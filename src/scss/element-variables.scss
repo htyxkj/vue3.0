@@ -1,0 +1,15 @@
+$--color-primary: #20a0ff;
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
+body{
+    overflow: scroll;
+    overflow-y: hidden; 
+    overflow-x: hidden;
+}
+
+.el-input-number--small{
+    width: 100% !important;
+}
