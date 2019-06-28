@@ -128,8 +128,6 @@ export default class BaseApplet extends Vue{
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
                             console.log(res);
-                            this.$notify.success('删除成功');
-                            this.JumpToIndexCRecord(this.dsm.index)
 
                         }).finally(()=>{
                             this.fullscreenLoading = false
@@ -155,13 +153,14 @@ export default class BaseApplet extends Vue{
                         statefr: crd[this.dsm.opera.statefld],
                         stateto: crd[this.dsm.opera.statefld],
                         spuserId: ""
-                    }
+                    }  
                     this.cea = new CeaPars(params)
                     console.log(this.cea)
                     this.fullscreenLoading = true
                     tools.getCheckInfo(this.cea,33).then((res:any)=>{
                         if(res.data.id==0){
                             let data = res.data.data.info
+                            console.log(data)
                             let work:any = this.$refs.work;
                             let smakefld:string='';
                             if(this.dsm.opera)

@@ -1,22 +1,33 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
-        <div class="bip-main-container" v-if="lay.binit">
-            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                <div ref="se">
-                    <bip-search-cont ref="se" :env="env"></bip-search-cont>
-                </div>
-                
-                <el-form label-position="right" label-width="120px">
-                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
-                </el-form>
-            </el-scrollbar>
-        </div>
+        <template v-if="!TJ">
+            <div class="bip-main-container" v-if="lay.binit">
+                <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+                    <div ref="se">
+                        <bip-search-cont ref="se" :env="env"></bip-search-cont>
+                    </div>
+                    <el-form label-position="right" label-width="120px">
+                        <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
+                    </el-form>
+                </el-scrollbar>
+            </div>
+        </template>
+        <template v-else>
+            <!-- 统计结果展示 -->
+            <bip-statistics-chart :stat="Statistics" :env="env" @goTable="goTable"></bip-statistics-chart>
+        </template>
+        <template v-if="TJDlog">
+            <!-- 统计项弹框选择 -->
+            <bip-statistics-dlog ref="bi_tj"  :env="env" @makeOK="tjData"></bip-statistics-dlog>
+        </template>
     </el-row>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
+import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
+import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
 import { URIParams } from "@/classes/URIParams";
 import { BIPUtil } from "@/utils/Request";
 
@@ -31,12 +42,11 @@ import BaseLayout from "@/components/layout/BaseLayout.vue";
 import BipSearchCont from './BipSearchCont.vue'
 import QueryEntity from "@/classes/search/QueryEntity";
 @Component({
-    components: { BipMenuBarUi,BaseLayout,BipSearchCont}
+    components: { BipMenuBarUi,BaseLayout,BipSearchCont,BipStatisticsDlog,BipStatisticsChart}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
     @Provide() fullscreenLoading: boolean = false;
-
     @Provide() cells: Array<Cells> = new Array<Cells>();
     @Provide() mbs: BipMenuBar = new BipMenuBar(0);
     @Provide() dsm: CDataSet = new CDataSet(null);
@@ -46,6 +56,9 @@ export default class CUnivSelect extends Vue {
     @Provide() env: CCliEnv = new CCliEnv();
     @Provide() listIndex: number = -1;
     @Provide() qe: QueryEntity = new QueryEntity("","");
+    @Provide() TJ :boolean = false;//是否是统计图
+    @Provide() TJDlog :boolean = false;//是否显示统计dlog
+    @Provide() Statistics:any=null;//统计条件集
     async initUI() {
         if (this.uriParams&&this.uriParams.pcell) {
             let pcell = this.uriParams.pcell
@@ -62,7 +75,7 @@ export default class CUnivSelect extends Vue {
                     this.ds_ext[i - 1] = new CDataSet(this.cells[i]);
                 }
                 this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm,true);
-                // console.log(this.mbs, "mbs");
+                console.log(this.mbs, "mbs");
                 this.listIndex = this.findListMenuIndex("LIST");
                 let layout = this.uriParams.playout
                 if(layout==''){
@@ -111,6 +124,12 @@ export default class CUnivSelect extends Vue {
             this.dsm_cont.currRecord = Object.assign({},{})
         }else if(cmd == 'FIND' ) {
             this.find()
+        }else if(cmd == 'ISTAT'){
+            this.TJDlog = true;
+            setTimeout(() => {
+                let dia: any = this.$refs.bi_tj;
+                dia.open();
+            }, 100);
         }
         console.log(this.dsm_cont.currRecord)
     }
@@ -173,6 +192,18 @@ export default class CUnivSelect extends Vue {
         this.qe.page.currPage = value
         this.qe.values = []
         this.findServerData(this.qe);
+    }
+
+    tjData(selGroup:[],selValue:[],chartTypeValue:string,showChart:boolean){
+        this.Statistics = {};
+        this.Statistics["selGroup"] = selGroup;
+        this.Statistics["selValue"] = selValue;
+        this.Statistics["chartTypeValue"] = chartTypeValue;
+        this.Statistics["showChart"] = showChart; 
+        this.TJ =true;
+    }
+    goTable(){
+        this.TJ = false;
     }
 }
 </script>

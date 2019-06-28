@@ -74,7 +74,6 @@ export default class CommonLayOut extends Vue {
             if (res.data.id === 0) {
                 this.uriParams = res.data.data.mparams;
             } else {
-                
                 this.$notify.error("没有菜单参数！");
             }
         } else {

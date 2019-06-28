@@ -148,6 +148,21 @@ export namespace BIPUtils {
         return checkParasm
     }
 
+    getBipStatisticsParams(pcell:any,pdata:any,pageSize:any,currentPage:any,groupfilds:any,groupdatafilds:any,psearch:any){
+        return Object.assign({
+            apiId: GlobalVariable.APIID_FINDSTATDATA,
+            dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+            usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode, 
+            pcell:pcell,
+            pdata:pdata,
+            pageSize:pageSize,
+            currentPage:currentPage,
+            groupfilds:groupfilds,
+            groupdatafilds:groupdatafilds,
+            psearch:psearch,
+            });
+        }
+
     base64Encode(str: string) {
       var pwd = encodeURIComponent(str);
       pwd = unescape(pwd);
