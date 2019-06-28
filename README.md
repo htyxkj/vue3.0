@@ -14,10 +14,9 @@ npm run serve
     文件路径： src/utils/BaseICL.ts
     BaseUri: "http://192.168.1.6:9999/jd",          //项目路径
     COMM_FLD_VALUE_DBID: "ZT1",                     //数据库标识
-
-    MQTT_SERVICE : 'ws://IP:端口/ws',     //rabbitMQ地址
-    MQTT_USERNAME:'username',                          //用户名
-    MQTT_PASSWORD:'password',                          //密码
+    MQTT_SERVICE : 'ws://IP:端口/ws',               //rabbitMQ地址
+    MQTT_USERNAME:'username',                       //用户名
+    MQTT_PASSWORD:'password',                       //密码
     MQTT_HOST:'bipmq',                              //HOST
 
 
