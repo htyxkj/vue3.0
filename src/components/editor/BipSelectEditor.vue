@@ -154,9 +154,12 @@ export default class BipSelectEditor extends Vue {
                 }
             }else{
                 let aidii:any = this.getAidInfos(str);
-                aidii.initOK = true
-                this.aidInfo = aidii;
-                this.initlinkRef()
+                if(aidii){
+                    console.log(aidii)
+                    aidii.initOK = true
+                    this.aidInfo = aidii;
+                    this.initlinkRef()
+                }
             }
     }
 

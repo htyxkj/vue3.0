@@ -71,7 +71,7 @@ export namespace BIPUtils {
 
     getWorkFlowDataParams(id:number,buidto:string,buidfr:string,qe: string) {
         return Object.assign({
-            apiId: GlobalVariable.APIID_QUERY,
+            apiId: GlobalVariable.APIID_WORKFLOW,
             dbid: BaseVariable.COMM_FLD_VALUE_DBID,
             usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
             .userCode,

@@ -47,7 +47,13 @@ export namespace BIPUtil {
     getRefById(aId:string,cont?:string){
       let param = tool.getRefParams(aId,cont);
       return this.getFromServer(param);
-  }
+    }
+
+    getWorkFlowData(id:number,buidto:string,buidfr:string,qee: QueryEntity){
+        let qe = JSON.stringify(qee)
+        let param = tool.getWorkFlowDataParams(id,buidto,buidfr,qe);
+        return this.getFromServer(param)
+    }
 
     getFromServer(param:any){
         // const options = {

@@ -591,6 +591,11 @@ export default class CDataSet {
     console.log(this.cdata._data.length);
     this.index = -1;
     this._total = 0;
+    if(this.ds_sub.length>0){
+        this.ds_sub.forEach(cds=>{
+            cds.clear()
+        })
+    }
   }
 
   private initHJList():void{

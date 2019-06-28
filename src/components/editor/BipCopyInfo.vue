@@ -10,8 +10,8 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-table :data="cds.cdata._data" height="200" size="small" stripe border >
-                
+            <el-table v-loading="mloading"  :data="cds.cdata._data" height="200" size="small" stripe border
+             highlight-current-row row-class-name="bip-assist-row" @current-change="selectionChange">   
                 <el-table-column v-for="(cel,index) in cellsm" :key="index" :prop="cel.id"
                 :label="cel.labelString"
                 :width="widths[index]" :resizable="true" :show-overflow-tooltip="true" :align="'center'">
@@ -30,7 +30,8 @@
                 :total="cds.page.total">
             </el-pagination>
 
-            <el-table v-if="cds.ds_sub.length>0" :data="cds.ds_sub[0].cdata._data" height="150" size="small" stripe border >
+            <el-table v-if="cds.ds_sub.length>0" :data="cds.ds_sub[0].cdata._data" 
+                height="150" size="small" stripe border @selection-change="mulSelectedChange" >
                 <el-table-column type="selection"></el-table-column>
                 <el-table-column v-for="(cel,index) in cellsms" :key="index" :prop="cel.id"
                 :label="cel.labelString"
@@ -54,7 +55,7 @@
                 </el-option>
             </el-select>
             <el-button size="small" type="primary" @click="find">刷新</el-button>
-            <el-button size="small" type="warning" @click="find">选中</el-button>
+            <el-button size="small" type="warning" @click="findSub">选中</el-button>
 
         </span>
         <!-- </template>
@@ -71,15 +72,18 @@ let tools = BIPUtil.ServApi
 import CDataSet from '../../classes/pub/CDataSet';
 import { Cell } from '../../classes/pub/coob/Cell';
 import BipCommEditor1 from './BipCommEditor1.vue'
+import BipGridLay from '../grideditor/BipGridLay.vue'
+import QueryEntity from '../../classes/search/QueryEntity';
 
 @Component({
-    components:{BipCommEditor1}
+    components:{BipCommEditor1,BipGridLay}
 })
 export default class BipCopyInfo extends Vue{
     @Prop() opera!:Operation;
     @Provide() aIdTitle:string='拷贝定义'
     @Provide() visible:boolean = false
     @Provide() loading:boolean = false
+    @Provide() mloading:boolean = false
     @Provide() flowList:any = []
     @Provide() buidfr:string =''
     @Provide() cd_cont:CDataSet = new CDataSet(null)
@@ -90,12 +94,18 @@ export default class BipCopyInfo extends Vue{
     @Provide() cellsms:Array<any> = []
     @Provide() widths:Array<any>=[]
     @Provide() widths1:Array<any>=[]
+    @Provide() qe:QueryEntity = new QueryEntity("","")
+    @Provide() qeSub:QueryEntity = new QueryEntity("","")
+    @Provide() mSelection:any=null
+    @Provide() sSelections:Array<any>=[]
     cancel(){
         this.visible = false
         console.log('cancel')
     }
 
     find(){
+        this.qe.page = this.cds.page
+        this.findMainPage()
 
     }
 
@@ -104,19 +114,88 @@ export default class BipCopyInfo extends Vue{
         console.log('selectOK')
     }
 
+    findSub(){
+        if(this.cds.ds_sub.length<1){
+            return ;
+        }
+        let aa:any = this.mSelection;
+        if(aa){
+            let _i = this.cds.ccells.x_pk;
+            if(_i>=0){
+                let cell = this.cds.ccells.cels[_i];
+                let cont = ''
+                let v = aa[cell.id];
+                let canf:boolean = false
+                if(cell.type==12){
+                    if(v){
+                        cont = cell.id+"='"+v+"'"
+                        canf = true
+                    }
+                    
+                }else{
+                    cont = cell.id+"="+v
+                     canf = true
+                }
+                if(canf){
+                    this.qeSub.cont = cont
+                    this.qeSub.pcell = this.cds.ds_sub[0].ccells.obj_id
+                    this.cds.ds_sub[0].cdata.clearValues();
+                    tools.getWorkFlowData(210,this.opera.buid,this.buidfr,this.qeSub).then(res=>{
+                        console.log(res)
+                        if(res.data.id==0){
+                            this.cds.ds_sub[0].cdata._data = res.data.data.info.values
+                        }    
+                    }).catch(err=>{
+                        console.log(err)
+                    }).finally(()=>{
+                        this.mloading = false
+                    })
+                }
+            }
+        }
+    }
+
+    findMainPage(){
+        this.qe.cont = JSON.stringify(this.cd_cont.currRecord);
+        this.qe.tcell = this.cd_cont.ccells.obj_id
+        this.mloading = true;
+        this.cds.clear();
+        tools.getWorkFlowData(205,this.opera.buid,this.buidfr,this.qe).then(res=>{
+            console.log(res)
+            if(res.data.id==0){
+                this.cds.cdata._data = res.data.data.info.values
+                this.cds.page = res.data.data.info.page
+            }    
+        }).catch(err=>{
+            console.log(err)
+        }).finally(()=>{
+            this.mloading = false
+        })
+    }
+
     updated(){
         console.log('updated')
     }
-    mounted(){
-        
+    selectionChange(val:any) {
+        console.log(val)
+        this.mSelection = val;
+    }
+
+    mulSelectedChange(val:any){
+        this.sSelections = val
     }
 
     handleSizeChange(value:any){
         console.log(value)
+        this.qe.page = this.cds.page
+        this.findMainPage()
     }
 
     handleCurrentChange(value:any){
-        console.log(value)
+        console.log(value,this.qe)
+        this.qe.page = this.cds.page
+        console.log(this.qe)
+        this.findMainPage()
     }
     open(){
         this.visible = true

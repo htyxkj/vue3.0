@@ -15,7 +15,7 @@
                 </template>
 
                 <template v-for="child in item.childMenu">
-                    <bip-menu-item1 v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item1>
+                    <bip-menu-item v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
 
                     <el-menu-item v-else :key="child.menuId" :index="child.menuId" :route="'layout?'+child.command">
                         <i class="el-icon-location"></i>
@@ -35,16 +35,15 @@
 <script lang="ts">
 import { Component, Vue,Provide,Prop} from "vue-property-decorator";
 import { Menu } from '@/classes/Menu';
-import BipMenuItem1 from "./BipMenuItem1.vue";
+import BipMenuItem from "@/components/menu/BipMenuItem.vue";
 @Component({
     components: {
-        BipMenuItem1
+        'bip-menu-item':BipMenuItem
     }
 })
-export default class BipMenuItem extends Vue{
-    @Provide() name:string="BipMenuItem"
+export default class BipMenuItem2 extends Vue{
+    @Provide() name:string="BipMenuItem1"
     @Prop() private item!:Menu;
-
 }
 </script>
 
