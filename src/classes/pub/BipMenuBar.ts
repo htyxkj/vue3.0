@@ -49,14 +49,14 @@ export default class BipMenuBar{
                 this.menuList.push(btn)
             }
             if((menuAttr&CommICL.B_IFIND)>0){
-                this.setNavButton()
+                this.setNavButton(menuAttr)
             }
 
             
         }
     }
 
-    setNavButton(){
+    setNavButton(menuAttr:number){
         if(this.search){
             let btn = new BipMenuBtn(CommICL.B_CMD_CLEAR,"清空")
             btn.setIconFontIcon('zk');
@@ -65,6 +65,13 @@ export default class BipMenuBar{
         let btn = new BipMenuBtn(CommICL.B_CMD_FIND,"查找")
         btn.setIconFontIcon('search');
         this.menuList.push(btn)
+
+        if(((menuAttr&CommICL.B_ISTAT)<=0)&&this.search){
+            let btn = new BipMenuBtn(CommICL.B_CMD_ISTAT,"统计")
+            btn.setIconFontIcon('tongji');
+            this.menuList.push(btn)
+        }
+
         btn = new BipMenuBtn(CommICL.B_CMD_FIRST,"第一个")
         btn.setIconFontIcon('first-page');
         this.menuList.push(btn)
