@@ -18,6 +18,7 @@
         <bip-copy-info v-if="dia"
             ref="ak"
             :opera='opera'
+            :ref_cds="cds"
             @select="selectCallBack"
         ></bip-copy-info>
     </el-col>
@@ -71,6 +72,11 @@ export default class BipCopyEditor extends Vue{
 
     selectCallBack(){
 
+    }
+
+    @Watch('model')
+    modelChange(){
+        this.model1 = this.model
     }
 }
 </script>

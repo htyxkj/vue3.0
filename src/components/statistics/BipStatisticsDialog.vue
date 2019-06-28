@@ -82,7 +82,7 @@ export default class BipStatisticsDialog extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
  
 .bip-search{
     .el-dialog__header{
@@ -92,8 +92,8 @@ export default class BipStatisticsDialog extends Vue {
         padding: 10px 10px !important;
     }
 }
-.el-icon-close:before {
-    content: "\E6DB";
-    color: white;
-}
+// .el-icon-close:before {
+//     content: "\E6DB";
+//     color: white;
+// }
 </style>

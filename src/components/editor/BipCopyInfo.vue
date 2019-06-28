@@ -11,7 +11,7 @@
         </el-row>
         <el-row>
             <el-table v-loading="mloading"  :data="cds.cdata._data" height="200" size="small" stripe border
-             highlight-current-row row-class-name="bip-assist-row" @current-change="selectionChange">   
+             highlight-current-row row-class-name="bip-assist-row" @current-change="currSelectedChange">   
                 <el-table-column v-for="(cel,index) in cellsm" :key="index" :prop="cel.id"
                 :label="cel.labelString"
                 :width="widths[index]" :resizable="true" :show-overflow-tooltip="true" :align="'center'">
@@ -46,7 +46,7 @@
             <el-button size="small" @click="cancel()">取 消</el-button>
             <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
             
-            <el-select v-model="buidfr" placeholder="请选择" size="small" :required="true">
+            <el-select v-model="buidfr" placeholder="请选择" size="small" :required="true" @change="buidfrChange">
                 <el-option 
                 v-for="item in flowList"
                 :key="item.buidfr"
@@ -74,18 +74,21 @@ import { Cell } from '../../classes/pub/coob/Cell';
 import BipCommEditor1 from './BipCommEditor1.vue'
 import BipGridLay from '../grideditor/BipGridLay.vue'
 import QueryEntity from '../../classes/search/QueryEntity';
-
+import { CommICL } from '@/utils/CommICL';
+let icl = CommICL
 @Component({
     components:{BipCommEditor1,BipGridLay}
 })
 export default class BipCopyInfo extends Vue{
     @Prop() opera!:Operation;
+    @Prop() ref_cds!:CDataSet;
     @Provide() aIdTitle:string='拷贝定义'
     @Provide() visible:boolean = false
     @Provide() loading:boolean = false
     @Provide() mloading:boolean = false
-    @Provide() flowList:any = []
+    @Provide() flowList:Array<any> = []
     @Provide() buidfr:string =''
+    @Provide() currFlow:any =null
     @Provide() cd_cont:CDataSet = new CDataSet(null)
     @Provide() cds:CDataSet = new CDataSet(null)
     @Provide() init:boolean = false
@@ -98,9 +101,10 @@ export default class BipCopyInfo extends Vue{
     @Provide() qeSub:QueryEntity = new QueryEntity("","")
     @Provide() mSelection:any=null
     @Provide() sSelections:Array<any>=[]
+
+    @Provide() mul:boolean = false
     cancel(){
         this.visible = false
-        console.log('cancel')
     }
 
     find(){
@@ -109,11 +113,84 @@ export default class BipCopyInfo extends Vue{
 
     }
 
+    /**
+     * 选择确认
+     */
     selectOK(){
-         this.visible = false
+        //  this.visible = false
         console.log('selectOK')
+        if(!this.mul){
+            if(this.mSelection){
+                let crd = this.ref_cds.currRecord
+                let obj_id = this.cds.ccells.obj_id
+                let scopys:Array<any> = this.currFlow.scopys
+                let index = scopys.findIndex(item=>{
+                    return item.objId == obj_id 
+                })
+                if(index>=0){
+                    //主对象赋值
+                    let scopy = scopys[index]
+                    let toList:Array<string> = scopy.toFldList
+                    let frList:Array<string> = scopy.fromFldList
+                    let crd0 = this.makeRecord(toList,frList,this.ref_cds,this.mSelection)
+
+                    if(this.cds.ds_sub.length>0&&this.ref_cds.ds_sub.length>0){
+                        obj_id = this.cds.ds_sub[0].ccells.obj_id
+                        let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata._data
+                        console.log(subV.length)
+                        index = scopys.findIndex(item=>{
+                            return item.objId == obj_id 
+                        })
+                        if(index>=0){
+                            let cds1 = this.ref_cds.ds_sub[0];
+                            scopy = scopys[index]
+                            toList = scopy.toFldList
+                            frList = scopy.fromFldList
+                            cds1.clear()
+                            subV.forEach(item=>{
+                                cds1.createRecord()
+                                let crd11 = this.makeRecord(toList,frList,cds1,item)
+                                console.log(crd11)
+                            })
+                        }
+                    }
+
+
+                }
+
+
+            }
+            this.visible = false
+        }
+
     }
 
+    makeRecord(toList:Array<string>,frList:Array<string>,cds1:CDataSet,item:any):any{
+        let crd:any = cds1.currRecord
+        toList.forEach((fld,index)=>{
+            
+            let m = cds1.ccells.cels.findIndex((cel:any)=>{
+                return cel.id == fld
+            })
+            if(m>=0){
+                let f1 = frList[index]
+                let v = item[f1]
+                if(v!=undefined){
+                    crd[fld] = v
+                    let methodName=icl.EV_CELL_CHANGE+'_'+cds1.ccells.obj_id+'_'+fld
+                    this.$bus.$emit(methodName,{cellId:fld,value:v,row:cds1.index})
+                    this.cds.cellChange(fld,v);
+                }
+                
+            }
+        })
+        crd.sys_stated = 3
+        return crd
+    }
+
+    /**
+     * 查询子对象数据
+     */
     findSub(){
         if(this.cds.ds_sub.length<1){
             return ;
@@ -154,7 +231,9 @@ export default class BipCopyInfo extends Vue{
             }
         }
     }
-
+    /***
+     * 查询主对象数据
+     */
     findMainPage(){
         this.qe.cont = JSON.stringify(this.cd_cont.currRecord);
         this.qe.tcell = this.cd_cont.ccells.obj_id
@@ -173,16 +252,24 @@ export default class BipCopyInfo extends Vue{
         })
     }
 
-    updated(){
-        console.log('updated')
-    }
-    selectionChange(val:any) {
+    /**
+     * 
+     */
+    currSelectedChange(val:any) {
         console.log(val)
         this.mSelection = val;
+        this.findSub()
     }
 
     mulSelectedChange(val:any){
         this.sSelections = val
+    }
+
+    buidfrChange(val:string){
+        let index = this.flowList.findIndex((item:any)=>{
+            return item.buidfr == val
+        });
+        this.initCopyInfo(index)
     }
 
     handleSizeChange(value:any){
@@ -197,6 +284,7 @@ export default class BipCopyInfo extends Vue{
         console.log(this.qe)
         this.findMainPage()
     }
+
     open(){
         this.visible = true
         let buid = this.opera.buid;
@@ -218,8 +306,9 @@ export default class BipCopyInfo extends Vue{
 
 
     initCopyInfo(index:number){
-        this.buidfr = this.flowList[index].buidfr
-        let cells = this.flowList[index].cells
+        this.currFlow = this.flowList[index]
+        this.buidfr = this.currFlow.buidfr
+        let cells = this.currFlow.cells
         this.cd_cont = new CDataSet(cells[0])
         this.cd_cont.createRecord()
         this.cds = new CDataSet(cells[1])
@@ -239,6 +328,7 @@ export default class BipCopyInfo extends Vue{
             this.widths1 = this.initWidth(this.cellsms)
         }
     }
+
 
     initWidth(cells:Array<any>):Array<any>{
         let ww:Array<any> = []
