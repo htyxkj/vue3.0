@@ -8,10 +8,12 @@
   },
   "dependencies": {
     "@types/echarts": "^4.1.9",
+    "@types/stompjs": "^2.3.4",
     "echarts": "^4.2.1",
     "element-ui": "^2.9.1",
     "moment": "^2.24.0",
     "qs": "^6.7.0",
+    "stompjs": "^2.3.3",
     "vue": "^2.6.10",
     "vue-bus-ts": "^1.0.8",
     "vue-class-component": "^7.1.0",

@@ -4,7 +4,7 @@
             <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
         </div>
         <div v-if="stat.showChart && option" >
-            <bip-chart :option="option"></bip-chart>
+            <bip-chart style="height :400px" :option="option"></bip-chart>
         </div>
         <div>
             <!-- 报表表格-->

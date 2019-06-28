@@ -18,7 +18,7 @@
                     <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">退出</el-button></el-row>
                 </el-col>
             </el-row>  
-            <img slot="reference" src ='../../assets/48.jpg' style="border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 10px;margin-right:10px"></img>
+            <img slot="reference" src ='../../assets/48.jpg' style="border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 10px;margin-right:10px" />
         </el-popover>
     </el-row>
 </template>
@@ -26,10 +26,10 @@
 import { User } from '@/classes/User';
 import { Component, Vue, Provide, Prop ,Watch} from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
-import  Stomp  from "stompjs";
+import  Stomp  from 'stompjs';
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
-import { watch } from 'fs';
+
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
 const BIPTASK : string = "biptask",BIPMSG : string = "bipmsg"; 
@@ -68,9 +68,9 @@ export default class LayHeader extends Vue {
     }
     //初始化mqtt客户端，并连接mqtt服务 
     connectQ() {      
-      var ws = new WebSocket(BaseVariable.MQTT_SERVICE);
+      let ws = new WebSocket(BaseVariable.MQTT_SERVICE);
       this.client = Stomp.over(ws);
-      var headers = {
+      const headers = {
         login: BaseVariable.MQTT_USERNAME, //用户名
         passcode: BaseVariable.MQTT_PASSWORD, //密码
         host: BaseVariable.MQTT_HOST // 虚拟空间
