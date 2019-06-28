@@ -3,4 +3,9 @@ export const BaseVariable = Object.assign({
     // BaseUri: "http://115.28.191.203:89/dabobip/",
     COMM_FLD_VALUE_DBID: "ZT1",
     // COMM_FLD_VALUE_DBID: "01",
+
+    MQTT_SERVICE : 'ws://115.28.191.203:85/ws',
+    MQTT_USERNAME:'bipmq',
+    MQTT_PASSWORD:'bipmq',
+    MQTT_HOST:'bipmq',
   });

@@ -42,7 +42,9 @@ import {
 //   Image,
   Step,
   Steps,
-  CheckboxGroup
+  CheckboxGroup,
+  Badge,
+  Popover
 
 
 } from "element-ui";
@@ -87,6 +89,8 @@ Vue.use(Tag);
 Vue.use(Step)
 Vue.use(Steps)
 Vue.use(CheckboxGroup)
+Vue.use(Badge)
+Vue.use(Popover)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;
