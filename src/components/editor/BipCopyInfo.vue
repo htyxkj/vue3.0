@@ -148,7 +148,7 @@ export default class BipCopyInfo extends Vue{
                             frList = scopy.fromFldList
                             cds1.clear()
                             subV.forEach(item=>{
-                                cds1.createRecord()
+                                cds1.createRecord();
                                 let crd11 = this.makeRecord(toList,frList,cds1,item)
                                 console.log(crd11)
                             })

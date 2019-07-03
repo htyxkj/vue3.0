@@ -219,8 +219,10 @@ export default class CDataSet {
   }
 
   createOne(): any {
-    let modal = this.initModal(true);
-    modal.sys_stated = modal | billState.INSERT;
+    let modal:any = this.initModal(true);
+    // console.log(modal)
+    modal = Object.assign({},modal,{'sys_stated': billState.INSERT})
+    // modal['sys_stated'] =  billState.INSERT;
     this.scriptProc.data = modal;
     this.checkGS();
     return modal;
@@ -402,24 +404,26 @@ export default class CDataSet {
 
   incCalc(cell: Cells, modal: any) {
     if (cell) {
-      let xinc = cell.autoInc;
-      if (xinc > 0) {
-        var cel = cell.cels[xinc - 1];
-        var s0 = cel.psAutoInc;
-        if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12)
-          return;
-        let ilnk = cel.lnk_inn;
-        // console.log('ilink',ilnk);
-        s0 = this.incCalc2(cell.cels, s0, ilnk, modal);
-        if ((cel.attr & 0x10000) == 0) {
-          var x0 = s0.lastIndexOf("%");
-          s0 = x0 < 1 ? s0 : s0.substring(0, x0 + 1);
-        }
-        modal[cel.id] = s0;
-      } else {
-        let cell: Cell = this.getPKInt();
-        if (cell && cell.id !== "c_corp")
-          modal[cell.id] = this.cdata._data.length + 1 + "";
+        let xinc =-1;
+        if(cell.pkindex)
+            xinc = cell.pkindex[0];
+        if (xinc >= 0) {
+            var cel = cell.cels[xinc];
+            var s0 = cel.psAutoInc;
+            if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12)
+            return;
+            let ilnk = cel.lnk_inn;
+            // console.log('ilink',ilnk);
+            s0 = this.incCalc2(cell.cels, s0, ilnk, modal);
+            if ((cel.attr & 0x10000) == 0) {
+            var x0 = s0.lastIndexOf("%");
+            s0 = x0 < 1 ? s0 : s0.substring(0, x0 + 1);
+            }
+            modal[cel.id] = s0;
+        } else {
+            let cell: Cell = this.getPKInt();
+            if (cell && cell.id !== "c_corp")
+                modal[cell.id] = this.cdata._data.length + 1 + "";
       }
     }
     return modal;

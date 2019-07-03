@@ -45,7 +45,7 @@ export default class BipListEditor extends Vue{
     //[{value:'A',label:'A类型'},{value:'B',label:'B类型'},{value:'C',label:'C类型'}]
     mounted(){
         // if(this.cds){
-            this.multiple = (this.cds.ccells.attr&0x80)>0
+        this.multiple = (this.cds.ccells.attr&0x80)>0
         // }
         this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         if(this.multiple){
@@ -146,9 +146,10 @@ export default class BipListEditor extends Vue{
         }   
     }
 
-    @Watch("clMap")
+    @Watch("clMap",{deep:true})
     clMapChange(){
-        if(this.bcl&&!this.initOK){
+        console.log('clMap change')
+        if(this.bcl){
             let vv = this.clMap.get('CL_'+this.refId)
             if(vv!=null&&vv&&vv.values){
                 if(this.options.length<vv.values){
@@ -163,11 +164,10 @@ export default class BipListEditor extends Vue{
                     if(vals&&vals.length>0){
                         vals.forEach(item=>{
                             let n2 = {value:item[labes[0]]+'',label:item[labes[1]||labes[0]]}
-                            console.log(item)
-                            if(n2)
                             this.options.push(n2)
                         })
                     }
+                    this.initOK = true;
                 }
             }
         }
