@@ -12,11 +12,13 @@ import { GetterTree, ActionTree, MutationTree  } from 'vuex'
 const _isLogin:boolean = (window.sessionStorage.getItem('isLogin')+'')==='true'
 const _u = JSON.parse(window.sessionStorage.getItem('user')+'')
 const _m = JSON.parse(window.sessionStorage.getItem('menulist')+'')
+const _isOpenMenu = false;
 const state:LoginState = {
     isLogin: _isLogin,
     snkey: JSON.parse(window.sessionStorage.getItem('snkey')+''),
     user:_u ===null?new User('','',''):_u,
-    menulist: _m === null?[]:_m
+    menulist: _m === null?[]:_m,
+    isOpenMenu:_isOpenMenu,
 }
 
 const mutations :MutationTree<LoginState> = {
@@ -35,6 +37,10 @@ const mutations :MutationTree<LoginState> = {
     menulist:(state:LoginState,data:Menu[]) => {
         state.menulist = data;
         window.sessionStorage.setItem('menulist',JSON.stringify(data));
+    },
+    setIsOpenMenu:(state:LoginState,data:boolean) => {
+        state.isOpenMenu = data;
+        window.sessionStorage.setItem('isOpenMenu',JSON.stringify(data));
     }
 }
 
@@ -51,7 +57,10 @@ const getters: GetterTree<LoginState, RootState> = {
     },
     menulist(state) : Menu[] {
         return state.menulist
-    }
+    },
+    isOpenMenu(state) : boolean {
+        return state.isOpenMenu
+    },
   }
 
 const namespaced: boolean = true;

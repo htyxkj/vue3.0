@@ -4,38 +4,38 @@
       <login></login>
     </template>
     <template v-else>
-      <el-container>
-        <bip-aside></bip-aside>
+      <el-container> 
+        <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
         <el-container>
-            <el-header style="background-color:#20a0ff;text-align: end;"> 
+            <el-header style="background-color:#20a0ff;"> 
                 <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
             </el-header>
-          <el-main class="bip-main">
-            <!-- <el-button @click="addTab(editableTabsValue2)">添加Tab</el-button> -->
-            <el-tabs
-              v-model="editableTabsValue2"
-              type="card"
-              :closable="false"
-              @tab-remove="removeTab"
-              class="bip-tabs"
-            >
-              <el-tab-pane
-                v-for="(item) in editableTabs2"
-                :key="item.name"
-                :label="item.title"
-                :name="item.name"
-                :closable="item.closable"
-                :lazy="true"
-              >
-                
-                <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">
+            <el-main class="bip-main">
+                <!-- <el-button @click="addTab(editableTabsValue2)">添加Tab</el-button> -->
+                <el-tabs
+                v-model="editableTabsValue2"
+                type="card"
+                :closable="false"
+                @tab-remove="removeTab"
+                class="bip-tabs"
+                >
+                <el-tab-pane
+                    v-for="(item) in editableTabs2"
+                    :key="item.name"
+                    :label="item.title"
+                    :name="item.name"
+                    :closable="item.closable"
+                    :lazy="true"
+                >
                     
-                </lay-out>
-                <!-- <router-view/> -->
-              </el-tab-pane>
-            </el-tabs>
-            <!-- <router-view /> -->
-          </el-main>
+                    <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">
+                        
+                    </lay-out>
+                    <!-- <router-view/> -->
+                </el-tab-pane>
+                </el-tabs>
+                <!-- <router-view /> -->
+            </el-main>
         </el-container>
       </el-container>
     </template>
@@ -75,17 +75,21 @@ export default class App extends Vue {
     @Provide() editableTabs2: BipTag[] = [];
     @Provide() tabIndex: any = 1;
     @Provide() dialogVisible = false;
+    @Provide() menu1:string = "menu menu1";
+    @Provide() menu2:string = "menu menu2";
 
     @State('login') profile!: LoginState
     // MapGetter
     //   @Getter('firstName', { namespace:'profile' }) firstName?: string;
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
+    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Getter('user', { namespace: 'login' }) user?: User;
     //   @Getter('lastName', { namespace }) lastName?: string;
     //   @Action('fetchName', { namespace:'profile' }) fetchName?: any;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
- 
+    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
+
     async mounted() {
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
@@ -125,13 +129,11 @@ export default class App extends Vue {
         this.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
     }
     loginOut(){
+        this.editableTabs2=[];
         this.$router.push({ path: "/login" });
         this.setIsLogin(false);
         sessionStorage.clear(); 
-    }
-    
-    
-
+    } 
     @Watch('isLogin')
     logined(){ 
         console.log('islogin change');
@@ -139,7 +141,7 @@ export default class App extends Vue {
             if(this.editableTabs2.length==0)
                 this.addIndex();
         }
-    }
+    } 
 
     @Watch('profile.isLogin')
     entityChange(){
@@ -147,10 +149,10 @@ export default class App extends Vue {
     }
 
     @Watch("$route")
-    routerChange(to: Route, from: Route) {
+    routerChange(to: Route, from: Route) { 
         if (to.name === "login") {
-        this.setIsLogin(false);
-        return;
+            this.setIsLogin(false);
+            return;
         }
         // console.log(to,from)
         if (to.name === 'index') {
@@ -160,31 +162,30 @@ export default class App extends Vue {
         return
         }
         if (to.name === 'layout') {
-
-        if (this.menusList.length > 0) { 
-            let me:any 
-            for(let i = 0;i<this.menusList.length;i++){
-                let m1 = this.findMenuById(to.query.pmenuid+'',this.menusList[i])
-                if(m1!=null){
-                    me = m1
-                    break ;
+            if (this.menusList.length > 0) { 
+                let me:any
+                for(let i = 0;i<this.menusList.length;i++){
+                    let m1 = this.findMenuById(to.query.pmenuid+'',this.menusList[i])
+                    if(m1!=null){
+                        me = m1
+                        break ;
+                    }
+                }
+                console.log(me)
+                let menu:Menu = me;
+                let currTag = this.editableTabs2.filter(
+                tab => 
+                    tab.name == menu.menuId
+                )[0];
+                console.log(currTag)
+                if (!currTag) {
+                let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
+                this.editableTabs2.push(tag);
+                this.editableTabsValue2 = menu.menuId;
+                } else {
+                this.editableTabsValue2 = menu.menuId;
                 }
             }
-            console.log(me)
-            let menu:Menu = me;
-            let currTag = this.editableTabs2.filter(
-            tab => 
-                tab.name == menu.menuId
-            )[0];
-            console.log(currTag)
-            if (!currTag) {
-            let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
-            this.editableTabs2.push(tag);
-            this.editableTabsValue2 = menu.menuId;
-            } else {
-            this.editableTabsValue2 = menu.menuId;
-            }
-        }
         }
     }
  
@@ -280,5 +281,39 @@ body {
     font-size: 22px;
     color: white;
     margin-right: 25px;
+}
+.menu{
+    z-index: 99999; 
+    position: absolute;
+    animation-fill-mode: both;
+    height: 100%;
+}
+.menu1{ 
+    animation-name: fadeInLeft; 
+    animation-duration: 0.3s;
+}
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  } 
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.menu2{
+    animation-name: fadeInLeft2;
+    animation-duration: 0.3s;
+}
+@keyframes fadeInLeft2 { 
+    from {
+        opacity: 1;
+        transform: none;
+    }
+    to {
+        opacity: 0;
+        transform: translate3d(-100%, 0, 0);
+    }
 }
 </style>

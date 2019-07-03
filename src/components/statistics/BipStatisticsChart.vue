@@ -1,9 +1,16 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <div>
-            <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
+        <div class="titlebg">
+            <el-row>
+                <el-col :span="2" style="text-align: left">
+                     <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
+                </el-col>
+                <el-col :span="22" class="charttitle">
+                        统计维度：{{this.getTitle()}}
+                </el-col>
+            </el-row>
         </div>
-        <div v-if="stat.showChart && option" >
+        <div v-if="stat.showChart && option"  class="showchart" >
             <bip-chart style="height :400px" :option="option"></bip-chart>
         </div>
         <div>
@@ -134,10 +141,10 @@ export default class BipStatisticsDialog extends Vue {
         var cell:any = this.getCellById(id);
         let labelString = cell.labelString 
         let pie = {
-            title : {
-                text: this.getTitle()+'  '+"统计", 
-                x:'center'
-            },
+            // title : {
+            //     text: "统计维度:"+this.getTitle(), 
+            //     x:'center'
+            // },
             tooltip : {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
@@ -166,6 +173,29 @@ export default class BipStatisticsDialog extends Vue {
                             shadowBlur: 10,
                             shadowOffsetX: 0,
                             shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        normal: {
+                            //定义一个list，然后根据所以取得不同的值，这样就实现了，
+                            // color: function(params:any) {
+                            //     var colorList = [
+                            //         "#C1232B",
+                            //         "#B5C334",
+                            //         "#FCCE10",
+                            //         "#E87C25",
+                            //         "#27727B",
+                            //         "#FE8463",
+                            //         "#9BCA63",
+                            //         "#FAD860",
+                            //         "#F3A43B",
+                            //         "#60C0DD",
+                            //         "#D7504B",
+                            //         "#C6E579",
+                            //         "#F4E001",
+                            //         "#F0805A",
+                            //         "#26C0C0"
+                            //     ];
+                            //     return colorList[params.dataIndex];
+                            // }
                         }
                     }
                 }
@@ -189,10 +219,14 @@ export default class BipStatisticsDialog extends Vue {
     async makeColumnOpitons(chartData:any){ 
         let chartD = chartData.data.data.tjpages.celData; 
         let option = {
-            title: {
-                left: 'left',
-                text: this.getTitle()+'  '+"统计", 
-            },
+            // title: {
+            //     left: 'left',
+            //     text: "统计维度："+this.getTitle(), 
+            //     backgroundColor:'rgb(242,242,242)',
+            //     textStyle:{
+            //         width:'100%'
+            //     }
+            // },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -218,12 +252,21 @@ export default class BipStatisticsDialog extends Vue {
                     rotate:20  
                 }  
             },
+            grid: {
+                left: '1%',
+                right: '1%',
+                bottom: '1%',
+                top:'8%',
+                containLabel: true
+            },
             legend: { 
+                 left: '45%',
+                 top: 5,
             },
             yAxis: {
                 type: 'value'
             },
-            series: []
+            series : [ ]
         };
         let chartType = this.stat.chartTypeValue;
         
@@ -394,4 +437,16 @@ export default class BipStatisticsDialog extends Vue {
 </script>
 
 <style lang="scss"> 
+.titlebg {
+    background-color: #f2f2f2;
+    text-align: center;
+    line-height: 30px;
+    margin-bottom: -20px;
+}
+.showchart {
+    border: 1px solid #E4E7ED;
+}
+.charttitle {
+    text-align: center;
+}
 </style>

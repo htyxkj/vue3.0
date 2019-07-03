@@ -104,7 +104,7 @@ export default class CommonLayOut extends Vue {
     // border: 1px solid black;
 
     height: calc(100% - 135px);
-    width: calc(100% - 310px);
+    width: calc(100% - 30px);
     // height: 400px;
     // position: fixed;
     z-index: 1;

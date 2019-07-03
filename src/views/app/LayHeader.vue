@@ -1,25 +1,33 @@
 <template>
-    <el-row>
-        <el-badge :value="taskNum" class="header_badge_item">
-            <i class="el-icon-mobile"></i>    
-        </el-badge>
-        <el-badge :value="msgNum" class="header_badge_item">
-            <i class="el-icon-message-solid"></i>    
-        </el-badge>
-
-        <el-popover  width="160" placement="bottom-end" >
-            <el-row style="margin: 0px;">
-                <el-col :span="24">
-                    <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
-                    <el-row class="user_code user_padding">{{user.userCode}}</el-row>
-                    <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
-                    <el-row class="user_padding user_hr"><el-button type="text" class="user_button">修改密码</el-button></el-row>                            
-                    <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
-                    <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">退出</el-button></el-row>
-                </el-col>
-            </el-row>  
-            <img slot="reference" src ='../../assets/48.jpg' style="border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 10px;margin-right:10px" />
-        </el-popover>
+    <el-row style="margin-bottom:0px"> 
+        <el-col :span="4"> 
+            <el-row style="text-align:start;margin-bottom:0px"> 
+                <i class="el-icon-menu menuicon pointer" @click="showMenu"></i>
+            </el-row>
+        </el-col>
+        <el-col :span="20">
+            <el-row style="text-align:end;margin-bottom:0px"> 
+                <el-badge :value="taskNum" class="header_badge_item">
+                    <i class="el-icon-mobile pointer"></i>    
+                </el-badge>
+                <el-badge :value="msgNum" class="header_badge_item">
+                    <i class="el-icon-message-solid pointer"></i>    
+                </el-badge> 
+                <el-popover  width="160" placement="bottom-end" >
+                    <el-row style="margin: 0px;">
+                        <el-col :span="24">
+                            <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
+                            <el-row class="user_code user_padding">{{user.userCode}}</el-row>
+                            <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
+                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button">修改密码</el-button></el-row>                            
+                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
+                            <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">注销</el-button></el-row>
+                        </el-col>
+                    </el-row>  
+                    <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
+                </el-popover>
+            </el-row>
+        </el-col>
     </el-row>
 </template>
 <script lang="ts">
@@ -29,6 +37,7 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import  Stomp  from 'stompjs';
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
+import { LoginState } from '../../store/modules/login/types'; 
 
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
@@ -42,6 +51,10 @@ export default class LayHeader extends Vue {
     @Provide() msgNum:Number = 0;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Prop() isLogin!:boolean;
+
+    @State('login') profile!: LoginState 
+    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
+    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     async mounted() {
         if(this.isLogin){ 
             this.getTaskMsgNum();
@@ -149,7 +162,9 @@ export default class LayHeader extends Vue {
         //     this.taskNum = 0;
         // } 
     }
-    
+    showMenu(){
+        this.setIsOpenMenu(true)
+    }
     @Watch('taskNum')
     uptaskNum(){
         if(this.taskNum >0 || this.msgNum>0)
@@ -162,3 +177,17 @@ export default class LayHeader extends Vue {
     }
 }
 </script>
+<style scoped>
+.menuicon{
+    color: white;
+    font-size: 28px;
+    margin: 16px 0px; 
+    
+}
+.pointer{
+    cursor:pointer;
+}
+.userimg{
+    border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 10px;margin-right:10px 
+}
+</style>

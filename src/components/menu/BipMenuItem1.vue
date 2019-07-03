@@ -2,7 +2,7 @@
     <div>
         <template v-if="item.haveChild">
             <template v-if="item.childMenu.length === 0">
-                <el-menu-item :index="item.menuId" :route="'layout?'+item.command">
+                <el-menu-item :index="item.menuId" :route="'layout?'+item.command" @click="closeMenu">
                     <i class="el-icon-menu"></i>
                     {{item.menuName}}
                 </el-menu-item>
@@ -17,7 +17,7 @@
                 <template v-for="child in item.childMenu">
                     <bip-menu-item v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
 
-                    <el-menu-item v-else :key="child.menuId" :index="child.menuId" :route="'layout?'+child.command">
+                    <el-menu-item v-else :key="child.menuId" :index="child.menuId" :route="'layout?'+child.command" @click="closeMenu">
                         <i class="el-icon-location"></i>
                         {{child.menuName}}
                     </el-menu-item>
@@ -25,7 +25,7 @@
             </el-submenu>
         </template>
         <template v-else>
-            <el-menu-item :key="item.menuId" :index="item.menuId" :route="'layout?'+item.command">
+            <el-menu-item :key="item.menuId" :index="item.menuId" :route="'layout?'+item.command" @click="closeMenu">
                 <i class="el-icon-menu"></i>
                 {{item.menuName}}
             </el-menu-item>
@@ -36,6 +36,8 @@
 import { Component, Vue,Provide,Prop} from "vue-property-decorator";
 import { Menu } from '@/classes/Menu';
 import BipMenuItem2 from "@/components/menu/BipMenuItem2.vue";
+import { LoginState } from '../../store/modules/login/types';
+import { State, Action, Getter, Mutation } from 'vuex-class';
 @Component({
     components: {
         'bip-menu-item':BipMenuItem2
@@ -44,6 +46,13 @@ import BipMenuItem2 from "@/components/menu/BipMenuItem2.vue";
 export default class BipMenuItem1 extends Vue{
     @Provide() name:string="BipMenuItem1"
     @Prop() private item!:Menu;
+    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
+    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
+
+    closeMenu(){
+        this.setIsOpenMenu(false);
+    }
+
 }
 </script>
 

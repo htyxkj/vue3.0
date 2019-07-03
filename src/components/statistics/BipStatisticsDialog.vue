@@ -1,5 +1,5 @@
 <template>
-    <el-dialog class="bip-search" width="30%" title="统计项选择" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+    <el-dialog class="bip-search" width="30%" title="统计" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
         <el-form ref="form" label-width="120px">
             <el-row>
                 <el-form-item label="统计项选择" :required="true">
@@ -20,28 +20,42 @@
                 </el-form-item> 
             </el-row>
             <el-row>
-                <el-form-item label="图表类型" :required="true">
+                <el-form-item label="图  表  类  型" :required="true">
                     <el-select v-model="chartTypeValue" collapse-tags style="margin-left: 20px;" placeholder="请选择">
                         <el-option v-for="item in chartType" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item> 
             </el-row>
             <el-row>
-                <el-form-item label="是否显示图表">
-                    <el-checkbox v-model="showChart"  style="margin-left: 20px;"></el-checkbox>
+                <el-form-item label="显  示  图  表" :required="true">
+                    <!-- <el-checkbox v-model="showChart"  style="margin-left: 20px;"></el-checkbox> -->
+                    <el-radio v-model="showChart"  :label='true' style="margin-left: 20px;" >显示</el-radio>
+                    <el-radio v-model="showChart"  :label='false' >不显示</el-radio>
+                     <!-- <el-checkbox-group 
+                        v-model="checkedCities1"
+                        :min="1"
+                        :max="1">
+                        <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+                    </el-checkbox-group> -->
                 </el-form-item> 
             </el-row>
-            <el-row>
+            <!-- <el-row>
                 <el-form-item>
                     <el-col :span="12">
-                        <el-button type="text" @click="close">取消</el-button>
+                        <el-button  @click="close" >取  消</el-button>
                     </el-col>
                     <el-col :span="12">
-                        <el-button type="text" @click="searchOK">确定</el-button>
+                        <el-button  @click="searchOK" type="primary" >确  定</el-button>
                     </el-col>
                 </el-form-item>
-            </el-row>
+            </el-row> -->
+           
+            
         </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button  @click="close" >取  消</el-button>
+            <el-button  @click="searchOK" type="primary" >确  定</el-button>
+        </div>
     </el-dialog>
 </template>
 <script lang="ts">
@@ -86,11 +100,12 @@ export default class BipStatisticsDialog extends Vue {
  
 .bip-search{
     .el-dialog__header{
-        background-color: #20a0ff
+        background-color: #ffffff !important;
+        // 20a0ff
     }
-    .el-dialog__body{
-        padding: 10px 10px !important;
-    }
+    // .el-dialog__body{
+    //     padding: 10px 10px !important;
+    // }
 }
 // .el-icon-close:before {
 //     content: "\E6DB";
