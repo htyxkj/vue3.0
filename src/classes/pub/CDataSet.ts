@@ -577,6 +577,17 @@ export default class CDataSet {
 
   setState(state: number) {
     this.currRecord.sys_stated = state;
+    if(this.ds_sub.length>0){
+        this.ds_sub.forEach(cd0=>{
+            cd0.setStateSub(state)
+        })
+    }
+  }
+
+  setStateSub(state: number){
+    this.cdata._data.forEach((crd:any) => {
+        crd.sys_stated = state;
+    });
   }
 
   setStateOrAnd(state: number, bor: boolean = true) {
