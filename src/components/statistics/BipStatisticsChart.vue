@@ -407,14 +407,16 @@ export default class BipStatisticsDialog extends Vue {
         }
     } 
     getFldName(id:any) {
-      var _idx = this.tjcell.cels.findIndex(function(cell:any) {
-        return cell.id == id;
-      });
-      if (_idx == -1) {
-        return id;
-      } else {
-        return this.tjcell.cels[_idx].labelString;
-      }
+        if(this.tjcell){
+            var _idx = this.tjcell.cels.findIndex(function(cell:any) {
+                return cell.id == id;
+            });
+            if (_idx == -1) {
+                return id;
+            } else {
+                return this.tjcell.cels[_idx].labelString;
+            }
+        }
     } 
      
     getTitle() {

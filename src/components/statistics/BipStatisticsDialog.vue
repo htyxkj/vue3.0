@@ -4,8 +4,7 @@
             <el-row>
                 <el-form-item label="统计项选择" :required="true">
                     <el-select v-model="selGroup" clearable  multiple collapse-tags style="margin-left: 20px;" placeholder="请选择">
-                        <el-option v-for="item in env.dsm.ccells.cels" :key="item.id" :label="item.labelString" :value="item.id"
-                        v-if="(item.type !== 2 && item.type !== 3 && item.type !== 4 && item.type !== 5 && item.type !== 6 && item.type !== 8) &&item.isShow"
+                        <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
                         ></el-option>
                     </el-select>
                 </el-form-item> 
@@ -13,8 +12,7 @@
             <el-row>
                 <el-form-item label="数据项选择" :required="true">
                     <el-select v-model="selValue" clearable  multiple collapse-tags style="margin-left: 20px;" placeholder="请选择">
-                        <el-option v-for="item in env.dsm.ccells.cels" :key="item.id" :label="item.labelString" :value="item.id"
-                        v-if="(item.type == 2 || item.type == 3 || item.type == 4 || item.type == 5 || item.type == 6 || item.type == 8) &&item.isShow"
+                        <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
                         ></el-option>
                     </el-select>
                 </el-form-item> 
@@ -63,6 +61,7 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
 import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
+import { Cell } from '../../classes/pub/coob/Cell';
 @Component({})
 export default class BipStatisticsDialog extends Vue {
     @Prop() env!:CCliEnv;
@@ -72,8 +71,16 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() chartTypeValue:any=0;
     @Provide() chartType:any =  [{id:"line",name:"线图"},{id:"pie",name:"饼图"},{id:"bar",name:"柱状图"}];
     @Provide() showChart:boolean = true;
+    @Provide() groupCells:Array<Cell>=[]
+    @Provide() valuesCells:Array<Cell>=[]
     mounted() {
         this.chartTypeValue = "line"; 
+        this.groupCells = this.env.dsm.ccells.cels.filter(item=>{
+            return (item.type !== 2 && item.type !== 3 && item.type !== 4 && item.type !== 5 && item.type !== 6 && item.type !== 8) &&item.isShow
+        })
+        this.valuesCells = this.env.dsm.ccells.cels.filter(item=>{
+            return (item.type == 2 || item.type == 3 || item.type == 4 || item.type == 5 || item.type == 6 || item.type == 8) &&item.isShow
+        })
     }
     open() {
         this.dialogVisible = true;

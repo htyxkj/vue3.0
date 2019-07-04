@@ -18,13 +18,16 @@ import CDataSet from '@/classes/pub/CDataSet';
 export default class BipSearchCont extends Vue{
     @Provide() cells:Array<Cell> = new Array<Cell>()
     @Provide() cds:CDataSet = new CDataSet(null)
-    @Prop() env?:CCliEnv
+    @Prop() env!:CCliEnv
     mounted(){
-        if(this.env){
+        // if(this.env){
             this.cds = this.env.ds_cont
             console.log(this.cds)
-            this.cells = this.cds.ccells.cels
-        }
+            this.cells = this.cds.ccells.cels.filter(item=>{
+                console.log(item,item.attr&0x400)
+                return item.attr>0?(item.attr&0x400)==0:true
+            })
+        // }
     }
 }
 </script>

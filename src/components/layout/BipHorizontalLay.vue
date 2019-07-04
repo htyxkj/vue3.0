@@ -1,6 +1,6 @@
 <template>
 <el-row v-if="laycfg">
-    <el-col :span="12" v-if="cfgL">
+    <el-col :span="12" v-if="laycfg.length>1" >
         <template v-if="!cfgL.bcells">
             <bip-comm-lay :layout="cfgL.comp" :env="env"></bip-comm-lay>
         </template>
@@ -10,7 +10,7 @@
             </el-row>
         </template>
     </el-col>
-    <el-col :span="12" v-if="cfgR">
+    <el-col :span="12" v-if="laycfg.length>1">
         <template v-if="!cfgR.bcells">
             <bip-comm-lay :layout="cfgR.comp" :env="env"></bip-comm-lay>
         </template>
@@ -38,15 +38,18 @@ export default class BipHorizontalLay extends Vue{
     @Prop() env?:CCliEnv
     @Provide() cfgL!:BipLayConf
     @Provide() cfgR!:BipLayConf
-    mounted(){
+    created(){
+        console.log(this.laycfg)
+        this.initLayCell()
+    }
+
+    updated(){
         this.initLayCell()
     }
 
     initLayCell(){
-        if(this.laycfg){
             this.cfgL = this.laycfg[0]
             this.cfgR = this.laycfg[1]
-        }
     }
 
     handleSizeChange(value:number){

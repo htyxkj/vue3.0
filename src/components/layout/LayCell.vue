@@ -1,7 +1,7 @@
 <template>
     <div v-if="laycell" class="bip-lay">
         <template v-if="laycell&&!laycell.btable">
-            <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds"/>
+            <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds"/>
         </template>
         <template v-else>
             <!-- <lay-cell-etable :laycell="laycell" :env="env"></lay-cell-etable> -->
@@ -51,7 +51,7 @@ export default class LayCell extends Vue{
     @Prop() env!:CCliEnv
     @Provide() info:string = 'infos'
     @Provide() clearable:boolean = true
-    @Provide() cells:Array<Cell> = new Array<Cell>()
+    // @Provide() cells:Array<Cell> = new Array<Cell>()
     // @Provide() tableData:Object[] = []
     @Provide() cds:CDataSet = new CDataSet(null)
     @Provide() widths:Array<string> = new Array<string>()
@@ -60,7 +60,7 @@ export default class LayCell extends Vue{
 
     created(){
         // if(this.laycell){
-            this.cells = this.laycell.cells.cels.slice(this.laycell.start===-1?0:this.laycell.start,this.laycell.endP===-1?this.laycell.cells.cels.length:(this.laycell.endP+1))
+            // this.cells = this.laycell.cells.cels.slice(this.laycell.start===-1?0:this.laycell.start,this.laycell.endP===-1?this.laycell.cells.cels.length:(this.laycell.endP+1))
             this.initWidth();
             // if(this.env){
             this.cds = this.env.getDataSet(this.laycell.obj_id);
@@ -75,11 +75,11 @@ export default class LayCell extends Vue{
     }
 
     initWidth(){
-        let layCell:Cell[] = []
+        // let layCell:Cell[] = []
         if(this.laycell){         
-            this.cells.forEach(cel => {
+            this.laycell.uiCels.forEach(cel => {
                 if(cel.isShow){
-                    layCell.push(cel)
+                    // layCell.push(cel)
                     let w1 = cel.ccCharleng;
                     if(!cel.id.startsWith('cid')){
                         w1 = w1<10?8:w1
@@ -91,7 +91,7 @@ export default class LayCell extends Vue{
                 }
             });          
         }
-        this.cells = layCell
+        // this.cells = layCell
     }
 
     getNumChar(cell:any):number{
@@ -115,26 +115,29 @@ export default class LayCell extends Vue{
         this.$emit('handleCurrentChange',value)
     }
 
-    @Watch('laycell')
-    layCellChange(){
-        if(this.laycell){
-            this.cells = this.laycell.cells.cels.slice(this.laycell.endP)
-            let layCell:Cell[] = []
-            this.cells.forEach(cel => {
-                if(cel.isShow){
-                    layCell.push(cel)
-                }
-            });
-            this.cells = layCell
-        }
-    }
+    // @Watch('laycell')
+    // layCellChange(){
+    //     if(this.laycell){
+    //         // this.cells = this.laycell.cells.cels.slice(this.laycell.endP)
+    //         let layCell:Cell[] = []
+    //         // this.cells.forEach(cel => {
+    //         //     if(cel.isShow){
+    //         //         layCell.push(cel)
+    //         //     }
+    //         // });
+    //         // this.cells = layCell
+    //     }
+    // }
 }
 </script>
 
-<style>
+<style lang="scss">
 .bip-lay{
     width: 100%;
     max-width: 100%;
+    .el-form-item__content{
+        line-height: 0px !important
+    }
 }
 .bip-number{
     color: rgb(54, 180, 121)

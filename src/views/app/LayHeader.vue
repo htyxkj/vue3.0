@@ -1,8 +1,8 @@
 <template>
     <el-row style="margin-bottom:0px"> 
         <el-col :span="4"> 
-            <el-row style="text-align:start;margin-bottom:0px"> 
-                <i class="el-icon-menu menuicon pointer" @click="showMenu"></i>
+            <el-row style="text-align:start;margin: 16px 0px;"> 
+                <i class="iconfont icon-bip-menu menuicon pointer" @click="showMenu"></i>
             </el-row>
         </el-col>
         <el-col :span="20">
@@ -180,9 +180,7 @@ export default class LayHeader extends Vue {
 <style scoped>
 .menuicon{
     color: white;
-    font-size: 28px;
-    margin: 16px 0px; 
-    
+    font-size: 28px; 
 }
 .pointer{
     cursor:pointer;

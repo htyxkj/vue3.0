@@ -14,10 +14,14 @@ export default class BipLayCells {
   layId: string;
   obj_id: string = "";
   name: string = "";
+  uiCels:Array<Cell>;
   constructor(_layId: string, _cells: Cells) {
     this.layId = _layId;
     this.cells = _cells;
+    this.uiCels = new Array<Cell>();
     this.init();
+    this.makeUICells(_layId);
+    // console.log(_layId);
   }
   /**
    *
@@ -95,5 +99,83 @@ export default class BipLayCells {
       return name;
     }
     return "";
+  }
+
+  makeUICells(layInfo:string){
+      let _startIndex = layInfo.indexOf('[');
+    if(_startIndex>-1){
+        let laystr = layInfo.substring(_startIndex+1,layInfo.indexOf(']'));
+        _startIndex = laystr.indexOf(',')
+        while(_startIndex>-1){
+            let str1 = laystr.substring(0,_startIndex)
+            if(str1.indexOf('-')>-1||str1.indexOf('~')>-1){
+                this.findRangeCell(str1);
+            }else{
+                this.findCellById(str1)
+            }
+
+            laystr = laystr.substr(_startIndex+1);
+            _startIndex = laystr.indexOf(',')
+        }
+        if(laystr.indexOf('-')>-1||laystr.indexOf('~')>-1){
+            this.findRangeCell(laystr);
+        }else{
+            this.findCellById(laystr)
+        }
+    }else{
+        this.uiCels = this.cells.cels.filter(item=>{
+            return item.attr>0?(item.attr&0x400)==0:true
+        });
+    }
+  }
+
+  findRangeCell(str1:string){
+    let _i = str1.indexOf('-')>-1?str1.indexOf('-'):str1.indexOf('~')
+    if(_i==0){
+        str1 = str1.substring(1)
+        let _ii = this.cells.cels.findIndex(item=>{
+        return item.id == str1;
+        })
+        if(_ii>=0){
+            for(let k=0;k<_ii;k++){
+                let cel:Cell = this.cells.cels[k];
+                if((cel.attr&0x400)==0)
+                    this.uiCels.push(cel)
+            }
+        }
+        
+    }else{
+        let id = str1.substring(0,_i);
+        str1 = str1.substring(_i+1)
+        let _s = this.cells.cels.findIndex(item=>{
+            return item.id == id
+        })
+        let _e = this.cells.cels.length;
+        if(str1.length>1){
+            _e = this.cells.cels.findIndex(item=>{
+                return item.id == str1
+            })
+        }
+        console.log(_s,_e,'fdsfds')
+        if(_s>=0&&_e>_s){
+            for(let k = _s;k<_e;k++){
+                let cel:Cell = this.cells.cels[k];
+                this.uiCels.push(cel)
+            }
+        }
+        
+    }
+
+  }
+
+  findCellById(id:string){
+    let _i = this.cells.cels.findIndex(item=>{
+        return item.id == id;
+    })
+    if(_i>-1){
+        let cel:Cell = this.cells.cels[_i];
+        if((cel.attr&0x400)==0)
+            this.uiCels.push(cel)
+    }
   }
 }

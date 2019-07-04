@@ -191,6 +191,4 @@ export default class BipListEditor extends Vue{
 }
 </script>
 
-<style lang="css">
-</style>
 

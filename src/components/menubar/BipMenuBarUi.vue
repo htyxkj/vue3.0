@@ -1,5 +1,5 @@
 <template>
-    <el-row class="bip-row">
+    <el-row class="menubar bip-row">
         <!-- <template v-if="mbs&&mbs.bcheck">
             <el-checkbox v-model="bInsert" label="录入"></el-checkbox>
         </template> -->
@@ -46,3 +46,10 @@ export default class BipMenuBarUI extends Vue{
     }
 }
 </script>
+
+<style lang="scss">
+    .bip-row.menubar{
+        margin-bottom: 10px !important;
+    }
+</style>
+
