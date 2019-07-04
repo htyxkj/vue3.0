@@ -5,13 +5,13 @@
             <bip-comm-lay :layout="laycfg[0].comp" :env="env"></bip-comm-lay >
         </template>
         <template v-else>
-            <el-row class="bip-row">
+            <el-row class="bip-row" :gutter="10">
                 <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
             </el-row>
         </template>
     </template>
     <template v-if="bcenter">
-        <el-row class="bip-row">
+        <el-row class="bip-row" :gutter="10">
             <template v-if="bleft">
                 <el-col :span="wleft">
                     <template v-if="!laycfg[3].bcells">
@@ -43,7 +43,7 @@
         </el-row>
     </template>
     <template v-if="bbuttom">
-        <el-row class="bip-row">
+        <el-row class="bip-row" :gutter="10">
             <template v-if="!laycfg[2].bcells">
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env"></bip-comm-lay >
             </template>

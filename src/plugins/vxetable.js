@@ -11,7 +11,7 @@ VXETable.interceptor.add('event.clear_actived', (params, event) => {
     // console.log(params,event)
     // console.log('999',event.target.className)
     if (event.target.className.indexOf('bip')>-1||event.target.className.indexOf('cell')>-1
-    ||event.target.className.indexOf('el-button')>-1 ||event.target.className=='') {
+    ||event.target.className.indexOf('el-button')>-1 ||event.target.className=='' || event.target.className.indexOf('scrolling')>-1) {
       return false
     }
   })

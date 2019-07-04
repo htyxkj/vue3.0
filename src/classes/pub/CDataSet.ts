@@ -341,6 +341,7 @@ export default class CDataSet {
     if ((modal.sys_stated & billState.INSERT) > 0) {
       modal = this.incCalc(this.ccells, modal);
     }
+    console.log(modal)
     return modal;
   }
 
@@ -410,8 +411,11 @@ export default class CDataSet {
         if (xinc >= 0) {
             var cel = cell.cels[xinc];
             var s0 = cel.psAutoInc;
-            if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12)
-            return;
+            if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12){
+                modal[cel.id] = this.cdata._data.length+1
+                return modal;
+            }
+                
             let ilnk = cel.lnk_inn;
             // console.log('ilink',ilnk);
             s0 = this.incCalc2(cell.cels, s0, ilnk, modal);

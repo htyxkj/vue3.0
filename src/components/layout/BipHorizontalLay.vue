@@ -1,5 +1,5 @@
 <template>
-<el-row v-if="laycfg">
+<el-row v-if="laycfg" :gutter="10">
     <el-col :span="12" v-if="laycfg.length>1" >
         <template v-if="!cfgL.bcells">
             <bip-comm-lay :layout="cfgL.comp" :env="env"></bip-comm-lay>

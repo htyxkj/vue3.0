@@ -51,23 +51,15 @@ export default class LayCell extends Vue{
     @Prop() env!:CCliEnv
     @Provide() info:string = 'infos'
     @Provide() clearable:boolean = true
-    // @Provide() cells:Array<Cell> = new Array<Cell>()
-    // @Provide() tableData:Object[] = []
+
     @Provide() cds:CDataSet = new CDataSet(null)
     @Provide() widths:Array<string> = new Array<string>()
-    // @Provide() status1:Array<Array<any>> = []
     @Provide() beBill:boolean = true
 
     created(){
-        // if(this.laycell){
-            // this.cells = this.laycell.cells.cels.slice(this.laycell.start===-1?0:this.laycell.start,this.laycell.endP===-1?this.laycell.cells.cels.length:(this.laycell.endP+1))
-            this.initWidth();
-            // if(this.env){
-            this.cds = this.env.getDataSet(this.laycell.obj_id);
-            this.beBill = this.env.uriParams.beBill
-        //     }
-            
-        // }
+        this.initWidth();
+        this.cds = this.env.getDataSet(this.laycell.obj_id);
+        this.beBill = this.env.uriParams.beBill
     }
 
     addRecord(){
@@ -75,11 +67,9 @@ export default class LayCell extends Vue{
     }
 
     initWidth(){
-        // let layCell:Cell[] = []
         if(this.laycell){         
             this.laycell.uiCels.forEach(cel => {
                 if(cel.isShow){
-                    // layCell.push(cel)
                     let w1 = cel.ccCharleng;
                     if(!cel.id.startsWith('cid')){
                         w1 = w1<10?8:w1
@@ -91,7 +81,6 @@ export default class LayCell extends Vue{
                 }
             });          
         }
-        // this.cells = layCell
     }
 
     getNumChar(cell:any):number{
@@ -99,11 +88,6 @@ export default class LayCell extends Vue{
         return cn
     }
 
-    // cellClick(row:any, column:any, cell:any, event:any){
-    //     console.log(row,'hang')
-    //     console.log(column,'lie')
-    //     console.log(cell,'cell')
-    // }
 
     handleSizeChange(value:number){
         console.log('handleSizeChange',value)
@@ -115,19 +99,6 @@ export default class LayCell extends Vue{
         this.$emit('handleCurrentChange',value)
     }
 
-    // @Watch('laycell')
-    // layCellChange(){
-    //     if(this.laycell){
-    //         // this.cells = this.laycell.cells.cels.slice(this.laycell.endP)
-    //         let layCell:Cell[] = []
-    //         // this.cells.forEach(cel => {
-    //         //     if(cel.isShow){
-    //         //         layCell.push(cel)
-    //         //     }
-    //         // });
-    //         // this.cells = layCell
-    //     }
-    // }
 }
 </script>
 

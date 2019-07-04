@@ -124,7 +124,7 @@ export default class BipLayCells {
         }
     }else{
         this.uiCels = this.cells.cels.filter(item=>{
-            return item.attr>0?(item.attr&0x400)==0:true
+            return item.attr?(item.attr&0x400)==0:true
         });
     }
   }
@@ -137,9 +137,13 @@ export default class BipLayCells {
         return item.id == str1;
         })
         if(_ii>=0){
-            for(let k=0;k<_ii;k++){
+            for(let k=0;k<=_ii;k++){
                 let cel:Cell = this.cells.cels[k];
-                if((cel.attr&0x400)==0)
+                console.log(cel,cel.attr&0x400)
+                if(cel.attr>0){
+                    if((cel.attr&0x400)===0)
+                        this.uiCels.push(cel)
+                }else
                     this.uiCels.push(cel)
             }
         }
@@ -150,17 +154,20 @@ export default class BipLayCells {
         let _s = this.cells.cels.findIndex(item=>{
             return item.id == id
         })
-        let _e = this.cells.cels.length;
+        let _e = this.cells.cels.length-1;
         if(str1.length>1){
             _e = this.cells.cels.findIndex(item=>{
                 return item.id == str1
             })
         }
-        console.log(_s,_e,'fdsfds')
         if(_s>=0&&_e>_s){
-            for(let k = _s;k<_e;k++){
+            for(let k = _s;k<=_e;k++){
                 let cel:Cell = this.cells.cels[k];
-                this.uiCels.push(cel)
+                if(cel.attr>0){
+                    if((cel.attr&0x400)===0)
+                        this.uiCels.push(cel)
+                }else
+                    this.uiCels.push(cel)
             }
         }
         
@@ -174,7 +181,10 @@ export default class BipLayCells {
     })
     if(_i>-1){
         let cel:Cell = this.cells.cels[_i];
-        if((cel.attr&0x400)==0)
+        if(cel.attr>0){
+            if((cel.attr&0x400)===0)
+                this.uiCels.push(cel)
+        }else
             this.uiCels.push(cel)
     }
   }

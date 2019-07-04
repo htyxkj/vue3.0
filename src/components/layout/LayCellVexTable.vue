@@ -22,7 +22,7 @@
             <vxe-table-column
                 header-align="center"
                 align="center"
-                v-for="(cel,index) in cells"
+                v-for="(cel,index) in laycell.uiCels"
                 :key="index"
                 :prop="cel.id"
                 :width="widths[index]"
@@ -70,7 +70,7 @@
             <vxe-table-column
                 header-align="center"
                 align="center"
-                v-for="(cel,index) in cells"
+                v-for="(cel,index) in laycell.uiCels"
                 :key="index"
                 :prop="cel.id"
                 :width="widths[index]"
@@ -98,7 +98,7 @@
             layout="slot,total,prev, pager, next,sizes"
             :total="cds.page.total"
         >
-        <el-col :span="18" :xs="18" :sm="18" :md="18">
+        <el-col :span="4" :xs="4" :sm="4" :md="4">
             <el-button-group size="small" v-if="cds.ds_par">  
                 <el-button icon="el-icon-edit" @click="addRecord"></el-button>
                 <el-button icon="el-icon-share"></el-button>
@@ -126,7 +126,6 @@ export default class LayCelVexTable extends Vue {
     @Prop() env!: CCliEnv;
     @Provide() info: string = "infos";
     @Provide() clearable: boolean = true;
-    @Provide() cells: Array<Cell> = new Array<Cell>();
     @Provide() tableData: Object[] = [];
     @Provide() cds: CDataSet = new CDataSet(null);
     @Provide() widths: Array<string> = new Array<string>();
@@ -136,23 +135,14 @@ export default class LayCelVexTable extends Vue {
     @Provide() id: string = "";
 
     created() {
-        if (this.laycell) {
-            this.cells = this.laycell.cells.cels.slice(
-                this.laycell.start === -1 ? 0 : this.laycell.start,
-                this.laycell.endP === -1
-                    ? this.laycell.cells.cels.length
-                    : this.laycell.endP + 1
-            );
-
-            this.initWidth();
-            if (this.env) {
-                this.cds = this.env.getDataSet(this.laycell.obj_id);
-                this.beBill = this.env.uriParams.beBill;
-                if(this.cds.x_pk>-1)
-                    this.id = this.laycell.cells.cels[this.cds.x_pk].id;
-                if (!this.id) {
-                    this.id = this.laycell.cells.cels[0].id;
-                }
+        this.initWidth();
+        if (this.env) {
+            this.cds = this.env.getDataSet(this.laycell.obj_id);
+            this.beBill = this.env.uriParams.beBill;
+            if(this.cds.x_pk>-1)
+                this.id = this.laycell.cells.cels[this.cds.x_pk].id;
+            if (!this.id) {
+                this.id = this.laycell.cells.cels[0].id;
             }
         }
     }
@@ -163,11 +153,9 @@ export default class LayCelVexTable extends Vue {
     }
 
     initWidth() {
-        let layCell: Cell[] = [];
         if (this.laycell) {
-            this.cells.forEach(cel => {
+            this.laycell.uiCels.forEach(cel => {
                 if (cel.isShow) {
-                    layCell.push(cel);
                     let w1 = cel.ccCharleng;
                     if (!cel.id.startsWith("cid")) {
                         w1 = w1 < 10 ? 8 : w1;
@@ -178,7 +166,6 @@ export default class LayCelVexTable extends Vue {
                 }
             });
         }
-        this.cells = layCell;
     }
 
     getNumChar(cell: any): number {
@@ -213,20 +200,6 @@ export default class LayCelVexTable extends Vue {
         }
         this.cds.cdata.clearValues();
         this.$emit("handleCurrentChange", value);
-    }
-
-    @Watch("laycell")
-    layCellChange() {
-        if (this.laycell) {
-            this.cells = this.laycell.cells.cels.slice(this.laycell.endP);
-            let layCell: Cell[] = [];
-            this.cells.forEach(cel => {
-                if (cel.isShow) {
-                    layCell.push(cel);
-                }
-            });
-            this.cells = layCell;
-        }
     }
 }
 </script>
