@@ -15,12 +15,14 @@ export default class BipLayCells {
   obj_id: string = "";
   name: string = "";
   uiCels:Array<Cell>;
+  bl:number = 0.5;
   constructor(_layId: string, _cells: Cells) {
     this.layId = _layId;
     this.cells = _cells;
     this.uiCels = new Array<Cell>();
     this.init();
     this.makeUICells(_layId);
+    this.initBL();
     // console.log(_layId);
   }
   /**
@@ -186,6 +188,17 @@ export default class BipLayCells {
                 this.uiCels.push(cel)
         }else
             this.uiCels.push(cel)
+    }
+  }
+
+  initBL(){
+    let _i = this.name.indexOf('*')
+    if(_i>-1){
+        let nn = this.name.substring(_i+1)
+        let v = parseFloat(nn)
+        if(v<1){
+            this.bl = v
+        }
     }
   }
 }

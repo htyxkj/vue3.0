@@ -36,7 +36,7 @@ export class BipLayout{
                             let objid = BIPUtils.baseUtil.getObjId(cmpstr);
                             let cel = this.getCells(objid,true,this.ccells);
                             let lay = new BipLayCells(cmpstr,cel)
-                            let cc = new BipLayConf(true,lay,lay.name);
+                            let cc = new BipLayConf(true,lay,lay.name,lay.bl);
                             this.compconfs.push(cc)
                         }
                     }
