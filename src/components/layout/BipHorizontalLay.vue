@@ -1,6 +1,6 @@
 <template>
 <el-row v-if="laycfg" :gutter="10">
-    <el-col :span="12" v-if="laycfg.length>1" >
+    <el-col :span="lspan" v-if="laycfg.length>1" >
         <template v-if="!cfgL.bcells">
             <bip-comm-lay :layout="cfgL.comp" :env="env"></bip-comm-lay>
         </template>
@@ -10,7 +10,7 @@
             </el-row>
         </template>
     </el-col>
-    <el-col :span="12" v-if="laycfg.length>1">
+    <el-col :span="rspan" v-if="laycfg.length>1">
         <template v-if="!cfgR.bcells">
             <bip-comm-lay :layout="cfgR.comp" :env="env"></bip-comm-lay>
         </template>
@@ -38,6 +38,8 @@ export default class BipHorizontalLay extends Vue{
     @Prop() env?:CCliEnv
     @Provide() cfgL!:BipLayConf
     @Provide() cfgR!:BipLayConf
+    @Provide() lspan:number = 12
+    @Provide() rspan:number = 12
     created(){
         console.log(this.laycfg)
         this.initLayCell()
@@ -48,8 +50,12 @@ export default class BipHorizontalLay extends Vue{
     }
 
     initLayCell(){
-            this.cfgL = this.laycfg[0]
-            this.cfgR = this.laycfg[1]
+        this.cfgL = this.laycfg[0]
+        this.cfgR = this.laycfg[1]
+        if(this.cfgL){
+            this.lspan = Math.round(24*this.cfgL.span)
+            this.rspan = 24-this.lspan
+        }
     }
 
     handleSizeChange(value:number){
