@@ -469,7 +469,7 @@ export default class Home extends Vue {
 }
 </script>
 
-<style >
+<style scoped>
 .home {
   overflow:auto
 }
@@ -570,7 +570,9 @@ export default class Home extends Vue {
 .center-right {
   text-align: center;
 }
-
+.el-row {
+  margin-bottom: 20px; 
+}
 </style>
 
 

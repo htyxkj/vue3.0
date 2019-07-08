@@ -1,62 +1,6 @@
 <template>
-  <!-- <div class="login-page">
-    <div class="login-card">
-      <div class="login-title">
-        <span>系统登陆窗口</span>
-      </div>
-      <div class="login-box" @keyup.enter="login">
-        <el-form>
-        <el-row>
-          <el-col :span="20" :offset="2">
-            <el-input id="name" v-model="user.userCode" placeholder="请输入帐号">
-              <template slot="prepend">帐号</template>
-            </el-input>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="20" :offset="2">
-            <el-input id="pwd" v-model="user.password" :show-password="true" placeholder="请输入密码" type="password">
-              <template slot="prepend">密码</template>
-            </el-input>
-          </el-col>
-        </el-row>
-        </el-form>
-        <el-row>
-          <el-col :span="20" :offset="2">
-            <el-button id="login" style="width:100%" type="primary" :disabled="canClick" @click="login" >登录</el-button>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-    <img class="login-img" src = "../../assets/login/login.png"/>
-    <div class="login-card" >
-      <el-row>
-        <el-col :span="20" :offset="2">系统登陆</el-col>
-      </el-row>
-      <div  @keyup.enter="login">
-        <el-row>
-          <el-col :span="20" :offset="2">用户名</el-col>
-          <el-col :span="20" :offset="2">
-            <el-input id="name" v-model="user.userCode" placeholder="请输入帐号"></el-input>
-          </el-col>
-          <el-col :span="20" :offset="2">密码</el-col>
-          <el-col :span="20" :offset="2">
-            <el-input id="pwd" v-model="user.password" :show-password="true" placeholder="请输入密码" type="password"></el-input>
-          </el-col>
-        </el-row>
-      </div> 
-      <el-row>
-        <el-col :span="20" :offset="2">
-          <el-button id="login" style="width:100%" type="primary" :disabled="canClick" @click="login" >登录</el-button>
-        </el-col>
-      </el-row>
-    </div> 
-  </div> -->
-  <div>
-    <div style="position:fixed;left:0;top:0;">
-      <img class="login-img" src = "../../assets/login/login.png"/>
-    </div>
-    <div @keyup.enter="login" style="position:fixed;right:15%;top:15%;">
+  <div class="login-img">
+    <!-- <div @keyup.enter="login" >
       <div class="login-form">
         <el-row>
           <el-col :span="20" :offset="2">
@@ -85,39 +29,80 @@
           </el-col>
         </el-row>
       </div>
+    </div>-->
+
+    <div class="login-card">
+      <div class="login-title">欢迎登陆BIP管理平台</div>
+      <div class="login-cont" @keyup.enter="login">
+
+        <el-form label-position="left" label-width="55px" >
+          <el-form-item label="账户:" style="font-size:16px">
+            <el-input v-model="user.userCode"></el-input>
+          </el-form-item>
+          <el-form-item label="密码:">
+            <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
+          </el-form-item>
+        </el-form>
+        <!-- <el-row>
+          <el-col :span="4"  >账户:</el-col>
+          <el-col :span="20" >
+            <el-input id="name" v-model="user.userCode"></el-input>
+          </el-col>
+        </el-row> -->
+        <!-- <el-row>
+          <el-col :span="4"  >密码:</el-col>
+          <el-col :span="20" >
+            <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
+          </el-col>
+        </el-row> -->
+        <el-row>
+          <el-col :span="24"  style="margin-top:10px">
+            <el-button
+              id="login"
+              style="width:100%"
+              type="primary"
+              :disabled="canClick"
+              @click="login"
+            >登录</el-button>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="login-footer">
+        <address>@2019：华泰益兴科技(北京)有限公司 版权所有</address>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Provide,Prop } from "vue-property-decorator";
+import { Component, Vue, Provide, Prop } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
-import qs from 'qs';
-import { BIPUtil } from '@/utils/Request';
+import qs from "qs";
+import { BIPUtil } from "@/utils/Request";
 
-import { State, Action, Getter, Mutation } from 'vuex-class';
-import { LoginState } from '@/store/modules/login/types';
-const namespace: string = 'login';
+import { State, Action, Getter, Mutation } from "vuex-class";
+import { LoginState } from "@/store/modules/login/types";
+const namespace: string = "login";
 @Component
 export default class Login extends Vue {
-//   @Provide() user: User = new User("", "", "");
+  //   @Provide() user: User = new User("", "", "");
 
-    @Provide() fullscreenLoading:boolean = false;
-//   @Provide() menus:Array<Menu> = [];
-    @Getter('user', { namespace }) user?: User;
-    @Getter('menulist', { namespace }) menus?:Menu[];
-    @Mutation('isLogin', { namespace }) setIsLogin: any;
-    @Mutation('snkey', { namespace }) setSnkey: any;
-    @Mutation('user', { namespace }) setUserInfo: any;
-    @Mutation('menulist', { namespace }) setMenusInfo: any;
+  @Provide() fullscreenLoading: boolean = false;
+  //   @Provide() menus:Array<Menu> = [];
+  @Getter("user", { namespace }) user?: User;
+  @Getter("menulist", { namespace }) menus?: Menu[];
+  @Mutation("isLogin", { namespace }) setIsLogin: any;
+  @Mutation("snkey", { namespace }) setSnkey: any;
+  @Mutation("user", { namespace }) setUserInfo: any;
+  @Mutation("menulist", { namespace }) setMenusInfo: any;
   // @Prop() isLogin:boolean = false;
   mounted() {
-      if(!this.user){
-          this.user = new User('','','');
-      }
+    if (!this.user) {
+      this.user = new User("", "", "");
+    }
     // this.user.userCode = "";
     // this.user.password = "";
-    let ii:string[] = ['1','2']
+    let ii: string[] = ["1", "2"];
     console.log(ii instanceof Array);
   }
 
@@ -128,91 +113,111 @@ export default class Login extends Vue {
       spinner: "el-icon-loading",
       background: "background:'rgba(0, 0, 0, 0.7)'"
     });
-    if(!this.user){
-        return ;
+    if (!this.user) {
+      return;
     }
-    BIPUtil.ServApi.login(this.user).then((res:any)=>{
-      let data = res.data;
-      console.log(data);
-      if(data.id === 0){
-        // this.menus = data.data.menulist;
-        let userI = data.data.user;
-        let snkey = data.data.snkey
-        userI.password = ''
-        // window.sessionStorage.setItem('user', JSON.stringify(userI));
-        // window.sessionStorage.setItem('menulist', JSON.stringify(this.menus))
-        // window.sessionStorage.setItem('isLogin', JSON.stringify(true))
-        // window.sessionStorage.setItem('snkey', JSON.stringify(snkey))
-        let ms = data.data.menulist
-        this.setIsLogin(true);
-        this.setSnkey(snkey);
-        this.setUserInfo(userI);
-        this.setMenusInfo(ms);
-        // this.$store.commit('isLogin',true);
-        // this.$store.commit('user',userI);
-        // this.$store.commit('menulist',this.menus);
-        // this.$store.commit('snkey',snkey);
-        // this.$emit("loginok")
-        console.log(this.user);
-        this.$router.push({path:'/',name:'home'})
-        this.$notify.success("登录成功");
-      }else{
-        this.$notify.error(data.message);
-      }
-      loading.close();
-    }).catch((res:any)=>{
-      this.$notify.error('服务没有启动！');
-      loading.close();
-    });
+    BIPUtil.ServApi.login(this.user)
+      .then((res: any) => {
+        let data = res.data;
+        console.log(data);
+        if (data.id === 0) {
+          // this.menus = data.data.menulist;
+          let userI = data.data.user;
+          let snkey = data.data.snkey;
+          userI.password = "";
+          // window.sessionStorage.setItem('user', JSON.stringify(userI));
+          // window.sessionStorage.setItem('menulist', JSON.stringify(this.menus))
+          // window.sessionStorage.setItem('isLogin', JSON.stringify(true))
+          // window.sessionStorage.setItem('snkey', JSON.stringify(snkey))
+          let ms = data.data.menulist;
+          this.setIsLogin(true);
+          this.setSnkey(snkey);
+          this.setUserInfo(userI);
+          this.setMenusInfo(ms);
+          // this.$store.commit('isLogin',true);
+          // this.$store.commit('user',userI);
+          // this.$store.commit('menulist',this.menus);
+          // this.$store.commit('snkey',snkey);
+          // this.$emit("loginok")
+          console.log(this.user);
+          this.$router.push({ path: "/", name: "home" });
+          this.$notify.success("登录成功");
+        } else {
+          this.$notify.error(data.message);
+        }
+        loading.close();
+      })
+      .catch((res: any) => {
+        this.$notify.error("服务没有启动！");
+        loading.close();
+      });
   }
 
   get canClick() {
-      if(!this.user){
-          return false;
-      }
+    if (!this.user) {
+      return false;
+    }
     return this.user.userCode === "";
-  }  
+  }
 }
 </script>
 
 
-<style lang="scss">
-$--color-primary: #20a0ff;
-.login-card {
-  width: 420px; 
+<style lang="scss" scoped>
+.login-img {
+  top: 0%;
+  left: 0%;
   position: fixed;
-  right:15%;
-  top: 20%;
+  width: 100%;
+  height: 100%;
+  background-image: url("../../assets/login/login.png");
+  background-size: 100% 100%;
 }
+.login-card {
+  height: 350px;
+  width: 480px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  border: 1px solid #127ACE;
+  margin-top: -175px;
+  margin-left: -240px;
+  border-radius: 5px;
+}
+.login-title {
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 20px;
+  color: #ffffff;
+  font-family: '华文楷体'
+}
+.login-cont {
+  background-color: #F0FCFA;
+  padding: 40px 70px;
+}
+
 .el-row {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 16px;
   &:last-child {
     margin-bottom: 20px;
   }
 }
-
-.el-card__header {
-  background-color: $--color-primary;
+.el-form-item {
+  margin-bottom: 22px;
 }
-.login-title {
-  font-size: 1.6em;
-  color: #ffffff;
+.login-footer {
+  text-align: center;
+  font-family: Arial;
+  font-size: 10px;
+  height: 30px;
+  line-height: 30px;
 }
-.login-page {  
-  width: 100%;
-  height: 100%;
-}
-.login-img{
-  top: 45%;
-  left: 50%;
-  transform: translate(-90%,-50%);
-  position: fixed;
-}
-.login-form{
-  min-width: 300px;
-  margin: 20px 20px;
-  padding: 50px 22px;
-  border: 1px solid #f0f0f0;
+address {
+  color: #FAFBFC;
 }
 </style>
 

@@ -44,9 +44,12 @@ export default class BipAside extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .menu-title{
     height:60px;
     padding-left: 10px;
+}
+.el-row {
+  margin-bottom: 20px; 
 }
 </style>
