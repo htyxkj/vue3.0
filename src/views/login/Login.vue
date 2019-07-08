@@ -203,7 +203,7 @@ $--color-primary: #20a0ff;
   height: 100%;
 }
 .login-img{
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-90%,-50%);
   position: fixed;

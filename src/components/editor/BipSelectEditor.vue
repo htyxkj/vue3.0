@@ -114,9 +114,22 @@ export default class BipSelectEditor extends Vue {
                 this.refId = refId1;
             }
             this.linkRef = new LinkRef(this.refId, this.refBcl, this.multiple);
-            this.initAssist();
-            // this.initRef();
-        // }
+            this.initAssist(); 
+
+            let nn = this.model+'';
+            nn = nn?nn+'':''
+            if(nn !=''){
+                let aidv = this.getAidValues(this.refId+'_'+nn);
+                if(!aidv){
+                    if(!this.keyMaps.get(this.refId+"_"+nn)){   
+                        this.fetchRefById({key:this.refId,model:nn,cont:nn})
+                    }
+                }else{
+                    this.linkRef.values = aidv
+                    this.linkRef.makeShow();
+                }
+                this.getFocus(false);
+            }
     }
 
     //#region 初始化辅助和参照
@@ -124,15 +137,14 @@ export default class BipSelectEditor extends Vue {
      * 初始化辅助
      */
     initAssist() {
-        // if (this.cell) {
-            let str = this.cell.editName;
-            console.log(str)
+        let str = this.cell.editName;
+        if(str!= null && str !='' ){
             let mp: Map<string, boolean> = this.keyMaps;
             let bexit = mp.get(str);
             console.log(bexit)
             if (!bexit) {
                 let aidii = this.getAidInfos(str);
-                if (!aidii) {
+                if (!aidii && str) {
                     this.fetchAssist({ id: str, value: this.model1 })
                         .then((res: any) => {
                             if (res && res.data.id === 0) {
@@ -161,6 +173,7 @@ export default class BipSelectEditor extends Vue {
                     this.initlinkRef()
                 }
             }
+        }
     }
 
     /**初始化多列参照 */
@@ -262,7 +275,7 @@ export default class BipSelectEditor extends Vue {
             if (this.multiple) {
                 let vvs: Array<any> = value;
                 vvs.forEach(item => {
-                    moo += value[this.aidInfo.layCells[0].id] + ";";
+                    moo += item[this.aidInfo.layCells[0].id] + ";";
                 });
                 moo = moo.substring(0, moo.length - 1);
             } else {

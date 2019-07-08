@@ -87,7 +87,6 @@ export default class BipListEditor extends Vue{
                     if(!this.keyMaps.get(this.refId)){
                         this.initOK = false
                         this.fetchCLById(this.refId)
-                        
                     }
                 }
             }else{
@@ -152,7 +151,7 @@ export default class BipListEditor extends Vue{
         if(this.bcl){
             let vv = this.clMap.get('CL_'+this.refId)
             if(vv!=null&&vv&&vv.values){
-                if(this.options.length<vv.values){
+                if(this.options.length<vv.values.length){
                     this.options = []
                     if(this.cell){
                         if(!(this.cell.isReq || this.cell.unNull)){

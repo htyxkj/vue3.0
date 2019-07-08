@@ -1,5 +1,16 @@
 <template>
-    <el-dialog :title="aIdTitle" class="bip-assist" :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
+    <el-dialog class="bip-assist" :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
+        <span slot="title">
+            <div class="el-dialog__title" style="padding-bottom:5px">{{aIdTitle}}</div>
+            <div>
+                <el-input placeholder="请输入内容" v-model="conditionValue" class="input-with-select" clearable>
+                    <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
+                        <el-option v-for="(item,index) in showCols" :key="index" :label="labers[index]" :value="allCols[item].id"></el-option>
+                    </el-select>
+                    <el-button slot="append" icon="el-icon-search" @click="aidselect"></el-button>
+                </el-input>
+            </div>
+        </span>
         <template v-if="bInit">
             <template v-if="multiple">
                 <el-table ref="assTable" height="250"
@@ -11,6 +22,9 @@
                     :prop="allCols[item].id"
                     :label="labers[index]" :showOverflowTooltip="true" :resizable="true" >
                     </el-table-column>
+                    <!-- <div slot="append" style="text-align: center">
+                        ------我是有底线的------
+                    </div> -->
                 </el-table>
             </template>
             <template v-else>
@@ -37,10 +51,10 @@
                 </el-pagination>
             </div>
             <hr />
-        <span slot="footer" class="dialog-footer">
-            <el-button size="small" @click="cancel()">取 消</el-button>
-            <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
-        </span>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="cancel()">取 消</el-button>
+                <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
+            </span>
         </template>
         <template v-else>
             <el-row>没有辅助{{aId}}</el-row>
@@ -51,6 +65,7 @@
 //辅助query
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import { BIPUtil } from '@/utils/Request';
+import { fips } from 'crypto';
 @Component({})
 export default class BipAssistEditor extends Vue{
     @Prop() aId?:string 
@@ -64,6 +79,8 @@ export default class BipAssistEditor extends Vue{
     @Provide() items:Array<any> = []
     @Provide() multipleSelection:any = null
     @Provide() page:any = {currPage:1,pageSize:20,total:0,cont:'' }
+    @Provide() conditionItem:string = "";
+    @Provide() conditionValue:string = "";
     async mounted(){
         if(this.aId){
             this.findData()
@@ -78,9 +95,9 @@ export default class BipAssistEditor extends Vue{
             if(v.id === 0){
                 v = v.data.values
                 console.log(v)
-                if(this.bInit){
-                    this.items = v.values
-                }else{
+                // if(this.bInit){
+                //     this.items = v.values
+                // }else{
                     this.page.total = v.total
                     this.aIdTitle = v.title
                     this.labers = v.labers
@@ -88,8 +105,7 @@ export default class BipAssistEditor extends Vue{
                     this.allCols = v.layCells
                     this.items = v.values
                     this.bInit = true
-                }
-
+                // }
             }else{
                 this.outerVisible = false
                 this.$notify.error(v.message+","+this.aId)
@@ -129,7 +145,24 @@ export default class BipAssistEditor extends Vue{
         }
     }
 
+    aidselect(){ 
+        let cont = "";
+        if(this.conditionItem && this.conditionValue)
+            cont = "~"+this.conditionItem+" like '%"+this.conditionValue+"%'"
+        this.page.cont = cont; 
+        this.findData();
+    }
 
+    @Watch('conditionValue')
+    condValue(){
+        let cont = "";
+        if(this.conditionItem && this.conditionValue)
+            cont = "~"+this.conditionItem+" like '%"+this.conditionValue+"%'"
+        this.page.cont = cont;
+        if(!this.conditionValue){
+            this.findData();
+        }
+    } 
 }
 </script>
 

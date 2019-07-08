@@ -44,8 +44,8 @@ import {
   Steps,
   CheckboxGroup,
   Badge,
-  Popover
-
+  Popover,
+  Progress,
 
 } from "element-ui";
 
@@ -91,6 +91,7 @@ Vue.use(Steps)
 Vue.use(CheckboxGroup)
 Vue.use(Badge)
 Vue.use(Popover)
+Vue.use(Progress)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

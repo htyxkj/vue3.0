@@ -78,11 +78,14 @@ export default class LinkRef{
         }else{
             if(this.id.length>0){
                 let type = this.layCells.length>0?this.layCells[0].type:12
-                if(type>=-5 && type<=8){
-                    cont = `~${this.layCells[0].id}=${this.realV}`
-                }else{
-                    cont = `~${this.layCells[0].id}='${this.realV}'`
-                }   
+                console.log(type)
+                if(type && this.layCells){
+                    if(type>=-5 && type<=8){
+                        cont = `~${this.layCells[0].id}=${this.realV}`
+                    }else{
+                        cont = `~${this.layCells[0].id}='${this.realV}'`
+                    }  
+                }
             }
         }
         return cont;
@@ -168,6 +171,7 @@ export default class LinkRef{
                         }
                     })
                 })
+                this.showV="";
                 vv2.forEach(item=>{
                     let n1 = item[this.layCells[1].id]
                     this.showV+=(n1?(n1+';'):'')
@@ -196,6 +200,7 @@ export default class LinkRef{
 
     makeAssitRef(){
         if(this.multiple){
+            this.showV="";
             if(this.layCells.length>1){
                 let vvs:Array<any> = this.values
                 vvs.forEach(item=>{
