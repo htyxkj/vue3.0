@@ -140,6 +140,8 @@ export default class App extends Vue {
         if(this.isLogin){ 
             if(this.editableTabs2.length==0)
                 this.addIndex();
+        }else{
+            this.editableTabs2=[];
         }
     } 
 
@@ -179,11 +181,11 @@ export default class App extends Vue {
                 )[0];
                 console.log(currTag)
                 if (!currTag) {
-                let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
-                this.editableTabs2.push(tag);
-                this.editableTabsValue2 = menu.menuId;
+                    let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
+                    this.editableTabs2.push(tag);
+                    this.editableTabsValue2 = menu.menuId;
                 } else {
-                this.editableTabsValue2 = menu.menuId;
+                    this.editableTabsValue2 = menu.menuId;
                 }
             }
         }

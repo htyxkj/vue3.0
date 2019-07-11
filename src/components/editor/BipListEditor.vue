@@ -145,7 +145,7 @@ export default class BipListEditor extends Vue{
         }   
     }
 
-    @Watch("clMap",{deep:true})
+    @Watch("clMap")
     clMapChange(){
         console.log('clMap change')
         if(this.bcl){

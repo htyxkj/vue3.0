@@ -400,12 +400,15 @@ export namespace BIPUtils {
       }
     }
 
-    dateFormat(d1: string | Date | number, type: number): string {
+    dateFormat(d1: string | Date | number, type: number,format:any): string {
       if (type == 93) {
         let n1 = moment(d1).format(GlobalVariable.DATE_FMT_ALL);
         return n1;
       }
-      return moment(d1).format(GlobalVariable.DATE_FMT_YMD);
+      if(!format){
+        format = GlobalVariable.DATE_FMT_YMD;
+      }
+      return moment(d1).format(format);
     }
   }
   export const baseUtil = new BaseUtil();

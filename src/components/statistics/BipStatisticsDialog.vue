@@ -2,7 +2,7 @@
     <el-dialog class="bip-search" width="30%" title="统计" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
         <el-form ref="form" label-width="120px">
             <el-row>
-                <el-form-item label="统计项选择" :required="true">
+                <el-form-item class="bip-form-item" label="统计项选择" :required="true">
                     <el-select v-model="selGroup" clearable  multiple collapse-tags style="margin-left: 20px;" placeholder="请选择">
                         <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
                         ></el-option>
@@ -10,7 +10,7 @@
                 </el-form-item> 
             </el-row>
             <el-row>
-                <el-form-item label="数据项选择" :required="true">
+                <el-form-item class="bip-form-item" label="数据项选择" :required="true">
                     <el-select v-model="selValue" clearable  multiple collapse-tags style="margin-left: 20px;" placeholder="请选择">
                         <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
                         ></el-option>
@@ -18,14 +18,14 @@
                 </el-form-item> 
             </el-row>
             <el-row>
-                <el-form-item label="图  表  类  型" :required="true">
+                <el-form-item class="bip-form-item" label="图  表  类  型" :required="true">
                     <el-select v-model="chartTypeValue" collapse-tags style="margin-left: 20px;" placeholder="请选择">
                         <el-option v-for="item in chartType" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item> 
             </el-row>
             <el-row>
-                <el-form-item label="显  示  图  表" :required="true">
+                <el-form-item class="bip-form-item" label="显  示  图  表" :required="true">
                     <!-- <el-checkbox v-model="showChart"  style="margin-left: 20px;"></el-checkbox> -->
                     <el-radio v-model="showChart"  :label='true' style="margin-left: 20px;" >显示</el-radio>
                     <el-radio v-model="showChart"  :label='false' >不显示</el-radio>
@@ -114,8 +114,7 @@ export default class BipStatisticsDialog extends Vue {
     //     padding: 10px 10px !important;
     // }
 }
-// .el-icon-close:before {
-//     content: "\E6DB";
-//     color: white;
-// }
+.bip-form-item {
+  margin-bottom: 22px !important;
+}
 </style>

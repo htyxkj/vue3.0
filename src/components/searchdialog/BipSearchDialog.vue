@@ -16,10 +16,13 @@
                         ></el-option>
                     </el-select>
                     <span>      </span>
-                    <el-button type="primary" @click="addTJ" size="mini" :disabled="canAdd">添 加</el-button>
+                    
                 </el-col>
                 <el-col :span="3">
-                    
+                    <el-button type="primary" @click="addTJ" size="mini" :disabled="canAdd">添 加</el-button>
+                </el-col>
+                <el-col :span="2">
+                    &nbsp;
                 </el-col>
                 <el-col :span="3">
                     <el-button type="warning" size="mini" @click="clear">清空</el-button>
@@ -28,7 +31,7 @@
                 
             </el-form-item>
             </el-row>
-            <el-row v-for="(sitem,index) in searchValues" :key="index">
+            <el-row v-for="(sitem,index) in searchValues" :key="index" style="margin-top:5px">
                 <el-form-item  :label="sitem.name">
                 <el-col :span="10" :xs="10" :sm="10" :md="10">
                     <el-input v-model="sitem.v1" size="small" :clearable="true" style="width: 100%;"></el-input>

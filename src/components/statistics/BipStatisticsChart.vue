@@ -1,48 +1,52 @@
-<template>
-    <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <div class="titlebg">
-            <el-row>
-                <el-col :span="2" style="text-align: left">
-                     <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
+<template> 
+<div class="bip-main-container">
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-row v-loading.fullscreen.lock="fullscreenLoading" class="bi-chart">
+            <div class="titlebg">
+                <el-row>
+                    <el-col :span="2" style="text-align: left">
+                        <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
+                    </el-col>
+                    <el-col :span="22" class="charttitle">
+                            统计维度：{{this.getTitle()}}
+                    </el-col>
+                </el-row>
+            </div>
+            <div v-if="stat.showChart && option"  class="showchart" >
+                <bip-chart style="height :400px;padding-bottom:20px;margin-bottom:20px" :option="option"></bip-chart>
+            </div>
+            <div>
+                <!-- 报表表格-->
+                <vxe-table v-if="tableData && tjcell"
+                    ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+                    show-header-all-overflow class="vxe-table-element" :data.sync="tableData" 
+                    :optimized="true" height="350px">
+                    <vxe-table-column type="index" width="60"></vxe-table-column>
+                    <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
+                        :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
+                    </vxe-table-column>
+                </vxe-table>
+                <!-- <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="cds.page.currPage"
+                    :page-size="cds.page.pageSize"
+                    :page-sizes="[10, 20, 30,40,50]"
+                    layout="slot,total,prev, pager, next,sizes"
+                    :total="cds.page.total"
+                >
+                <el-col :span="18" :xs="18" :sm="18" :md="18">
+                    <el-button-group size="small" v-if="cds.ds_par">  
+                        <el-button icon="el-icon-edit" @click="addRecord"></el-button>
+                        <el-button icon="el-icon-share"></el-button>
+                        <el-button icon="el-icon-delete"></el-button>
+                    </el-button-group>
                 </el-col>
-                <el-col :span="22" class="charttitle">
-                        统计维度：{{this.getTitle()}}
-                </el-col>
-            </el-row>
-        </div>
-        <div v-if="stat.showChart && option"  class="showchart" >
-            <bip-chart style="height :400px" :option="option"></bip-chart>
-        </div>
-        <div>
-            <!-- 报表表格-->
-            <vxe-table v-if="tableData && tjcell"
-                ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-                show-header-all-overflow class="vxe-table-element" :data.sync="tableData" 
-                :optimized="true" height="200px" >
-                <vxe-table-column type="index" width="60"></vxe-table-column>
-                <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
-                    :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
-                </vxe-table-column>
-            </vxe-table>
-            <!-- <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page.sync="cds.page.currPage"
-                :page-size="cds.page.pageSize"
-                :page-sizes="[10, 20, 30,40,50]"
-                layout="slot,total,prev, pager, next,sizes"
-                :total="cds.page.total"
-            >
-            <el-col :span="18" :xs="18" :sm="18" :md="18">
-                <el-button-group size="small" v-if="cds.ds_par">  
-                    <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-                    <el-button icon="el-icon-share"></el-button>
-                    <el-button icon="el-icon-delete"></el-button>
-                </el-button-group>
-            </el-col>
-            </el-pagination>  -->
-        </div>
-    </el-row>
+                </el-pagination>  -->
+            </div>
+        </el-row>
+    </el-scrollbar>
+</div>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
@@ -379,7 +383,6 @@ export default class BipStatisticsDialog extends Vue {
     
     async getAidValues(key:string){
         let res = this.aidValues.get(key)
-        console.log(res)
         if(res && res.length>0){
             return res;
         }
@@ -450,5 +453,8 @@ export default class BipStatisticsDialog extends Vue {
 }
 .charttitle {
     text-align: center;
+}
+.bi-chart{
+    height: 600px;
 }
 </style>

@@ -31,9 +31,11 @@ const getters: GetterTree<AssistState, RootState> = {
 
   const mutations :MutationTree<AssistState> = {
     setAidInfo:(state:AssistState,vals:any) => {
-        state.aidInfos.set(vals.key,vals.value);
-        state.aidInfos = new Map(state.aidInfos);
-        window.sessionStorage.setItem(vals.key,JSON.stringify(vals.value))
+        if(vals && vals.value){
+            state.aidInfos.set(vals.key,vals.value);
+            state.aidInfos = new Map(state.aidInfos);
+            window.sessionStorage.setItem(vals.key,JSON.stringify(vals.value))
+        }
     },
     setKeyMap:(state:AssistState,key:string)=>{
         state.keyMaps.set(key,true);
@@ -41,16 +43,20 @@ const getters: GetterTree<AssistState, RootState> = {
         // state.keyMaps = Object.assign({},state.keyMaps);
     },
     setAidValue:(state:AssistState,vals:any) => {
-        state.aidValues.set(vals.key,vals.value);
-        state.aidValues = new Map(state.aidValues);
-        // state.aidValues = Object.assign({},state.aidValues);
-        window.sessionStorage.setItem(vals.key,JSON.stringify(vals.value))
+        if(vals && vals.value){
+            state.aidValues.set(vals.key,vals.value);
+            state.aidValues = new Map(state.aidValues);
+            // state.aidValues = Object.assign({},state.aidValues);
+            window.sessionStorage.setItem(vals.key,JSON.stringify(vals.value))
+        }
     },
     setCLInfo:(state:AssistState,vals:any)=>{
-        state.clInfos.set(vals.key,vals.value);
-        state.clInfos = new Map(state.clInfos);
-        // state.aidValues = Object.assign({},state.aidValues);
-        window.sessionStorage.setItem(vals.key,JSON.stringify(vals.value))
+        if(vals && vals.value){
+            state.clInfos.set(vals.key,vals.value);
+            state.clInfos = new Map(state.clInfos);
+            // state.aidValues = Object.assign({},state.aidValues);
+            window.sessionStorage.setItem(vals.key,JSON.stringify(vals.value))
+        }
     }
 
 

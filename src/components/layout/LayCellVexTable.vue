@@ -1,5 +1,6 @@
 <template>
     <div v-if="laycell" class="bip-lay">
+        <!-- 单据录入表格-->
         <vxe-table
             ref="_vvt"
             v-if="beBill"
@@ -17,7 +18,7 @@
             @edit-closed="editClose"
             height="300px"
             :selectRow="cds.currRecord"
-        >
+            >
             <!-- <vxe-table-column type="index" width="60"></vxe-table-column> -->
             <vxe-table-column
                 header-align="center"
@@ -51,7 +52,7 @@
                 </template>
             </vxe-table-column>
         </vxe-table>
-        <!-- 报表表格-->
+        <!-- 报表展示表格-->
         <vxe-table
             ref="_vvt"
             v-else
@@ -65,7 +66,8 @@
             :data.sync="cds.cdata._data"
             :optimized="true"
             height="300px"
-        >
+            @cell-dblclick="openrefs"
+            >
             <vxe-table-column type="index" width="60"></vxe-table-column>
             <vxe-table-column
                 header-align="center"
@@ -118,6 +120,10 @@ import CDataSet from "@/classes/pub/CDataSet";
 import BipCommEditor from "../editor/BipCommEditor.vue";
 import BipGridInputLay from "../geditor/BipGridInputLay.vue";
 import BipGridCellInfo from "../geditor/BipGridCellInfo.vue";
+import { BIPUtil } from "@/utils/Request"; 
+let tools = BIPUtil.ServApi
+import { State, Action, Getter, Mutation } from 'vuex-class';
+import { Menu } from "@/classes/Menu";
 @Component({
     components: { BipCommEditor, BipGridInputLay, BipGridCellInfo }
 })
@@ -133,6 +139,7 @@ export default class LayCelVexTable extends Vue {
     @Provide() beBill: boolean = true;
 
     @Provide() id: string = "";
+    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
 
     created() {
         this.initWidth();
@@ -200,6 +207,87 @@ export default class LayCelVexTable extends Vue {
         }
         this.cds.cdata.clearValues();
         this.$emit("handleCurrentChange", value);
+    }
+
+    async openrefs(data:any,event:any){
+        let row = data.row
+        let rowIndex = data.rowIndex
+        let columnIndex = data.columnIndex
+        if(columnIndex > 0){
+            let cell = this.laycell.uiCels[columnIndex-1]
+            if( (cell.attr & 1) >0 || (cell.attr & (0x80000)) >0 ) { // 0主键   0x80000关联
+                let slkid = row[cell.id];
+                if ((cell.attr & 0x80000) > 0) {//关联
+                    let allCels = this.laycell.cells.cels;
+                    let slkbuidCell = null;
+                    for(var i=0;i<allCels.length;i++){
+                        let oneCel = allCels[i];
+                        if(oneCel.id == cell.id){
+                            slkbuidCell = allCels[i+1];
+                            break;
+                        }
+                    } 
+                    let slkbuid = ''
+                    if(slkbuidCell)
+                        slkbuid = row[slkbuidCell.id];
+                    let data = null;//获取常量定义的 BL_菜单号_字段ID 进行菜单打开
+                    if(data == null){
+                        if (slkid && slkbuid) { 
+                            //获取业务定义
+                            let param = await tools.getBULinks(slkbuid);
+                            if(param.data.id ==0){
+                                let opera = param.data.data.opt;
+                                if (opera&&!opera.pmenuid) {
+                                    this.$notify.error("业务" + slkbuid + "没有绑定菜单!"); 
+                                    return false;
+                                }
+                                let me = null; 
+                                for(let i = 0;i<this.menusList.length;i++){
+                                    let m1 = this.findMenuById(opera.pmenuid,this.menusList[i])
+                                    if(m1!=null){
+                                        me = m1
+                                        break ;
+                                    }
+                                } 
+                                if (!me) {
+                                    this.$notify.error( "没有" + opera.pmenuid + "菜单权限!" );
+                                    return false;
+                                }else{
+                                    let command = me.command.split("&");
+                                    let pbuid = command[0].split("=");
+                                    let pmenuid = command[1].split("="); 
+                                    this.$router.push({
+                                        path:'/layout',
+                                        name:'layout',
+                                        params:{pkfld:opera.pkfld,value:slkid},
+                                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                                    })
+                                }
+                            }  
+                        }
+                    }else{
+
+                    }
+                }else{
+                    console.log('主键点击')
+                }
+            }
+        }
+    }
+    findMenuById(menuId:string,menu:Menu):any{
+        if(menu.menuId==menuId){
+            return menu
+        }else{
+            if(menu.haveChild){
+                for(let i = 0;i<menu.childMenu.length;i++){
+                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
+                    if(m1!=null){
+                        return m1;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
 </script>

@@ -3,6 +3,7 @@
     v-model="model1"
     :type="dateType"
     :format="dateFormat"
+    :value-format="dateFormat"
     placeholder=""  @change="dataChange">
     </el-date-picker>
 </template>
@@ -40,7 +41,7 @@ export default class BipGridNumberEditor extends Vue{
         console.log('dataChange',value)
         let _i = this.index?this.index:0
         if(value){
-            value = baseTool.dateFormat(value,this.cell?this.cell.type:91)
+            // value = baseTool.dateFormat(value,this.cell?this.cell.type:91,null)
         }else{
             value = ''
         }

@@ -1,6 +1,7 @@
 import Vue, { PluginObject } from 'vue';
 import axios from 'axios';
 import { BaseVariable } from "../utils/BaseICL";
+import router from "../router";
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -34,11 +35,17 @@ _axios.interceptors.request.use(
 
 // Add a response interceptor
 _axios.interceptors.response.use(
-  (res) => {
+  (res : any ) => {
     // Do something with response data
-    return res;
+    if(res.data && res.data.id && res.data.id ==-2){
+      router.replace({
+        path: '/login', 
+      }) 
+    }else{
+      return res;
+    }
   },
-  (err) => {
+  (err :any) => {
     // Do something with response error
     return Promise.reject(err);
   },

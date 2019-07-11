@@ -6,9 +6,9 @@
             </el-row>
         </el-col>
         <el-col :span="20">
-            <el-row style="text-align:end;margin-bottom:0px"> 
+            <el-row style="text-align:end;margin-bottom:0px" > 
                 <el-badge :value="taskNum" class="header_badge_item">
-                    <i class="el-icon-mobile pointer"></i>    
+                    <i class="el-icon-mobile pointer" @click="myTask"></i>    
                 </el-badge>
                 <el-badge :value="msgNum" class="header_badge_item">
                     <i class="el-icon-message-solid pointer"></i>    
@@ -165,6 +165,14 @@ export default class LayHeader extends Vue {
     showMenu(){
         this.setIsOpenMenu(true)
     }
+
+    myTask(){
+        this.$router.push({
+            path:'/layout',  
+            query: {pbuid:'SSTASK',pmenuid:'SSTASK'},
+        })
+    }
+
     @Watch('taskNum')
     uptaskNum(){
         if(this.taskNum >0 || this.msgNum>0)

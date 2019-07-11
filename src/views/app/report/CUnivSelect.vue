@@ -194,7 +194,7 @@ export default class CUnivSelect extends Vue {
         this.findServerData(this.qe);
     }
 
-    tjData(selGroup:[],selValue:[],chartTypeValue:string,showChart:boolean){
+    tjData(selGroup:Array<any>,selValue:Array<any>,chartTypeValue:string,showChart:boolean){
         this.Statistics = {};
         this.Statistics["selGroup"] = selGroup;
         this.Statistics["selValue"] = selValue;

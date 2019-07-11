@@ -478,6 +478,18 @@ export default class BipSelectEditor extends Vue {
                     this.model1 = this.aidInfo.showValues;
                 } else {
                     //   console.log("realV != nn", nn, this.cell.id);
+                    if(nn !=''){
+                        let aidv = this.getAidValues(this.refId+'_'+nn);
+                        if(!aidv){
+                            if(!this.keyMaps.get(this.refId+"_"+nn)){   
+                                this.fetchRefById({key:this.refId,model:nn,cont:nn})
+                            }
+                        }else{
+                            this.linkRef.values = aidv
+                            this.linkRef.makeShow();
+                        }
+                        this.getFocus(false);
+                    }
                     if (nn !== this.model1) {
                         this.model1 = nn;
                     }

@@ -1,7 +1,7 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <template v-if="uriParams.beBill">
-            <base-applet :uriParams="uriParams"></base-applet>
+            <base-applet :uriParams="uriParams" :params="$route.params"></base-applet>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect'">
             <c-univ-select :uriParams="uriParams"></c-univ-select>
@@ -98,15 +98,9 @@ export default class CommonLayOut extends Vue {
     margin-bottom: 0px !important;
 }
 .bip-main-container {
-    position: fixed;
-    // left: 50px;
-    // width: calc(100% - 100px);
-    // border: 1px solid black;
-
-    height: calc(100% - 135px);
-    width: calc(100% - 30px);
-    // height: 400px;
-    // position: fixed;
+    position: fixed; 
+    height: calc(100% - 135px) !important;
+    width: calc(100% - 30px) !important;
     z-index: 1;
     overflow: hidden;
     margin-right: 20px;

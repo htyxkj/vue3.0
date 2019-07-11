@@ -353,7 +353,13 @@ export default class CDataSet {
       if(!iniVl){
           if(item.type==12)
             modal[item.id] = ''
-
+          else{
+            if(item.id == 'state' && item.refValue =="{$D.STATE}"){
+              modal[item.id] = '0';
+            }else{
+              modal[item.id] = null;
+            }
+          }
       }else{
         if (iniVl == "[!]") {
             iniVl = deptInfo.deptCode;
@@ -388,7 +394,7 @@ export default class CDataSet {
           if (iniVl == "[Y2-M]") {
             iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y2M);
           }
-          if (item.type <= 5) {
+          if (item.type <= 5 && item.type !=1) {
             if (!iniVl) iniVl = "";
             else {
                 if(item.type==3)

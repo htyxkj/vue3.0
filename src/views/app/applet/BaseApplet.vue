@@ -48,6 +48,7 @@ let tools = BIPUtil.ServApi
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
+    @Prop() params:any;
     @Provide() cells: Array<Cells> = new Array<Cells>();
     @Provide() mbs: BipMenuBar = new BipMenuBar(0);
     @Provide() dsm: CDataSet = new CDataSet(null);
@@ -576,9 +577,15 @@ export default class BaseApplet extends Vue{
     async mounted(){
         // console.log(this.uriParams,'bbb')
         await this.uriParamsChange()
-        this.dsm.createRecord();
-        this.dsm.currRecord.sys_stated = 1
-
+        if(!this.params){
+            this.dsm.createRecord();
+            this.dsm.currRecord.sys_stated = 1
+        }else{
+            let data:any = {};
+            data[this.params.pkfld] = this.params.value
+            this.findData(true,data);
+        }
+        
     }
 
     async handleSizeChange(value:number){
@@ -610,11 +617,20 @@ export default class BaseApplet extends Vue{
             this.setListMenuName();
         }
     }
+
+    @Watch('params')
+    paramsWatch(){ 
+        if(this.params && this.params.pkfld){
+            let data:any = {};
+            data[this.params.pkfld] = this.params.value
+            this.findData(true,data);
+        }
+    }
 //#endregion
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 /* .bip-main-container{
     background-color:red;
 } */

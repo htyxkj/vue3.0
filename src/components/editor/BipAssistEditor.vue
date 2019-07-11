@@ -2,9 +2,10 @@
     <el-dialog class="bip-assist" :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
         <span slot="title">
             <div class="el-dialog__title" style="padding-bottom:5px">{{aIdTitle}}</div>
-            <div>
-                <el-input placeholder="请输入内容" v-model="conditionValue" class="input-with-select" clearable>
+            <div @keyup.enter="aidselect">
+                <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select" clearable >
                     <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
+                        <el-option label="全局匹配" value="-1"></el-option>
                         <el-option v-for="(item,index) in showCols" :key="index" :label="labers[index]" :value="allCols[item].id"></el-option>
                     </el-select>
                     <el-button slot="append" icon="el-icon-search" @click="aidselect"></el-button>
@@ -79,7 +80,7 @@ export default class BipAssistEditor extends Vue{
     @Provide() items:Array<any> = []
     @Provide() multipleSelection:any = null
     @Provide() page:any = {currPage:1,pageSize:20,total:0,cont:'' }
-    @Provide() conditionItem:string = "";
+    @Provide() conditionItem:string = "-1";
     @Provide() conditionValue:string = "";
     async mounted(){
         if(this.aId){
@@ -147,8 +148,16 @@ export default class BipAssistEditor extends Vue{
 
     aidselect(){ 
         let cont = "";
-        if(this.conditionItem && this.conditionValue)
+        if(this.conditionItem !='-1' && this.conditionValue)
             cont = "~"+this.conditionItem+" like '%"+this.conditionValue+"%'"
+        if(this.conditionItem =='-1' && this.conditionValue){
+            cont = "~";
+            for(var i=0;i<this.showCols.length;i++){
+                let cols = this.showCols[i];
+                cont += this.allCols[cols].id +" like '%"+this.conditionValue+"%' or " 
+            }
+            cont = cont.substring(0,cont.length-4);
+        }
         this.page.cont = cont; 
         this.findData();
     }

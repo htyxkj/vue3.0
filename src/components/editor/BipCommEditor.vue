@@ -78,6 +78,8 @@ export default class BipCommEditor extends Vue{
                         this.editorType = ICL.I_EDITOR_UPDOWN
                     }else if(this.cell.editName == 'COPY'){
                         this.editorType = ICL.I_EDITOR_COPY
+                    }else if(this.cell.editName =='YM'){
+                        this.editorType = ICL.I_EDITOR_DATE
                     }else{
                         this.editorType = ICL.I_EDITOR_SELECT
                     }

@@ -5,6 +5,7 @@
             v-model="model1"
             :type="dateType"
             :format="dateFormat"
+            :value-format="dateFormat"
             placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
             </el-date-picker>
         </el-form-item>
@@ -37,6 +38,9 @@ export default class BipDateEditor extends Vue{
             if(this.cell.type===93){
                 this.dateType = 'datetime'
                 this.dateFormat = 'yyyy-MM-dd HH:mm:ss'
+            }else if(this.cell.editName == 'YM'){
+                this.dateType = 'month';
+                this.dateFormat = 'yyyyMM'
             }
             this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         // }
@@ -58,7 +62,8 @@ export default class BipDateEditor extends Vue{
                     this.cds.currRecord = Object.assign({},this.cds.currRecord)
                     this.cds.cdata._data[this.cds.index] = this.cds.currRecord
                 }else{
-                    value = baseTool.dateFormat(value,this.cell.type)
+                    // let format = this.dateFormat.replace('yyyy','YYYY');
+                    // value = baseTool.dateFormat(value,this.cell.type,format)
                     if(value != this.model){
                         // this.model1 = value
                         //TODO 公式关联

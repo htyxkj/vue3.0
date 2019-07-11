@@ -36,10 +36,10 @@
       <div class="login-cont" @keyup.enter="login">
 
         <el-form label-position="left" label-width="55px" >
-          <el-form-item label="账户:" style="font-size:16px">
+          <el-form-item class="bip-form-item" label="账户:" style="font-size:16px">
             <el-input v-model="user.userCode"></el-input>
           </el-form-item>
-          <el-form-item label="密码:">
+          <el-form-item class="bip-form-item" label="密码:">
             <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
           </el-form-item>
         </el-form>
@@ -198,7 +198,7 @@ export default class Login extends Vue {
 }
 
 .el-row {
-  margin-bottom: 30px;
+  margin-bottom: 30px !important;
   height: 30px;
   line-height: 30px;
   font-size: 16px;
@@ -206,8 +206,8 @@ export default class Login extends Vue {
     margin-bottom: 20px;
   }
 }
-.el-form-item {
-  margin-bottom: 22px;
+.bip-form-item {
+  margin-bottom: 22px !important;
 }
 .login-footer {
   text-align: center;
