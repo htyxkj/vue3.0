@@ -99,6 +99,17 @@ export namespace BIPUtil {
         return this.getFromServer(param);
     }
 
+    /**
+     * @description 获取服务器辅助、常量、产品核算单位
+     * @param aid 辅助或者常量ID，或者产品编码
+     * @param id 辅助200，常量，300，辅助取值210，产品核算单位查询400
+     * @param qe 查询条件，有可能有
+     */
+    getBipInsAidInfo(aid:string,id:number=200,qe?:QueryEntity){
+        let param = tool.getBipInsAidParams(aid,id,qe?JSON.stringify(qe):undefined);
+        return this.getFromServer(param);
+    }
+
     test(){
         
         let data = JSON.stringify({"id":200,"sid":9999,"jsondata":[{"id":222}]})

@@ -4,32 +4,7 @@
             <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds"/>
         </template>
         <template v-else>
-            <!-- <lay-cell-etable :laycell="laycell" :env="env"></lay-cell-etable> -->
             <lay-cell-vex-table :laycell="laycell" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell-vex-table>
-            <!-- <el-table :data="cds.cdata._data" style="width: 100%" height="300" size="small" stripe border >
-                <el-table-column v-if="beBill" type="selection" width="45" :align="'center'"></el-table-column>
-                <el-table-column v-for="(cel,index) in cells" :key="index" :prop="cel.id"
-                :label="cel.labelString"
-                :width="widths[index]" :resizable="true" :show-overflow-tooltip="true" :align="'center'" :label-class-name="cel.isReq?'bip-req':(cel.type==3?'bip-number':'')">
-                    <template slot-scope="scope">
-                        <bip-grid-lay :cds="cds" :cell="cel" :index="scope.$index" :model="scope.row[cel.id]" :bill="beBill"></bip-grid-lay>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page.sync="cds.page.currPage"
-                :page-size="cds.page.pageSize"
-                :page-sizes="[10, 20, 30,40,50]"
-                layout="sizes,total, prev, pager, next"
-                :total="cds.page.total">
-            </el-pagination>
-            <el-button-group size="small" v-if="cds.ds_par">
-            <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-            <el-button icon="el-icon-share"></el-button>
-            <el-button icon="el-icon-delete"></el-button>
-            </el-button-group> -->
         </template>
     </div>
 </template>

@@ -2,6 +2,7 @@ import { GlobalVariable } from "./ICL";
 import { BaseVariable } from "./BaseICL";
 import moment from "moment";
 import { User } from '@/classes/User';
+import QueryEntity from '@/classes/search/QueryEntity';
 export namespace BIPUtils {
   class BaseUtil {
     getLoginParmasUri() {
@@ -162,6 +163,23 @@ export namespace BIPUtils {
             psearch:psearch,
             });
         }
+
+    /**
+     * @description 获取辅助/常量元素对象
+     * @param aId 辅助后者常量ID
+     * @param id 200 辅助,300常量
+     */
+    getBipInsAidParams(aId: string,id:number=200,qe?:string) {
+        return Object.assign({
+          apiId: GlobalVariable.APIID_BIPINSAID,
+          dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+          usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
+            .userCode,
+          aid: aId,
+          id:id,
+          qe:qe
+        });
+    }
 
     base64Encode(str: string) {
       var pwd = encodeURIComponent(str);
