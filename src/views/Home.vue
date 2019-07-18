@@ -5,7 +5,12 @@
       :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[10, 10]" :use-css-transforms="true" >
       <grid-item v-for="item in layout" :key="item.i" :x="item.x"
         :y="item.y" :w="item.w" :h="item.h" :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent" >
-        {{item.i}}
+        <template v-if="item.b_type == 'bipMsg'">
+          <bip-msg></bip-msg>
+        </template>
+        <template v-else-if="item.b_type == 'bipTask'">
+          <bip-task></bip-task>
+        </template>
       </grid-item>
     </grid-layout>
   </el-scrollbar>
@@ -18,6 +23,8 @@ import echarts from 'echarts';
 import { Menu } from "@/classes/Menu";
 import BipMenu from "@/components/menu/BipMenu.vue";
 import { Route, RawLocation } from 'vue-router';
+import BipTask from './app/taskMsg/bipTask.vue';
+import BipMsg from './app/taskMsg/bipMsg.vue';
 
 import VueGridLayout from 'vue-grid-layout'
 Vue.use(VueGridLayout)
@@ -28,7 +35,9 @@ var GridItem = VueGridLayout.GridItem;
   components: {
     BipMenu,
     GridLayout,
-    GridItem
+    GridItem,
+    BipTask,
+    BipMsg,
   }
 })
 export default class Home extends Vue { 
@@ -39,16 +48,8 @@ export default class Home extends Vue {
     }
     created(){
         this.layout = [
-            {"x":0,"y":0,"w":1,"h":1,"i":"0"},
-            {"x":1,"y":0,"w":1,"h":1,"i":"1"},
-            {"x":2,"y":0,"w":1,"h":1,"i":"2"},
-            {"x":3,"y":0,"w":1,"h":1,"i":"3"},
-            {"x":4,"y":0,"w":1,"h":1,"i":"4"},
-            {"x":0,"y":1,"w":1,"h":1,"i":"5"},
-            {"x":1,"y":1,"w":1,"h":1,"i":"6"},
-            {"x":2,"y":1,"w":1,"h":1,"i":"7"},
-            {"x":3,"y":1,"w":1,"h":1,"i":"8"},
-            {"x":4,"y":1,"w":1,"h":1,"i":"9"},
+            {"x":0,"y":0,"w":10,"h":10,"i":"0","b_type":"bipMsg"},
+            {"x":10,"y":10,"w":10,"h":10,"i":"1","b_type":"bipTask"},
         ];
     }
     moveEvent(i:any, newX:any, newY:any,e:any){
@@ -99,7 +100,7 @@ export default class Home extends Vue {
   }
   .vue-grid-layout>div {
      position: absolute;
-     background: indianred;
+    //  background: indianred;
   }
 </style>
 

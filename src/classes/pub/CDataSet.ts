@@ -177,15 +177,17 @@ export default class CDataSet {
     if (_i !== -1) {
       crd = this.cdata.getDataAtIndex(_i);
     }
-    if (this.haveAuth()) {
-      if (this.i_state > -1) {
-        let cell = this.ccells.cels[this.i_state];
-        let statestr = crd[cell.id];
-        let state: number = parseInt(statestr);
-        return state == 0;
-      } else {
-        return true;
-      }
+    if(crd){
+        if (this.haveAuth()) {
+            if (this.i_state > -1) {
+                let cell = this.ccells.cels[this.i_state];
+                let statestr = crd[cell.id];
+                let state: number = parseInt(statestr);
+                return state == 0;
+            } else {
+                return true;
+            }
+          }
     }
     return false;
   }

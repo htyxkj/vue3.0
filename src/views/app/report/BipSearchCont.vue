@@ -1,5 +1,5 @@
 <template>
-    <el-row class="bip-row">
+    <el-row class="bip-lay">
         <el-form label-position="right" label-width="120px">
             <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds" :row="0"/>
         </el-form>

@@ -10,6 +10,9 @@
             <template v-else-if="bipInsAid.bType === 'CUpDownEditor'">
                 <bip-up-down-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-up-down-editor>
             </template>
+            <template v-else-if="bipInsAid.bType === 'CQueryEditor'">
+                <bip-query-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-query-editor>
+            </template>
             <template v-else>
                 <bip-ins-aid-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-ins-aid-editor>
             </template>    
@@ -39,13 +42,14 @@ import BipInsAidEditor from './BipInsAidEditor.vue'
 import BipDateEditor from './BipDateEditor.vue'
 import BipFlowEditor from './BipFlowEditor.vue'
 import BipUpDownEditor from './BipUpDownEditor.vue'
+import BipQueryEditor from './BipQueryEditor.vue'
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { BIPUtils } from '@/utils/BaseUtil'
 import BipInsAidNew from '../../classes/BipInsAidNew';
 let baseTool = BIPUtils.baseUtil
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() cds!:CDataSet
