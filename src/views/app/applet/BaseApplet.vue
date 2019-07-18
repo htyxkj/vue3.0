@@ -41,6 +41,7 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import DataCache from "@/classes/DataCache";
 import PageInfo from "@/classes/search/PageInfo";
 import BipWork from '@/components/cwork/BipWork.vue';
+import { stringify } from 'querystring';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
@@ -62,6 +63,8 @@ export default class BaseApplet extends Vue{
     @Provide() dataCache: Array<DataCache> = [];
     @Provide() listIndex: number = -1;
     @Provide() cea:CeaPars = new CeaPars({});
+    @Provide() pmenuid:string ='';
+
 
     async invokecmd(cmd: string) {
         console.log(cmd);
@@ -292,7 +295,6 @@ export default class BaseApplet extends Vue{
             if (vr) {
                 this.dsm.setValues(vr.values, true);
                 crd = vr.values[page.index];
-                this.$bus.$emit('cell_edit')
             } else {
                 this.qe.oprid = 13;
                 this.qe.cont = JSON.stringify(this.dsm.cont);
@@ -354,7 +356,6 @@ export default class BaseApplet extends Vue{
                 let dc = new DataCache(page.currPage, vv.values);
                 console.log(dc, "缓存数据");
                 this.dataCache.push(dc);
-                this.$bus.$emit('cell_edit')
                 // this.setListMenuName()
             } else {
                 this.$notify.info("没有查询到数据");
@@ -381,7 +382,6 @@ export default class BaseApplet extends Vue{
             this.dsm.setRecordAtIndex(rec, i);
             this.dsm.currRecord = rec;
             // this.setSubData()
-            this.$bus.$emit('cell_edit')
         }
     }
 
@@ -458,7 +458,6 @@ export default class BaseApplet extends Vue{
                         ord
                     );
                     this.dsm.setState(icl.R_POSTED);
-                    this.$bus.$emit('cell_edit')
                     this.$message.success("保存成功！");
                     console.log(this.dsm.currRecord);
                 }
@@ -579,13 +578,13 @@ export default class BaseApplet extends Vue{
     }
 
     async mounted(){
-    // console.log(this.uriParams,'bbb')
+        // console.log(this.uriParams,'bbb')
         await this.uriParamsChange()
         if(!this.params || !this.params.pkfld){
             this.dsm.createRecord();
             this.dsm.currRecord.sys_stated = 1
         }else{
-            // this.pmenuid = this.$route.query.pmenuid+'';
+            this.pmenuid = this.$route.query.pmenuid+'';
             if(this.params && this.params.pkfld){
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value
@@ -626,10 +625,12 @@ export default class BaseApplet extends Vue{
 
     @Watch('params')
     paramsWatch(){ 
-        if(this.params && this.params.pkfld){
-            let data:any = {};
-            data[this.params.pkfld] = this.params.value
-            this.findData(true,data);
+        if(this.pmenuid == this.$route.query.pmenuid){
+            if(this.params && this.params.pkfld){
+                let data:any = {};
+                data[this.params.pkfld] = this.params.value
+                this.findData(true,data);
+            }
         }
     }
 //#endregion

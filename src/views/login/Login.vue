@@ -26,7 +26,7 @@
         </el-row>
       </div>
       <div class="login-footer">
-        <address>@2019：华泰益兴科技(北京)有限公司 版权所有</address>
+        <address>&copy;2019：华泰益兴科技(北京)有限公司 版权所有</address>
       </div>
     </div>
   </div>
