@@ -3,7 +3,8 @@
         <template v-if="editorType==I_EDITOR_LIST &&bipInsAid">
             <bip-list-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-list-ref>
         </template>
-        <template v-else-if="editorType == 9 &&bipInsAid && (bipInsAid.bType !== 'CDateEditor'||bipInsAid.bType !== 'CQueryEditor')">
+
+        <template v-else-if="editorType == 9 && bipInsAid && (bipInsAid.bType !== 'CDateEditor' && bipInsAid.bType !== 'CQueryEditor')">
             <bip-aid-ref :refLink="bipInsAid" :cell="cell" :model="model" />
         </template>
         <template v-else>
