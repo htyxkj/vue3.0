@@ -70,5 +70,22 @@ export const CommICL = Object.assign({
     R_DICT:0x200,//记录经过动态字典处理后,置上该标记。
     R_POSTED: 0x400,//记录已提交过
     //#endregion
-    EV_CELL_CHANGE:'cellDataChange'//
+    EV_CELL_CHANGE:'cellDataChange',//
+
+    //#region 辅助输入类别
+    CELL_CGroupEditor:'CGroupEditor',
+    CELL_CSelectEditor:'CSelectEditor',
+    CELL_CFlagEditor:'CFlagEditor',
+    CELL_CFlowEditor:'CFlowEditor',
+    CELL_CQueryEditor:'CQueryEditor',
+    CELL_CDynaEditorr:'CDynaEditor',
+    CELL_CUpDownEditor:'CUpDownEditor',
+    CELL_CGDicEditor:'CGDicEditor',
+    CELL_CDateEditor:'CDateEditor',
+    CELL_CYMEditor:'CYMEditor',
+    CELL_CHSMEditor:'CHSMEditor',
+    //#endregion
+    AID_KEY:'KEY_',
+    AID_KEYCL:'$KEY_'
+
 });

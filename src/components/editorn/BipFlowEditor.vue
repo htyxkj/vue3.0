@@ -1,0 +1,192 @@
+<template>
+    <el-col :span="span" :xs="24" :sm="24" :md="span">
+        <template v-if="!bgrid">
+            <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                <el-input v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange">
+                    <el-button slot="append" icon="el-icon-tickets" @click="iconClick"></el-button>
+                </el-input>
+            </el-form-item>
+        </template>
+        <template v-else>
+             <el-input v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange">
+                 <el-button slot="append" icon="el-icon-tickets" @click="iconClick"></el-button>
+             </el-input>
+        </template>
+
+        <!-- <template v-if="dia"> -->
+        <bip-copy-info
+            ref="ak"
+            :opera='cds.opera'
+            :ref_cds="cds"
+            @select="selectCallBack"
+        ></bip-copy-info>
+        <!-- </template> -->
+
+    </el-col>
+</template>
+<script lang="ts">
+import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
+import CDataSet from '@/classes/pub/CDataSet';
+import { Cell } from '@/classes/pub/coob/Cell';
+import { CommICL } from '@/utils/CommICL';
+let icl = CommICL
+
+import { State, Action, Getter, Mutation } from "vuex-class";
+import BipInsAidNew from '../../classes/BipInsAidNew';
+import { BIPUtil } from '@/utils/Request';
+import BipCopyInfo from './cutil/BipCopyInfo.vue'
+let tools = BIPUtil.ServApi
+@Component({
+    components:{BipCopyInfo}
+})
+export default class BipFlowEditor extends Vue{
+    @Prop() cds!:CDataSet
+    @Prop() cell!:Cell
+    @Prop() model:any
+    @Prop() row!:number
+    @Prop() bgrid!:boolean
+    @Prop() bipInsAid!:BipInsAidNew
+    @Provide() model1:any = ""
+    @Provide() clearable:boolean = true
+    @Provide() multiple:boolean = false
+    @Provide() refId:string = ''
+    @Provide() initOK:boolean = false
+    @Provide() span:number = 6
+
+    @Provide() methodName:string = ''
+
+    @Provide() dia:boolean = false;
+
+
+    @Provide() mulcols: boolean = false;//多列
+    @Provide() bcode: boolean = false;//文本编码
+    @Provide() bfmt: boolean = false;//格式化
+    @Provide() othCols: Array<string> = [];
+    @Provide() othColsIndex: Array<number> = [];
+
+    mounted(){
+        this.multiple = (this.cds.ccells.attr&0x80)>0
+        this.mulcols = (this.cell.attr & 0x100000) > 0;
+        this.bfmt = (this.cell.attr & 0x10000) > 0;
+        this.bcode = (this.cell.attr & 0x40000) > 0;
+        if(!this.bgrid){
+            this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
+        }else{
+            this.span = 24
+        }
+        if(this.multiple){
+            this.model1 = []
+            if(this.model)
+                this.model1 = this.model.split(',')||this.model.split(';')
+        }else{
+            this.model1 = this.model
+        }
+        this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
+        if(this.mulcols)
+        this.initMulColInfo()
+
+    }
+
+
+    dataChange(value:any){
+        let str = ""
+        console.log(value)
+        if(this.multiple){
+            this.model1 = []
+            value.forEach((item:string)=>{
+                if(item!==''){
+                    str+=item+';'
+                    this.model1.push(item)
+                }       
+            })
+            str = str.substring(0,str.length-1)
+        }else{
+            str = this.model1
+        }
+        if( str !== this.model){
+            if(this.cds.currCanEdit()){
+                this.cds.setStateOrAnd(icl.R_EDITED)
+                let record = this.cds.currRecord
+                record[this.cell.id] = str
+                this.cds.currRecord = Object.assign({},record);
+                this.cds.cdata._data[this.cds.index] = Object.assign({},record)
+                const key:string = this.cell.id
+                this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
+                this.cds.cellChange(key,str);
+            }else{
+                this.model1 = this.model
+            }   
+        } 
+    }
+
+    iconClick() {
+        if (!((this.cell.attr & 0x40) > 0)) {
+            // this.dia = true;
+            setTimeout(() => {
+                let dia: any = this.$refs.ak;
+                if (dia) dia.open();
+            }, 100);
+        }
+    }
+
+    selectCallBack(val:any,close:boolean = false){
+        console.log(val,close)
+  
+    }
+//#region /**初始化多列参照 */
+    initMulColInfo() {
+        let script = this.cell ? this.cell.script : "";
+        if (script) {
+            let vals = script.split("&");
+            if (vals.length < 2) {
+                this.$notify.error("多列定义错误" + script);
+            } else {
+                let flds = vals[0].split(",");
+                let flds_index: Array<number> = vals[1]
+                    .split(",")
+                    .map(value => {
+                        return parseInt(value);
+                    });
+                if (flds.length != flds_index.length) {
+                    this.$notify.error(
+                        "多列参照定义的字段和下标的个数不对" + script
+                    );
+                } else {
+                    this.othCols = flds;
+                    this.othColsIndex = flds_index;
+                }
+            }
+        }
+    }
+
+//#endregion
+
+    @Watch('model')
+    valueChange(){
+        console.log(this.model)
+        if(this.multiple){
+            let str = this.model||''
+            if(str.length>0){
+                this.model1 = str.split(';')||str.split(',')
+            }
+        }else{
+            if(this.model!=this.model1){
+                this.model1 = this.model
+            }
+        }
+
+    }
+
+
+
+}
+</script>
+
+<style>
+.el-input-group__append{
+    padding: 0 8px !important;
+}
+</style>
+
+
+

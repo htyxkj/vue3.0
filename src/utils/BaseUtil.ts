@@ -2,7 +2,9 @@ import { GlobalVariable } from "./ICL";
 import { BaseVariable } from "./BaseICL";
 import moment from "moment";
 import { User } from '@/classes/User';
-import QueryEntity from '@/classes/search/QueryEntity';
+import BipInsAidNew from '@/classes/BipInsAidNew';
+import { Cells } from '@/classes/pub/coob/Cells';
+import { Cell } from '@/classes/pub/coob/Cell';
 export namespace BIPUtils {
   class BaseUtil {
     getLoginParmasUri() {
@@ -428,6 +430,55 @@ export namespace BIPUtils {
       }
       return moment(d1).format(format);
     }
+
+    makeBipInsAidByStr(str:string,id:string):BipInsAidNew{
+        let insAid = new BipInsAidNew(id);
+        let cells = new Cells();
+        let cels = new Array<Cell>();
+        let c1 = new Cell();
+        insAid.cl = true
+        c1.id = 'code'
+        c1.labelString = 'code'
+        cels.push(c1)
+        let c2 = new Cell();
+        c2.id = 'name'
+        c2.labelString = 'name'
+        cels.push(c2)
+        cells.cels = cels;
+        insAid.cells = cells;
+        let datas:any = []
+        let vv:Array<string> = str.split(";")
+        vv.forEach((item,index)=>{
+            if(item.length>0){
+                let _n = item.indexOf(':')
+                if(_n>0){
+                    let vs = item.split(':')
+                    datas.push({code:vs[0],name:vs[1]})
+                }else{
+                    datas.push({code:index+'',name:item})
+                }
+            }
+        })
+        insAid.values = datas
+        return insAid;
+    }
+
+    getTaskMsgParams(tskim:number,iid:number,state:number,buno:string,buid:string,tousr:string,page:number,size:number,keyword:string) {
+        return Object.assign({
+            apiId: GlobalVariable.APIID_TA_MSG,
+            dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+            usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+            tskim:tskim,
+            iid:iid,
+            state:state,
+            buno:buno,
+            buid:buid,
+            tousr:tousr,
+            page:page,
+            size:size,
+            keyword:keyword,
+        });
+      }
   }
   export const baseUtil = new BaseUtil();
 }

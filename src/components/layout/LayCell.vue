@@ -1,7 +1,7 @@
 <template>
     <div v-if="laycell" class="bip-lay">
         <template v-if="laycell&&!laycell.btable">
-            <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds"/>
+            <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable"/>
         </template>
         <template v-else>
             <lay-cell-vex-table :laycell="laycell" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell-vex-table>
@@ -14,12 +14,10 @@ import BipLayCells from '@/classes/ui/BipLayCells';
 import {Cell} from '@/classes/pub/coob/Cell';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
-import BipCommEditor from '../editor/BipCommEditor.vue'
-// import BipGridLay from '../grideditor/BipGridLay.vue'
+import BipCommEditor from '../editorn/BipCommEditor.vue'
 import LayCellVexTable from './LayCellVexTable.vue'
-import LayCellEtable from './LayCellEtable.vue'
 @Component({
-    components:{BipCommEditor,LayCellEtable,LayCellVexTable}
+    components:{BipCommEditor,LayCellVexTable}
 })
 export default class LayCell extends Vue{
     @Prop() laycell!:BipLayCells

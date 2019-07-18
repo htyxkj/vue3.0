@@ -11,7 +11,7 @@
                     <i class="el-icon-mobile pointer" @click="myTask"></i>    
                 </el-badge>
                 <el-badge :value="msgNum" class="header_badge_item">
-                    <i class="el-icon-message-solid pointer"></i>    
+                    <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
                 </el-badge> 
                 <el-popover  width="160" placement="bottom-end" >
                     <el-row style="margin: 0px;">
@@ -41,7 +41,8 @@ import { LoginState } from '../../store/modules/login/types';
 
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
-const BIPTASK : string = "biptask",BIPMSG : string = "bipmsg"; 
+const BIPTASK : string = "biptask",BIPMSG : string = "bipmsg";  
+import { Menu } from "@/classes/Menu";
 @Component({
 })
 export default class LayHeader extends Vue { 
@@ -51,7 +52,7 @@ export default class LayHeader extends Vue {
     @Provide() msgNum:Number = 0;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Prop() isLogin!:boolean;
-
+    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @State('login') profile!: LoginState 
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
@@ -101,19 +102,20 @@ export default class LayHeader extends Vue {
         }
     }
     responseCallback(frame : any) { 
-        console.log(frame)
         var info = JSON.parse(frame.body);
         if (info.type === 1) {
             if (this.taskNum !== info.count) {
-            this.taskNum = info.count;
-            if(this.taskNum>0)
-                this.$notify.success("您有" + this.taskNum + "条任务未处理！" );
+                this.taskNum = info.count;
+                if(this.taskNum>0)
+                    this.$notify.success("您有" + this.taskNum + "条任务未处理！" );
             }
         }
         if (info.type === 2) {
-            this.msgNum = info.count;
-            if(this.msgNum>0)
-            this.$notify.success("您有" + this.msgNum + "条消息未处理！" ); 
+            if (this.msgNum !== info.count) {
+                this.msgNum = info.count;
+                if(this.msgNum>0)
+                    this.$notify.success("您有" + this.msgNum + "条消息未处理！" ); 
+            }
         }
         // console.log(frame);
         // 接收消息
@@ -124,43 +126,7 @@ export default class LayHeader extends Vue {
     }
 
     async getTaskMsgNum(){
-        var data1 = { 
-            pcell: "SYRW",
-            pdata: "{brd:0,}",
-            bebill: 1,
-            currentPage: 1,
-            pageSize: 1,
-            cellid: ""
-        };
-        let qe:QueryEntity = new QueryEntity("SYRW","SYRW","{brd:0,}");
-        let vv = await tools.query(qe); 
-        let data = vv.data; 
-        if(data)
-        if (data.id == 0) {
-            let vv: QueryEntity = data.data.data;
-            this.taskNum = vv.values.length;
-        }else{
-            this.taskNum = 0;
-        }
-
-        // var data1 = { 
-        //     pcell: "SYRW",
-        //     pdata: "{brd:0,}",
-        //     bebill: 1,
-        //     currentPage: 1,
-        //     pageSize: 1,
-        //     cellid: ""
-        // };
-        // let qe:QueryEntity = new QueryEntity("SYRW","SYRW","{brd:0,}");
-        // let vv = await tools.query(qe); 
-        // let data = vv.data; 
-        // if(data)
-        // if (data.id == 0) {
-        //     let vv: QueryEntity = data.data.data;
-        //     this.taskNum = vv.values.length;
-        // }else{
-        //     this.taskNum = 0;
-        // } 
+        let cc = await tools.getTaskMsgData(200,null,null,null,null,null,null,null,null); 
     }
     showMenu(){
         this.setIsOpenMenu(true)
@@ -168,11 +134,14 @@ export default class LayHeader extends Vue {
 
     myTask(){
         this.$router.push({
-            path:'/layout',  
-            query: {pbuid:'SSTASK',pmenuid:'SSTASK'},
+            path:'/myTask',  
         })
     }
-
+    myMsg(){
+        this.$router.push({
+            path:'/myMsg',  
+        })
+    }
     @Watch('taskNum')
     uptaskNum(){
         if(this.taskNum >0 || this.msgNum>0)
@@ -182,6 +151,21 @@ export default class LayHeader extends Vue {
     upmsgNum(){
         if(this.taskNum >0 || this.msgNum>0)
             this.haveTask = true;
+    }
+    findMenuById(menuId:string,menu:Menu):any{
+        if(menu.menuId==menuId){
+            return menu
+        }else{
+            if(menu.haveChild){
+                for(let i = 0;i<menu.childMenu.length;i++){
+                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
+                    if(m1!=null){
+                        return m1;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
 </script>

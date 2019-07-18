@@ -115,9 +115,20 @@ export default class CUnivSelect extends Vue {
         console.log(ses)
         let height= ses.offsetHeight;
         console.log('ses height:'+height,he-height)
-
+        this.initData();
     }
-
+    initData(){
+        if(this.uriParams && this.uriParams.pbds){
+            let pbds:any = this.uriParams.pbds;
+            let ptran = pbds.ptran.substring(1,pbds.ptran.length-1);
+            ptran = ptran.split("&")
+            for(var i=0 ; i< ptran.length;i++){
+                let cc = ptran[i].split("=");
+                this.dsm_cont.currRecord[cc[0]] = cc[1];
+            }
+            this.find();
+        }
+    }
     invokecmd(cmd:string){
         console.log(cmd)
         if(cmd == 'CLEAR'){

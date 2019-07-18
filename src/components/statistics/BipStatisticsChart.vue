@@ -26,23 +26,6 @@
                         :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
                     </vxe-table-column>
                 </vxe-table>
-                <!-- <el-pagination
-                    @size-change="handleSizeChange"
-                    @current-change="handleCurrentChange"
-                    :current-page.sync="cds.page.currPage"
-                    :page-size="cds.page.pageSize"
-                    :page-sizes="[10, 20, 30,40,50]"
-                    layout="slot,total,prev, pager, next,sizes"
-                    :total="cds.page.total"
-                >
-                <el-col :span="18" :xs="18" :sm="18" :md="18">
-                    <el-button-group size="small" v-if="cds.ds_par">  
-                        <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-                        <el-button icon="el-icon-share"></el-button>
-                        <el-button icon="el-icon-delete"></el-button>
-                    </el-button-group>
-                </el-col>
-                </el-pagination>  -->
             </div>
         </el-row>
     </el-scrollbar>
@@ -57,13 +40,12 @@ import { BIPUtil } from "@/utils/Request";
 import { BIPUtils } from "@/utils/BaseUtil";
 import echarts from 'echarts';
 import BipChart from "@/components/chart/BipChart.vue"
-import BipGridCellInfo from "../geditor/BipGridCellInfo.vue";
 let tools = BIPUtil.ServApi;
 let tool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from "vuex-class";
 
 @Component({
-    components: { BipChart,BipGridCellInfo}
+    components: { BipChart}
 })
 export default class BipStatisticsDialog extends Vue {
     @Prop() stat!:any;

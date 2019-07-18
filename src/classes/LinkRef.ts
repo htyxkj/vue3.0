@@ -76,16 +76,19 @@ export default class LinkRef{
                 } 
             })
         }else{
-            if(this.id.length>0){
-                let type = this.layCells.length>0?this.layCells[0].type:12
-                console.log(type)
-                if(type && this.layCells){
-                    if(type>=-5 && type<=8){
-                        cont = `~${this.layCells[0].id}=${this.realV}`
-                    }else{
-                        cont = `~${this.layCells[0].id}='${this.realV}'`
-                    }  
+            if(this.id&&this.id.length>0){
+                if(this.layCells){
+                    let type = (this.layCells.length>0)?this.layCells[0].type:12
+                    console.log(type)
+                    if(type && this.layCells){
+                        if(type>=-5 && type<=8){
+                            cont = `~${this.layCells[0].id}=${this.realV}`
+                        }else{
+                            cont = `~${this.layCells[0].id}='${this.realV}'`
+                        }  
+                    }
                 }
+
             }
         }
         return cont;
@@ -215,7 +218,7 @@ export default class LinkRef{
                 this.showV = this.realV
             }
         }else{
-            if(this.layCells.length>1){
+            if(this.layCells&&this.layCells.length>1){
                 if(this.values){
                     if(this.values instanceof Array){
                         if(this.values.length>0){

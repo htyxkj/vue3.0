@@ -178,6 +178,7 @@ export default class BipWork extends Vue{
                 this.$notify.success('审批成功！')
                 this.$emit('checkOK',this.value)
                 this.centerDialogVisible = false
+                this.$bus.$emit('cell_edit')
             }).catch(err=>{
                 this.$notify.error(err)
             }).finally(()=>{

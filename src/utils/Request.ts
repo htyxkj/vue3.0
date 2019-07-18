@@ -106,8 +106,18 @@ export namespace BIPUtil {
      * @param qe 查询条件，有可能有
      */
     getBipInsAidInfo(aid:string,id:number=200,qe?:QueryEntity){
+        if(qe)
+            qe.type =3 
         let param = tool.getBipInsAidParams(aid,id,qe?JSON.stringify(qe):undefined);
         return this.getFromServer(param);
+    }
+
+        /**
+         * 方法编码，消息编号，消息状态，任务编码，任务业务，用户，页数，条数，消息关键字
+         */
+    getTaskMsgData(tskim:any,iid:any,state:any,buno:any,buid:any,tousr:any,page:any,size:any,keyword:any){ 
+        let param = tool.getTaskMsgParams(tskim,iid,state,buno,buid,tousr,page,size,keyword);
+        return this.getFromServer(param)
     }
 
     test(){

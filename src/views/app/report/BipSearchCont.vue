@@ -1,14 +1,14 @@
 <template>
     <el-row class="bip-row">
         <el-form label-position="right" label-width="120px">
-            <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds"/>
+            <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds" :row="0"/>
         </el-form>
     </el-row>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import BipCommEditor from '@/components/editor/BipCommEditor.vue'
+import BipCommEditor from '@/components/editorn/BipCommEditor.vue'
 import {Cell} from '@/classes/pub/coob/Cell';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';

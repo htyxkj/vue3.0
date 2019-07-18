@@ -1,37 +1,6 @@
 <template>
   <div class="login-img">
-    <!-- <div @keyup.enter="login" >
-      <div class="login-form">
-        <el-row>
-          <el-col :span="20" :offset="2">
-            <h2 style="color:#248EE9">系统登陆</h2>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="20" :offset="2" style="color:#555555;margin-bottom: 6px;">
-            用户名
-          </el-col>
-          <el-col :span="20" :offset="2">
-            <el-input id="name" v-model="user.userCode"></el-input>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="20" :offset="2" style="color:#555555;margin-bottom: 6px;">
-            登陆密码
-          </el-col>
-          <el-col :span="20" :offset="2">
-            <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
-          </el-col>
-        </el-row>
-        <el-row> 
-          <el-col :span="20" :offset="2" style="margin-top:10px">
-            <el-button id="login" style="width:100%" type="primary" :disabled="canClick" @click="login" >登录</el-button>
-          </el-col>
-        </el-row>
-      </div>
-    </div>-->
-
-    <div class="login-card">
+       <div class="login-card">
       <div class="login-title">欢迎登陆BIP管理平台</div>
       <div class="login-cont" @keyup.enter="login">
 
@@ -43,18 +12,7 @@
             <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
           </el-form-item>
         </el-form>
-        <!-- <el-row>
-          <el-col :span="4"  >账户:</el-col>
-          <el-col :span="20" >
-            <el-input id="name" v-model="user.userCode"></el-input>
-          </el-col>
-        </el-row> -->
-        <!-- <el-row>
-          <el-col :span="4"  >密码:</el-col>
-          <el-col :span="20" >
-            <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
-          </el-col>
-        </el-row> -->
+
         <el-row>
           <el-col :span="24"  style="margin-top:10px">
             <el-button

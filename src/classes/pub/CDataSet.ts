@@ -2,10 +2,10 @@ import { Cells } from "./coob/Cells";
 import CData from "./CData";
 import { Cell } from "./coob/Cell";
 import { billState } from "./BillState";
-import { GlobalVariable } from "@/utils/ICL";
-import { DateUtils } from "@/utils/DateUtils";
+import { GlobalVariable } from "../../utils/ICL";
+import { DateUtils } from "../../utils/DateUtils";
 import BipScriptProc from "./BipScriptProc";
-import { BIPUtil } from "@/utils/Request";
+import { BIPUtil } from "../../utils/Request";
 import QueryEntity from "../search/QueryEntity";
 import Operation from "../operation/Operation";
 import PageInfo from '../search/PageInfo';
@@ -555,9 +555,13 @@ export default class CDataSet {
   }
 
   setRecordAtIndex(crd: any, _i: number = -1) {
+    this.currRecord = crd
     if (this.cdata._data.length < _i) {
-      this.cdata.addRecord(crd, -1);
-    } else this.cdata._data[_i] = crd;
+      this.index = this.cdata.addRecord(crd, -1);
+    } else {
+        this.cdata._data[_i] = crd;
+        this.index = _i;
+    }
     console.log(crd);
     if (this.ds_sub.length > 0) {
       for (let i = 0; i < this.ds_sub.length; i++) {

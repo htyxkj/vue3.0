@@ -19,7 +19,7 @@
             height="300px"
             :selectRow="cds.currRecord"
             >
-            <!-- <vxe-table-column type="index" width="60"></vxe-table-column> -->
+            <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
             <vxe-table-column
                 header-align="center"
                 align="center"
@@ -31,24 +31,25 @@
                 show-header-overflow
                 :edit-render="{name: 'default'}"
                 show-overflow
+                :disabled="(cel.attr&0x40)>0"
             >
                 <template v-slot:edit="{row,rowIndex}">
-                    <bip-grid-input-lay
+                    <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/>
+                    <!-- <bip-grid-input-lay
                         :cds="cds"
                         :cell="cel"
                         :index="rowIndex"
                         :bill="beBill"
                         :row="row"
-                    ></bip-grid-input-lay>
+                    ></bip-grid-input-lay> -->
                 </template>
                 <template v-slot="{row,rowIndex}">
-                    <bip-grid-cell-info
+                    <bip-grid-info
                         :cds="cds"
                         :cell="cel"
-                        :index="rowIndex"
-                        :bill="beBill"
-                        :row="row"
-                    ></bip-grid-cell-info>
+                        :row="rowIndex"
+                        :bgrid="true"
+                    ></bip-grid-info>
                 </template>
             </vxe-table-column>
         </vxe-table>
@@ -81,13 +82,20 @@
                 show-overflow
             >
                 <template v-slot="{row,rowIndex}">
-                    <bip-grid-cell-info
+                    <!-- <bip-grid-cell-info
                         :cds="cds"
                         :cell="cel"
                         :index="rowIndex"
                         :bill="beBill"
                         :row="row"
-                    ></bip-grid-cell-info>
+                    ></bip-grid-cell-info> -->
+
+                    <bip-grid-info
+                        :cds="cds"
+                        :cell="cel"
+                        :row="rowIndex"
+                        :bgrid="true"
+                    ></bip-grid-info>
                 </template>
             </vxe-table-column>
         </vxe-table>
@@ -117,15 +125,16 @@ import BipLayCells from "@/classes/ui/BipLayCells";
 import { Cell } from "@/classes/pub/coob/Cell";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
-import BipCommEditor from "../editor/BipCommEditor.vue";
-import BipGridInputLay from "../geditor/BipGridInputLay.vue";
-import BipGridCellInfo from "../geditor/BipGridCellInfo.vue";
+import BipCommEditor from "../editorn/BipCommEditor.vue";
+import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
+
+
 import { BIPUtil } from "@/utils/Request"; 
 let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Menu } from "@/classes/Menu";
 @Component({
-    components: { BipCommEditor, BipGridInputLay, BipGridCellInfo }
+    components: { BipCommEditor, BipGridInfo }
 })
 export default class LayCelVexTable extends Vue {
     @Prop() laycell!: BipLayCells;

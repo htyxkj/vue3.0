@@ -4,6 +4,7 @@ import { RootState } from './modules/types'
 // import { profile } from './modules/profile'
 import { login } from './modules/login'
 import { assit } from './modules/assist'
+import { insaid } from './modules/insaid'
 Vue.use(Vuex)
 const store: StoreOptions<RootState> = {
     state: {
@@ -12,7 +13,8 @@ const store: StoreOptions<RootState> = {
     modules: {
     //   profile,
       login,
-      assit
+      assit,
+      insaid
     }
   }
   export default new Vuex.Store<RootState>(store);

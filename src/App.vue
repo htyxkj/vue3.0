@@ -188,6 +188,30 @@ export default class App extends Vue {
                     this.editableTabsValue2 = menu.menuId;
                 }
             }
+        }else if(to.name === 'myTask' ){
+            let currTag = this.editableTabs2.filter(
+            tab => 
+                tab.name == 'myTask'
+            )[0]; 
+            if (!currTag) {
+                let tag = new BipTag('myTask', '我的任务', to.fullPath, true);
+                this.editableTabs2.push(tag);
+                this.editableTabsValue2 = 'myTask';
+            } else {
+                this.editableTabsValue2 = 'myTask';
+            }
+        }else if(to.name === 'myMsg' ){
+            let currTag = this.editableTabs2.filter(
+            tab => 
+                tab.name == 'myMsg'
+            )[0]; 
+            if (!currTag) {
+                let tag = new BipTag('myMsg', '我的消息', to.fullPath, true);
+                this.editableTabs2.push(tag);
+                this.editableTabsValue2 = 'myMsg';
+            } else {
+                this.editableTabsValue2 = 'myMsg';
+            }
         }
     }
  
