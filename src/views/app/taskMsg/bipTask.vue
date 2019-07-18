@@ -9,13 +9,12 @@
               header-align="center" align="center" v-for="(cel,index) in laycell.uiCels"
               :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow >
               <template v-slot="{row,rowIndex}">
-                  <bip-grid-cell-info
+                  <bip-grid-info
                       :cds="cds"
                       :cell="cel"
                       :index="rowIndex"
-                      :bill="false"
-                      :row="row"
-                  ></bip-grid-cell-info>
+                      :row="rowIndex"
+                  ></bip-grid-info>
               </template>
             </vxe-table-column>
         </vxe-table>
@@ -44,10 +43,11 @@ import CDataSet from "@/classes/pub/CDataSet";
 import QueryEntity from "@/classes/search/QueryEntity";
 import BaseApplet from '../applet/BaseApplet.vue'
 import CUnivSelect from '../report/CUnivSelect.vue' 
-
+import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 let tools = BIPUtil.ServApi 
 
 @Component({
+    components:{BipGridInfo}
 })
 export default class bipTask extends Vue {
     @Provide() pbuid: string = "";

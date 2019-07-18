@@ -58,8 +58,8 @@ export default class LayHeader extends Vue {
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     async mounted() {
         if(this.isLogin){ 
+            await this.connectQ(); 
             this.getTaskMsgNum();
-            this.connectQ();
         } 
     }
     loginOut(){
@@ -70,14 +70,14 @@ export default class LayHeader extends Vue {
         this.$emit('loginOut');
     }
     @Watch("isLogin")
-    logined(){
+    async logined(){
         if(this.client){
             this.client.disconnect();
             this.client = null;
         }
         if(this.isLogin){
+            await this.connectQ()  
             this.getTaskMsgNum();
-            this.connectQ() 
         }
     }
     //初始化mqtt客户端，并连接mqtt服务 
@@ -126,7 +126,9 @@ export default class LayHeader extends Vue {
     }
 
     async getTaskMsgNum(){
-        let cc = await tools.getTaskMsgData(200,null,null,null,null,null,null,null,null); 
+        setTimeout(() => {
+            let cc = tools.getTaskMsgData(200,null,null,null,null,null,null,null,null);             
+        }, 500);
     }
     showMenu(){
         this.setIsOpenMenu(true)
