@@ -422,21 +422,3 @@ export default class BipStatisticsDialog extends Vue {
     } 
 }
 </script>
-
-<style lang="scss"> 
-.titlebg {
-    background-color: #f2f2f2;
-    text-align: center;
-    line-height: 30px;
-    margin-bottom: -20px;
-}
-.showchart {
-    border: 1px solid #E4E7ED;
-}
-.charttitle {
-    text-align: center;
-}
-.bi-chart{
-    height: 600px;
-}
-</style>

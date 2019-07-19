@@ -349,22 +349,4 @@ export default class BipCopyInfo extends Vue{
 }
 </script>
 
-<style lang="scss">
-.bip-copy {
-    .el-dialog__body{
-        padding:4px 12px;
-    }
-    .el-dialog__footer{
-        padding-top: 5px;
-        padding-bottom: 10px;
-        text-align: center;
-    }
-    hr{
-        color:#ccc;
-    }
-    .el-table__body tr.current-row > td {
-        background-color: #13a8a1 !important;
-    }
-}
-</style>
 

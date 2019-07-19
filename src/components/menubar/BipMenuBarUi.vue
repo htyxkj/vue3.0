@@ -47,9 +47,3 @@ export default class BipMenuBarUI extends Vue{
 }
 </script>
 
-<style lang="scss">
-    .bip-row.menubar{
-        margin-bottom: 10px !important;
-    }
-</style>
-

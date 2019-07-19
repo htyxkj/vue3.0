@@ -295,18 +295,4 @@ export default class BipFileInfo extends Vue {
 }
 </script>
 
-<style lang="scss">
-.bip-file {
-  .el-dialog__body {
-    padding: 2px 2px;
-  }
-  .el-dialog__footer {
-    padding-top: 5px;
-    padding-bottom: 10px;
-  }
-  hr {
-    color: #ccc;
-  }
-}
-</style>
 

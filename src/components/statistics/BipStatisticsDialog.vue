@@ -102,19 +102,3 @@ export default class BipStatisticsDialog extends Vue {
     }
 }
 </script>
-
-<style lang="scss" scoped>
- 
-.bip-search{
-    .el-dialog__header{
-        background-color: #ffffff !important;
-        // 20a0ff
-    }
-    // .el-dialog__body{
-    //     padding: 10px 10px !important;
-    // }
-}
-.bip-form-item {
-  margin-bottom: 22px !important;
-}
-</style>

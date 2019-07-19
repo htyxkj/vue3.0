@@ -1,11 +1,12 @@
 <template>
-    <el-dialog :title="bipInsAid.title" class="bip-copy" :visible.sync="visible" :append-to-body="true" 
+    <el-dialog :title="bipInsAid.title" class="bip-query" :visible.sync="visible" :append-to-body="true" 
     :close-on-press-escape="true" :close-on-click-modal="false">
-        <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+        <!-- <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;"> -->
+            <bip-search-cont :env="env" />
             <el-form label-position="right" label-width="120px">
                 <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" />
             </el-form>
-        </el-scrollbar>
+        <!-- </el-scrollbar> -->
          <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="open(false)">取 消</el-button>
             <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
@@ -35,7 +36,7 @@ export default class BipQueryInfo extends Vue{
     @Provide() biplay:BipLayout = new BipLayout("")
     @Provide() env: CCliEnv = new CCliEnv();
     @Provide() dsm!:CDataSet
-
+    @Provide() ds_cont!:CDataSet
     @Provide() visible:boolean = false
     mounted(){
         this.cells = this.bipInsAid.cells
@@ -45,8 +46,10 @@ export default class BipQueryInfo extends Vue{
         // console.log(this.bipInsAid.sflag,arrcell)
         this.biplay = new BipLayout(this.bipInsAid.sflag,arrcell);
         this.dsm = new CDataSet(this.cells);
+        this.ds_cont = new CDataSet(this.contCell)
         this.env.dsm = this.dsm
         this.env.cells = arrcell
+        this.env.ds_cont = this.ds_cont
         console.log(this.biplay)
     }
 

@@ -22,6 +22,3 @@ export default class BipStatisticsDialog extends Vue {
     }
 }
 </script>
-
-<style lang="scss"> 
-</style>

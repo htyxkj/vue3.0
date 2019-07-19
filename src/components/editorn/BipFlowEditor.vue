@@ -182,11 +182,6 @@ export default class BipFlowEditor extends Vue{
 }
 </script>
 
-<style>
-.el-input-group__append{
-    padding: 0 8px !important;
-}
-</style>
 
 
 

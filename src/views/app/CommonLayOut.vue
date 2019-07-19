@@ -33,19 +33,6 @@ import { BIPUtil } from "@/utils/Request";
 // import { CommICL } from "@/utils/CommICL";
 // import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import { URIParams } from "@/classes/URIParams";
-// import { BipMenuBtn } from "@/classes/BipMenuBtn";
-// import { Cells } from "@/classes/pub/coob/Cells";
-// import BipLayCells from "@/classes/ui/BipLayCells";
-// import CDataSet from "@/classes/pub/CDataSet";
-// import BipMenuBar from "@/classes/pub/BipMenuBar";
-// import CCliEnv from "@/classes/cenv/CCliEnv";
-// import Operation from "@/classes/operation/Operation";
-// import BaseLayout from "@/components/layout/BaseLayout.vue";
-// import { BipLayout } from "@/classes/ui/BipLayout";
-// import BipSearchDialog from "@/components/searchdialog/BipSearchDialog.vue";
-// import QueryEntity from "@/classes/search/QueryEntity";
-// import DataCache from "@/classes/DataCache";
-// import PageInfo from "@/classes/search/PageInfo";
 
 import BaseApplet from './applet/BaseApplet.vue'
 import CUnivSelect from './report/CUnivSelect.vue'

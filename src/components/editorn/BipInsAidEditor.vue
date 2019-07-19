@@ -367,11 +367,5 @@ export default class BipInsAidEditor extends Vue{
 }
 </script>
 
-<style>
-.el-input-group__append{
-    padding: 0 8px !important;
-}
-</style>
-
 
 

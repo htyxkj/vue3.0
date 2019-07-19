@@ -189,28 +189,3 @@ export default class BipPopView extends Vue{
     
 }
 </script>
-
-<style lang="scss">
-.bipinsaid {
-    .el-dialog__header{
-        background-color: #4db3ff !important;
-        .el-icon-close{
-            color: black;
-        }
-    }
-    .el-dialog__body{
-        padding:2px 2px;
-        
-    }
-    .el-dialog__footer{
-        padding-top: 5px;
-        padding-bottom: 10px;
-    }
-    hr{
-        color:#ccc;
-    }
-    .el-table__body tr.current-row > td {
-        background-color: #13a8a1 !important;
-    }
-}
-</style>

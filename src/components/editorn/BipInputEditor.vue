@@ -66,13 +66,4 @@ export default class BipInputEditor extends Vue{
 }
 </script>
 
-<style>
-.is-required .el-form-item__label{
-    color:rgba(184, 29, 29, 0.8) !important ;   
-}
-
-.el-form-item__label{
-    font-weight:bold;  
-}
-</style>
 

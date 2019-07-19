@@ -38,11 +38,9 @@ import BipMenuBar from "@/classes/pub/BipMenuBar";
 let tools = BIPUtil.ServApi
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
-import BaseLayout from "@/components/layout/BaseLayout.vue";
-import BipSearchCont from './BipSearchCont.vue'
 import QueryEntity from "@/classes/search/QueryEntity";
 @Component({
-    components: { BipMenuBarUi,BaseLayout,BipSearchCont,BipStatisticsDlog,BipStatisticsChart}
+    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
