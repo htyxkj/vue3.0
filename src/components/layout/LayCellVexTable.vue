@@ -309,9 +309,7 @@ export default class LayCelVexTable extends Vue {
 </script>
 
 <style  lang="scss">
-@import 'vxe-table/styles/variable.scss';
-$vxe-table-row-current-background-color: #61b3d3cc !important; 
-@import 'vxe-table/styles/default.scss';
+
 /* .bip-lay {
     width: 100%;
     max-width: 100%;
