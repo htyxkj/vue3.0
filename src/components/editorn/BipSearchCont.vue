@@ -1,7 +1,7 @@
 <template>
     <el-row class="bip-lay">
         <el-form label-position="right" label-width="120px">
-            <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds" :row="0"/>
+            <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds" :row="0" :bgrid="false"/>
         </el-form>
     </el-row>
 </template>
@@ -25,6 +25,9 @@ export default class BipSearchCont extends Vue{
                 console.log(item,item.attr&0x400)
                 return item.attr>0?(item.attr&0x400)==0:true
             })
+            if(this.cells.length<2){
+                this.cds.ccells.widthCell = 2
+            }
         // }
     }
 }

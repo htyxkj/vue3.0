@@ -9,22 +9,23 @@
         <!-- </el-scrollbar> -->
          <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="open(false)">取 消</el-button>
-            <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
-            
-            <el-button size="small" type="primary" @click="find">刷新</el-button>
-            <el-button size="small" type="warning" @click="findSub">选中</el-button>
+            <el-button size="small" type="primary" @click="selectOK">确 定</el-button>            
+            <el-button size="small" type="primary" @click="find">查找</el-button>
+            <!-- <el-button size="small" type="warning" @click="findSub">选中</el-button> -->
         </span>
     </el-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
-import BipInsAidNew from '../../../classes/BipInsAidNew';
-import { Cells } from '../../../classes/pub/coob/Cells';
-import { BipLayout } from '../../../classes/ui/BipLayout';
-import CDataSet from '../../../classes/pub/CDataSet';
-import { Cell } from '../../../classes/pub/coob/Cell';
+import BipInsAidNew from '@/classes/BipInsAidNew';
+import { Cells } from '@/classes/pub/coob/Cells';
+import { BipLayout } from '@/classes/ui/BipLayout';
+import CDataSet from '@/classes/pub/CDataSet';
+import { Cell } from '@/classes/pub/coob/Cell';
 import CCliEnv from "@/classes/cenv/CCliEnv";
-
+import {BIPUtil} from '@/utils/Request';
+import QueryEntity from '../../../classes/search/QueryEntity';
+const tools = BIPUtil.ServApi
 @Component({
 })
 export default class BipQueryInfo extends Vue{
@@ -38,6 +39,7 @@ export default class BipQueryInfo extends Vue{
     @Provide() dsm!:CDataSet
     @Provide() ds_cont!:CDataSet
     @Provide() visible:boolean = false
+    @Provide() qe:QueryEntity = new QueryEntity("","");
     mounted(){
         this.cells = this.bipInsAid.cells
         this.contCell = this.bipInsAid.contCells
@@ -47,6 +49,8 @@ export default class BipQueryInfo extends Vue{
         this.biplay = new BipLayout(this.bipInsAid.sflag,arrcell);
         this.dsm = new CDataSet(this.cells);
         this.ds_cont = new CDataSet(this.contCell)
+
+
         this.env.dsm = this.dsm
         this.env.cells = arrcell
         this.env.ds_cont = this.ds_cont
@@ -57,18 +61,34 @@ export default class BipQueryInfo extends Vue{
         this.visible = vis
     }
 
-    handleCurrentChange(){
-
+    handleCurrentChange(curr:number){
+        this.qe.page.currPage = curr
+        this.find()
     }
 
-    handleSizeChange(){
-
+    handleSizeChange(size:number){
+        this.qe.page.pageSize = size
+        this.find()
     }
 
     selectOK(){}
 
-    find(){}
-
-    findSub(){}
+    find(){
+        let crdc = this.ds_cont.currRecord;
+        this.qe.cont = JSON.stringify(crdc)
+        tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
+            if(res.data.id==0){
+                let vr = res.data.data.data
+                console.log(vr)
+                if(vr&&vr.values){
+                    this.dsm.setValues(vr.values)
+                    this.dsm.page = vr.page
+                }
+            }
+            console.log(res)
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
 }
 </script>
