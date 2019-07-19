@@ -2,7 +2,7 @@
 <div class="bip-border-lay">
     <template v-if="btop">
         <template v-if="!laycfg[0].bcells">
-            <bip-comm-lay :layout="laycfg[0].comp" :env="env"></bip-comm-lay >
+            <base-layout :layout="laycfg[0].comp" :env="env"></base-layout >
         </template>
         <template v-else>
             <el-row class="bip-row" :gutter="10">
@@ -15,7 +15,7 @@
             <template v-if="bleft">
                 <el-col :span="wleft">
                     <template v-if="!laycfg[3].bcells">
-                        <bip-comm-lay :layout="laycfg[3].comp" :env="env"></bip-comm-lay >
+                        <base-layout :layout="laycfg[3].comp" :env="env"></base-layout >
                     </template>
                     <template v-else>
                         <lay-cell :laycell="laycfg[3].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
@@ -24,7 +24,7 @@
             </template>
             <template v-if="bcenter">
                 <template v-if="!laycfg[wcenterIndex].bcells">
-                    <bip-comm-lay :layout="laycfg[wcenterIndex].comp" :env="env"></bip-comm-lay >
+                    <base-layout :layout="laycfg[wcenterIndex].comp" :env="env"></base-layout >
                 </template>
                 <template v-else>
                     <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell></el-col>
@@ -33,7 +33,7 @@
             <template v-if="bright">
                 <el-col :span="wright">
                     <template v-if="!laycfg[4].bcells">
-                        <bip-comm-lay :layout="laycfg[4].comp" :env="env"></bip-comm-lay >
+                        <base-layout :layout="laycfg[4].comp" :env="env"></base-layout >
                     </template>
                     <template v-else>
                         <lay-cell :laycell="laycfg[4].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
@@ -61,10 +61,9 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipLayConf from '@/classes/ui/BipLayConf';
 import LayCell from './LayCell.vue'
-import BipCommLay from './BipCommLay.vue'
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
-    components:{LayCell,BipCommLay}
+    components:{LayCell}
 })
 export default class BorderLayout extends Vue{
     @Prop() laycfg!:Array<BipLayConf>

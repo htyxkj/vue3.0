@@ -2,7 +2,7 @@
 <el-row v-if="laycfg" :gutter="10">
     <el-col :span="lspan" v-if="laycfg.length>1" >
         <template v-if="!cfgL.bcells">
-            <bip-comm-lay :layout="cfgL.comp" :env="env"></bip-comm-lay>
+            <base-layout :layout="cfgL.comp" :env="env"></base-layout>
         </template>
         <template v-else>
             <el-row class="bip-row">
@@ -12,7 +12,7 @@
     </el-col>
     <el-col :span="rspan" v-if="laycfg.length>1">
         <template v-if="!cfgR.bcells">
-            <bip-comm-lay :layout="cfgR.comp" :env="env"></bip-comm-lay>
+            <base-layout :layout="cfgR.comp" :env="env"></base-layout>
         </template>
         <template v-else>
             <el-row class="bip-row">
@@ -28,10 +28,9 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipLayConf from '@/classes/ui/BipLayConf';
 import LayCell from './LayCell.vue'
-import BipCommLay from './BipCommLay.vue'
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
-     components:{LayCell,BipCommLay}
+     components:{LayCell}
 })
 export default class BipHorizontalLay extends Vue{
     @Prop() laycfg!:Array<BipLayConf>

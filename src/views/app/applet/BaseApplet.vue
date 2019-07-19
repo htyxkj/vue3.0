@@ -34,7 +34,7 @@ import BipMenuBar from "@/classes/pub/BipMenuBar";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CeaPars from "@/classes/cenv/CeaPars";
 import Operation from "@/classes/operation/Operation";
-import BaseLayout from "@/components/layout/BaseLayout.vue";
+// import BaseLayout from "@/components/layout/BaseLayout.vue";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import BipSearchDialog from "@/components/searchdialog/BipSearchDialog.vue";
 import QueryEntity from "@/classes/search/QueryEntity";
@@ -45,7 +45,7 @@ import { stringify } from 'querystring';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
-    components: { BipMenuBarUi, BaseLayout, BipSearchDialog,BipWork }
+    components: { BipMenuBarUi,  BipSearchDialog,BipWork }
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;

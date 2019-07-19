@@ -4,7 +4,7 @@ import App from "./App.vue";
 import router from "./router";
 import "./plugins/element.js";
 import "./plugins/vxetable.js";
-// import "./plugins/eventBus.js";
+// import layout from  "@/plugins/mylayout.js";
 import './assets/icon/iconfont.css'
 import "./scss/element-variables.scss";
 import './utils/Request'
@@ -12,8 +12,10 @@ import store from './store'
 import 'vxe-table/lib/index.css'
 
 import EventBus from 'vue-bus-ts';
-
+import BaseLayout from '@/components/layout/BaseLayout.vue';
+Vue.component('BaseLayout',BaseLayout);
 Vue.use(EventBus);
+
 var bus = new EventBus.Bus();
 
 

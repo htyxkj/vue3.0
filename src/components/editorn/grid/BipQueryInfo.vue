@@ -3,7 +3,7 @@
     :close-on-press-escape="true" :close-on-click-modal="false">
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
             <el-form label-position="right" label-width="120px">
-                <bip-comm-lay v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" />
+                <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" />
             </el-form>
         </el-scrollbar>
          <span slot="footer" class="dialog-footer">
@@ -24,10 +24,7 @@ import CDataSet from '../../../classes/pub/CDataSet';
 import { Cell } from '../../../classes/pub/coob/Cell';
 import CCliEnv from "@/classes/cenv/CCliEnv";
 
-import BipCommLay from '@/components/layout/BipCommLay.vue'
-
 @Component({
-    components:{BipCommLay}
 })
 export default class BipQueryInfo extends Vue{
     @Prop() cds!:CDataSet

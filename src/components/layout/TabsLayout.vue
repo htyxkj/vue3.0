@@ -4,7 +4,7 @@
             <!-- {{cfg.name}} -->
             <template v-if="!cfg.bcells">
                 <!-- {{111}} -->
-                <bip-comm-lay :layout="cfg.comp" :env="env"></bip-comm-lay >
+                <base-layout :layout="cfg.comp" :env="env"></base-layout >
             </template>
             <template v-else>
                 <!-- {{222}} -->
@@ -20,10 +20,9 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipLayConf from '@/classes/ui/BipLayConf';
 import LayCell from './LayCell.vue'
-import BipCommLay from './BipCommLay.vue'
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
-    components:{LayCell,BipCommLay}
+    components:{LayCell}
 })
 export default class TabsLayout extends Vue{
     @Prop() laycfg!:Array<BipLayConf>
