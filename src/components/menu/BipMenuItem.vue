@@ -15,7 +15,7 @@
                 </template>
 
                 <template v-for="child in item.childMenu">
-                    <bip-menu-item1 v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item1>
+                    <bip-menu-item v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
 
                     <el-menu-item v-else :key="child.menuId" :index="child.menuId" :route="'layout?'+child.command" @click="closeMenu">
                         <i class="el-icon-location"></i>
@@ -35,14 +35,10 @@
 <script lang="ts">
 import { Component, Vue,Provide,Prop} from "vue-property-decorator";
 import { Menu } from '@/classes/Menu';
-import BipMenuItem1 from "./BipMenuItem1.vue";
 import { LoginState } from '../../store/modules/login/types';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 
 @Component({
-    components: {
-        BipMenuItem1
-    }
 })
 export default class BipMenuItem extends Vue{
     @Provide() name:string="BipMenuItem"
