@@ -6,7 +6,7 @@
     <!-- <template v-if="init"> -->
         <el-row class="bip-row">
             <el-form label-position="right" label-width="120px">
-                <bip-comm-editor1  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cd_cont" :row="cds.index" :bgrid="false"></bip-comm-editor1>
+                <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cd_cont" :row="cds.index" :bgrid="false"></bip-comm-editor>
             </el-form>
         </el-row>
         <el-row>
@@ -71,13 +71,12 @@ import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
-import BipCommEditor1 from '../BipCommEditor1.vue'
 import BipGridInfo from '../grid/BipGridInfo.vue'
 import QueryEntity from '@/classes/search/QueryEntity';
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 @Component({
-    components:{BipCommEditor1,BipGridInfo}
+    components:{BipGridInfo}
 })
 export default class BipCopyInfo extends Vue{
     @Prop() opera!:Operation;

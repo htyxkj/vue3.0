@@ -14,8 +14,10 @@ import 'vxe-table/lib/index.css'
 import EventBus from 'vue-bus-ts';
 import BaseLayout from '@/components/layout/BaseLayout.vue';
 import BipMenuItem from '@/components/menu/BipMenuItem.vue';
+import BipCommEditor from '@/components/editorn/BipCommEditor.vue'
 Vue.component('BaseLayout',BaseLayout);
 Vue.component('BipMenuItem',BipMenuItem);
+Vue.component('BipCommEditor',BipCommEditor);
 Vue.use(EventBus);
 
 var bus = new EventBus.Bus();

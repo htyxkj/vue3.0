@@ -125,7 +125,6 @@ import BipLayCells from "@/classes/ui/BipLayCells";
 import { Cell } from "@/classes/pub/coob/Cell";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
-import BipCommEditor from "../editorn/BipCommEditor.vue";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 
 
@@ -134,7 +133,7 @@ let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Menu } from "@/classes/Menu";
 @Component({
-    components: { BipCommEditor, BipGridInfo }
+    components: {  BipGridInfo }
 })
 export default class LayCelVexTable extends Vue {
     @Prop() laycell!: BipLayCells;

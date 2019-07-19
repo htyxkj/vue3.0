@@ -14,10 +14,9 @@ import BipLayCells from '@/classes/ui/BipLayCells';
 import {Cell} from '@/classes/pub/coob/Cell';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
-import BipCommEditor from '../editorn/BipCommEditor.vue'
 import LayCellVexTable from './LayCellVexTable.vue'
 @Component({
-    components:{BipCommEditor,LayCellVexTable}
+    components:{LayCellVexTable}
 })
 export default class LayCell extends Vue{
     @Prop() laycell!:BipLayCells

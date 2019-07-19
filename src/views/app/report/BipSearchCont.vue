@@ -8,12 +8,10 @@
 
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import BipCommEditor from '@/components/editorn/BipCommEditor.vue'
 import {Cell} from '@/classes/pub/coob/Cell';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
 @Component({
-    components: { BipCommEditor}
 })
 export default class BipSearchCont extends Vue{
     @Provide() cells:Array<Cell> = new Array<Cell>()
