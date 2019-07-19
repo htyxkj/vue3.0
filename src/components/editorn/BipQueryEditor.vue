@@ -12,6 +12,7 @@
                  <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
              </el-input>
         </template>
+        <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid"></bip-query-info>
     </el-col>
 </template>
 </template>
@@ -21,8 +22,10 @@ import CDataSet from '../../classes/pub/CDataSet';
 import { Cell } from '../../classes/pub/coob/Cell';
 import BipInsAidNew from '../../classes/BipInsAidNew';
 import CommATTR from '../../classes/CommAttr';
-
-@Component({})
+import BipQueryInfo from './grid/BipQueryInfo.vue';
+@Component({
+    components:{BipQueryInfo}
+})
 export default class BipQueryEditor extends Vue{
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
@@ -50,7 +53,17 @@ export default class BipQueryEditor extends Vue{
     }
 
     iconClick(){
-        
+        if(this.bipInsAid){
+            if (!((this.cell.attr & 0x40) > 0)) {
+                // this.dia = true;
+                setTimeout(() => {
+                    let dia: any = this.$refs.queryinfo;
+                    if (dia) dia.open(true);
+                }, 100);
+            }
+        }else{
+            this.$notify.warning('没有QueryEditor：'+this.cell.editName)
+        }
     }
 
     /**

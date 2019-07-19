@@ -1,0 +1,74 @@
+<template>
+    <el-dialog :title="bipInsAid.title" class="bip-copy" :visible.sync="visible" :append-to-body="true" 
+    :close-on-press-escape="true" :close-on-click-modal="false">
+        <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+            <el-form label-position="right" label-width="120px">
+                <bip-comm-lay v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" />
+            </el-form>
+        </el-scrollbar>
+         <span slot="footer" class="dialog-footer">
+            <el-button size="small" @click="open(false)">取 消</el-button>
+            <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
+            
+            <el-button size="small" type="primary" @click="find">刷新</el-button>
+            <el-button size="small" type="warning" @click="findSub">选中</el-button>
+        </span>
+    </el-dialog>
+</template>
+<script lang="ts">
+import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
+import BipInsAidNew from '../../../classes/BipInsAidNew';
+import { Cells } from '../../../classes/pub/coob/Cells';
+import { BipLayout } from '../../../classes/ui/BipLayout';
+import CDataSet from '../../../classes/pub/CDataSet';
+import { Cell } from '../../../classes/pub/coob/Cell';
+import CCliEnv from "@/classes/cenv/CCliEnv";
+
+import BipCommLay from '@/components/layout/BipCommLay.vue'
+
+@Component({
+    components:{BipCommLay}
+})
+export default class BipQueryInfo extends Vue{
+    @Prop() cds!:CDataSet
+    @Prop() cell!:Cell
+    @Prop() bipInsAid!:BipInsAidNew
+    @Provide() contCell!:Cells
+    @Provide() cells!:Cells
+    @Provide() biplay:BipLayout = new BipLayout("")
+    @Provide() env: CCliEnv = new CCliEnv();
+    @Provide() dsm!:CDataSet
+
+    @Provide() visible:boolean = false
+    mounted(){
+        this.cells = this.bipInsAid.cells
+        this.contCell = this.bipInsAid.contCells
+        let arrcell = []
+        arrcell[0] = this.cells
+        // console.log(this.bipInsAid.sflag,arrcell)
+        this.biplay = new BipLayout(this.bipInsAid.sflag,arrcell);
+        this.dsm = new CDataSet(this.cells);
+        this.env.dsm = this.dsm
+        this.env.cells = arrcell
+        console.log(this.biplay)
+    }
+
+    open(vis:boolean){
+        this.visible = vis
+    }
+
+    handleCurrentChange(){
+
+    }
+
+    handleSizeChange(){
+
+    }
+
+    selectOK(){}
+
+    find(){}
+
+    findSub(){}
+}
+</script>

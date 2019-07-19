@@ -4,7 +4,7 @@
             <bip-list-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-list-ref>
         </template>
         <template v-else-if="editorType == 9 && bipInsAid && (bipInsAid.bType == 'CSelectEditor' || bipInsAid.bType == 'CDynaEditor'|| bipInsAid.bType == 'CGDicEditor')">
-            <bip-aid-ref :refLink="bipInsAid" :cell="cell" :model="model" />
+            <bip-aid-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" />
         </template>
         <template v-else>
             <bip-grid-show :cell="cell" :model="model" />

@@ -2,13 +2,30 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-date-picker size="small" style="width:100%"
-                v-model="model1"
-                :type="dateType"
-                :format="dateFormat"
-                :value-format="dateFormat"
-                placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
-                </el-date-picker>
+                <template v-if="condition"><!-- 报表条件 -->
+                    <el-date-picker size="small" style="width:100%"
+                        v-model="model1"
+                        type="datetimerange"
+                        :picker-options="pickerOptions"
+                        range-separator="~"
+                        :format="dateFormat"
+                        :value-format="dateFormat"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                        </el-date-picker>
+                </template>
+                <template v-else>
+                    <el-date-picker size="small" style="width:100%"
+                        v-model="model1"
+                        :type="dateType"
+                        :format="dateFormat"
+                        :value-format="dateFormat"
+                        placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                    </el-date-picker>
+                </template>
+                
+
             </el-form-item>
         </template>
         <template v-else>
@@ -44,9 +61,11 @@ export default class BipDateEditor extends Vue{
     @Provide() dateType="date"
     @Provide() dateFormat="yyyy-MM-dd"
     @Provide() methodName:string = ''
-
+    @Provide() condition:boolean = false;
     @Provide() span:number = 6
+    @Provide() pickerOptions:any = null;
     mounted(){
+        this.condition = (this.cds.ccells.attr&0x80)>0
         this.model1 = this.model
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
@@ -63,9 +82,43 @@ export default class BipDateEditor extends Vue{
             }
             this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         // }
+        this.pickerOptions = {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker:any) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker:any) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker:any) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        }
     }
 
-    dataChange(value:string|number){
+    dataChange(value:string|number|Array<any>){
+        let vl:any = "";
+        if(value instanceof Array){
+            vl = value[0]+"~"+value[1];
+        }else{
+            vl = value;
+        }
+        value = vl;
         if(this.cds&&this.cell){
             console.log(value)
             if(this.cds.currCanEdit()){

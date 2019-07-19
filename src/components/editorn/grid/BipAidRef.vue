@@ -17,7 +17,7 @@ let ICL = CommICL
 @Component({})
 export default class BipAidRef extends Vue{
     @Prop() cell!:Cell
-    @Prop() refLink!:BipInsAidNew //参照对象
+    @Prop() bipInsAid!:BipInsAidNew //参照对象
     @Prop() model!:string
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
@@ -32,8 +32,9 @@ export default class BipAidRef extends Vue{
     @Provide() attr:CommAttr = new CommAttr()
 
     @Provide() model1:string = ''
-
+    @Provide() refLink!:BipInsAidNew
     mounted(){
+        this.refLink = Object.assign({},this.bipInsAid)
         this.disabled = (this.cell.attr & this.attr.READ) > 0;
         this.multiple = (this.cell.attr & this.attr.MULTIPLE) > 0;
         this.bfmt = (this.cell.attr & this.attr.FMT) > 0;
