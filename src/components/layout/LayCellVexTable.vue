@@ -9,6 +9,7 @@
             highlight-hover-row
             show-all-overflow="tooltip"
             show-header-all-overflow
+            highlight-current-row
             class="vxe-table-element"
             :data.sync="cds.cdata._data"
             :optimized="true"
@@ -63,11 +64,13 @@
             highlight-hover-row
             show-all-overflow="tooltip"
             show-header-all-overflow
+            highlight-current-row
             class="vxe-table-element"
             :data.sync="cds.cdata._data"
             :optimized="true"
             height="300px"
             @cell-dblclick="openrefs"
+            @cell-click="table_cell_click"
             >
             <vxe-table-column type="index" width="60"></vxe-table-column>
             <vxe-table-column
@@ -297,10 +300,18 @@ export default class LayCelVexTable extends Vue {
             return null;
         }
     }
+
+    table_cell_click(data:any,event:any){ 
+        let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex};
+        this.$bus.$emit("row_click",value);
+    }
 }
 </script>
 
-<style>
+<style  lang="scss">
+@import 'vxe-table/styles/variable.scss';
+$vxe-table-row-current-background-color: #61b3d3cc !important; 
+@import 'vxe-table/styles/default.scss';
 /* .bip-lay {
     width: 100%;
     max-width: 100%;

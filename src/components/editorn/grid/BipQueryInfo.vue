@@ -54,7 +54,8 @@ export default class BipQueryInfo extends Vue{
         this.env.dsm = this.dsm
         this.env.cells = arrcell
         this.env.ds_cont = this.ds_cont
-        console.log(this.biplay)
+        console.log(this.biplay) 
+        this.$bus.$on("row_click",this.row_click) 
     }
 
     open(vis:boolean){
@@ -89,6 +90,38 @@ export default class BipQueryInfo extends Vue{
         }).catch(err=>{
             console.log(err)
         })
+    }
+
+    row_click(data:any){
+        console.log(data.row)
+        console.log(data.rowIndex)
+        console.log(data.columnIndex)
+        this.dsm.currRecord = data.row;
+        console.log(this.dsm)
+        if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
+            let pkindex = this.dsm.ccells.pkindex;
+            let crdc = "";
+            for(var i=0;i<pkindex.length;i++){
+                let cel = this.dsm.ccells.cels[pkindex[i]];
+                if(i == pkindex.length -1)
+                    crdc += cel.id + " = '"+data.row[cel.id]+"' "
+                else
+                    crdc += cel.id + " = '"+data.row[cel.id]+"' and  "
+            } 
+            this.qe.cont = crdc
+            this.qe.oprid = 14;
+            this.qe.tcell = this.dsm.ds_sub[0].ccells.obj_id;
+            tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
+                if(res.data.id==0){
+                    let vr = res.data.data.data
+                    console.log(vr) 
+                    this.dsm.ds_sub[0].setValues(vr.values)
+                }
+                console.log(res)
+            }).catch(err=>{
+                console.log(err)
+            })
+        }
     }
 }
 </script>
