@@ -127,7 +127,6 @@ export default class CDataSet {
 
   removeIndex(_i: number) {
     this.cdata.removeIndex(_i);
-    this._total -= 1;
   }
 
   /**

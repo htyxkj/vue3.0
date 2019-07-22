@@ -1,19 +1,21 @@
-import { __decorate } from 'tslib';
+import CRecord from './CRecord';
+import PageInfo from '../search/PageInfo';
 
 export default class CData{
-    _data:object[]//数据集合
-    private _rmdata:object[]//删除的数据
-    private obj_id:string//对象ID
+    _data:Array<CRecord> //数据集合
+    _rmdata:Array<CRecord>//删除的数据
+    obj_id:string//对象ID
     index:number = -1
     attr!:number;
     _bnull:boolean = true;
+    page:PageInfo = new PageInfo()
     constructor(_obj_id:string){
-        this._data = []
-        this._rmdata = []
+        this._data = new Array<CRecord>()
+        this._rmdata = new Array<CRecord>()
         this.obj_id = _obj_id
     }
 
-    public addRecord(crd:Object,idx:number):number{
+    public addRecord(crd:CRecord,idx:number):number{
         let imx = this._data.length
         if(idx<0||idx>=imx){
             this._data.push(crd)
@@ -34,11 +36,11 @@ export default class CData{
         this.attr &= ~(0x20000|0x80000)
     }
 
-    getValues():object[]{
+    getValues():Array<CRecord>{
         return this._data
     }
 
-    getDataAtIndex(_i:number):any{
+    getDataAtIndex(_i:number):CRecord{
         return this._data[_i];
     }
 

@@ -80,7 +80,7 @@ export default class BipQueryInfo extends Vue{
         tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
             if(res.data.id==0){
                 let vr = res.data.data.data
-                console.log(vr)
+                console.log(vr,'99990')
                 if(vr&&vr.values){
                     this.dsm.setValues(vr.values)
                     this.dsm.page = vr.page
