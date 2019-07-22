@@ -135,7 +135,7 @@ export default class BipInsAidEditor extends Vue{
     }
 
     selectOK(val:any,close:boolean = false){
-        console.log("selectOk")
+        // console.log("selectOk")
         let record: any = this.cds.getRecordAtIndex(this.row<0?0:this.row);
         this.cds.currRecord = record;
         this.cds.setStateOrAnd(ICL.R_EDITED);
@@ -201,7 +201,7 @@ export default class BipInsAidEditor extends Vue{
         if(!this.bcode){
             if(this.refLink.values&&this.refLink.values.length>0){
                 let vv = this.refLink.values[0];
-                console.log(this.refLink)
+                // console.log(this.refLink)
                 if(vv){
                     this.refLink.showV = vv[this.refLink.cells.cels[1].id]||this.refLink.realV
                 }else{
@@ -222,21 +222,21 @@ export default class BipInsAidEditor extends Vue{
 
     getRefValues(){
         if(this.refLink&&this.refLink.id.length>0&&this.model1.length>0){
-            console.log(this.refLink,'fdsfdsfdsfd')
+            // console.log(this.refLink,'fdsfdsfdsfd')
              this.refLink.values = []
             if(this.model&&this.model.length>0){
                 let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
                 let key = ICL.AID_KEY+this.linkName+"_"+this.model
-                console.log('获取辅助值',key)
+                // console.log('获取辅助值',key)
                 let vrs = this.aidValues.get(key);
-                console.log('获取辅助值',key,vrs)
+                // console.log('获取辅助值',key,vrs)
                 if(!vrs){
-                    console.log('缓存没有',key,vrs)
+                    // console.log('缓存没有',key,vrs)
                     let str = window.sessionStorage.getItem(key)
-                    console.log('session没有',key,vrs)
+                    // console.log('session没有',key,vrs)
                     if(!str){
                         let vvs = {id:this.linkName,key:key,cont:cont}
-                        console.log('服务器获取',vvs)
+                        // console.log('服务器获取',vvs)
                         this.fetchInsDataByCont(vvs)
                     }else{
                         vrs = JSON.parse(str);
@@ -291,7 +291,7 @@ export default class BipInsAidEditor extends Vue{
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
                     let vars = {id:bcl?300:200,aid:editName}
-                    console.log(vars)
+                    // console.log(vars)
                     await this.fetchInsAid(vars);
             }else{
                 this.refLink = JSON.parse(vv)
@@ -316,17 +316,17 @@ export default class BipInsAidEditor extends Vue{
 
     @Watch('model')
     valueChanges(){
-        console.log(this.model,'model change')
+        // console.log(this.model,'model change')
         this.refLink.realV = this.model
         if(this.model1 === this.model){
-            console.log('相等',this.model,this.model1,this.cell.id)
+            // console.log('相等',this.model,this.model1,this.cell.id)
             this.refLink.realV = this.model
             this.refLink.showV = this.model
         }else{
             this.refLink.realV = this.model
             this.refLink.showV = this.model
             this.model1 = this.model
-            console.log('不相等',this.model,this.model1,this.cell.id)
+            // console.log('不相等',this.model,this.model1,this.cell.id)
         }
         if(this.model.length>0)
             this.getRefValues()
@@ -343,7 +343,7 @@ export default class BipInsAidEditor extends Vue{
         if(this.refLink&&this.refLink.id.length>0&&this.model1){
             let key = ICL.AID_KEY+this.linkName+"_"+this.model
             let vvs = this.aidValues.get(key);
-            console.log('获取到值：',key,vvs);
+            // console.log('获取到值：',key,vvs);
             if(vvs){
                 this.refLink.realV = this.model
                 this.refLink.values = []
