@@ -133,10 +133,6 @@ export default class BipGridInfo extends Vue{
         }   
     }
 
-    @Watch('cds')
-    cdataChange(){
-        this.dataloadchange();
-    }
 }
 </script>
 

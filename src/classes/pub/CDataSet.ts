@@ -595,9 +595,21 @@ export default class CDataSet {
   }
 
   setCData(data : CData){
+    this.clear();
     this.cdata = data;// Object.assign({},data);
     this.page = data.page;
     this.currRecord = data.getDataAtIndex(0);
+    if(this.currRecord.subs.length>0){
+            this.ds_sub.forEach(cd0=>{
+            let _i = this.currRecord.subs.findIndex(item=>{
+                return item.obj_id = cd0.cdata.obj_id
+            })
+            if(_i>-1){
+                cd0.currRecord = cd0.getRecordAtIndex(0)
+            }
+        })
+    }
+
   }
 
   setState(state: number) {
@@ -632,6 +644,7 @@ export default class CDataSet {
 
   clear() {
     this.cdata.clearValues();
+    this.currRecord = new CRecord()
     console.log(this.cdata.data.length);
     this.index = -1;
     this._total = 0;

@@ -140,26 +140,24 @@ import { Menu } from "@/classes/Menu";
 })
 export default class LayCelVexTable extends Vue {
     @Prop() laycell!: BipLayCells;
-    @Prop() env!: CCliEnv;
+    @Prop() cds!: CDataSet;
     @Provide() info: string = "infos";
     @Provide() clearable: boolean = true;
-    @Provide() cds: CDataSet = new CDataSet(null);
+    // @Provide() cds: CDataSet = new CDataSet(null);
     @Provide() widths: Array<string> = new Array<string>();
-    @Provide() beBill: boolean = true;
+    @Prop() beBill!: boolean;
 
     @Provide() id: string = "";
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
 
     created() {
         this.initWidth();
-        if (this.env) {
-            this.cds = this.env.getDataSet(this.laycell.obj_id);
-            this.beBill = this.env.uriParams.beBill;
-            if(this.cds.x_pk>-1)
-                this.id = this.laycell.cells.cels[this.cds.x_pk].id;
-            if (!this.id) {
-                this.id = this.laycell.cells.cels[0].id;
-            }
+        // this.cds = this.env.getDataSet(this.laycell.obj_id);
+        // this.beBill = this.env.uriParams.beBill;
+        if(this.cds.x_pk>-1)
+            this.id = this.laycell.cells.cels[this.cds.x_pk].id;
+        if (!this.id) {
+            this.id = this.laycell.cells.cels[0].id;
         }
     }
 
@@ -304,6 +302,11 @@ export default class LayCelVexTable extends Vue {
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         this.$bus.$emit("row_click",value);
     }
+
+    // @Watch('cds.data',{deep:true})
+    // cdsChange(){
+    //     console.log('cds data change')
+    // }
 }
 </script>
 
