@@ -594,6 +594,12 @@ export default class CDataSet {
     });
   }
 
+  setCData(data : CData){
+    this.cdata = data;// Object.assign({},data);
+    this.page = data.page;
+    // this.currRecord = data.getDataAtIndex(0);
+  }
+
   setState(state: number) {
     this.currRecord.c_state = state;
     if(this.ds_sub.length>0){

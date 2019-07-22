@@ -40,6 +40,7 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../../classes/pub/CRecord';
+import CData from '../../../classes/pub/CData';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart}
 })
@@ -119,11 +120,13 @@ export default class CUnivSelect extends Vue {
     initData(){
         if(this.uriParams && this.uriParams.pbds){
             let pbds:any = this.uriParams.pbds;
-            let ptran = pbds.ptran.substring(1,pbds.ptran.length-1);
-            ptran = ptran.split("&")
-            for(var i=0 ; i< ptran.length;i++){
-                let cc = ptran[i].split("=");
-                this.dsm_cont.currRecord.data[cc[0]] = cc[1];
+            if(pbds.ptran){
+                let ptran = pbds.ptran.substring(1,pbds.ptran.length-1);
+                ptran = ptran.split("&")
+                for(var i=0 ; i< ptran.length;i++){
+                    let cc = ptran[i].split("=");
+                    this.dsm_cont.currRecord.data[cc[0]] = cc[1];
+                }
             }
             this.find();
         }
@@ -163,12 +166,15 @@ export default class CUnivSelect extends Vue {
             this.fullscreenLoading = false
             let data = res.data;
             if(data.id === 0){
-                this.qe = data.data.data
-                console.log(this.qe,this.qe.values)
-                let page = this.qe.page;
-                this.dsm.page = page;
-                this.dsm.setValues(this.qe.values,true)
-                // this.dsm._total = page.total;
+                let cd : CData = new CData('');
+
+                let retdata = data.data.data
+                cd.obj_id = retdata.obj_id;
+                cd._data = retdata.data;
+                cd.page = retdata.page; 
+                
+                let page = retdata.page; 
+                this.dsm.setCData(cd)
                 this.dsm.index = (page.currPage - 1) * page.pageSize;
             }else{
                 this.$notify.error(data)
