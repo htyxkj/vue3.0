@@ -334,10 +334,15 @@ export default class BaseApplet extends Vue{
         this.dataCache = []
         let vv = await this.findDataFromServe(this.qe);
         if (vv != null) { 
-            this.qe.values = vv.data;
+            // this.qe.values = vv.data;
             this.qe.page = vv.page;
+            console.log('服务器获取数据',vv)
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
+            this.$bus.$emit('dataloadchange')
+        }else{
+            this.$notify.info("没有查询到数据");
+            this.$bus.$emit('dataloadchange')
         }
     }
 
@@ -345,25 +350,15 @@ export default class BaseApplet extends Vue{
      * @description 数据从新加载
      * @param vv 查询返回的结果集
      */
-    dataLoaded(vv: QueryEntity,cd :CData) {
+    dataLoaded(vv: QueryEntity,cd:CData) {
         if (vv.oprid == 13) {
-            let rec: any = vv.values[0];
-            if (cd) {
-                let page = this.qe.page;
+                let page = cd.page;
                 this.dsm.setCData(cd);
-                // this.dsm.setValues(vv.values, true);
-                // this.dsm._total = page.total;
-                // this.dsm.index = page.index;
-                // this.dsm.currRecord = rec;
-                // this.dsm.page = Object.assign({},page);
                 this.setSubData()
                 let dc = new DataCache(page.currPage, cd);
                 console.log(dc, "缓存数据");
                 this.dataCache.push(dc);
-                // this.setListMenuName()
-            } else {
-                this.$notify.info("没有查询到数据");
-            }
+
         } else if (vv.oprid == 15) {
             let rec: any = vv.values[0]; //后台返回的数据当前行
             let page = this.qe.page;
@@ -419,14 +414,28 @@ export default class BaseApplet extends Vue{
         let data = res.data;
         this.fullscreenLoading = false;
         if (data.id == 0) {
-            let vv:CData = eval(JSON.stringify(data.data.data));
-            let cd :CData = new CData('');
-            cd.data = vv.data;
-            cd.page = vv.page
+            let vv:CData = data.data.data;
+            let cd :CData = this.initCData(vv)
             return cd;
         } else {
             return null;
         }
+    }
+
+    initCData(vv:CData){
+        let cd :CData = new CData('');
+        cd.data = vv.data
+        cd.page = vv.page
+        cd.obj_id = vv.obj_id
+        vv.data.forEach((item,index)=>{
+            if(item.subs.length>0){
+                item.subs.forEach((icd,index)=>{
+                    let cc:CData = this.initCData(icd)
+                    item.subs[index] = cc;
+                })
+            }
+        })
+        return cd;
     }
 //#endregion
 //#region 找到按钮的下标，设置list按钮名称
@@ -445,7 +454,7 @@ export default class BaseApplet extends Vue{
             let mm = this.mbs.menuList[this.listIndex];
             let page = this.dsm.page;
             let currIndex = (page.currPage-1)*page.pageSize+page.index;
-            mm.name = currIndex + 1 + "/" + this.dsm._total;
+            mm.name = currIndex + 1 + "/" + page.total;
         }
 
     }
@@ -613,6 +622,7 @@ export default class BaseApplet extends Vue{
         console.log(this.qe)
         this.qe.cont = JSON.stringify(this.dsm.cont);
          let vv = await this.findDataFromServe(this.qe);
+         console.log(vv,'服务器返回数据')
         if (vv != null) {
             this.qe.values = vv.data;
             this.qe.page = vv.page;

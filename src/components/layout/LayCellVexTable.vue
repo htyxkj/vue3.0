@@ -11,7 +11,7 @@
             show-header-all-overflow
             highlight-current-row
             class="vxe-table-element"
-            :data.sync="cds.cdata._data"
+            :data.sync="cds.cdata.data"
             :optimized="true"
             :edit-config="{key:`${id}`,trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
             resizable
@@ -66,7 +66,7 @@
             show-header-all-overflow
             highlight-current-row
             class="vxe-table-element"
-            :data.sync="cds.cdata._data"
+            :data.sync="cds.cdata.data"
             :optimized="true"
             height="300px"
             @cell-dblclick="openrefs"
@@ -143,10 +143,8 @@ export default class LayCelVexTable extends Vue {
     @Prop() env!: CCliEnv;
     @Provide() info: string = "infos";
     @Provide() clearable: boolean = true;
-    @Provide() tableData: Object[] = [];
     @Provide() cds: CDataSet = new CDataSet(null);
     @Provide() widths: Array<string> = new Array<string>();
-    // @Provide() status1:Array<Array<any>> = []
     @Provide() beBill: boolean = true;
 
     @Provide() id: string = "";

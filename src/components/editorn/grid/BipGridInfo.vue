@@ -44,10 +44,12 @@ export default class BipGridInfo extends Vue{
     @Provide() model:any = ''
     @Provide() linkName:string = ""
     @Provide() eventId:number = 0
+    @Provide() eventId1:number = 1
     mounted(){
         
         this.cellEdit()
         this.eventId = this.$bus.$on('cell_edit',this.cellEdit)
+        this.eventId1 =this.$bus.$on('dataloadchange',this.dataloadchange)
         //获取关联】参照的CellId
         this.getLinkedName(this.cell)
     }
@@ -79,12 +81,23 @@ export default class BipGridInfo extends Vue{
     }
     beforeDestroy(){
         this.$bus.$off('cell_edit',this.eventId)
+        this.$bus.$off('dataloadchange',this.eventId1)
     }
 
     cellEdit(){
         let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
         if(crd)
             this.model = crd.data[this.cell.id]
+    }
+
+    dataloadchange(){
+        console.log('dataloadchange');
+        let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
+        if(crd)
+            this.model = crd.data[this.cell.id]
+        else{
+            this.model = ''
+        }
     }
 
     
