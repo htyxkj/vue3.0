@@ -39,6 +39,7 @@ let tools = BIPUtil.ServApi
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
+import CRecord from '../../../classes/pub/CRecord';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart}
 })
@@ -122,7 +123,7 @@ export default class CUnivSelect extends Vue {
             ptran = ptran.split("&")
             for(var i=0 ; i< ptran.length;i++){
                 let cc = ptran[i].split("=");
-                this.dsm_cont.currRecord[cc[0]] = cc[1];
+                this.dsm_cont.currRecord.data[cc[0]] = cc[1];
             }
             this.find();
         }
@@ -130,7 +131,7 @@ export default class CUnivSelect extends Vue {
     invokecmd(cmd:string){
         console.log(cmd)
         if(cmd == 'CLEAR'){
-            this.dsm_cont.currRecord = Object.assign({},{})
+            this.dsm_cont.currRecord = new CRecord()
         }else if(cmd == 'FIND' ) {
             this.find()
         }else if(cmd == 'ISTAT'){

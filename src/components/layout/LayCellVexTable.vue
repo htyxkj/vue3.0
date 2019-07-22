@@ -205,7 +205,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     handleSizeChange(value: number) {
-        if((this.cds.currRecord['sys_stated']&1)>0){
+        if((this.cds.currRecord.c_state&1)>0){
             return ;
         }
         this.cds.cdata.clearValues();
@@ -213,7 +213,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     handleCurrentChange(value: number) {
-         if((this.cds.currRecord['sys_stated']&1)>0){
+         if((this.cds.currRecord.c_state&1)>0){
             return ;
         }
         this.cds.cdata.clearValues();

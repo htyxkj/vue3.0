@@ -32,11 +32,11 @@ export class CCalcUI extends Vue implements BaseI{
         console.log('CCalcUI cellDataChange',cellId,value,cds)
         let crd = cds.currRecord;
         if(cellId==this.qty){
-            crd[this.qty] = value
+            crd.data[this.qty] = value
             this.caclQtyhs(crd,cds.index,cds)
             this.caclFcy(crd,cds.index,cds)
         }else if(cellId==this.nup){
-            crd[this.nup] = value
+            crd.data[this.nup] = value
             this.caclFcy(crd,cds.index,cds)
         }else if(cellId == 'taxlb'){
             this.taxlb = parseInt(value)        

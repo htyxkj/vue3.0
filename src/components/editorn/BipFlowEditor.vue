@@ -107,7 +107,7 @@ export default class BipFlowEditor extends Vue{
             if(this.cds.currCanEdit()){
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 let record = this.cds.currRecord
-                record[this.cell.id] = str
+                record.data[this.cell.id] = str
                 this.cds.currRecord = Object.assign({},record);
                 this.cds.cdata._data[this.cds.index] = Object.assign({},record)
                 const key:string = this.cell.id

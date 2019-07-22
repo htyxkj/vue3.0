@@ -97,7 +97,7 @@ export default class BipPopView extends Vue{
             let gfld = this.bipInsAid.sref;
             if(gfld){
                 let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
-                let cont = crd[gfld]
+                let cont = crd.data[gfld]
                 if(cont&&cont.length>0){
                     this.qe.groupV = cont
                     if(this.datas.length==0)

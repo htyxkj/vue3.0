@@ -40,6 +40,7 @@ import DataCache from "@/classes/DataCache";
 import PageInfo from "@/classes/search/PageInfo";
 import BipWork from '@/components/cwork/BipWork.vue';
 import { stringify } from 'querystring';
+import CRecord from '../../../classes/pub/CRecord';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
@@ -67,7 +68,7 @@ export default class BaseApplet extends Vue{
     async invokecmd(cmd: string) {
         console.log(cmd);
         if (cmd === "ADD") {
-            if ((this.dsm.currRecord.sys_stated & 2) > 0) {
+            if ((this.dsm.currRecord.c_state & 2) > 0) {
                 this.$alert(
                     `当前数据没有保存，请先保存当前行数据`,
                     `系统提醒`,
@@ -77,7 +78,7 @@ export default class BaseApplet extends Vue{
                 });
                 return;
             }
-            if(this.dsm.currRecord.sys_stated&icl.R_INSERT){
+            if(this.dsm.currRecord.c_state&icl.R_INSERT){
                 return 
             }
             this.dsm.createRecord();
@@ -109,7 +110,7 @@ export default class BaseApplet extends Vue{
             if (this.dsm.index !== 0) this.JumpToIndexCRecord(0);
         }else if(cmd === "DEL"){
             console.log('删除')
-            let states = this.dsm.currRecord.sys_stated
+            let states = this.dsm.currRecord.c_state
             if((states&icl.R_INSERT)>0){
                 //新建状态
                 this.dsm.removeIndex(this.dsm.index)
@@ -119,14 +120,14 @@ export default class BaseApplet extends Vue{
                     let crd = this.dsm.currRecord
                     let _idx = this.dsm.ccells.x_pk;
                     let id = this.dsm.ccells.cels[_idx].id
-                    let sid = crd[id]
+                    let sid = crd.data[id]
                     this.$alert(`确定删除当前${sid}记录吗？`,
                         `系统提醒`,
                         { type: "warning" }
                     ).catch(() => {
                         console.log("取消")
                     }).then(()=>{
-                        this.dsm.currRecord.sys_stated = 4
+                        this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
                             console.log(res);
@@ -150,10 +151,10 @@ export default class BaseApplet extends Vue{
                     //可以提交
                     let crd = this.dsm.currRecord
                     let params = {
-                        sid: crd[this.dsm.opera.pkfld],
-                        sbuid: crd[this.dsm.opera.buidfld],
-                        statefr: crd[this.dsm.opera.statefld],
-                        stateto: crd[this.dsm.opera.statefld],
+                        sid: crd.data[this.dsm.opera.pkfld],
+                        sbuid: crd.data[this.dsm.opera.buidfld],
+                        statefr: crd.data[this.dsm.opera.statefld],
+                        stateto: crd.data[this.dsm.opera.statefld],
                         spuserId: ""
                     }  
                     this.cea = new CeaPars(params)
@@ -166,7 +167,7 @@ export default class BaseApplet extends Vue{
                             let work:any = this.$refs.work;
                             let smakefld:string='';
                             if(this.dsm.opera)
-                                smakefld = crd[this.dsm.opera.smakefld];
+                                smakefld = crd.data[this.dsm.opera.smakefld];
                             work.open(data,this.cea,smakefld);
                         }
                         console.log(res)
@@ -189,7 +190,7 @@ export default class BaseApplet extends Vue{
     checkOK(state:number|string){
         let i = this.dsm.i_state;
         if(i>-1){
-            this.dsm.currRecord[this.dsm.ccells.cels[i].id] = state
+            this.dsm.currRecord.data[this.dsm.ccells.cels[i].id] = state
         }
         
     }
@@ -201,8 +202,8 @@ export default class BaseApplet extends Vue{
      * @description 根据主键获取记录
      * @param crd 查询条件
      */
-    async getCRecordByPk(crd: any) {
-        if (crd.sys_stated == undefined) {
+    async getCRecordByPk(crd: CRecord) {
+        if (crd.c_state == undefined) {
             this.qe.oprid = 15;
             this.qe.cont = JSON.stringify(crd);
             this.qe.values = [];
@@ -388,7 +389,7 @@ export default class BaseApplet extends Vue{
         for(let i=0;i<n;i++){
             let cds1 = this.dsm.ds_sub[i]
             cds1.clear();
-            let vals = this.dsm.currRecord[cds1.ccells.obj_id]
+            let vals = this.dsm.currRecord.data[cds1.ccells.obj_id]
             if(vals){
                 cds1.clear();
                 cds1.setValues(vals,true)
@@ -443,7 +444,7 @@ export default class BaseApplet extends Vue{
         if(!bok)
             return ;        
         //保存数据
-        if ((this.dsm.currRecord.sys_stated & icl.R_EDITED) > 0) {
+        if ((this.dsm.currRecord.c_state & icl.R_EDITED) > 0) {
             this.fullscreenLoading = true;
             let res = await this.dsm.saveData();
             this.fullscreenLoading = false;
@@ -464,8 +465,8 @@ export default class BaseApplet extends Vue{
             console.log(res);
         } else {
             console.log(
-                this.dsm.currRecord.sys_stated,
-                this.dsm.currRecord.sys_stated & icl.R_EDITED
+                this.dsm.currRecord.c_state,
+                this.dsm.currRecord.c_state & icl.R_EDITED
             );
             return;
         }
@@ -475,7 +476,7 @@ export default class BaseApplet extends Vue{
         let bok = true;
         cds.ccells.cels.forEach(item => {
             if (item.unNull&&bok) {
-                var vl = cds.currRecord[item.id]+'';
+                var vl = cds.currRecord.data[item.id]+'';
                 if(item.type<5){
                     if(!vl){
                         vl = 0+'';
@@ -509,7 +510,7 @@ export default class BaseApplet extends Vue{
                         let crd = cd0.getRecordAtIndex(i);
                         cd0.ccells.cels.forEach(item=>{
                             if(isok&&item.unNull){
-                                var vl = crd[item.id];
+                                var vl = crd.data[item.id];
                                 if(item.type<5){
                                     if(!vl){
                                         vl = 0;
@@ -580,7 +581,7 @@ export default class BaseApplet extends Vue{
         await this.uriParamsChange()
         if(!this.params || !this.params.pkfld){
             this.dsm.createRecord();
-            this.dsm.currRecord.sys_stated = 1
+            this.dsm.currRecord.c_state = 1
         }else{
             this.pmenuid = this.$route.query.pmenuid+'';
             if(this.params && this.params.pkfld){
