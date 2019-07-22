@@ -197,5 +197,11 @@ export default class BipCommEditor extends Vue{
             this.bipInsAid = vv;
         }
     }
+
+    @Watch('model')
+    modelChange(){
+        console.log('modelChange')
+        this.$bus.$emit('datachange','')
+    }
 }
 </script>
