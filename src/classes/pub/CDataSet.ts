@@ -11,6 +11,7 @@ import Operation from "../operation/Operation";
 import PageInfo from '../search/PageInfo';
 import { BaseI } from './interface/BaseI';
 import { CCalcUI } from './interface/CCalcUI';
+import CRecord from './CRecord';
 let tools = BIPUtil.ServApi;
 export default class CDataSet {
   ccells: Cells;
@@ -23,7 +24,7 @@ export default class CDataSet {
   x_pk: number;
   initOK: boolean = false;
   canEdit: boolean = false;
-  currRecord: any = { sys_stated: billState.DICT };
+  currRecord: CRecord = new CRecord();
   scriptProc: BipScriptProc;
   opera: Operation | null = null;
   page:PageInfo ;
@@ -158,7 +159,7 @@ export default class CDataSet {
       let crd = this.currRecord;
       if (this.i_state > -1) {
         let cell = this.ccells.cels[this.i_state];
-        let statestr = crd[cell.id];
+        let statestr = crd.data[cell.id];
         let state: number = parseInt(statestr);
         return state == 0;
       } else {
@@ -180,7 +181,7 @@ export default class CDataSet {
         if (this.haveAuth()) {
             if (this.i_state > -1) {
                 let cell = this.ccells.cels[this.i_state];
-                let statestr = crd[cell.id];
+                let statestr = crd.data[cell.id];
                 let state: number = parseInt(statestr);
                 return state == 0;
             } else {
@@ -195,7 +196,7 @@ export default class CDataSet {
     let crd = this.currRecord;
     if (this.i_smake > -1) {
       let cell = this.ccells.cels[this.i_smake];
-      let smake = crd[cell.id];
+      let smake = crd.data[cell.id];
       let user = tools.getUser();
       if (smake == user.userCode) {
         return true;
@@ -269,15 +270,15 @@ export default class CDataSet {
           if (vl == "Invalid date") {
             let dd = DateUtils.DateTool.now();
             if (col.type == 91) {
-              this.currRecord[col.id] = DateUtils.DateTool.getDate(
+              this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
                 dd,
                 GlobalVariable.DATE_FMT_YMD
               );
             } else {
-              this.currRecord[col.id] = dd;
+              this.currRecord.data[col.id] = dd;
             }
           } else {
-            this.currRecord[col.id] = vl;
+            this.currRecord.data[col.id] = vl;
           }
         }
         // this.currRecord[col.id] = vl;
@@ -292,7 +293,7 @@ export default class CDataSet {
       let cols = scripts[0].split(",");
       let _indexs = scripts[1].split(",");
       let refValues = cell.refValues;
-      let id = this.currRecord[cell.id];
+      let id = this.currRecord.data[cell.id];
       if(!id){
           return ;
       }
@@ -312,9 +313,9 @@ export default class CDataSet {
               if (cl.type < 12 && cl.type > 1) {
                 vv = new Number(vv).toFixed(cl.ccPoint);
               }
-              this.currRecord[col] = vv;
+              this.currRecord.data[col] = vv;
             } else {
-              this.currRecord[col] = vv;
+              this.currRecord.data[col] = vv;
             }
           }
         });
@@ -334,31 +335,32 @@ export default class CDataSet {
     let xinc = this.ccells.autoInc;
     if (xinc > 0) xinc = xinc - 1;
     let cel = this.ccells.cels[xinc];
-    let modal: any = { sys_stated: billState.DICT };
-    if ((xinc >= 0 && modal[cel.id]) || isNew) {
-      modal.sys_stated = modal.sys_stated | billState.INSERT;
+    let modal: CRecord = new CRecord();
+    modal.c_state = billState.DICT
+    if ((xinc >= 0 && modal.data[cel.id]) || isNew) {
+      modal.c_state = modal.c_state | billState.INSERT;
     }
     modal = this.createDataModal(this.ccells, modal);
-    if ((modal.sys_stated & billState.INSERT) > 0) {
+    if ((modal.c_state & billState.INSERT) > 0) {
       modal = this.incCalc(this.ccells, modal);
     }
     console.log(modal)
     return modal;
   }
 
-  createDataModal(cell: Cells, modal: any) {
+  createDataModal(cell: Cells, modal: CRecord):CRecord {
     let user = JSON.parse(window.sessionStorage.getItem("user") + "");
     let deptInfo = user.deptInfo;
     cell.cels.forEach(item => {
       let iniVl = item.initValue;
       if(!iniVl){
           if(item.type==12)
-            modal[item.id] = ''
+            modal.data[item.id] = ''
           else{
             if(item.id == 'state' && item.refValue =="{$D.STATE}"){
-              modal[item.id] = '0';
+              modal.data[item.id] = '0';
             }else{
-              modal[item.id] = null;
+              modal.data[item.id] = null;
             }
           }
       }else{
@@ -404,13 +406,13 @@ export default class CDataSet {
                     iniVl = parseInt(iniVl) + "";
             }
           }
-          modal[item.id] = iniVl ? iniVl : "";
+          modal.data[item.id] = iniVl ? iniVl : "";
       }
     });
     return modal;
   }
 
-  incCalc(cell: Cells, modal: any) {
+  incCalc(cell: Cells, modal: CRecord):CRecord{
     if (cell) {
         let xinc =-1;
         if(cell.pkindex)
@@ -419,7 +421,7 @@ export default class CDataSet {
             var cel = cell.cels[xinc];
             var s0 = cel.psAutoInc;
             if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12){
-                modal[cel.id] = this.cdata._data.length+1
+                modal.data[cel.id] = this.cdata._data.length+1
                 return modal;
             }
                 
@@ -430,17 +432,17 @@ export default class CDataSet {
             var x0 = s0.lastIndexOf("%");
             s0 = x0 < 1 ? s0 : s0.substring(0, x0 + 1);
             }
-            modal[cel.id] = s0;
+            modal.data[cel.id] = s0;
         } else {
             let cell: Cell = this.getPKInt();
             if (cell && cell.id !== "c_corp")
-                modal[cell.id] = this.cdata._data.length + 1 + "";
+                modal.data[cell.id] = this.cdata._data.length + 1 + "";
       }
     }
     return modal;
   }
 
-  incCalc2(cells: Cell[], sinc: string, ilnk: number, modalV: any) {
+  incCalc2(cells: Cell[], sinc: string, ilnk: number, modalV: CRecord) {
     let x0 = sinc.indexOf("\r"),
       x1;
     if (x0 > 0) sinc = sinc.substring(0, x0);
@@ -460,7 +462,7 @@ export default class CDataSet {
           console.log(sinc + " autoinc innlink(-1)");
         }
         var refCel = cells[x1];
-        var vv = modalV[refCel.id];
+        var vv = modalV.data[refCel.id];
         sinc =
           sinc.substring(0, x0) +
           this.incCalca(refCel, (ilnk >>> 8) & 0xff, vv, x1) +
@@ -522,7 +524,7 @@ export default class CDataSet {
   saveData() {
       for(let i=0;i<this.ds_sub.length;i++){
           const cds_0 = this.ds_sub[i]
-          this.currRecord[cds_0.ccells.obj_id] = cds_0.cdata._data
+          this.currRecord.subs[i] = cds_0.cdata
       }
     return tools.saveData(this.currRecord, this.p_cell);
   }
@@ -539,7 +541,7 @@ export default class CDataSet {
    * @param crd 添加记录，
    * @param clr 是否清空原记录，默认是不清空
    */
-  setRecord(crd: any, clr: boolean = false) {
+  setRecord(crd: CRecord, clr: boolean = false) {
     if (clr) {
       this.cdata.clearValues();
     }
@@ -555,7 +557,7 @@ export default class CDataSet {
     return this.cdata.getDataAtIndex(_i);
   }
 
-  setRecordAtIndex(crd: any, _i: number = -1) {
+  setRecordAtIndex(crd: CRecord, _i: number = -1) {
     this.currRecord = crd
     if (this.cdata._data.length < _i) {
       this.index = this.cdata.addRecord(crd, -1);
@@ -568,11 +570,17 @@ export default class CDataSet {
       for (let i = 0; i < this.ds_sub.length; i++) {
         let cds1 = this.ds_sub[i];
         cds1.clear();
-        let vals = crd[cds1.ccells.obj_id];
-        if (vals) {
-          console.log(vals);
-          cds1.setValues(vals, true);
+        let _index = crd.subs.findIndex(item=>{
+            return item.obj_id == cds1.ccells.obj_id;
+        })
+        if(_index>-1){
+            let vals = crd.subs[_index]
+            if (vals) {
+              console.log(vals);
+              cds1.setValues(vals._data, true);
+            }
         }
+
       }
     }
   }
@@ -587,7 +595,7 @@ export default class CDataSet {
   }
 
   setState(state: number) {
-    this.currRecord.sys_stated = state;
+    this.currRecord.c_state = state;
     if(this.ds_sub.length>0){
         this.ds_sub.forEach(cd0=>{
             cd0.setStateSub(state)
@@ -596,22 +604,22 @@ export default class CDataSet {
   }
 
   setStateSub(state: number){
-    this.cdata._data.forEach((crd:any) => {
-        crd.sys_stated = state;
+    this.cdata._data.forEach((crd:CRecord) => {
+        crd.c_state = state;
     });
   }
 
   setStateOrAnd(state: number, bor: boolean = true) {
     if (bor) {
-      this.currRecord.sys_stated |= state;
+      this.currRecord.c_state |= state;
     } else {
-      this.currRecord.sys_stated &= state;
+      this.currRecord.c_state &= state;
     }
   }
 
   isPosted():boolean{
     let bpost = true
-    if((this.currRecord.sys_stated&1)>0||(this.currRecord.sys_stated&2)>0)
+    if((this.currRecord.c_state&1)>0||(this.currRecord.c_state&2)>0)
         bpost = false
     return bpost
   }
@@ -646,9 +654,9 @@ export default class CDataSet {
     if(this.hjList.length>0){
         let vvs:Array<number> = new Array<number>();
         this.cdata._data.forEach(row=>{
-            let crd:any = row;
+            let crd:CRecord = row;
             this.hjList.forEach((fld:string,index)=>{
-                let v = crd[fld] 
+                let v = crd.data[fld] 
                 v = v ? parseFloat(v):0
                 let v1 = vvs[index]
                 v1 = v1?parseFloat(v1+''):0
@@ -663,7 +671,7 @@ export default class CDataSet {
                     return cell.id == fld;
                 })
                 if(_i>-1){
-                    cds.currRecord[fld] = vvs[index]
+                    cds.currRecord.data[fld] = vvs[index]
                 }
             })
         }

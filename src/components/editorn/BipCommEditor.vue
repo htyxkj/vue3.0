@@ -47,6 +47,7 @@ import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { BIPUtils } from '@/utils/BaseUtil'
 import BipInsAidNew from '../../classes/BipInsAidNew';
+import CRecord from '../../classes/pub/CRecord';
 let baseTool = BIPUtils.baseUtil
 @Component({
     components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor}
@@ -159,9 +160,9 @@ export default class BipCommEditor extends Vue{
      * 获取当前cell绑定的值
      */
     getModelValues(){
-        let crd:any = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
-        if(crd){
-            this.model = crd[this.cell.id]
+        let crd:CRecord = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
+        if(crd&&crd.data){
+            this.model = crd.data[this.cell.id]
             if(this.model!=undefined || this.model!=null){
                 this.model+=''
             }

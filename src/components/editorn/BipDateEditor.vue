@@ -126,14 +126,14 @@ export default class BipDateEditor extends Vue{
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 if(value==null){
                     this.model1 = ''
-                    this.cds.currRecord[this.cell.id] = this.model1
+                    this.cds.currRecord.data[this.cell.id] = this.model1
                     this.cds.currRecord = Object.assign({},this.cds.currRecord)
                     this.cds.cdata._data[this.cds.index] = this.cds.currRecord
                 }else{
                     if(value != this.model){
                         // this.model1 = value
                         //TODO 公式关联
-                        this.cds.currRecord[this.cell.id] = value
+                        this.cds.currRecord.data[this.cell.id] = value
                         this.cds.currRecord = Object.assign({},this.cds.currRecord)
                         this.cds.cdata._data[this.cds.index] = Object.assign({},this.cds.currRecord)
                         const key:string = this.cell.id
