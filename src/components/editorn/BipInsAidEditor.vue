@@ -11,9 +11,9 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
-                 <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
-             </el-input>
+            <el-input v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
+                <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
+            </el-input>
         </template>
 
         <!-- <template v-if="dia"> -->
@@ -135,18 +135,19 @@ export default class BipInsAidEditor extends Vue{
     }
 
     selectOK(val:any,close:boolean = false){
+        console.log("selectOk")
         let record: any = this.cds.getRecordAtIndex(this.row<0?0:this.row);
         this.cds.currRecord = record;
         this.cds.setStateOrAnd(ICL.R_EDITED);
         this.model1 = val[this.bipInsAid.cells.cels[0].id]
-        record[this.cell.id] = this.model1
+        record.data[this.cell.id] = this.model1
         this.setAidValue({key:this.bipInsAid.id+"_"+this.model1,value:val})
         if (this.mulcols) {
             this.othCols.forEach((fld, index) => {
                 let idx = this.othColsIndex[index];
                 let layC = this.bipInsAid.cells.cels[idx];
                 if (layC) {
-                    record[fld] = val[layC.id]||"";
+                    record.data[fld] = val[layC.id]||"";
                 }
             });
         }

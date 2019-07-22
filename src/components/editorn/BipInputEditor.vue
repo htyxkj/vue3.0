@@ -45,7 +45,7 @@ export default class BipInputEditor extends Vue{
                     this.cds.setStateOrAnd(icl.R_EDITED)
                     const record = this.cds.currRecord
                     this.cds.currRecord = Object.assign({},record);
-                    this.cds.cdata._data[this.cds.index] = Object.assign({},record)
+                    this.cds.cdata.data[this.cds.index] = Object.assign({},record)
                     const key:string = this.cell.id
                     this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
 

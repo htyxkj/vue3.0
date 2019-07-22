@@ -43,7 +43,7 @@ export class CCalcUI extends Vue implements BaseI{
             cds.ds_sub.forEach(cds0=>{
                 if(cds0.baseI){
                     cds0.baseI.taxlb = parseInt(value)
-                    cds0.cdata._data.forEach((row,index) => {
+                    cds0.cdata.data.forEach((row,index) => {
                         console.log(row)
                         this.caclFcy(row,index,cds0)
                     });
@@ -57,7 +57,7 @@ export class CCalcUI extends Vue implements BaseI{
         _qrt = _qrt?_qrt:1
         const _qty = crd[this.qty]
         crd[this.qtyhs] = _qrt*_qty
-        cds.cdata._data[row] = Object.assign({},crd)
+        cds.cdata.data[row] = Object.assign({},crd)
         const mm1 = this.getMethordName(cds.ccells.obj_id,this.qtyhs)
         this.$bus.$emit(mm1,{cellId:this.qtyhs,value:crd[this.qtyhs],row:row})
     }
@@ -73,7 +73,7 @@ export class CCalcUI extends Vue implements BaseI{
         let _nup = parseFloat(crd[this.nup])
         let _qty = parseFloat(crd[this.qty])
         crd[this.fcy] = _nup*_qty
-        cds.cdata._data[row] = crd
+        cds.cdata.data[row] = crd
         const mm = this.getMethordName(cds.ccells.obj_id,this.fcy)
         this.$bus.$emit(mm,{cellId:this.fcy,value:crd[this.fcy],row:row})
         this.caclRmbhs(crd,row,cds)

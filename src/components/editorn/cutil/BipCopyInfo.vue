@@ -10,7 +10,7 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-table v-loading="mloading"  :data="cds.cdata._data" height="200" size="small" stripe border
+            <el-table v-loading="mloading"  :data="cds.cdata.data" height="200" size="small" stripe border
              highlight-current-row row-class-name="bip-assist-row" @current-change="currSelectedChange">   
                 <el-table-column v-for="(cel,index) in cellsm" :key="index" :prop="cel.id"
                 :label="cel.labelString"
@@ -30,7 +30,7 @@
                 :total="cds.page.total">
             </el-pagination>
 
-            <el-table v-if="cds.ds_sub.length>0" :data="cds.ds_sub[0].cdata._data" 
+            <el-table v-if="cds.ds_sub.length>0" :data="cds.ds_sub[0].cdata.data" 
                 height="150" size="small" stripe border @selection-change="mulSelectedChange" >
                 <el-table-column type="selection"></el-table-column>
                 <el-table-column v-for="(cel,index) in cellsms" :key="index" :prop="cel.id"
@@ -135,7 +135,7 @@ export default class BipCopyInfo extends Vue{
 
                     if(this.cds.ds_sub.length>0&&this.ref_cds.ds_sub.length>0){
                         obj_id = this.cds.ds_sub[0].ccells.obj_id
-                        let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata._data
+                        let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata.data
                         console.log(subV.length)
                         index = scopys.findIndex(item=>{
                             return item.objId == obj_id 
@@ -219,7 +219,7 @@ export default class BipCopyInfo extends Vue{
                     tools.getWorkFlowData(210,this.opera.buid,this.buidfr,this.qeSub).then(res=>{
                         console.log(res)
                         if(res.data.id==0){
-                            this.cds.ds_sub[0].cdata._data = res.data.data.info.values
+                            this.cds.ds_sub[0].cdata.data = res.data.data.info.values
                         }    
                     }).catch(err=>{
                         console.log(err)
@@ -241,7 +241,7 @@ export default class BipCopyInfo extends Vue{
         tools.getWorkFlowData(205,this.opera.buid,this.buidfr,this.qe).then(res=>{
             console.log(res)
             if(res.data.id==0){
-                this.cds.cdata._data = res.data.data.info.values
+                this.cds.cdata.data = res.data.data.info.values
                 this.cds.page = res.data.data.info.page
             }    
         }).catch(err=>{

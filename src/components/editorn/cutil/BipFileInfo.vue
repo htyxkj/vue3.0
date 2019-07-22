@@ -282,7 +282,7 @@ export default class BipFileInfo extends Vue {
             let record:any
             let _i = this.index==-1?0:this.index
             if(this.index){
-                record = this.cds.cdata._data[this.index]
+                record = this.cds.cdata.data[this.index]
             }else{
                 record = this.cds.currRecord
             }

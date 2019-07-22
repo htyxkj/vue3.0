@@ -303,6 +303,7 @@ export default class LayCelVexTable extends Vue {
 
     table_cell_click(data:any,event:any){ 
         let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex};
+        this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         this.$bus.$emit("row_click",value);
     }
 }

@@ -216,7 +216,7 @@ export default class CDataSet {
     this.canEdit = true;
     this.page.currPage=1
     this.page.index = this.index
-    this.page.total = this.cdata._data.length
+    this.page.total = this.cdata.data.length
     return this.currRecord;
   }
 
@@ -421,7 +421,7 @@ export default class CDataSet {
             var cel = cell.cels[xinc];
             var s0 = cel.psAutoInc;
             if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12){
-                modal.data[cel.id] = this.cdata._data.length+1
+                modal.data[cel.id] = this.cdata.data.length+1
                 return modal;
             }
                 
@@ -436,7 +436,7 @@ export default class CDataSet {
         } else {
             let cell: Cell = this.getPKInt();
             if (cell && cell.id !== "c_corp")
-                modal.data[cell.id] = this.cdata._data.length + 1 + "";
+                modal.data[cell.id] = this.cdata.data.length + 1 + "";
       }
     }
     return modal;
@@ -559,10 +559,10 @@ export default class CDataSet {
 
   setRecordAtIndex(crd: CRecord, _i: number = -1) {
     this.currRecord = crd
-    if (this.cdata._data.length < _i) {
+    if (this.cdata.data.length < _i) {
       this.index = this.cdata.addRecord(crd, -1);
     } else {
-        this.cdata._data[_i] = crd;
+        this.cdata.data[_i] = crd;
         this.index = _i;
     }
     console.log(crd);
@@ -577,7 +577,7 @@ export default class CDataSet {
             let vals = crd.subs[_index]
             if (vals) {
               console.log(vals);
-              cds1.setValues(vals._data, true);
+              cds1.setValues(vals.data, true);
             }
         }
 
@@ -597,7 +597,7 @@ export default class CDataSet {
   setCData(data : CData){
     this.cdata = data;// Object.assign({},data);
     this.page = data.page;
-    // this.currRecord = data.getDataAtIndex(0);
+    this.currRecord = data.getDataAtIndex(0);
   }
 
   setState(state: number) {
@@ -610,7 +610,7 @@ export default class CDataSet {
   }
 
   setStateSub(state: number){
-    this.cdata._data.forEach((crd:CRecord) => {
+    this.cdata.data.forEach((crd:CRecord) => {
         crd.c_state = state;
     });
   }
@@ -632,7 +632,7 @@ export default class CDataSet {
 
   clear() {
     this.cdata.clearValues();
-    console.log(this.cdata._data.length);
+    console.log(this.cdata.data.length);
     this.index = -1;
     this._total = 0;
     if(this.ds_sub.length>0){
@@ -659,7 +659,7 @@ export default class CDataSet {
     }
     if(this.hjList.length>0){
         let vvs:Array<number> = new Array<number>();
-        this.cdata._data.forEach(row=>{
+        this.cdata.data.forEach(row=>{
             let crd:CRecord = row;
             this.hjList.forEach((fld:string,index)=>{
                 let v = crd.data[fld] 

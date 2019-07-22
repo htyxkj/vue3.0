@@ -25,6 +25,7 @@ import { Cell } from '@/classes/pub/coob/Cell';
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import {BIPUtil} from '@/utils/Request';
 import QueryEntity from '../../../classes/search/QueryEntity';
+import CData from '../../../classes/pub/CData';
 const tools = BIPUtil.ServApi
 @Component({
 })
@@ -36,10 +37,12 @@ export default class BipQueryInfo extends Vue{
     @Provide() cells!:Cells
     @Provide() biplay:BipLayout = new BipLayout("")
     @Provide() env: CCliEnv = new CCliEnv();
-    @Provide() dsm!:CDataSet
+    @Provide() dsmfrom!:CDataSet
     @Provide() ds_cont!:CDataSet
     @Provide() visible:boolean = false
     @Provide() qe:QueryEntity = new QueryEntity("","");
+    @Provide() mkey:number = 0
+    @Provide() sref:string = ''
     mounted(){
         this.cells = this.bipInsAid.cells
         this.contCell = this.bipInsAid.contCells
@@ -47,15 +50,20 @@ export default class BipQueryInfo extends Vue{
         arrcell[0] = this.cells
         // console.log(this.bipInsAid.sflag,arrcell)
         this.biplay = new BipLayout(this.bipInsAid.sflag,arrcell);
-        this.dsm = new CDataSet(this.cells);
+        this.dsmfrom = new CDataSet(this.cells);
         this.ds_cont = new CDataSet(this.contCell)
-
-
-        this.env.dsm = this.dsm
+        this.env.dsm = this.dsmfrom
         this.env.cells = arrcell
         this.env.ds_cont = this.ds_cont
         console.log(this.biplay) 
-        this.$bus.$on("row_click",this.row_click) 
+        this.mkey = this.$bus.$on("row_click",this.row_click) 
+        this.sref = this.bipInsAid.sref
+        console.log(this.sref)
+
+    }
+
+    beforeDestroy(){
+        this.$bus.$off("row_click",this.mkey)
     }
 
     open(vis:boolean){
@@ -76,14 +84,19 @@ export default class BipQueryInfo extends Vue{
 
     find(){
         let crdc = this.ds_cont.currRecord;
-        this.qe.cont = JSON.stringify(crdc)
+        this.qe.cont = JSON.stringify(crdc.data)
         tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
             if(res.data.id==0){
                 let vr = res.data.data.data
                 console.log(vr,'99990')
-                if(vr&&vr.values){
-                    this.dsm.setValues(vr.values)
-                    this.dsm.page = vr.page
+                if(vr){
+                    let cd : CData = new CData('');
+                    let retdata = vr
+                    cd.obj_id = retdata.obj_id;
+                    cd.data = retdata.data;
+                    cd.page = retdata.page; 
+                    this.dsmfrom.setCData(cd)
+                    // this.dsmfrom.page = vr.page
                 }
             }
             console.log(res)
@@ -93,29 +106,34 @@ export default class BipQueryInfo extends Vue{
     }
 
     row_click(data:any){
-        console.log(data.row)
-        console.log(data.rowIndex)
-        console.log(data.columnIndex)
-        this.dsm.currRecord = data.row;
-        console.log(this.dsm)
-        if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
-            let pkindex = this.dsm.ccells.pkindex;
+        let crd = this.dsmfrom.currRecord
+        if(this.dsmfrom.ds_sub && this.dsmfrom.ds_sub.length>0){
+            let pkindex = this.dsmfrom.ccells.pkindex;
             let crdc = "";
             for(var i=0;i<pkindex.length;i++){
-                let cel = this.dsm.ccells.cels[pkindex[i]];
+                let cel = this.dsmfrom.ccells.cels[pkindex[i]];
                 if(i == pkindex.length -1)
-                    crdc += cel.id + " = '"+data.row[cel.id]+"' "
+                    crdc += cel.id + " = '"+crd.data[cel.id]+"' "
                 else
-                    crdc += cel.id + " = '"+data.row[cel.id]+"' and  "
+                    crdc += cel.id + " = '"+crd.data[cel.id]+"' and  "
             } 
             this.qe.cont = crdc
             this.qe.oprid = 14;
-            this.qe.tcell = this.dsm.ds_sub[0].ccells.obj_id;
+            this.qe.tcell = this.dsmfrom.ds_sub[0].ccells.obj_id;
             tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
                 if(res.data.id==0){
                     let vr = res.data.data.data
-                    console.log(vr) 
-                    this.dsm.ds_sub[0].setValues(vr.values)
+                    console.log(vr,'ffff') 
+                    if(vr){
+                        let cd : CData = new CData('');
+                        let retdata = vr
+                        cd.obj_id = retdata.obj_id;
+                        cd.data = retdata.data;
+                        cd.page = retdata.page; 
+                        this.dsmfrom.currRecord.subs[0] = cd
+                        crd.subs[0] =cd
+                        this.dsmfrom.ds_sub[0].setCData(cd)
+                    }
                 }
                 console.log(res)
             }).catch(err=>{

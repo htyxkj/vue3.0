@@ -170,9 +170,9 @@ export default class CUnivSelect extends Vue {
 
                 let retdata = data.data.data
                 cd.obj_id = retdata.obj_id;
-                cd._data = retdata.data;
+                cd.data = retdata.data;
                 cd.page = retdata.page; 
-                
+
                 let page = retdata.page; 
                 this.dsm.setCData(cd)
                 this.dsm.index = (page.currPage - 1) * page.pageSize;

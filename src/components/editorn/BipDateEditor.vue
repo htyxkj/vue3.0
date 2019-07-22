@@ -128,14 +128,14 @@ export default class BipDateEditor extends Vue{
                     this.model1 = ''
                     this.cds.currRecord.data[this.cell.id] = this.model1
                     this.cds.currRecord = Object.assign({},this.cds.currRecord)
-                    this.cds.cdata._data[this.cds.index] = this.cds.currRecord
+                    this.cds.cdata.data[this.cds.index] = this.cds.currRecord
                 }else{
                     if(value != this.model){
                         // this.model1 = value
                         //TODO 公式关联
                         this.cds.currRecord.data[this.cell.id] = value
                         this.cds.currRecord = Object.assign({},this.cds.currRecord)
-                        this.cds.cdata._data[this.cds.index] = Object.assign({},this.cds.currRecord)
+                        this.cds.cdata.data[this.cds.index] = Object.assign({},this.cds.currRecord)
                         const key:string = this.cell.id
                         this.$bus.$emit(this.methodName,{cellId:key,value:value,row:this.cds.index})
                         this.cds.checkGS()
