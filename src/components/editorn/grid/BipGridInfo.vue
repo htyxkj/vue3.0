@@ -61,7 +61,6 @@ export default class BipGridInfo extends Vue{
                 str = str.substr(str.indexOf('{')+1,str.indexOf('}')-str.indexOf('{')-1)
                 let c = str.charAt(0)
                 str = str.substr(1,str.length);
-                console.log(c)
                 let bcl = c == '$'
                 this.getInsAidInfoBy(str,bcl)
                 this.linkName = str
@@ -94,7 +93,6 @@ export default class BipGridInfo extends Vue{
     }
 
     dataloadchange(){
-        console.log('dataloadchange');
         let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
         if(crd)
             this.model = crd.data[this.cell.id]
@@ -121,7 +119,6 @@ export default class BipGridInfo extends Vue{
                 if(!vv){
                     let vars = {id:bcl?300:200,aid:editName}
                     await this.fetchInsAid(vars);
-                    console.log(this.aidInfo.get(str))
                 }else{
                     this.bipInsAid = JSON.parse(vv)
                     let vals = {key:str,value:this.bipInsAid}

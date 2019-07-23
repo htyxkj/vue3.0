@@ -44,7 +44,6 @@ export default class BipNumberEditor extends Vue{
             if(this.model1 !== this.model){
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.setStateOrAnd(icl.R_EDITED)
-                console.log(this.cds.ds_par)
                 if(this.cds.ds_par){
                     this.cds.ds_par.setStateOrAnd(icl.R_EDITED)
                 }

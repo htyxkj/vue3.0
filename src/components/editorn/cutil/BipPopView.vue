@@ -82,7 +82,6 @@ export default class BipPopView extends Vue{
     }
 
     updated(){
-        console.log('updated')
         if(this.showCols.length==0){
             this.showCols = this.bipInsAid.cells.cels.filter(item=>{
                 return item.isReq||item.isShow;
@@ -105,7 +104,6 @@ export default class BipPopView extends Vue{
 
                 }
             }
-            console.log(this.bipInsAid.groupFld)
         }else{
             if(this.datas.length==0)
                 this.searchInsAidDatas()
@@ -151,13 +149,12 @@ export default class BipPopView extends Vue{
     searchInsAidDatas(){
         this.makeCont();
         tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
-            console.log(res)
             if(res.data.id==0){
                 this.datas = res.data.data.data.values
                 this.qe.page = res.data.data.data.page
             }
         }).catch(err=>{
-            console.log(err)
+            this.$notify.error(err)
         });
     }
 
@@ -167,7 +164,6 @@ export default class BipPopView extends Vue{
 
     handleSizeChange(val:number) {
         let totalPage = this.qe.page.total/this.qe.page.pageSize
-        console.log(totalPage,'totalPage')
         if(val<this.qe.page.total||this.qe.page.currPage<totalPage){
             this.qe.page.pageSize = val
             this.searchInsAidDatas()

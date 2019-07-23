@@ -18,17 +18,13 @@ export default class BipSearchCont extends Vue{
     @Provide() cds:CDataSet = new CDataSet(null)
     @Prop() env!:CCliEnv
     mounted(){
-        // if(this.env){
             this.cds = this.env.ds_cont
-            console.log(this.cds)
             this.cells = this.cds.ccells.cels.filter(item=>{
-                console.log(item,item.attr&0x400)
                 return item.attr>0?(item.attr&0x400)==0:true
             })
             if(this.cells.length<2){
                 this.cds.ccells.widthCell = 2
             }
-        // }
     }
 }
 </script>

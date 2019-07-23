@@ -41,17 +41,9 @@ export default class BipInputEditor extends Vue{
     dataChange(value:string|number){
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
-                console.log(this.model1)
-                // if(this.model1 !== this.model){
                     this.cds.currRecord.data[this.cell.id] = this.model1;
-                    this.cds.setStateOrAnd(icl.R_EDITED)
-                    // const record = this.cds.currRecord
-                    // this.cds.currRecord = Object.assign({},record);
-                    this.cds.cdata.data[this.cds.index] = this.cds.currRecord;//Object.assign({},record)
+                    this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
                     const key:string = this.cell.id
-                    // this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
-
-                // }
             }else{
                 this.model1 = this.model
             }

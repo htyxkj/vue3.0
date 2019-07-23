@@ -323,10 +323,6 @@ export default class LayCelVexTable extends Vue {
             this.removeData[i].c_state =4;
         }
     }
-    // @Watch('cds.data',{deep:true})
-    // cdsChange(){
-    //     console.log('cds data change')
-    // }
 }
 </script>
 

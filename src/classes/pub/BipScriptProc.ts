@@ -91,7 +91,6 @@ export default class BipScriptProc {
       return this.expItem2(s0, null);
     }
     x1 = c0 >= "A" ? s0.indexOf(".") : 0;
-    console.log(s0);
     if (x1 > 0) console.log("varfield");
     //return varfield(s0, x1);
     //getVar(new CVar(s0, -1, null));
@@ -126,11 +125,9 @@ export default class BipScriptProc {
       else bf = true;
       b10 = s1 == null || s1.length < 1;
     }
-    // console.log(oins);
     if (oins != null)
       // return '00' //TODO 需要添加方法
       return this.expItem6(s0, oins, fps, bf, idx, s1); //;--带实例
-    // console.log(o0);
     x0 = s0.indexOf(".");
     if (x0 < 1) {
       if (bf) {
@@ -361,14 +358,11 @@ export default class BipScriptProc {
             t1--;
             if (cx0 >= t1 || cx0 < 1) {
               sv0 = sv0.substring(1, t1); // [xxxx]
-              // console.log(sv0);
               sv1 = null;
             } else {
               sv1 = sv0.substring(cx0 + 2); //[xxxx].方法或其它变量
               sv0 = sv0.substring(1, cx0);
-              // console.log(sv0);
             }
-            // console.log(cfh);
             ov = cfh == "(" ? this.expcalc(sv0, true) : this.invokeref(sv0);
             if (ov != null && sv1 != null) {
               // 有其他关联
@@ -409,7 +403,6 @@ export default class BipScriptProc {
     } else if (c0 >= "a" && c0 <= "z") {
       // 当前数据
       ov = this.data.data[s0];
-      // console.log(ov,'shuju',s0);
       var cell = this.getColumn(s0);
       if (cell) {
         if (cell.type < 12 && cell.type > 1) {

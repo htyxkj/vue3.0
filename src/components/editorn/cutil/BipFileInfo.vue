@@ -115,7 +115,6 @@ export default class BipFileInfo extends Vue {
      * 上传文件
      */
     uploadFile(param:any){
-        console.log(param)
         let dfconfig:any = {
             headers: {
             'Content-Type': 'multipart/form-data'
@@ -148,7 +147,6 @@ export default class BipFileInfo extends Vue {
             form.append("data", file.slice(start,end)); 
 
             this.$axios.post(this.uri,form,config).then((res)=>{
-            console.log(res);
             if(res.data.id==-1){
                 this.$notify.error("上传失败！");
             }else{
@@ -185,7 +183,6 @@ export default class BipFileInfo extends Vue {
         return this.$confirm(`确定移除 ${ file.name }？`);
     }
     async handleRemove(file: any, fileList: any) {
-        console.log(file, fileList);
         var name = file.name;
         var params = {
         snkey: JSON.parse(window.sessionStorage.getItem('snkey')+''),
@@ -206,11 +203,9 @@ export default class BipFileInfo extends Vue {
        
     }
     handlePreview(file: any) {
-        console.log(file);
     }
 
     cancel() {
-        console.log("取消");
         this.outerVisible = false;
     }
 
@@ -218,7 +213,6 @@ export default class BipFileInfo extends Vue {
         if(this.$refs.upload){
             let upload:any = this.$refs.upload
             let files:Array<any> = upload.uploadFiles
-            console.log(files)
             if(files&&files.length>0){
                 let f2:Array<any> = files.filter(f1=>f1.status != 'success')
                 if(f2&&f2.length>0){
@@ -258,9 +252,7 @@ export default class BipFileInfo extends Vue {
                 }
             }
         }
-        console.log(this.$refs.upload);
         this.outerVisible = false
-        console.log("确定");
         this.$emit('select',true)
         // this.outerVisible = false
     }

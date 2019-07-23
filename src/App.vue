@@ -55,7 +55,6 @@ import router from "@/router";
 import { User } from '@/classes/User';
 
 import { State, Action, Getter, Mutation } from 'vuex-class';
-import { ProfileState } from './store/modules/profile/types';
 import { LoginState } from './store/modules/login/types';
 import { AxiosPromise } from 'axios'
 import { watch } from 'fs';
@@ -136,7 +135,7 @@ export default class App extends Vue {
     } 
     @Watch('isLogin')
     logined(){ 
-        console.log('islogin change');
+        // console.log('islogin change');
         if(this.isLogin){ 
             if(this.editableTabs2.length==0)
                 this.addIndex();
@@ -144,11 +143,6 @@ export default class App extends Vue {
             this.editableTabs2=[];
         }
     } 
-
-    @Watch('profile.isLogin')
-    entityChange(){
-        console.log('pro change');
-    }
 
     @Watch("$route")
     routerChange(to: Route, from: Route) { 
@@ -173,13 +167,13 @@ export default class App extends Vue {
                         break ;
                     }
                 }
-                console.log(me)
+                // console.log(me)
                 let menu:Menu = me;
                 let currTag = this.editableTabs2.filter(
                 tab => 
                     tab.name == menu.menuId
                 )[0];
-                console.log(currTag)
+                // console.log(currTag)
                 if (!currTag) {
                     let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
                     this.editableTabs2.push(tag);

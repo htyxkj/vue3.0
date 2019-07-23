@@ -79,7 +79,6 @@ export default class LinkRef{
             if(this.id&&this.id.length>0){
                 if(this.layCells){
                     let type = (this.layCells.length>0)?this.layCells[0].type:12
-                    console.log(type)
                     if(type && this.layCells){
                         if(type>=-5 && type<=8){
                             cont = `~${this.layCells[0].id}=${this.realV}`
@@ -94,73 +93,7 @@ export default class LinkRef{
         return cont;
     }
 
-    // findRefValues(){
-    //     if(this.realV){
-    //         if(this.bCL){
-    //             this.makeCLRef()
-    //         }else{
-    //             let cont = ''
-    //             if(this.multiple){
-    //                 let type = this.layCells[0].type
-    //                 let nn = this.realV.split(';')
-    //                 let id = this.layCells[0].id
-    //                 nn.forEach((v1,index)=>{
-    //                     if(type>=-5 && type<=8){
-    //                         if(index==0){
-    //                             cont = `~${id}=${v1}`
-    //                         }else{
-    //                             cont += ` or ${id}=${v1}`
-    //                         }
-    //                     }else{
-    //                         if(index==0){
-    //                             cont += `~${id}='${v1}'`
-    //                         }else{
-    //                             cont += `or ${id}='${v1}'`
-    //                         }
-    //                     } 
-    //                 })
-    //             }else{
-    //                 if(this.id.length>0){
-    //                     let type = this.layCells.length>0?this.layCells[0].type:12
-    //                     if(type>=-5 && type<=8){
-    //                         cont = `~${this.layCells[0].id}=${this.realV}`
-    //                     }else{
-    //                         cont = `~${this.layCells[0].id}='${this.realV}'`
-    //                     }   
-    //                 }
-               
-    //             }
-    //             // console.log(cont)
-    //             if(this.refId.length<2){
-    //                 return ;
-    //             }
-    //             tool.getRefValuesById(this.refId,cont).then((res)=>{
-    //                 if(res.data.id==0){
-    //                     let r = res.data.data.values
-    //                     // console.log(r)
-    //                     if(r&&r.values){
-    //                         if(!this.multiple)
-    //                             this.values = r.values[0]
-    //                         else
-    //                             this.values = r.values
-    //                         this.makeAssitRef()
-    //                     }else{
-    //                         console.log(r,'没有数据')
-    //                     }
-    //             }else{
-    //                 console.log(res,'错误了')
-    //             }
-    //         }).catch(err=>{
-    //             console.log(err,'错误了')
-    //         })
-    //         }
-    //     }else{
-    //         this.showV = this.realV = ''
-
-    //     }
-    // }
-
-    makeCLRef(){
+      makeCLRef(){
         if(this.multiple){
             if(this.layCells.length>1){
                 let nn = this.realV.split(';')

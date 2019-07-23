@@ -14,7 +14,6 @@ export class BipLayout{
         this.compconfs = new Array<BipLayConf>();
         if(this.laystr){
             //初始化界面组成
-            // console.log(this.laystr)
             let index = this.laystr.indexOf(':')
             if(_cells){
                 this.ccells = _cells;
@@ -25,7 +24,6 @@ export class BipLayout{
                 str = str.substring(1,str.length-1)
                 //str = '@60JH211#40725[-remark];T:(60JHA211#725//节哀节哀);@60JH211#60725[jyfs-]'
                 let comps:Array<string> = this.doLayout(str);
-                console.log(comps)
                 comps.forEach(cmpstr => {
                     if(cmpstr&&!cmpstr.startsWith('#')){
                         if(cmpstr.indexOf(':')>0){

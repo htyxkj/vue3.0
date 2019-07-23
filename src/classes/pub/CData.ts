@@ -45,10 +45,8 @@ export default class CData{
     }
 
     removeIndex(_i:number){
-        console.log(this.data)
         let ss = this.data.filter((item,index)=>{
             return index != _i;
         })
-        console.log(ss)
     }
 }

@@ -41,7 +41,6 @@ export default class BipAidRef extends Vue{
         this.bcode = (this.cell.attr & this.attr.CODE) > 0;
         this.model1 = this.model
         if(this.model&&this.model.length>0){
-            console.log(this.model)
             if(this.bcode){
                
             }else{
@@ -51,23 +50,16 @@ export default class BipAidRef extends Vue{
     }
 
     getRefValues(){
-        // console.log(this.refLink,this.model,'000000')
         if(this.refLink&&this.refLink.id.length>0&&this.model&&this.model.length>0){
-            console.log(this.refLink,'fdsfdsfdsfd')
              this.refLink.values = []
             if(this.model&&this.model.length>0){
                 let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
                 let key = ICL.AID_KEY+this.refLink.id+"_"+this.model
-                console.log('获取辅助值',key)
                 let vrs = this.aidValues.get(key);
-                console.log('获取辅助值',key,vrs)
                 if(!vrs){
-                    console.log('缓存没有',key,vrs)
                     let str = window.sessionStorage.getItem(key)
-                    console.log('session没有',key,vrs)
                     if(!str){
                         let vvs = {id:this.refLink.id,key:key,cont:cont}
-                        console.log('服务器获取',vvs)
                         this.fetchInsDataByCont(vvs)
                     }else{
                         vrs = JSON.parse(str);
@@ -94,7 +86,6 @@ export default class BipAidRef extends Vue{
         if(!this.bcode){
             if(this.refLink.values&&this.refLink.values.length>0){
                 let vv = this.refLink.values[0];
-                console.log(this.refLink)
                 if(vv){
                     this.refLink.showV = vv[this.refLink.cells.cels[1].id]||this.refLink.realV
                 }else{
@@ -114,18 +105,15 @@ export default class BipAidRef extends Vue{
 
     @Watch('aidValues')
     aidValuesChange(){
-    console.log('aidValues change',this.model)
         if(this.refLink&&this.refLink.id.length>0&&this.model){
             let key = ICL.AID_KEY+this.refLink.id+"_"+this.model
             let vvs = this.aidValues.get(key);
-            console.log('获取到值：',key,vvs);
             if(vvs){
                 this.refLink.realV = this.model
                 this.refLink.values = []
                 this.refLink.values[0] = vvs
                 this.makeShow()
             }else{
-                console.log('fdsfds',this.model1)
                 this.model1 = this.model
                 this.refLink.realV = this.model
                 this.refLink.values = []
@@ -143,7 +131,6 @@ export default class BipAidRef extends Vue{
             this.refLink.realV = this.model
             this.getRefValues()
         }
-        console.log('model change')
     }   
 }
 </script>

@@ -164,7 +164,6 @@ export default class BipWork extends Vue{
     //提交审核
     checkUp(){
         const ckuser = this.makeUU()
-        console.log(ckuser,this.cea)
         if(ckuser.length<=0 && this.value!="6"){
             this.$notify.error("没有审核人！");
             return ;
@@ -174,7 +173,6 @@ export default class BipWork extends Vue{
             this.cea.tousr =ckuser;
             this.loading = true
             tools.getCheckInfo(this.cea,34).then(res=>{
-                console.log(res)
                 this.$notify.success('审批成功！')
                 this.$emit('checkOK',this.value)
                 this.centerDialogVisible = false
@@ -210,7 +208,6 @@ export default class BipWork extends Vue{
                 id = 40;
             } 
             tools.getCheckInfo(this.cea,id).then(res=>{
-                console.log(res)
                 this.$notify.success('审批成功！')
                 this.$emit('checkOK',this.info.upState)
                 this.centerDialogVisible = false
@@ -224,7 +221,6 @@ export default class BipWork extends Vue{
             this.cea.statefr = this.info.state;
             var id = 39; 
             tools.getCheckInfo(this.cea,id).then(res=>{
-                console.log(res)
                 this.$notify.success('审批成功！')
                 this.$emit('checkOK',this.info.upState)
                 this.centerDialogVisible = false
@@ -244,7 +240,6 @@ export default class BipWork extends Vue{
         var id=34;
         this.loading = true;
         tools.getCheckInfo(this.cea,id).then(res=>{
-            console.log(res)
             this.$notify.success('审批成功！')
             this.$emit('checkOK',this.info.upState)
             this.centerDialogVisible = false

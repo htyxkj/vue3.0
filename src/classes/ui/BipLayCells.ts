@@ -23,7 +23,6 @@ export default class BipLayCells {
     this.init();
     this.makeUICells(_layId);
     this.initBL();
-    // console.log(_layId);
   }
   /**
    *
@@ -141,7 +140,6 @@ export default class BipLayCells {
         if(_ii>=0){
             for(let k=0;k<=_ii;k++){
                 let cel:Cell = this.cells.cels[k];
-                console.log(cel,cel.attr&0x400)
                 if(cel.attr>0){
                     if((cel.attr&0x400)===0)
                         this.uiCels.push(cel)

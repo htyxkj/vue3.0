@@ -30,7 +30,6 @@ export default class TabsLayout extends Vue{
     @Provide() activeName:string = ""
 
     handleClick(tab:any, event:EventListener){
-        console.log(tab,event)
     }
 
     mounted(){
@@ -38,12 +37,10 @@ export default class TabsLayout extends Vue{
     }
 
     handleSizeChange(value:number){
-        console.log('handleSizeChange',value)
         this.$emit('handleSizeChange',value)
     }
 
     handleCurrentChange(value:number){
-        console.log('handleCurrentChange',value)
         this.$emit('handleCurrentChange',value)
     }
 }

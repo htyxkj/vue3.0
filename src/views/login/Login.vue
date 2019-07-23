@@ -61,7 +61,6 @@ export default class Login extends Vue {
     // this.user.userCode = "";
     // this.user.password = "";
     let ii: string[] = ["1", "2"];
-    console.log(ii instanceof Array);
   }
 
   login() {
@@ -79,25 +78,17 @@ export default class Login extends Vue {
         let data = res.data;
         console.log(data);
         if (data.id === 0) {
-          // this.menus = data.data.menulist;
+
           let userI = data.data.user;
           let snkey = data.data.snkey;
           userI.password = "";
-          // window.sessionStorage.setItem('user', JSON.stringify(userI));
-          // window.sessionStorage.setItem('menulist', JSON.stringify(this.menus))
-          // window.sessionStorage.setItem('isLogin', JSON.stringify(true))
-          // window.sessionStorage.setItem('snkey', JSON.stringify(snkey))
+
           let ms = data.data.menulist;
           this.setIsLogin(true);
           this.setSnkey(snkey);
           this.setUserInfo(userI);
           this.setMenusInfo(ms);
-          // this.$store.commit('isLogin',true);
-          // this.$store.commit('user',userI);
-          // this.$store.commit('menulist',this.menus);
-          // this.$store.commit('snkey',snkey);
-          // this.$emit("loginok")
-          console.log(this.user);
+
           this.$router.push({ path: "/", name: "home" });
           this.$notify.success("登录成功");
         } else {

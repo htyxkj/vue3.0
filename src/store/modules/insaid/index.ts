@@ -59,7 +59,6 @@ const actions: ActionTree<BipInsState, RootState> = {
     fetchInsAid:({commit},val:any): AxiosPromise<BipInsState>  => {
         let id = val.id;
         let aid = val.aid;
-        // console.log(val,'assist')
         let k1 = aid
         if(id==300){
             k1 = ICL.AID_KEYCL+aid;
@@ -68,15 +67,12 @@ const actions: ActionTree<BipInsState, RootState> = {
         }
         commit('setKeyMap',k1);
         return tools.getBipInsAidInfo(aid, id).then(res=>{
-            console.log(res);
             if(res.data.id==0){
                 let vrr = res.data.data.data
                 commit('setAidInfo',{key:k1,value:vrr});
-                console.log(res.data.data)
             }
             return res;
         }).catch(err=>{
-            // console.log('error',id)
             commit('setKeyMapCancel',k1);
             return err;
         });
@@ -89,20 +85,15 @@ const actions: ActionTree<BipInsState, RootState> = {
         commit('setKeyMap',key);
         let qe = new QueryEntity("","");
         qe.cont = cont
-        console.log(key,'fdsfds')
         return tools.getBipInsAidInfo(aid, 210,qe).then(res=>{
-            console.log(res,val);
             if(res.data.id==0){
                 let vrr = res.data.data.data
-                console.log(vrr,key,cont)
                 commit('setAidValue',{key:key,value:vrr.values[0]});
-                // console.log(res.data.data)
             }else{
                 commit('setKeyMapCancel',key);
             }
             return res;
         }).catch(err=>{
-            // console.log('error',id)
             commit('setKeyMapCancel',key);
             return err;
         });

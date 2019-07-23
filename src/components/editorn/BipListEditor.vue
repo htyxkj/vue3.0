@@ -70,7 +70,6 @@ export default class BipListEditor extends Vue{
         
         this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
 
-        console.log(this.bipInsAid,'fdsfds')
         this.initOPtions()
 
     }
@@ -97,7 +96,6 @@ export default class BipListEditor extends Vue{
 
     dataChange(value:any){
         let str = ""
-        console.log(value)
         if(this.multiple){
             this.model1 = []
             value.forEach((item:string)=>{
@@ -133,7 +131,6 @@ export default class BipListEditor extends Vue{
 
     @Watch('model')
     valueChange(){
-        // console.log(this.model)
         if(this.multiple){
             let str = this.model||''
             if(str.length>0){

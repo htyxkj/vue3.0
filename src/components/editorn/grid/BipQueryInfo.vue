@@ -208,18 +208,18 @@ export default class BipQueryInfo extends Vue{
         let crd0 = this.cds.currRecord
         crd0 = this.makeUIRecord(this.qcopyconf,crd,crd0,this.cds.ccells)
         crd0.c_state |= 2
-        console.log(this.qcopyconf)
+        // console.log(this.qcopyconf)
         if(this.qcopyconf.subs.length>0){
             crd.subs.forEach(cdata=>{
                 let id = cdata.obj_id
                 let _index = this.qcopyconf.subs.findIndex(item=>{
-                    console.log(item.toId,id)
+                    // console.log(item.toId,id)
                     return item.fromID == id;
                 })
-                 console.log(_index)
+                //  console.log(_index)
                 if(_index>-1){
                     let conf = this.qcopyconf.subs[_index]
-                    console.log(conf)
+                    // console.log(conf)
                     let cells = this.findCells(this.cds.ccells,conf.toId);
                     let _mm = crd0.subs.findIndex(item=>{
                         return item.obj_id == conf.toId
@@ -230,7 +230,7 @@ export default class BipQueryInfo extends Vue{
                     if(cells){
                         let sdata = new CData(id)
                         let _nn = this.cds.ds_sub.findIndex(item=>{
-                            console.log(item.ccells.obj_id,conf.toId,'7777777')
+                            // console.log(item.ccells.obj_id,conf.toId,'7777777')
                             return item.ccells.obj_id == conf.toId
                         })
                         if(_nn>-1){
@@ -249,25 +249,14 @@ export default class BipQueryInfo extends Vue{
                         }else{
                             crd0.subs.push(sdata)   
                         }
-
-                        // let pk = cells.pkindex[0]
-                        // let cel = cells.cels[pk]
-                        // sdata.data.forEach((item,index)=>{
-                        //     item.data[cel.id] = (index+1)
-                        // })
-
-                        // console.log(_nn)
-                        // if(_nn>-1){
-                        //     this.cds.ds_sub[_nn].setCData(sdata);
-                        // }
                     }
-                    console.log(crd0,cells,'99999')
+                    // console.log(crd0,cells,'99999')
 
                 }
             })
         }
          this.$emit('select')
-        console.log(crd0.data)
+        // console.log(crd0.data)
     }
 
     makeUIRecord(conf:QCopyConf,crd:CRecord,crd0:CRecord,cells:Cells){

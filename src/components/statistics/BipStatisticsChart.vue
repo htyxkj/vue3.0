@@ -380,7 +380,6 @@ export default class BipStatisticsDialog extends Vue {
             return await this.fetchAssist({ id: karr[0], value: karr[1] })
             .then((res: any) => {
                 if (res && res.data.id === 0) { 
-                    console.log(res) 
                     return res.data.data.values.values;
                 } else {
                     this.$notify.error(res.message);

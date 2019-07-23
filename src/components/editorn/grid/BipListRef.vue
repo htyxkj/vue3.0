@@ -33,16 +33,14 @@ export default class BipListRef extends Vue{
         this.multiple = (this.cell.attr & 0x200000) > 0;
         this.bfmt = (this.cell.attr & 0x10000) > 0;
         this.bcode = (this.cell.attr & 0x40000) > 0;
-        if(this.model&&this.model.length>0){
-            console.log(this.model)
-        }
+        // if(this.model&&this.model.length>0){
+        // }
         // this.cellEdit()
         // this.eventId = this.$bus.$on('cell_edit',this.cellEdit)
     }
 
     @Watch('model')
     valuesChange(){
-        console.log('model change')
     }
 
     get showValues(){

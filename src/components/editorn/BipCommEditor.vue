@@ -83,7 +83,6 @@ export default class BipCommEditor extends Vue{
             if(this.assit){
                 this.editName = this.cell.editName
                 if(!this.inProcess.get(ICL.AID_KEY+this.editName)){
-                    console.log(this.editName)
                     await this.getInsAidInfoBy(this.editName)
                 }
             }else{
@@ -99,7 +98,6 @@ export default class BipCommEditor extends Vue{
                             this.getInsAidInfoBy(str,true)
                         }else{
                             this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
-                            console.log(str,this.bipInsAid)
                         }
                     }
                 }else if(type>=2&&type<12){
@@ -113,7 +111,6 @@ export default class BipCommEditor extends Vue{
                             str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
                             this.editName = str
                             await this.getInsAidInfoBy(str,false)
-                            console.log(str)
                         }
                          this.editorType = this.I_EDITOR_LIST
                     }else
@@ -136,14 +133,12 @@ export default class BipCommEditor extends Vue{
             if(this.assit){
                 if(this.editName){
                     let rr = this.aidInfo.get(ICL.AID_KEY+this.editName)
-                    console.log(rr)
                     if(rr)
                         this.bipInsAid = rr
                 }
             }else{
                 if(this.editorType == this.I_EDITOR_LIST){
                     let rr = this.aidInfo.get(ICL.AID_KEYCL+this.editName)
-                    console.log(rr,'321321')
                     if(rr)
                         this.bipInsAid = rr
                 }
@@ -185,9 +180,7 @@ export default class BipCommEditor extends Vue{
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
                 let vars = {id:bcl?300:200,aid:editName}
-                console.log(vars,this.cell.id,this.editName,this.cell.refValue)
                 await this.fetchInsAid(vars);
-                console.log(this.aidInfo.get(str))
             }else{
                 this.bipInsAid = JSON.parse(vv)
                 let vals = {key:str,value:this.bipInsAid}
@@ -200,7 +193,6 @@ export default class BipCommEditor extends Vue{
 
     @Watch('model')
     modelChange(){
-        console.log('modelChange')
         this.$bus.$emit('datachange','')
         if(this.cds.currRecord.data[this.cell.id] != this.model){
             this.cds.currRecord.data[this.cell.id] = this.model

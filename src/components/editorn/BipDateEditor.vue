@@ -120,9 +120,7 @@ export default class BipDateEditor extends Vue{
         }
         value = vl;
         if(this.cds&&this.cell){
-            console.log(value)
             if(this.cds.currCanEdit()){
-                // console.log(value)
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 if(value==null){
                     this.model1 = ''
@@ -151,7 +149,6 @@ export default class BipDateEditor extends Vue{
     @Watch("model")
     cdataSetRecordChange(){
         if(this.cds&&this.cell){
-            console.log('date model change',this.model)
             if( this.model1 != this.model){
                 this.model1 = this.model
             }

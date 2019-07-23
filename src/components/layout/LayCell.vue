@@ -68,18 +68,11 @@ export default class LayCell extends Vue{
 
 
     handleSizeChange(value:number){
-        // console.log('handleSizeChange',value)
         this.$emit('handleSizeChange',value)
     }
 
     handleCurrentChange(value:number){
-        // console.log('handleCurrentChange',value)
         this.$emit('handleCurrentChange',value)
-    }
-
-    @Watch('cds')
-    cdatachange(){
-        console.log('数据发生变化了')
     }
 
 }

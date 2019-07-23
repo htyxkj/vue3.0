@@ -90,7 +90,6 @@ export default class BipFlowEditor extends Vue{
 
     dataChange(value:any){
         let str = ""
-        console.log(value)
         if(this.multiple){
             this.model1 = []
             value.forEach((item:string)=>{
@@ -130,7 +129,6 @@ export default class BipFlowEditor extends Vue{
     }
 
     selectCallBack(val:any,close:boolean = false){
-        console.log(val,close)
   
     }
 //#region /**初始化多列参照 */
@@ -163,7 +161,6 @@ export default class BipFlowEditor extends Vue{
 
     @Watch('model')
     valueChange(){
-        console.log(this.model)
         if(this.multiple){
             let str = this.model||''
             if(str.length>0){

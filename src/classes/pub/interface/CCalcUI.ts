@@ -29,7 +29,6 @@ export class CCalcUI extends Vue implements BaseI{
         this.taxlb = parseInt(_taxlb);
     }
     public cellDataChange(cds:CDataSet,cellId:string,value:any):void{  
-        console.log('CCalcUI cellDataChange',cellId,value,cds)
         let crd = cds.currRecord;
         if(cellId==this.qty){
             crd.data[this.qty] = value
@@ -44,7 +43,6 @@ export class CCalcUI extends Vue implements BaseI{
                 if(cds0.baseI){
                     cds0.baseI.taxlb = parseInt(value)
                     cds0.cdata.data.forEach((row,index) => {
-                        console.log(row)
                         this.caclFcy(row,index,cds0)
                     });
                 }
@@ -106,7 +104,6 @@ export class CCalcUI extends Vue implements BaseI{
         }        
         crd[this.rmbhs] = _rmbhs
         crd[this.addtax] = _tax
-        console.log(crd,_rmbhs,_tax)
         const mm = this.getMethordName(cds.ccells.obj_id,this.rmbhs)
         this.$bus.$emit(mm,{cellId:this.rmbhs,value:crd[this.rmbhs],row:row})
         const mm1 = this.getMethordName(cds.ccells.obj_id,this.addtax)

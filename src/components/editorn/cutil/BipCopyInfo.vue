@@ -117,7 +117,6 @@ export default class BipCopyInfo extends Vue{
      */
     selectOK(){
         //  this.visible = false
-        console.log('selectOK')
         if(!this.mul){
             if(this.mSelection){
                 let crd = this.ref_cds.currRecord
@@ -136,7 +135,6 @@ export default class BipCopyInfo extends Vue{
                     if(this.cds.ds_sub.length>0&&this.ref_cds.ds_sub.length>0){
                         obj_id = this.cds.ds_sub[0].ccells.obj_id
                         let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata.data
-                        console.log(subV.length)
                         index = scopys.findIndex(item=>{
                             return item.objId == obj_id 
                         })
@@ -149,7 +147,6 @@ export default class BipCopyInfo extends Vue{
                             subV.forEach(item=>{
                                 cds1.createRecord();
                                 let crd11 = this.makeRecord(toList,frList,cds1,item)
-                                console.log(crd11)
                             })
                         }
                     }
@@ -217,12 +214,10 @@ export default class BipCopyInfo extends Vue{
                     this.qeSub.pcell = this.cds.ds_sub[0].ccells.obj_id
                     this.cds.ds_sub[0].cdata.clearValues();
                     tools.getWorkFlowData(210,this.opera.buid,this.buidfr,this.qeSub).then(res=>{
-                        console.log(res)
                         if(res.data.id==0){
                             this.cds.ds_sub[0].cdata.data = res.data.data.info.values
                         }    
                     }).catch(err=>{
-                        console.log(err)
                     }).finally(()=>{
                         this.mloading = false
                     })
@@ -239,13 +234,11 @@ export default class BipCopyInfo extends Vue{
         this.mloading = true;
         this.cds.clear();
         tools.getWorkFlowData(205,this.opera.buid,this.buidfr,this.qe).then(res=>{
-            console.log(res)
             if(res.data.id==0){
                 this.cds.cdata.data = res.data.data.info.values
                 this.cds.page = res.data.data.info.page
             }    
         }).catch(err=>{
-            console.log(err)
         }).finally(()=>{
             this.mloading = false
         })
@@ -255,7 +248,6 @@ export default class BipCopyInfo extends Vue{
      * 
      */
     currSelectedChange(val:any) {
-        console.log(val)
         this.mSelection = val;
         this.findSub()
     }
@@ -272,22 +264,18 @@ export default class BipCopyInfo extends Vue{
     }
 
     handleSizeChange(value:any){
-        console.log(value)
         this.qe.page = this.cds.page
         this.findMainPage()
     }
 
     handleCurrentChange(value:any){
-        console.log(value,this.qe)
         this.qe.page = this.cds.page
-        console.log(this.qe)
         this.findMainPage()
     }
 
     open(){
         this.visible = true
         let buid = this.opera.buid;
-        console.log(this.opera)
         if(buid){
             this.loading = true
             tools.getWorkFlows(buid).then(res=>{

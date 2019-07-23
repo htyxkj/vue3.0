@@ -21,6 +21,5 @@ export default class CeaPars{
             ckd:false
           }
         Object.assign(this,options,param);
-        console.log(this)
     }
 }

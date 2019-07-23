@@ -110,7 +110,6 @@ export default class BaseApplet extends Vue{
         } else if (cmd === "FIRST") {
             if (this.dsm.index !== 0) this.JumpToIndexCRecord(0);
         }else if(cmd === "DEL"){
-            console.log('删除')
             let states = this.dsm.currRecord.c_state
             if((states&icl.R_INSERT)>0){
                 //新建状态
@@ -126,12 +125,10 @@ export default class BaseApplet extends Vue{
                         `系统提醒`,
                         { type: "warning" }
                     ).catch(() => {
-                        console.log("取消")
                     }).then(()=>{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
-                            console.log(res);
 
                         }).finally(()=>{
                             this.fullscreenLoading = false
@@ -148,7 +145,6 @@ export default class BaseApplet extends Vue{
             console.log(this.dsm.opera)
             if(this.dsm.opera){
                 if(this.dsm.isPosted()){
-                    console.log(123)
                     //可以提交
                     let crd = this.dsm.currRecord
                     let params = {
@@ -159,21 +155,18 @@ export default class BaseApplet extends Vue{
                         spuserId: ""
                     }  
                     this.cea = new CeaPars(params)
-                    console.log(this.cea)
                     this.fullscreenLoading = true
                     tools.getCheckInfo(this.cea,33).then((res:any)=>{
                         if(res.data.id==0){
                             let data = res.data.data.info
-                            console.log(data)
                             let work:any = this.$refs.work;
                             let smakefld:string='';
                             if(this.dsm.opera)
                                 smakefld = crd.data[this.dsm.opera.smakefld];
                             work.open(data,this.cea,smakefld);
                         }
-                        console.log(res)
                     }).catch(err=>{
-                        console.log(err);
+                        this.$notify.error(err)
                     }).finally(()=>{
                         this.fullscreenLoading = false
                     });

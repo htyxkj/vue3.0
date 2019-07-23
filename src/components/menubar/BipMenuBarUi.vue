@@ -37,12 +37,6 @@ export default class BipMenuBarUI extends Vue{
         this.$emit('invokecmd',cmd);
     }
     mounted(){
-        // this.initMenuButton();
-    }
-
-    @Watch("mbs")
-    mbsChange(){
-        console.log(this.mbs)
     }
 }
 </script>

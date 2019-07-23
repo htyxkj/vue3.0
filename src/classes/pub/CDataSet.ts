@@ -60,7 +60,6 @@ export default class CDataSet {
           let _ds: CDataSet = new CDataSet(_cells.subLayCells[i]);
           this.ds_sub[i] = _ds;
           this.ds_sub[i].ds_par = this;
-          // console.log(_ds.p_cell);
           n1 += _ds.p_cell + ";";
         }
       }
@@ -70,14 +69,11 @@ export default class CDataSet {
             this.baseI = new CCalcUI(this);
           }
       }
-      // console.log(pcell)
       if (n1.length > 0) {
         n1 = n1.substring(0, n1.length - 1);
         this.p_cell = pcell + "(" + n1 + ")";
-        // console.log(this.p_cell)
       } else {
         this.p_cell = pcell;
-        // console.log(this.p_cell)
       }
 
       this.initOK = true;
@@ -212,7 +208,6 @@ export default class CDataSet {
 
   createRecord(): CRecord {
     let modal = this.createOne();
-    // console.log(modal);
     // modal.sys_stated = modal | billState.INSERT | billState.EDITED;
     this.addRow(modal);
     this.currRecord = modal;
@@ -248,7 +243,6 @@ export default class CDataSet {
     if (cell) {
       const attr = cell.attr;
       if ((attr & 0x100000) > 0) {
-        // console.log('多列计算')
         this.checkMulCols(cell);
       }
     }
@@ -259,12 +253,7 @@ export default class CDataSet {
         scstr = scstr.replace("=:", "");
         // 公式计算
         var vl = this.scriptProc.execute(scstr, "", col);
-        // console.log(vl,this.currRecord,col.id,scstr);
-        // if (vl == 'Invalid date') {
-        //   console.log(1231);
-        //   vl = "";
-        // }
-        // console.log(vl);
+
         if (vl instanceof Array) {
         } else {
           if (vl == "Invalid date") {
@@ -344,7 +333,6 @@ export default class CDataSet {
     if ((modal.c_state & billState.INSERT) > 0) {
       modal = this.incCalc(this.ccells, modal);
     }
-    console.log(modal)
     return modal;
   }
 
@@ -426,7 +414,6 @@ export default class CDataSet {
             }
                 
             let ilnk = cel.lnk_inn;
-            // console.log('ilink',ilnk);
             s0 = this.incCalc2(cell.cels, s0, ilnk, modal);
             if ((cel.attr & 0x10000) == 0) {
             var x0 = s0.lastIndexOf("%");
@@ -450,9 +437,7 @@ export default class CDataSet {
     if (cc == "[") {
       sinc = sinc.substring(1, sinc.length - 1);
     }
-    // console.log(sinc);
     sinc = this.formatVars(sinc);
-    // console.log(sinc);
     // 处理其他关联
     x0 = sinc.indexOf("%");
     if (x0 >= 0) {
@@ -484,7 +469,6 @@ export default class CDataSet {
   incCalca(cel: Cell, iinc: number, orf: string, xdep: any) {
     var t0 = iinc & 0xf0;
     var s0 = "";
-    // console.log(cel,iinc,orf,xdep);
     if (t0 == 16) {
       var bbc = orf.match(GlobalVariable.FULLDATE);
       if (bbc == null) orf = DateUtils.DateTool.now();
@@ -565,7 +549,6 @@ export default class CDataSet {
         this.cdata.data[_i] = crd;
         this.index = _i;
     }
-    console.log(crd);
     if (this.ds_sub.length > 0) {
       for (let i = 0; i < this.ds_sub.length; i++) {
         let cds1 = this.ds_sub[i];
@@ -576,7 +559,6 @@ export default class CDataSet {
         if(_index>-1){
             let vals = crd.subs[_index]
             if (vals) {
-              console.log(vals);
               cds1.setValues(vals.data, true);
             }
         }
@@ -645,7 +627,6 @@ export default class CDataSet {
   clear() {
     this.cdata.clearValues();
     this.currRecord = new CRecord()
-    console.log(this.cdata.data.length);
     this.index = -1;
     this._total = 0;
     if(this.ds_sub.length>0){
@@ -662,7 +643,6 @@ export default class CDataSet {
                 this.hjList.push(item.id)
             }
         })
-        console.log(this.hjList)
     }
   }
 
@@ -679,7 +659,6 @@ export default class CDataSet {
                 v = v ? parseFloat(v):0
                 let v1 = vvs[index]
                 v1 = v1?parseFloat(v1+''):0
-                console.log(v1,v,'1111',fld,crd)
                 vvs[index]=v+v1
             })
         });

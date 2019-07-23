@@ -334,7 +334,6 @@ export namespace BIPUtils {
         x1 = idx - 1,
         c0 = this.tolevel(fhs[x0]);
       if (c0 < 1 || c0 < this.tolevel(fhs[x1])) return idx; //注意赋值语句
-      // console.log('calcItems');
       ovs[x0] = this.calcTwoItem(ovs[x0], ovs[x1], fhs[x0]);
       ovs[x1] = ovs[idx];
       fhs[x0] = fhs[x1];
@@ -359,7 +358,6 @@ export namespace BIPUtils {
       if (ysf == "+" || ysf == "|") {
         if (o0 == null) return o1;
         if (o1 == null) return o0;
-        // console.log(o0)
         if (
           ysf == "+" &&
           !(o0 instanceof Date) &&

@@ -40,7 +40,6 @@ export default class BipHorizontalLay extends Vue{
     @Provide() lspan:number = 12
     @Provide() rspan:number = 12
     created(){
-        console.log(this.laycfg)
         this.initLayCell()
     }
 
@@ -58,12 +57,10 @@ export default class BipHorizontalLay extends Vue{
     }
 
     handleSizeChange(value:number){
-        console.log('handleSizeChange',value)
         this.$emit('handleSizeChange',value)
     }
 
     handleCurrentChange(value:number){
-        console.log('handleCurrentChange',value)
         this.$emit('handleCurrentChange',value)
     }
 
