@@ -9,7 +9,7 @@
         <!-- </el-scrollbar> -->
          <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="open(false)">取 消</el-button>
-            <el-button size="small" type="primary" @click="selectOK">确 定</el-button>            
+            <el-button size="small" type="primary" @click="selectOK">选中</el-button>            
             <el-button size="small" type="primary" @click="find">查找</el-button>
             <!-- <el-button size="small" type="warning" @click="findSub">选中</el-button> -->
         </span>
@@ -19,6 +19,7 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipInsAidNew from '@/classes/BipInsAidNew';
 import { Cells } from '@/classes/pub/coob/Cells';
+import QCopyConf  from '@/classes/pub/copy/QCopyConf';
 import { BipLayout } from '@/classes/ui/BipLayout';
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
@@ -26,6 +27,7 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import {BIPUtil} from '@/utils/Request';
 import QueryEntity from '../../../classes/search/QueryEntity';
 import CData from '../../../classes/pub/CData';
+import CRecord from '../../../classes/pub/CRecord';
 const tools = BIPUtil.ServApi
 @Component({
 })
@@ -42,7 +44,8 @@ export default class BipQueryInfo extends Vue{
     @Provide() visible:boolean = false
     @Provide() qe:QueryEntity = new QueryEntity("","");
     @Provide() mkey:number = 0
-    @Provide() sref:string = ''
+    @Provide() tomaps:string = ''
+    @Provide() qcopyconf:QCopyConf = new QCopyConf();
     mounted(){
         this.cells = this.bipInsAid.cells
         this.contCell = this.bipInsAid.contCells
@@ -55,11 +58,131 @@ export default class BipQueryInfo extends Vue{
         this.env.dsm = this.dsmfrom
         this.env.cells = arrcell
         this.env.ds_cont = this.ds_cont
-        console.log(this.biplay) 
+        // console.log(this.biplay) 
         this.mkey = this.$bus.$on("row_click",this.row_click) 
-        this.sref = this.bipInsAid.sref
-        console.log(this.sref)
+        this.tomaps = this.bipInsAid.sref
+        // console.log(this.tomaps)
+         let fid = this.cells.obj_id;
+        let toid = this.cds.ccells.obj_id
+        this.qcopyconf.fromID = fid
+        this.qcopyconf.toId = toid
+        if(!this.tomaps){
+            //普通的拷贝定义赋值
+             this.getCopyFlds(this.cells,this.cds.ccells,this.qcopyconf)
+            console.log(this.qcopyconf)
+        }else{
+            let map0 = '',s0 = '',maps=this.tomaps
+            if(maps.startsWith(this.cells.obj_id+'=')){
+                let i = maps.indexOf(';')
+                if(i>0){
+                    s0 = maps.substring(0,i)
+                    maps = maps.substring(i+1)
+                    console.log(s0,maps)
+                }else{
+                    s0 = maps
+                    maps = ''
+                }
+                i = s0.indexOf(',')
+                if(i>0)
+                    map0 = s0.substring(i+1)
+            }
+            let rr = this.mapToArray(map0);
+            this.qcopyconf.trans = rr;
+            this.qcopyconf = this.getCopyFlds(this.cells,this.cds.ccells,this.qcopyconf)
+            // console.log(rr,this.qcopyconf);
+            if(maps){
+                let _n = maps.indexOf(',');
+                let frId = '',toId = ''
+                let s1 = new QCopyConf()
+                if(_n>0){
+                    let n1 = maps.substring(0,_n);
+                    console.log(n1)
+                    let n2 = n1.split('=')
+                    frId = n2[0]
+                    toId = n2[1]
+                    maps = maps.substring(_n+1)
+                    let rr = this.mapToArray(maps);
+                    s1.trans = rr;
+                }else{
+                    let n2 = maps.split('=')
+                    frId = n2[0]
+                    toId = n2[1]
+                    maps = ''
+                }
+                s1.fromID = frId
+                s1.toId = toId
+                let c1 = this.findCells(this.cells,frId);
+                let c2 = this.findCells(this.cds.ccells,toId);
+                if(c1&&c2){
+                    s1 = this.getCopyFlds(c1,c2,s1)
+                    this.qcopyconf.subs.push(s1)
+                }    
+            }
+            this.qcopyconf.makeTrans()
+        }
 
+    }
+
+    mapToArray(s0:string){
+        let cc:Array<Array<string>> = []
+        if(s0){
+            s0 = s0.replace('/','=')
+            if(s0.indexOf(',')>0){
+                let r0 = s0.split(',')
+                for(let i=0;i<r0.length;i++){
+                    let r1 = r0[i]
+                    if(r1.indexOf('=')>0){
+                        cc.push(r1.split('='))
+                    }
+                }
+            }else{
+                if(s0.indexOf('=')>0){
+                    cc.push(s0.split('='))
+                }
+            }
+        }
+        return cc;
+    }
+
+    findCells(cell:Cells,objid:string){
+        if(cell.obj_id == objid){
+            return cell;
+        }else{
+            let _n = cell.subLayCells.findIndex(item=>{
+                return item.obj_id == objid
+            })
+            if(_n>-1){
+                return cell.subLayCells[_n]
+            }else{
+                return null;
+            }
+
+        }
+    }
+
+    /**
+     * 生成对象参照数据
+     */
+    getCopyFlds(fromCell:Cells,toCells:Cells,qcopy:QCopyConf):QCopyConf{
+        console.log(fromCell.obj_id,toCells.obj_id)
+        let cels = fromCell.cels
+        let tcels = toCells.cels
+        let fcels:Array<string> = []
+        let tocels:Array<string> = []
+        console.log(cels.length)
+        for(let i=0;i<cels.length;i++){
+            let id = cels[i].id
+            let _i = tcels.findIndex(item=>{
+                return item.id == id
+            })
+            if(_i>-1){
+                fcels.push(id)
+                tocels.push(id)
+            }
+        }
+        qcopy.fromCols = fcels
+        qcopy.toCols = tocels
+        return qcopy
     }
 
     beforeDestroy(){
@@ -80,7 +203,88 @@ export default class BipQueryInfo extends Vue{
         this.find()
     }
 
-    selectOK(){}
+    selectOK(){
+        let crd = this.dsmfrom.currRecord
+        let crd0 = this.cds.currRecord
+        crd0 = this.makeUIRecord(this.qcopyconf,crd,crd0,this.cds.ccells)
+        crd0.c_state |= 2
+        console.log(this.qcopyconf)
+        if(this.qcopyconf.subs.length>0){
+            crd.subs.forEach(cdata=>{
+                let id = cdata.obj_id
+                let _index = this.qcopyconf.subs.findIndex(item=>{
+                    console.log(item.toId,id)
+                    return item.fromID == id;
+                })
+                 console.log(_index)
+                if(_index>-1){
+                    let conf = this.qcopyconf.subs[_index]
+                    console.log(conf)
+                    let cells = this.findCells(this.cds.ccells,conf.toId);
+                    let _mm = crd0.subs.findIndex(item=>{
+                        return item.obj_id == conf.toId
+                    })
+                    if(_mm>-1){
+                        crd0.subs[_mm].clearValues();
+                    }
+                    if(cells){
+                        let sdata = new CData(id)
+                        let _nn = this.cds.ds_sub.findIndex(item=>{
+                            console.log(item.ccells.obj_id,conf.toId,'7777777')
+                            return item.ccells.obj_id == conf.toId
+                        })
+                        if(_nn>-1){
+                            let subcds = this.cds.ds_sub[_nn]
+                            subcds.clear()
+                            for(let m=0;m<cdata.data.length;m++){
+                                let cr1 = cdata.data[m];
+                                let cr2 = subcds.createRecord()
+                                cr2 = this.makeUIRecord(conf,cr1,cr2,cells)
+                                cr2.c_state |= 2;
+                                sdata.addRecord(cr2,-1);
+                            }
+                        }
+                        if(_mm>-1){
+                            crd0.subs[_mm] = sdata
+                        }else{
+                            crd0.subs.push(sdata)   
+                        }
+
+                        // let pk = cells.pkindex[0]
+                        // let cel = cells.cels[pk]
+                        // sdata.data.forEach((item,index)=>{
+                        //     item.data[cel.id] = (index+1)
+                        // })
+
+                        // console.log(_nn)
+                        // if(_nn>-1){
+                        //     this.cds.ds_sub[_nn].setCData(sdata);
+                        // }
+                    }
+                    console.log(crd0,cells,'99999')
+
+                }
+            })
+        }
+         this.$emit('select')
+        console.log(crd0.data)
+    }
+
+    makeUIRecord(conf:QCopyConf,crd:CRecord,crd0:CRecord,cells:Cells){
+        let fc = conf.fromCols
+        let tcols = conf.toCols
+        for(let i=0;i<fc.length;i++){
+            let ff = fc[i]
+            let tf = tcols[i]
+            let _i = cells.cels.findIndex(item=>{
+                return item.id == tf
+            })
+            if(_i>-1){
+                crd0.data[tf] = crd.data[ff]||''
+            }
+        }
+        return crd0
+    }
 
     find(){
         let crdc = this.ds_cont.currRecord;

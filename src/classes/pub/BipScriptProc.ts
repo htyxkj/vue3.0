@@ -3,11 +3,12 @@ import { Cell } from "./coob/Cell";
 import moment from 'moment';
 import { GlobalVariable } from '@/utils/ICL';
 import { BIPUtils } from "@/utils/BaseUtil";
+import CRecord from './CRecord';
 let baseTool = BIPUtils.baseUtil;
 export default class BipScriptProc {
-  data: any;
+  data: CRecord;
   cells: Cells;
-  constructor(data: any, cells: Cells) {
+  constructor(data: CRecord, cells: Cells) {
     this.data = data;
     this.cells = cells;
   }
@@ -407,7 +408,7 @@ export default class BipScriptProc {
       // 取父节点数据或者上一行数据
     } else if (c0 >= "a" && c0 <= "z") {
       // 当前数据
-      ov = this.data[s0];
+      ov = this.data.data[s0];
       // console.log(ov,'shuju',s0);
       var cell = this.getColumn(s0);
       if (cell) {
@@ -510,7 +511,7 @@ export default class BipScriptProc {
     }else if(cell.type == 91){
         v0 = moment(v0).format(GlobalVariable.DATE_FMT_YMD)
     }
-    this.data[cell.id] = v0;
+    this.data.data[cell.id] = v0;
     return v0;
   }
 

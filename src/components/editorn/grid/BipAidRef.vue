@@ -51,7 +51,8 @@ export default class BipAidRef extends Vue{
     }
 
     getRefValues(){
-        if(this.refLink&&this.refLink.id.length>0&&this.model.length>0){
+        // console.log(this.refLink,this.model,'000000')
+        if(this.refLink&&this.refLink.id.length>0&&this.model&&this.model.length>0){
             console.log(this.refLink,'fdsfdsfdsfd')
              this.refLink.values = []
             if(this.model&&this.model.length>0){

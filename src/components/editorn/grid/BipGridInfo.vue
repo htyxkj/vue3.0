@@ -87,7 +87,10 @@ export default class BipGridInfo extends Vue{
     cellEdit(){
         let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
         if(crd)
-            this.model = crd.data[this.cell.id]
+            this.model = crd.data[this.cell.id]||''
+        else{
+            this.model = ''
+        }
     }
 
     dataloadchange(){

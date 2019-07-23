@@ -12,7 +12,7 @@
                  <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
              </el-input>
         </template>
-        <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid"></bip-query-info>
+        <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select"></bip-query-info>
     </el-col>
 </template>
 </template>
@@ -44,12 +44,12 @@ export default class BipQueryEditor extends Vue{
     @Provide() attr:CommATTR = new CommATTR()
 
     mounted(){
-        
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{
             this.span = 24
         }
+        this.model1 = this.model
     }
 
     iconClick(){
@@ -66,6 +66,11 @@ export default class BipQueryEditor extends Vue{
         }
     }
 
+    select(bcl:boolean){
+        let dia: any = this.$refs.queryinfo;
+        if (dia) dia.open(false);
+    }
+
     /**
      *能否编辑
      */
@@ -75,6 +80,11 @@ export default class BipQueryEditor extends Vue{
             return dis;
         }
         return !this.cds.currCanEdit(this.row>-1?this.row:0)
+    }
+
+    @Watch('model')
+    valuesChange(){
+        this.model1 = this.model
     }
 
 }

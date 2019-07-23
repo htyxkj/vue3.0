@@ -183,8 +183,11 @@ export default class CDataSet {
                 let cell = this.ccells.cels[this.i_state];
                 let statestr = crd.data[cell.id];
                 let state: number = parseInt(statestr);
+                if(state == 0)
+                crd.c_state |= 2;
                 return state == 0;
             } else {
+                crd.c_state |= 2;
                 return true;
             }
           }
@@ -207,7 +210,7 @@ export default class CDataSet {
     return true;
   }
 
-  createRecord(): object {
+  createRecord(): CRecord {
     let modal = this.createOne();
     // console.log(modal);
     // modal.sys_stated = modal | billState.INSERT | billState.EDITED;
@@ -220,11 +223,8 @@ export default class CDataSet {
     return this.currRecord;
   }
 
-  createOne(): any {
-    let modal:any = this.initModal(true);
-    // console.log(modal)
-    modal = Object.assign({},modal,{'sys_stated': billState.INSERT})
-    // modal['sys_stated'] =  billState.INSERT;
+  createOne(): CRecord {
+    let modal:CRecord = this.initModal(true);
     this.scriptProc.data = modal;
     this.checkGS();
     return modal;
@@ -329,7 +329,7 @@ export default class CDataSet {
     });
   }
 
-  initModal(isNew: boolean): any {
+  initModal(isNew: boolean): CRecord {
     // let user = JSON.parse(window.sessionStorage.getItem('user')+'')
     // let deptInfo = user.deptInfo
     let xinc = this.ccells.autoInc;

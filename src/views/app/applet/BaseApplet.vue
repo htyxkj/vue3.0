@@ -472,9 +472,9 @@ export default class BaseApplet extends Vue{
             if (res.status == 200) {
                 let data = res.data;
                 if (data.id == 0) {
-                    let ord: any = data.data;
-                    this.dsm.currRecord = Object.assign(
-                        this.dsm.currRecord,
+                    let ord: any = data.data; 
+                    this.dsm.currRecord.data = Object.assign(
+                        this.dsm.currRecord.data,
                         ord
                     );
                     this.dsm.setState(icl.R_POSTED);
@@ -662,10 +662,4 @@ export default class BaseApplet extends Vue{
 //#endregion
 }
 </script>
-
-<style lang="scss" scoped>
-/* .bip-main-container{
-    background-color:red;
-} */
-</style>
 

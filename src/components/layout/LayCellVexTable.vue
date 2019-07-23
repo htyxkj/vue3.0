@@ -19,8 +19,10 @@
             @edit-closed="editClose"
             height="300px"
             :selectRow="cds.currRecord"
+            @select-all="selectAllEvent"
+            @select-change="selectChangeEvent"
             >
-            <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
+            <vxe-table-column type="selection" width="40"></vxe-table-column>
             <vxe-table-column
                 header-align="center"
                 align="center"
@@ -35,14 +37,7 @@
                 :disabled="(cel.attr&0x40)>0"
             >
                 <template v-slot:edit="{row,rowIndex}">
-                    <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/>
-                    <!-- <bip-grid-input-lay
-                        :cds="cds"
-                        :cell="cel"
-                        :index="rowIndex"
-                        :bill="beBill"
-                        :row="row"
-                    ></bip-grid-input-lay> -->
+                    <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                 </template>
                 <template v-slot="{row,rowIndex}">
                     <bip-grid-info
@@ -115,7 +110,7 @@
             <el-button-group size="small" v-if="cds.ds_par">  
                 <el-button icon="el-icon-edit" @click="addRecord"></el-button>
                 <el-button icon="el-icon-share"></el-button>
-                <el-button icon="el-icon-delete"></el-button>
+                <el-button icon="el-icon-delete" @click="delRecord"></el-button>
             </el-button-group>
         </el-col>
         </el-pagination>
@@ -135,6 +130,7 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Menu } from "@/classes/Menu";
+import CRecord from '../../classes/pub/CRecord';
 @Component({
     components: {  BipGridInfo }
 })
@@ -149,6 +145,8 @@ export default class LayCelVexTable extends Vue {
 
     @Provide() id: string = "";
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
+
+    @Provide() removeData :Array<CRecord> =[];
 
     created() {
         this.initWidth();
@@ -165,7 +163,17 @@ export default class LayCelVexTable extends Vue {
     addRecord() {
         this.cds.createRecord();
     }
-
+    delRecord(){
+        this.cds.cdata.rmdata = this.removeData;
+        // console.log(this.cds)
+        for(var i=this.cds.cdata.data.length-1;i>=0;i --){
+            let data = this.cds.cdata.data[i];
+            if(data.c_state ==4){
+                this.cds.cdata.data.splice(i,1);
+                // i--;
+            }
+        }
+    }
     initWidth() {
         if (this.laycell) {
             this.laycell.uiCels.forEach(cel => {
@@ -303,24 +311,22 @@ export default class LayCelVexTable extends Vue {
         this.$bus.$emit("row_click",value);
     }
 
+    selectAllEvent ({ selection,checked }:any) {
+        this.removeData = selection;
+        for(var i=0;i<this.removeData.length;i++){
+            this.removeData[i].c_state =4;
+        }
+    }
+    selectChangeEvent ({ selection,checked,}:any) {
+        this.removeData = selection;
+        for(var i=0;i<this.removeData.length;i++){
+            this.removeData[i].c_state =4;
+        }
+    }
     // @Watch('cds.data',{deep:true})
     // cdsChange(){
     //     console.log('cds data change')
     // }
 }
 </script>
-
-<style  lang="scss">
-
-/* .bip-lay {
-    width: 100%;
-    max-width: 100%;
-}
-.bip-number {
-    color: rgb(54, 180, 121);
-}
-.bip-req {
-    color: rgb(167, 8, 8);
-} */
-</style>
 
