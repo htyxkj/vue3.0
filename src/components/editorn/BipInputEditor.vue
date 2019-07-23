@@ -20,6 +20,7 @@ let icl = CommICL
 export default class BipInputEditor extends Vue{
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
+    @Prop() row!:number
     @Prop() model:any
     @Prop() bgrid!:boolean
     @Provide() model1:any = ''
@@ -40,16 +41,17 @@ export default class BipInputEditor extends Vue{
     dataChange(value:string|number){
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
-                if(this.model1 !== this.model){
+                console.log(this.model1)
+                // if(this.model1 !== this.model){
                     this.cds.currRecord.data[this.cell.id] = this.model1;
                     this.cds.setStateOrAnd(icl.R_EDITED)
-                    const record = this.cds.currRecord
-                    this.cds.currRecord = Object.assign({},record);
-                    this.cds.cdata.data[this.cds.index] = Object.assign({},record)
+                    // const record = this.cds.currRecord
+                    // this.cds.currRecord = Object.assign({},record);
+                    this.cds.cdata.data[this.cds.index] = this.cds.currRecord;//Object.assign({},record)
                     const key:string = this.cell.id
-                    this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
+                    // this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
 
-                }
+                // }
             }else{
                 this.model1 = this.model
             }
@@ -60,6 +62,7 @@ export default class BipInputEditor extends Vue{
         if(this.cds&&this.cell){
             if( this.model !== this.model1){
                 this.model1 = this.model
+  
             }
         }
     }

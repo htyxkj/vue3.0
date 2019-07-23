@@ -287,38 +287,45 @@ export default class BipQueryInfo extends Vue{
     }
 
     find(){
-        let crdc = this.ds_cont.currRecord;
-        let jsonCrd = JSON.parse(JSON.stringify(crdc.data));  
-        let cont:any = ""; 
-        for(var i=0;i<this.ds_cont.ccells.cels.length;i++){
-            let cel:any = this.ds_cont.ccells.cels[i];
-            if(jsonCrd[cel.id]){
-                if(i == this.ds_cont.ccells.cels.length -1){
-                    cont += cel.id+" = '"+jsonCrd[cel.id]+"'  "
-                }else{
-                    cont += cel.id+" = '"+jsonCrd[cel.id]+"'   and  "
+        let crdc = this.ds_cont.currRecord; 
+        let canSel = true;
+        this.ds_cont.ccells.cels.forEach(item => {
+            if (item.unNull) {
+                var vl = this.ds_cont.currRecord.data[item.id]+'';
+                if(item.type<5){
+                    if(!vl){
+                        vl = 0+'';
+                    }
+                }
+                if (!vl || vl == "undefined") {
+                    this.$notify.warning( "【" + item.labelString + "】不能为空!");
+                    canSel = false;
+                    return ;
                 }
             }
+        });
+        if(canSel){
+            this.qe.oprid = 13;
+            this.qe.cont = JSON.parse(JSON.stringify(crdc.data));
+            tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
+                if(res.data.id==0){
+                    let vr = res.data.data.data
+                    console.log(vr,'99990')
+                    if(vr){
+                        let cd : CData = new CData('');
+                        let retdata = vr
+                        cd.obj_id = retdata.obj_id;
+                        cd.data = retdata.data;
+                        cd.page = retdata.page; 
+                        this.dsmfrom.setCData(cd)
+                        // this.dsmfrom.page = vr.page
+                    }
+                }
+                console.log(res)
+            }).catch(err=>{
+                console.log(err)
+            })
         }
-        this.qe.cont = JSON.parse(JSON.stringify(crdc.data));
-        tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
-            if(res.data.id==0){
-                let vr = res.data.data.data
-                console.log(vr,'99990')
-                if(vr){
-                    let cd : CData = new CData('');
-                    let retdata = vr
-                    cd.obj_id = retdata.obj_id;
-                    cd.data = retdata.data;
-                    cd.page = retdata.page; 
-                    this.dsmfrom.setCData(cd)
-                    // this.dsmfrom.page = vr.page
-                }
-            }
-            console.log(res)
-        }).catch(err=>{
-            console.log(err)
-        })
     }
 
     row_click(data:any){
@@ -333,10 +340,11 @@ export default class BipQueryInfo extends Vue{
                 else
                     crdc += cel.id + " = '"+crd.data[cel.id]+"' and  "
             } 
-            this.qe.cont = crdc
-            this.qe.oprid = 14;
-            this.qe.tcell = this.dsmfrom.ds_sub[0].ccells.obj_id;
-            tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
+            let qq = Object.assign({},this.qe);
+            qq.cont = crdc
+            qq.oprid = 14;
+            qq.tcell = this.dsmfrom.ds_sub[0].ccells.obj_id;
+            tools.getBipInsAidInfo(this.bipInsAid.id,210,qq).then(res=>{
                 if(res.data.id==0){
                     let vr = res.data.data.data
                     console.log(vr,'ffff') 

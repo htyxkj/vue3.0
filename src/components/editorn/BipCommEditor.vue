@@ -25,7 +25,7 @@
                 <bip-list-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-list-editor>
             </template>
             <template v-else>
-                <bip-input-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid"></bip-input-editor>
+                <bip-input-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-editor>
             </template>   
         </template>  
     </div>
@@ -202,6 +202,10 @@ export default class BipCommEditor extends Vue{
     modelChange(){
         console.log('modelChange')
         this.$bus.$emit('datachange','')
+        if(this.cds.currRecord.data[this.cell.id] != this.model){
+            this.cds.currRecord.data[this.cell.id] = this.model
+            this.cds.cdata.data[this.row] = this.cds.currRecord
+        }
     }
 }
 </script>
