@@ -288,7 +288,19 @@ export default class BipQueryInfo extends Vue{
 
     find(){
         let crdc = this.ds_cont.currRecord;
-        this.qe.cont = JSON.stringify(crdc.data)
+        let jsonCrd = JSON.parse(JSON.stringify(crdc.data));  
+        let cont:any = ""; 
+        for(var i=0;i<this.ds_cont.ccells.cels.length;i++){
+            let cel:any = this.ds_cont.ccells.cels[i];
+            if(jsonCrd[cel.id]){
+                if(i == this.ds_cont.ccells.cels.length -1){
+                    cont += cel.id+" = '"+jsonCrd[cel.id]+"'  "
+                }else{
+                    cont += cel.id+" = '"+jsonCrd[cel.id]+"'   and  "
+                }
+            }
+        }
+        this.qe.cont = JSON.parse(JSON.stringify(crdc.data));
         tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
             if(res.data.id==0){
                 let vr = res.data.data.data

@@ -13,7 +13,7 @@
             class="vxe-table-element"
             :data.sync="cds.cdata.data"
             :optimized="true"
-            :edit-config="{key:`${id}`,trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
+            :edit-config="{key:'id',trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
             resizable
             @edit-actived="rowActive"
             @edit-closed="editClose"
@@ -323,10 +323,7 @@ export default class LayCelVexTable extends Vue {
             this.removeData[i].c_state =4;
         }
     }
-    // @Watch('cds.data',{deep:true})
-    // cdsChange(){
-    //     console.log('cds data change')
-    // }
+
 }
 </script>
 
