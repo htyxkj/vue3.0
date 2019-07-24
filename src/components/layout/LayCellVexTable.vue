@@ -164,13 +164,15 @@ export default class LayCelVexTable extends Vue {
         this.cds.createRecord();
     }
     delRecord(){
-        this.cds.cdata.rmdata = this.removeData;
-        // console.log(this.cds)
-        for(var i=this.cds.cdata.data.length-1;i>=0;i --){
-            let data = this.cds.cdata.data[i];
-            if(data.c_state ==4){
-                this.cds.cdata.data.splice(i,1);
-                // i--;
+        if(this.cds.currCanEdit()){
+            this.cds.cdata.rmdata = this.removeData;
+            // console.log(this.cds)
+            for(var i=this.cds.cdata.data.length-1;i>=0;i --){
+                let data = this.cds.cdata.data[i];
+                if(data.c_state ==4){
+                    this.cds.cdata.data.splice(i,1); 
+                    this.cds.setState(2);
+                }
             }
         }
     }
@@ -306,6 +308,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     table_cell_click(data:any,event:any){ 
+        this.cds.index = data.rowIndex;
         let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex};
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         this.$bus.$emit("row_click",value);

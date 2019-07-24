@@ -74,6 +74,8 @@ import { Cell } from '@/classes/pub/coob/Cell';
 import BipGridInfo from '../grid/BipGridInfo.vue'
 import QueryEntity from '@/classes/search/QueryEntity';
 import { CommICL } from '@/utils/CommICL';
+import CData from '../../../classes/pub/CData';
+import CRecord from '../../../classes/pub/CRecord';
 let icl = CommICL
 @Component({
     components:{BipGridInfo}
@@ -191,13 +193,13 @@ export default class BipCopyInfo extends Vue{
         if(this.cds.ds_sub.length<1){
             return ;
         }
-        let aa:any = this.mSelection;
+        let aa:CRecord = this.mSelection;
         if(aa){
             let _i = this.cds.ccells.x_pk;
             if(_i>=0){
                 let cell = this.cds.ccells.cels[_i];
                 let cont = ''
-                let v = aa[cell.id];
+                let v = aa.data[cell.id];
                 let canf:boolean = false
                 if(cell.type==12){
                     if(v){
@@ -215,7 +217,11 @@ export default class BipCopyInfo extends Vue{
                     this.cds.ds_sub[0].cdata.clearValues();
                     tools.getWorkFlowData(210,this.opera.buid,this.buidfr,this.qeSub).then(res=>{
                         if(res.data.id==0){
-                            this.cds.ds_sub[0].cdata.data = res.data.data.info.values
+                            
+                            let cd:CData = res.data.data.info
+                            console.log(cd)
+                            this.cds.ds_sub[0].cdata.data = cd.data
+                            this.cds.ds_sub[0].cdata.page = cd.page
                         }    
                     }).catch(err=>{
                     }).finally(()=>{
@@ -229,14 +235,16 @@ export default class BipCopyInfo extends Vue{
      * 查询主对象数据
      */
     findMainPage(){
-        this.qe.cont = JSON.stringify(this.cd_cont.currRecord);
+        this.qe.cont = JSON.stringify(this.cd_cont.currRecord.data);
         this.qe.tcell = this.cd_cont.ccells.obj_id
         this.mloading = true;
         this.cds.clear();
         tools.getWorkFlowData(205,this.opera.buid,this.buidfr,this.qe).then(res=>{
             if(res.data.id==0){
-                this.cds.cdata.data = res.data.data.info.values
-                this.cds.page = res.data.data.info.page
+                console.log(res.data.data)
+                let cd:CData = res.data.data.info
+                this.cds.cdata.data = cd.data
+                this.cds.page = cd.page
             }    
         }).catch(err=>{
         }).finally(()=>{

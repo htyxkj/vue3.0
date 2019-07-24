@@ -49,4 +49,14 @@ export default class CData{
             return index != _i;
         })
     }
+    setStateSub(state: number){
+        this.data.forEach((crd:CRecord) => {
+            crd.c_state = state;
+            if(crd.subs.length > 0){
+                crd.subs.forEach(cd0=>{
+                cd0.setStateSub(state)
+                }) 
+            }
+        });
+    }
 }

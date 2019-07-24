@@ -603,9 +603,15 @@ export default class CDataSet {
     }
   }
 
+
   setStateSub(state: number){
     this.cdata.data.forEach((crd:CRecord) => {
         crd.c_state = state;
+        if(crd.subs.length > 0){
+          crd.subs.forEach(cd0=>{
+            cd0.setStateSub(state)
+          }) 
+        }
     });
   }
 
@@ -614,7 +620,9 @@ export default class CDataSet {
       this.currRecord.c_state |= state;
     } else {
       this.currRecord.c_state &= state;
-    }
+    } 
+    if(this.index >-1)
+      this.cdata.data[this.index] = this.currRecord;
   }
 
   isPosted():boolean{
