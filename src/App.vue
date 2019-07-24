@@ -85,11 +85,11 @@ export default class App extends Vue {
     @Getter('user', { namespace: 'login' }) user?: User;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
-
+    
     async mounted() {  
-        this.$axios.get('./static/config.json').then((res:any) => { 
-            this.$axios.defaults.baseURL = res.data.apiUrl; 
-            BaseVariable.BaseUri = res.data.apiUrl; 
+        await this.$axios.get('./static/config.json').then((res:any) => { 
+            this.$axios.defaults.baseURL = res.data.ApiUrl; 
+            BaseVariable.BaseUri = res.data.ApiUrl; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
         }).catch((err:any) => {
             console.log(err)

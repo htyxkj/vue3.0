@@ -306,14 +306,14 @@ export default class BaseApplet extends Vue{
      * @param bok 是否确定查询
      * @param cont 查询条件对象
      */
-    async findData(bok: boolean, cont: any) {
+    async findData(bok: boolean, cont: any,oprid:number = 13) {
         console.log("单据查询！")
         // console.log(bok,cont,this.dsm.ccells.obj_id)
         if (!bok) {
             return;
         }
         this.dsm.cont = cont;
-        this.qe.oprid = 13;
+        this.qe.oprid = oprid;
         if (!this.qe.pcell || this.qe.pcell === "")
             this.qe = new QueryEntity(
                 this.dsm.p_cell,
@@ -323,9 +323,13 @@ export default class BaseApplet extends Vue{
         else {
             if (cont) this.qe.cont = JSON.stringify(cont);
         }
+        if(oprid == 14 ){
+            this.qe.oprid = oprid;
+            this.qe.cont = cont;
+        }
         // console.log(this.qe,'qe')
         this.dataCache = []
-        let vv = await this.findDataFromServe(this.qe);
+        let vv:CData = await this.findDataFromServe(this.qe);
         if (vv != null) { 
             // this.qe.values = vv.data;
             this.qe.page = vv.page;
@@ -344,7 +348,7 @@ export default class BaseApplet extends Vue{
      * @param vv 查询返回的结果集
      */
     dataLoaded(vv: QueryEntity,cd:CData) {
-        if (vv.oprid == 13) {
+        if ((vv.oprid == 13) || (vv.oprid == 14)) {
                 let page = cd.page;
                 this.dsm.setCData(cd);
                 this.setSubData()
@@ -411,7 +415,7 @@ export default class BaseApplet extends Vue{
             let cd :CData = this.initCData(vv)
             return cd;
         } else {
-            return null;
+            return new CData('');
         }
     }
 
@@ -596,9 +600,11 @@ export default class BaseApplet extends Vue{
         if(!this.params || !this.params.pkfld){
             this.dsm.createRecord();
             this.dsm.currRecord.c_state = 1
+            if(this.uriParams && this.uriParams.pdata){ 
+                this.findData(true,this.uriParams.pdata,14); 
+            } 
         }else{
             this.pmenuid = this.$route.query.pmenuid+'';
-            // console.log(this.params)
             if(this.params && this.params.pkfld){
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value

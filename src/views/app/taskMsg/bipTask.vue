@@ -99,7 +99,7 @@ export default class bipTask extends Vue {
       let vv = await tools.query(qe);
       console.log(vv)
       if(vv.data.id ==0){ 
-        this.taskValue = vv.data.data.data.values; 
+        this.taskValue = vv.data.data.data.data; 
         let page = vv.data.data.data.page;
         this.pageSize = page.pageSize;
         this.total = page.total;
@@ -118,7 +118,7 @@ export default class bipTask extends Vue {
       this.fetchTaskData();
     } 
     async openrefs(data:any,event:any){
-        let row = data.row
+        let row = data.row.data
         let rowIndex = data.rowIndex
         let columnIndex = data.columnIndex
         if(columnIndex > 0){

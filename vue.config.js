@@ -1,8 +1,8 @@
 module.exports = {
   publicPath: './',
-  outputDir: 'dist',
+  outputDir: 'dist/',
+  assetsDir: 'static',
   lintOnSave: true,
-
   //关键点在这  
   runtimeCompiler: true,
 

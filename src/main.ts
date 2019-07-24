@@ -10,7 +10,6 @@ import "./scss/element-variables.scss";
 import './utils/Request'
 import store from './store'
 import 'vxe-table/lib/index.css'
-
 import EventBus from 'vue-bus-ts';
 import BaseLayout from '@/components/layout/BaseLayout.vue';
 import BipMenuItem from '@/components/menu/BipMenuItem.vue';
