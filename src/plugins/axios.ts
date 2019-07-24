@@ -1,6 +1,5 @@
 import Vue, { PluginObject } from 'vue';
 import axios from 'axios';
-import { BaseVariable } from "../utils/BaseICL";
 import router from "../router";
 
 // Full config:  https://github.com/axios/axios#request-config
@@ -9,7 +8,6 @@ import router from "../router";
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 // axios.defaults.headers.post['Content-Type'] = 'application/json';
 const config = {
-  baseURL:BaseVariable.BaseUri,
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
   // timeout: 60 * 1000, // Timeout
   timeout:60 * 1000,

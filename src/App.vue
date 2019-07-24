@@ -53,6 +53,7 @@ import { BipTag } from "./classes/BipTag";
 import { Menu } from "@/classes/Menu";
 import router from "@/router";
 import { User } from '@/classes/User';
+import { BaseVariable } from "@/utils/BaseICL";
 
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
@@ -78,18 +79,22 @@ export default class App extends Vue {
     @Provide() menu2:string = "menu menu2";
 
     @State('login') profile!: LoginState
-    // MapGetter
-    //   @Getter('firstName', { namespace:'profile' }) firstName?: string;
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Getter('user', { namespace: 'login' }) user?: User;
-    //   @Getter('lastName', { namespace }) lastName?: string;
-    //   @Action('fetchName', { namespace:'profile' }) fetchName?: any;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
 
-    async mounted() {
+    async mounted() {  
+        this.$axios.get('./static/config.json').then((res:any) => { 
+            this.$axios.defaults.baseURL = res.data.apiUrl; 
+            BaseVariable.BaseUri = res.data.apiUrl; 
+            BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
+        }).catch((err:any) => {
+            console.log(err)
+        }) 
+
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
             if(this.editableTabs2.length==0){

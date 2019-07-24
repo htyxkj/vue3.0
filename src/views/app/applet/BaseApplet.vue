@@ -598,6 +598,7 @@ export default class BaseApplet extends Vue{
             this.dsm.currRecord.c_state = 1
         }else{
             this.pmenuid = this.$route.query.pmenuid+'';
+            // console.log(this.params)
             if(this.params && this.params.pkfld){
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value
