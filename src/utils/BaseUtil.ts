@@ -182,6 +182,20 @@ export namespace BIPUtils {
           qe:qe
         });
     }
+    /**
+     * @description 获取辅助/常量元素对象
+     * @param aId 辅助后者常量ID
+     * @param id 200 辅助,300常量
+     */
+    getDlgRunSqlParams(value: string,btn:string) {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_DLGSQLRUN,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        value: value,
+        btn:btn, 
+      });
+    }
 
     base64Encode(str: string) {
       var pwd = encodeURIComponent(str);

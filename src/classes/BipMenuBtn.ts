@@ -6,10 +6,19 @@ export class BipMenuBtn{
     bIconleft:boolean = true
     enable:boolean = true
     hasIcon:boolean = true
+
+    /**自定义DLG按钮 */
+    dlgType:string
+    dlgCont:string
+    dlgSname:string = ""
+
+
     constructor(cmd:string,name:string){
         this.cmd = cmd;
         this.name = name;
         this.size = 'mini'
+        this.dlgType = ""
+        this.dlgCont = ""
     }
     public setName(value:string):void{
         this.name = value;
@@ -40,4 +49,15 @@ export class BipMenuBtn{
     public setHasIcon(value:boolean):void{
         this.hasIcon = value
     }
+
+    public setDlgType(value:string):void{
+        this.dlgType = value
+    }
+
+    public setDlgCont(value:string):void{
+        this.dlgCont = value
+    }
+    public setDlgSname(value:string):void{
+        this.dlgSname = value
+    }    
 }

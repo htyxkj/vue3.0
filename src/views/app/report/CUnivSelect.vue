@@ -21,6 +21,9 @@
             <!-- 统计项弹框选择 -->
             <bip-statistics-dlog ref="bi_tj"  :env="env" @makeOK="tjData"></bip-statistics-dlog>
         </template>
+        <template>
+            <bip-menu-btn-dlg ref="bip_dlg"></bip-menu-btn-dlg>
+        </template>
     </el-row>
 </template>
 <script lang="ts">
@@ -28,21 +31,31 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
 import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
+import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
+
 import { URIParams } from "@/classes/URIParams";
 import { BIPUtil } from "@/utils/Request";
+let tools = BIPUtil.ServApi
+import { State, Action, Getter, Mutation } from "vuex-class";
+import {CommICL} from '@/utils/CommICL'
+let ICL = CommICL
+
+import {BipMenuBtn} from '@/classes/BipMenuBtn'
 
 import { Cells } from "@/classes/pub/coob/Cells";
 import BipLayCells from "@/classes/ui/BipLayCells";
 import CDataSet from "@/classes/pub/CDataSet";
-import BipMenuBar from "@/classes/pub/BipMenuBar";
-let tools = BIPUtil.ServApi
+import BipMenuBar from "@/classes/pub/BipMenuBar"; 
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
+import { on } from 'cluster';
+import { types } from 'util';
+import { connect } from 'echarts';
 @Component({
-    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart}
+    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
@@ -59,6 +72,11 @@ export default class CUnivSelect extends Vue {
     @Provide() TJ :boolean = false;//是否是统计图
     @Provide() TJDlog :boolean = false;//是否显示统计dlog
     @Provide() Statistics:any=null;//统计条件集
+    
+    @State("aidValues", { namespace: "insaid" }) aidValues: any;
+    @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
+    @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
+    @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     async initUI() {
         if (this.uriParams&&this.uriParams.pcell) {
             let pcell = this.uriParams.pcell
@@ -107,6 +125,7 @@ export default class CUnivSelect extends Vue {
 
     async mounted(){
         await this.initUI()
+        this.initDlgBtn();
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         let he = document.documentElement.clientHeight;
@@ -127,12 +146,13 @@ export default class CUnivSelect extends Vue {
                     let cc = ptran[i].split("=");
                     this.dsm_cont.currRecord.data[cc[0]] = cc[1];
                 }
+                this.find();
             }
-            this.find();
         }
     }
-    invokecmd(cmd:string){
-        console.log(cmd)
+    async invokecmd(btn:any) {
+        let cmd = btn.cmd
+        console.log(cmd);
         if(cmd == 'CLEAR'){
             this.dsm_cont.currRecord = new CRecord()
         }else if(cmd == 'FIND' ) {
@@ -143,11 +163,19 @@ export default class CUnivSelect extends Vue {
                 let dia: any = this.$refs.bi_tj;
                 dia.open();
             }, 100);
+        }else if(cmd == 'DLG'){
+            let cc = JSON.stringify(this.dsm.currRecord.data);
+            if(cc.length>2){
+                setTimeout(() => {
+                    let dia: any = this.$refs.bip_dlg;
+                    dia.open(btn,this.env); 
+                }, 100);
+            }
         }
         console.log(this.dsm_cont.currRecord)
     }
     find(){
-        this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
         this.qe.oprid = 13
         this.qe.type = 1
         this.qe.page.pageSize = 20
@@ -221,5 +249,44 @@ export default class CUnivSelect extends Vue {
     goTable(){
         this.TJ = false;
     }
+    /**
+     * 获取自定义按钮
+     */
+    async initDlgBtn(){
+        if(this.uriParams){
+            let name = "DLG."+this.uriParams.pbuid;
+            let str = name
+            str = ICL.AID_KEYCL+str;
+            if(!this.aidValues.get(str)){
+                let vv  = window.sessionStorage.getItem(str)
+                if(!vv){
+                    let vars = {id:300,aid:name}
+                    await this.fetchInsAid(vars);
+                    let vv  = window.sessionStorage.getItem(str)
+                    if(vv){
+                        let vals = {key:str,value:JSON.parse(vv)}
+                        this.setAidValue(vals)
+                    }
+                }else{
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                } 
+            }
+            let dlg = this.aidValues.get(str);
+            if(dlg && dlg.slink){ 
+                let dlgBtn = dlg.slink.split("&")
+                dlgBtn.forEach((item:any) => {
+                    let cc = item.substring(0,item.indexOf(";")); 
+                    let type = cc.substring(0,1);
+                    let bname = cc.substring(2,item.indexOf(","));  
+                    let btn1 = new BipMenuBtn("DLG",bname)
+                    btn1.setDlgSname(name);
+                    btn1.setDlgType(type)
+                    btn1.setDlgCont(item.substring(item.indexOf(";")+1))
+                    this.mbs.menuList.push(btn1)
+                });
+            }
+        }
+    } 
 }
 </script>

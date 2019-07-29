@@ -276,7 +276,7 @@ export default class LayCelVexTable extends Vue {
                                     this.$router.push({
                                         path:'/layout',
                                         name:'layout',
-                                        params:{pkfld:opera.pkfld,value:slkid},
+                                        params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
                                         query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
                                     })
                                 }

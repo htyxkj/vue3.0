@@ -66,7 +66,8 @@ export default class BaseApplet extends Vue{
     @Provide() pmenuid:string ='';
 
 
-    async invokecmd(cmd: string) {
+    async invokecmd(btn:any) {
+        let cmd = btn.cmd
         console.log(cmd);
         if (cmd === "ADD") {
             if ((this.dsm.currRecord.c_state & 2) > 0) {
@@ -341,6 +342,7 @@ export default class BaseApplet extends Vue{
             this.$notify.info("没有查询到数据");
             this.$bus.$emit('dataloadchange')
         }
+        return vv;
     }
 
     /**
@@ -597,19 +599,24 @@ export default class BaseApplet extends Vue{
     async mounted(){
         // console.log(this.uriParams,'bbb')
         await this.uriParamsChange()
-        if(!this.params || !this.params.pkfld){
+        if(!this.params || !this.params.method){
             this.dsm.createRecord();
             this.dsm.currRecord.c_state = 1
-            if(this.uriParams && this.uriParams.pdata){ 
+            if(this.uriParams && this.uriParams.pdata && this.uriParams.pdata.length>1){ 
                 this.findData(true,this.uriParams.pdata,14); 
             } 
         }else{
+
             this.pmenuid = this.$route.query.pmenuid+'';
-            if(this.params && this.params.pkfld){
-                let data:any = {};
-                data[this.params.pkfld] = this.params.value
-                this.findData(true,data);
-            } 
+            this.initGetVal();
+            // if(this.params && this.params.method =='pkfld'){
+            //     let data:any = {};
+            //     data[this.params.pkfld] = this.params.value
+            //     this.findData(true,data);
+            // }else if(this.params && this.params.method =='dlg'){ 
+            //     if(JSON.stringify(this.params.jsontj).length >2)
+            //     this.findData(true,this.params.jsontj);
+            // }
         } 
     }
 
@@ -649,14 +656,45 @@ export default class BaseApplet extends Vue{
         }
     }
 
+    async initGetVal(){
+        this.searchdia = true;
+        this.qe.oprid = 13;
+        this.qe.page.currPage = 1;
+        this.qe.page.index = 0;
+        if(this.params && this.params.method =='pkfld'){
+            let data:any = {};
+            data[this.params.pkfld] = this.params.value
+            this.findData(true,data);
+        }else if(this.params && this.params.method =='dlg'){
+            if(JSON.stringify(this.params.jsontj).length >2)
+            var cData  = await this.findData(true,this.params.jsontj);
+            if(cData && cData.page)
+            if(cData.page.total ==0){
+                let obj_id = this.params.cellid;
+                let cont = this.params.jsoncont;
+                let data = this.finCellCurrRecord(this.env.dsm,obj_id) 
+            　　for(var key in cont){ 
+                    data.data[key] = cont[key]
+            　　} 
+            }
+        }
+    }
+    /**
+     * 获取某个对象的当前选中的内容
+     */
+    finCellCurrRecord(dsm:CDataSet,obj_id:string):any{
+        if(dsm.ccells.obj_id == obj_id){
+            return dsm.currRecord;
+        }
+        for(var i =0;i< dsm.ds_sub.length ;i++){
+            return this.finCellCurrRecord(dsm.ds_sub[i],obj_id)
+        }
+        return null;
+    }
     @Watch('params')
     paramsWatch(){ 
-        if(this.pmenuid == this.$route.query.pmenuid){
-            if(this.params && this.params.pkfld){
-                let data:any = {};
-                data[this.params.pkfld] = this.params.value
-                this.findData(true,data);
-            }
+        if(this.pmenuid == this.$route.query.pmenuid){ 
+            this.initGetVal();
         }
     }
 //#endregion

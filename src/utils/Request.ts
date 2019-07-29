@@ -112,6 +112,12 @@ export namespace BIPUtil {
         return this.getFromServer(param);
     }
 
+
+    getDlgRunSql(value:string,btn:string){
+        let param = tool.getDlgRunSqlParams(value,btn);
+        return this.getFromServer(param)
+    }
+
         /**
          * 方法编码，消息编号，消息状态，任务编码，任务业务，用户，页数，条数，消息关键字
          */

@@ -581,17 +581,25 @@ export default class CDataSet {
     this.cdata = data;// Object.assign({},data);
     this.page = data.page;
     this.currRecord = data.getDataAtIndex(0);
-    if(this.currRecord.subs.length>0){
-            this.ds_sub.forEach(cd0=>{
-            let _i = this.currRecord.subs.findIndex(item=>{
-                return item.obj_id = cd0.cdata.obj_id
-            })
-            if(_i>-1){
-                cd0.currRecord = cd0.getRecordAtIndex(0)
-            }
-        })
+    if(this.currRecord){
+      if(this.currRecord.subs.length>0){
+              this.ds_sub.forEach(cd0=>{
+              let _i = this.currRecord.subs.findIndex(item=>{
+                  return item.obj_id = cd0.cdata.obj_id
+              })
+              if(_i>-1){
+                  cd0.currRecord = cd0.getRecordAtIndex(0)
+              }
+          })
+      }
+    }else{ 
+      this.page = new PageInfo(1,1)
+      this.page.total = 1;
+      this.currRecord = new CRecord()
+      let modal = this.createOne();
+      this.addRow(modal);
+      this.currRecord = modal;
     }
-
   }
 
   setState(state: number) {

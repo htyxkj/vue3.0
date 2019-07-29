@@ -2,7 +2,7 @@
     <div>
         <template v-if="item.haveChild">
             <template v-if="item.childMenu.length === 0">
-                <el-menu-item :index="item.menuId" :route="'layout?'+item.command" @click="closeMenu">
+                <el-menu-item :index="item.menuId" v-if="item.menuattr != 4" :route="'layout?'+item.command" @click="closeMenu">
                     <i class="el-icon-menu"></i>
                     {{item.menuName}}
                 </el-menu-item>
@@ -16,16 +16,17 @@
 
                 <template v-for="child in item.childMenu">
                     <bip-menu-item v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
-
-                    <el-menu-item v-else :key="child.menuId" :index="child.menuId" :route="'layout?'+child.command" @click="closeMenu">
-                        <i class="el-icon-location"></i>
-                        {{child.menuName}}
-                    </el-menu-item>
+                    <template v-else>
+                        <el-menu-item v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  :route="'layout?'+child.command" @click="closeMenu">
+                            <i class="el-icon-location"></i>
+                            {{child.menuName}}
+                        </el-menu-item> 
+                    </template>
                 </template>
             </el-submenu>
         </template>
         <template v-else>
-            <el-menu-item :key="item.menuId" :index="item.menuId" :route="'layout?'+item.command" @click="closeMenu">
+            <el-menu-item :key="item.menuId" :index="item.menuId" v-if="item.menuattr != 4" :route="'layout?'+item.command" @click="closeMenu">
                 <i class="el-icon-menu"></i>
                 {{item.menuName}}
             </el-menu-item>

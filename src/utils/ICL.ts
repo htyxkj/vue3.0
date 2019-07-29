@@ -15,7 +15,7 @@ export const GlobalVariable = Object.assign({},{
     APIID_WORKFLOW:"workflow",
     APIID_FINDSTATDATA:"findstatdata",
     APIID_BIPINSAID:"bipinsaid",
-
+    APIID_DLGSQLRUN : "dlgsqlrun" ,
 
     APIID_TA_MSG:"taskmsg",
 

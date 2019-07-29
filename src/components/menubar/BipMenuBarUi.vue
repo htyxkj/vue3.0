@@ -4,7 +4,7 @@
             <el-checkbox v-model="bInsert" label="录入"></el-checkbox>
         </template> -->
         <el-button-group v-if="mbs">
-            <el-button v-for="(btn,index) in mbs.menuList" :key="index" :size="btn.size" @click.native="invokecmd(btn.cmd)" :disabled="!btn.enable">     
+            <el-button v-for="(btn,index) in mbs.menuList" :key="index" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                 <template v-if="btn.hasIcon">
                     <template v-if="btn.icon&&btn.bIconleft">
                         <i :class="btn.icon"></i>{{btn.name}}
@@ -33,8 +33,8 @@ export default class BipMenuBarUI extends Vue{
     @Prop() mbs!:BipMenuBar;
     @Prop() cds!:CDataSet
     @Provide() bInsert:boolean = true;
-    invokecmd(cmd:string){
-        this.$emit('invokecmd',cmd);
+    invokecmd(btn:any){
+        this.$emit('invokecmd',btn);
     }
     mounted(){
     }
