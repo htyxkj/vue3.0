@@ -60,7 +60,7 @@ export default class BaseApplet extends Vue{
     @Provide() fullscreenLoading: boolean = false;
     @Provide() searchdia: boolean = false;
     @Provide() qe: QueryEntity = new QueryEntity("","");
-    @Provide() dataCache: Array<DataCache> = [];
+    // @Provide() dataCache: Array<DataCache> = [];
     @Provide() listIndex: number = -1;
     @Provide() cea:CeaPars = new CeaPars({});
     @Provide() pmenuid:string ='';
@@ -109,7 +109,8 @@ export default class BaseApplet extends Vue{
                 this.JumpToIndexCRecord(_idx);
             }
         } else if (cmd === "FIRST") {
-            if (this.dsm.index !== 0) this.JumpToIndexCRecord(0);
+            if (this.dsm.index !== 0) 
+            this.JumpToIndexCRecord(0);
         }else if(cmd === "DEL"){
             let states = this.dsm.currRecord.c_state
             if((states&icl.R_INSERT)>0){
@@ -198,17 +199,21 @@ export default class BaseApplet extends Vue{
      * @param crd 查询条件
      */
     async getCRecordByPk(crd: CRecord) {
+        console.log(crd)
         if (crd.c_state == undefined || crd.c_state == 0) {
             this.qe.oprid = 15;
             this.qe.cont = JSON.stringify(crd.data);
             this.qe.values = [];
             let vv = await this.findDataFromServe(this.qe);
-            // console.log(vv)
+            console.log(vv)
             if (vv != null) {
-                this.qe.values = vv.data;
-                this.qe.page = vv.page;
-                this.dataLoaded(this.qe,vv);
-                console.log('getdataBack')
+                this.dsm.currRecord = vv.data[0]
+                this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
+                // this.qe.values = vv.data;
+                // this.qe.page = vv.page;
+                // this.dataLoaded(this.qe,vv);
+                // console.log('getdataBack')
+                this.setSubData()
             }
         } else {
             this.dsm.currRecord = crd;
@@ -223,8 +228,8 @@ export default class BaseApplet extends Vue{
      */
     getPageInfo(index: number, size: number): PageInfo {
         let page = new PageInfo(1, size);
-        page.currPage = Math.floor(index / size) + 1;
-        page.index = index % size;
+        page.currPage = index==0?1: Math.floor(index / size) + 1;
+        page.index = index==0?0:index % size;
         return page;
     }
     /**
@@ -248,21 +253,22 @@ export default class BaseApplet extends Vue{
      */
     async JumpToIndexCRecord(_idx: number) {
         let crd = this.caclPageAndCRecord(_idx);
-        // this.dsm.index = _idx;
-        if (crd) {
+        console.log('跳转'+_idx,crd)
+        if(crd){
+            this.dsm.currRecord  =crd
             await this.getCRecordByPk(crd);
-        } else {
+        }else{
             let vv = await this.findDataFromServe(this.qe);
             if (vv && vv.data.length > 0) {
                 console.log(vv);
-                let dc = new DataCache(vv.page.currPage, vv);
-                console.log(dc, "缓存数据");
-                this.dataCache.push(dc);
+                // let dc = new DataCache(this.dsm.page.currPage, vv);
+                // console.log(dc, "缓存数据");
+                // this.dataCache.push(dc);
                 this.dsm.setValues(vv.data, true);
                 crd = vv.data[vv.page.index];
+                this.dsm.currRecord = crd
                 await this.getCRecordByPk(crd);
             }
-            console.log(vv);
         }
         this.setListMenuName();
     }
@@ -275,32 +281,40 @@ export default class BaseApplet extends Vue{
      */
     caclPageAndCRecord(_idx: number) {
         //计算或者获取当前页次
+        console.log('数据下标:'+_idx)
         let page = this.getPageInfo(_idx, this.qe.page.pageSize);
-        console.log(page);
-        this.dsm.page = page;
-        let page0 = this.qe.page;
-        page.total = page0.total;
-        this.qe.page = page;
-        let crd;
-        if (page.currPage == page0.currPage) {
-            crd = this.dsm.getRecordAtIndex(page.index);
-        } else {
-            let vr = this.dataCache.find(item => {
-                return item.page == page.currPage;
-            });
-            if (vr) {
-                this.dsm.setCData(vr.values);
-                crd =vr.values.getDataAtIndex(page.index);
-            } else {
-                this.qe.oprid = this.oprid;
+        
+        let p0 = this.dsm.page
+        this.dsm.index = page.index
+        if(p0.currPage == page.currPage){
+            this.dsm.page.index = page.index;
+            return this.dsm.cdata.getDataAtIndex(page.index);
+        }else{
+            this.dsm.page.index = page.index;
+            this.dsm.page.currPage = page.currPage
+            // let _idex = this.dataCache.findIndex(item => {
+            //     return item.page == page.currPage;
+            // });
+            // if(_idex>-1){
+            //     let cdata:CData = this.dataCache[_idex].values
+            //     console.log(cdata,'fdfds');
+            //     this.dsm.setCData(cdata);
+            //     return cdata.getDataAtIndex(page.index);
+            // }else{
+            //     this.qe.oprid = this.oprid;
+            //     if(this.oprid == 13)
+            //         this.qe.cont = JSON.stringify(this.dsm.cont);
+            //     else
+            //         this.qe.cont = this.dsm.cont;
+            // }
+            this.qe.oprid = this.oprid;
                 if(this.oprid == 13)
-                this.qe.cont = JSON.stringify(this.dsm.cont);
+                    this.qe.cont = JSON.stringify(this.dsm.cont);
                 else
-                this.qe.cont = this.dsm.cont;
-            }
+                    this.qe.cont = this.dsm.cont;
+            return null;
         }
-        // console.log(JSON.stringify(crd), "获取记录");
-        return crd;
+        return null;
     }
 
     
@@ -337,7 +351,7 @@ export default class BaseApplet extends Vue{
             this.qe.cont = cont;
         }
         // console.log(this.qe,'qe')
-        this.dataCache = []
+        // this.dataCache = []
         let vv:CData = await this.findDataFromServe(this.qe);
         if (vv != null) { 
             // this.qe.values = vv.data;
@@ -362,9 +376,10 @@ export default class BaseApplet extends Vue{
                 let page = cd.page;
                 this.dsm.setCData(cd);
                 this.setSubData()
-                let dc = new DataCache(page.currPage, cd);
-                console.log(dc, "缓存数据");
-                this.dataCache.push(dc);
+                // let dc = new DataCache(page.currPage, cd);
+                // console.log(dc, "缓存数据");
+                // this.dataCache.push(dc);
+                
 
         } else if (vv.oprid == 15) {
             let rec: any = vv.values[0]; //后台返回的数据当前行
@@ -373,18 +388,18 @@ export default class BaseApplet extends Vue{
             this.dsm.page = Object.assign({},page);
             console.log(JSON.stringify(page));
             let i = vv.page.index; //数据的第几个
-            let vr = this.dataCache.find(item => {
-                return item.page == page.currPage;
-            });
-            // console.log(vr);
-            let _ii = this.dataCache.findIndex(item => {
-                return item.page == page.currPage;
-            });
-            if (_ii !== -1) {
-                let v = this.dataCache[_ii];
-                // console.log("缓存第几个," + _ii);
-                v.values = cd
-            }
+            // let vr = this.dataCache.find(item => {
+            //     return item.page == page.currPage;
+            // });
+            // // console.log(vr);
+            // let _ii = this.dataCache.findIndex(item => {
+            //     return item.page == page.currPage;
+            // });
+            // if (_ii !== -1) {
+            //     let v = this.dataCache[_ii];
+            //     // console.log("缓存第几个," + _ii);
+            //     v.values = cd
+            // }
             this.dsm.setRecordAtIndex(rec, i);
             this.dsm.currRecord = rec;
             // this.setSubData()
@@ -421,6 +436,7 @@ export default class BaseApplet extends Vue{
         let data = res.data;
         this.fullscreenLoading = false;
         if (data.id == 0) {
+            console.log(data.data.data)
             let vv:CData = data.data.data;
             let cd :CData = this.initCData(vv)
             return cd;
@@ -618,14 +634,6 @@ export default class BaseApplet extends Vue{
 
             this.pmenuid = this.$route.query.pmenuid+'';
             this.initGetVal();
-            // if(this.params && this.params.method =='pkfld'){
-            //     let data:any = {};
-            //     data[this.params.pkfld] = this.params.value
-            //     this.findData(true,data);
-            // }else if(this.params && this.params.method =='dlg'){ 
-            //     if(JSON.stringify(this.params.jsontj).length >2)
-            //     this.findData(true,this.params.jsontj);
-            // }
         } 
     }
 
@@ -661,10 +669,11 @@ export default class BaseApplet extends Vue{
         this.qe.cont = JSON.stringify(this.dsm.cont);
         else
         this.qe.cont = this.dsm.cont;
-         let vv = await this.findDataFromServe(this.qe);
+        let vv = await this.findDataFromServe(this.qe);
         if (vv != null) {
             // this.qe = vv;
-            this.qe.values = vv.data;
+            // this.qe.values = vv.data;
+            
             this.qe.page = vv.page;
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
@@ -693,7 +702,7 @@ export default class BaseApplet extends Vue{
                 　　for(var key in cont){ 
                         data.data[key] = cont[key]
                 　　} 
-                    // this.env.dsm.inc_Calc2(this.dsm.ccells,this.dsm.currRecord.data,-1);
+                    this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
                 }
             }else if(this.params.method =='BL'){
                 if(JSON.stringify(this.params.jsontj).length >2)

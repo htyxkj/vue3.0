@@ -400,6 +400,9 @@ export default class CDataSet {
           if (iniVl == "[Y2-M]") {
             iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y2M);
           }
+          if (iniVl == "[Y]") {
+            iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y);
+          }
           if (item.type <= 5 && item.type !=1) {
             if (!iniVl) iniVl = "";
             else {
@@ -707,135 +710,5 @@ export default class CDataSet {
     // })
   }
 
-  inc_Calc2(cell:Cells , ovs:Array<any>, cx:number) {
-    let xinc = cell.autoInc;
-    if (xinc < 1)
-     return;
-    let x0 = cell.pkindex[0]
-    if (x0 > 0)
-     this.inc_Calc(cell, x0, ovs, cx);
-    x0 = (xinc >>> 8) & 0xFF;
-    if (x0 > 0)
-     this.inc_Calc(cell, x0, ovs, cx);
-   }
-   /**
- * 算实际的缺省值,结合编辑使用,它只能在新增下使用
- */
-  inc_Calc(cell:Cells,xinc:number,ovs:Array<any>,cx:number) {
-  let cel = cell.cels[xinc];
-  let s0 = cel.psAutoInc;
-  // if (s0 == null || s0.length < 1 || cel.type !=12 )
-  //  return;
-  let ilnk = cel.lnk_inn, x0;
- // int ilnk = cel.lnk_out, x0;
-  if (cx > -1) {
-   x0 = cx + 1;//;-单元改变
-   for (let id1 = ilnk;id1 != 0 && x0 > 0;id1 >>>= 16) {
-    if ((id1 & 0xFF) == x0)
-     x0 = 0;//;-依赖检查
-   }
-   if (x0 > 0)
-    return;//;-编码无关时退出
-  }
-  s0 = this.inc_Calc3(s0, ilnk, ovs);//;-只对合并编码有效
-  cel.initValue = s0;//;-服务器使用
-  if ((cel.attr & 0x10000) == 0) {
-   x0 = s0.lastIndexOf('%');
-   ovs[xinc] = x0 < 1 ? s0 : s0.substring(0, x0 + 1);
-  }
- }
- /**
- * 计算依赖值(对于非字段型,直接为当前值),它只能用于依赖字段合并入编码
- * 如果是非单据,在客户端指为操作公司,服务器调用变量表。
- */
-  inc_Calc3(sinc:string , ilnk:number, orf:any) {
-  let x0 = sinc.indexOf('\r'), x1;//;-格式化后和格式化前的值
-  if (x0 > 0)
-   sinc = sinc.substring(0, x0);
-  x0 = sinc.indexOf('%');
-  if (x0 >= 0) {
-   let bary = orf != null && orf instanceof Array;
-   let o0 = orf;
-   while (x0 >= 0 && ilnk != 0) {
-    x1 = (ilnk & 0xFF) - 1;
-    if (x1 < 0)
-    //  throw new RuntimeException(cl.IERR.ERR_ERROR + ":" + sinc + " autoinc innlink(-1)");//;--自增依赖定义错误
-    if (bary)
-     o0 = orf[x1];
-    sinc = sinc.substring(0, x0) + this.inc_Calca((ilnk >>> 8) & 0xFF, o0, x1) + sinc.substring(x0 + 1);
-    x0 = sinc.indexOf('%', x0);
-    ilnk >>>= 16;
- //   ilnk >>>= 8;
-   }
-  }
-  return sinc;
- }
- /**
- * iinc主要是标识日期和长度
- * 年可以用2位和4位,月和日必需是2位
- * 参照值:非对照方式时,当前的实值;对照方式:客户端调用时为操作公司否则表变量表
- * 部门相关时可以区分按部门或公司。
- */
-  inc_Calca(iinc:number, orf:any, xdep:number) {
-  let s0;
-  let t0 = iinc & 0xF0;//;-高位表示类形,低位表示长度
-  let bvar = false;//orf instanceof IMacroListener;//;-值按码表形式传入
-  // if (t0 == ICL.INC_YMD) {//--日期为空时使用当前的日期
-  //   let cal = bvar ? ((IMacroListener) orf).macro_date(xdep) : toCalendar(objToDate(orf));//;-日期类型
-  //  s0 = "";
-  //  let s1 = cal.get(0x1);
-  //  if ((iinc & ICL.INC_Y2) != 0)
-  //   s0 += s1.substring(2);
-  //  else if ((iinc & ICL.INC_Y) != 0)
-  //   s0 += s1;
-  //  if ((iinc & ICL.INC_M) != 0) {
-  //   t0 = cal.get(0x2) + 1;
-  //   s0 += (t0 < 10 ? "0" : "") + t0;
-  //  }
-  //  if ((iinc & ICL.INC_D) != 0) {
-  //   t0 = cal.get(0x5);
-  //   s0 += (t0 < 10 ? "0" : "") + t0;
-  //  }
-  //  return s0;
-  // }
-  if (orf == null)
-   return "0";
-  if (bvar) {
-   if (t0 == ICL.INC_CM)
-    s0 = ICL.F_SCM;
-   else if (t0 == ICL.INC_ORG)
-    s0 = ICL.ORGCODE;
-   else if (t0 == ICL.INC_USR)
-    s0 = ICL.USRCODE;
-   else
-    s0 = "#Z" + ((t0 - ICL.INC_OTH) / 16);//;--动态值(#Z0,#Z1,...)放到变量表中。
-   let var1 =  orf;
-   s0 =  s0;
-   if (t0 == ICL.INC_CM && s0 == null)
-    s0 = ICL.CMCODE;
-  } else
-   s0 = orf.toString();
-  t0 = iinc & 0xF;//;-定义长度
-  if (s0 == null || s0.length() < 1)
-   s0 = "0";
-  if (t0 > 0) {
-    let t1 = s0.length();
-   if (t1 > t0)
-    return s0.substring(0, t0);
-   if (t1 < t0)
-    return this.fillchar(['0'], t0 - t1) + s0;//;-补"0"(用于对齐)
-  }
-  return s0;
- }
- /**
- * 返回指定字符和长度的字符串。 
- */
- fillchar(ch:Array<any>, cc:number) {
-  if (cc < 1)
-   return "";
-  let chs = [];
-  for (let i = 0;i < cc;i++)
-    chs[i] = ch;
-  return new String(chs);
- }
+
 }

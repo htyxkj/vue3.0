@@ -5,6 +5,7 @@
                 <el-input v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" 
                         @focus="getFocus(true)"
                         @blur="getFocus(false)"
+                        @change="dataChange"
                     >
                     <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
                 </el-input>
@@ -77,7 +78,7 @@ export default class BipInsAidEditor extends Vue{
         this.multiple = (this.cds.ccells.attr&0x80)>0
         this.mulcols = (this.cell.attr & 0x100000) > 0;
         this.bfmt = (this.cell.attr & 0x10000) > 0;
-        this.bcode = (this.cell.attr & 0x40000) > 0 || (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
+        this.bcode = (this.cell.attr & 0x40000) > 0 ;//|| (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{
@@ -345,7 +346,20 @@ export default class BipInsAidEditor extends Vue{
            this.refLink = this.bipInsAid 
         }
     }
-    
+
+    dataChange(value:string|number){
+        if(this.cds&&this.cell){
+            if(this.cds.currCanEdit()){
+                this.cds.currRecord.data[this.cell.id] = this.model1;
+                this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
+                const key:string = this.cell.id
+                // this.cds.cdata.data[this.row].c_state |=2;
+                this.cds.setStateOrAnd(ICL.R_EDITED)
+            }else{
+                this.model1 = this.model
+            }
+        }   
+    }
 
 
 

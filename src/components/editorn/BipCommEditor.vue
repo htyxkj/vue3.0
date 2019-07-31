@@ -161,6 +161,8 @@ export default class BipCommEditor extends Vue{
             if(this.model!=undefined || this.model!=null){
                 this.model+=''
             }
+        }else{
+            this.model = '';
         }
         return this.model||''
     }

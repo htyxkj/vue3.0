@@ -145,7 +145,7 @@ export default class BipGridInfo extends Vue{
     mapChanges(){
         if(!this.bipInsAid){ 
             if(this.linkName){
-                let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName)
+                let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName) ==null?this.aidInfo.get(ICL.AID_KEYCL+this.linkName):this.aidInfo.get(ICL.AID_KEY+this.linkName) 
                 if(rr)
                     this.bipInsAid = rr
             } 

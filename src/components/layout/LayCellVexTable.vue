@@ -155,6 +155,8 @@ export default class LayCelVexTable extends Vue {
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
+
+    @Provide() datachangeBusID:number=0;
     created() {
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
@@ -404,6 +406,17 @@ export default class LayCelVexTable extends Vue {
             } 
         }
         return this.aidValues.get(str);
+    }
+    mounted(){ 
+        this.datachangeBusID= this.$bus.$on('datachange',this.datachange)
+    }
+    beforeDestroy(){
+        this.$bus.$off('datachange',this.datachangeBusID)
+    }
+    datachange(){
+        let cc:any = this.$refs._vvt;
+        if(cc)
+            cc.setCurrentRow(this.cds.currRecord);
     }
 }
 </script>

@@ -102,3 +102,8 @@ export default class BipStatisticsDialog extends Vue {
     }
 }
 </script>
+<style lang="scss" scoped>
+.bip-form-item {
+  margin-bottom: 22px !important;
+}
+</style>

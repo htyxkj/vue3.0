@@ -143,6 +143,7 @@ export default class CUnivSelect extends Vue {
             this.pmenuid = this.$route.query.pmenuid+'';
             this.initVal(); 
         } 
+        this.$bus.$on("row_click",this.getCRecordByPk2) 
     }
     initData(){
         if(this.uriParams && this.uriParams.pbds){
@@ -162,7 +163,9 @@ export default class CUnivSelect extends Vue {
         let cmd = btn.cmd
         console.log(cmd);
         if(cmd == 'CLEAR'){
-            this.dsm_cont.currRecord = new CRecord()
+        　　for(var key in this.dsm_cont.currRecord.data){ 
+                this.dsm_cont.currRecord.data[key] = "";
+        　　} 
         }else if(cmd == 'FIND' ) {
             this.find()
         }else if(cmd == 'ISTAT'){
@@ -183,6 +186,8 @@ export default class CUnivSelect extends Vue {
         console.log(this.dsm_cont.currRecord)
     }
     find(){
+        this.qe.pcell = this.dsm.ccells.obj_id
+        this.qe.tcell = this.dsm_cont.ccells.obj_id
         if(this.biType == "SEL")
             this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
         else if(this.biType == "RPT"){
@@ -221,6 +226,7 @@ export default class CUnivSelect extends Vue {
                     this.$notify.error(data)
                 }
                 this.$bus.$emit("datachange")
+                this.getCRecordByPk2();
             }).catch(err=>{
                 this.fullscreenLoading = false
                 this.$notify.error(err)
@@ -348,6 +354,90 @@ export default class CUnivSelect extends Vue {
      */
     Recheck(){
         this.find()
+    }
+
+    getCRecordByPk2(){
+        if(this.dsm.ds_sub.length>0)
+        this.getCRecordByPk(this.dsm.currRecord)
+    }
+    /**
+     * @description 根据主键获取记录
+     * @param crd 查询条件
+     */
+    async getCRecordByPk(crd: CRecord) {
+        console.log(crd)
+        if (crd.c_state == undefined || crd.c_state == 0) {
+            this.qe.pcell = this.dsm.p_cell
+            this.qe.tcell = this.dsm.ccells.obj_id
+            this.qe.oprid = 15;
+            this.qe.cont = JSON.stringify(crd.data);
+            this.qe.values = [];
+            let vv = await this.findDataFromServe(this.qe);
+            console.log(vv)
+            if (vv != null) {
+                this.dsm.currRecord = vv.data[0]
+                this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
+                // this.qe.values = vv.data;
+                // this.qe.page = vv.page;
+                // this.dataLoaded(this.qe,vv);
+                // console.log('getdataBack')
+                this.setSubData()
+            }
+        } else {
+            this.dsm.currRecord = crd;
+            this.setSubData()
+        }
+    }
+    /***
+     * @description 从服务端获取数据
+     * @param qes 查询条件和页次对象
+     */
+    async findDataFromServe(qes: QueryEntity) {
+        this.fullscreenLoading = true;
+        let res = await this.dsm.queryData(qes);
+        let data = res.data;
+        this.fullscreenLoading = false;
+        if (data.id == 0) {
+            console.log(data.data.data)
+            let vv:CData = data.data.data;
+            let cd :CData = this.initCData(vv)
+            return cd;
+        } else {
+            return new CData('');
+        }
+    }
+    setSubData(){
+        let n = this.dsm.ds_sub.length
+        for(let i=0;i<n;i++){
+            let cds1 = this.dsm.ds_sub[i]
+            cds1.clear();
+            for(let j=0;j<this.dsm.currRecord.subs.length;j++){
+                let oneSubs:any = this.dsm.currRecord.subs[j]
+                if(oneSubs.obj_id == cds1.ccells.obj_id){
+                    let vals = oneSubs.data;
+                    if(oneSubs){
+                        cds1.clear();
+                        cds1.setCData(oneSubs)
+                        cds1.page.total = vals.length||0
+                    }
+                }
+            }
+        }
+    }
+    initCData(vv:CData){
+        let cd :CData = new CData('');
+        cd.data = vv.data
+        cd.page = vv.page
+        cd.obj_id = vv.obj_id
+        vv.data.forEach((item,index)=>{
+            if(item.subs.length>0){
+                item.subs.forEach((icd,index)=>{
+                    let cc:CData = this.initCData(icd)
+                    item.subs[index] = cc;
+                })
+            }
+        })
+        return cd;
     }
 }
 </script>
