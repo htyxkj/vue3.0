@@ -41,6 +41,14 @@ export default class CCliEnv{
                 }
             }
         }
+        if(cds == null){
+            if(this.ds_cont){
+                cds = this.getCDataSet(this.ds_cont,obid)
+                if(cds!=null){
+                    return  cds
+                }
+            }
+        }
         return cds
     }
 

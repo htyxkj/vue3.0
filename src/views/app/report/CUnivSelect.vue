@@ -4,7 +4,7 @@
         <template v-if="!TJ">
             <div class="bip-main-container" v-if="lay.binit">
                 <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                    <div ref="se">
+                    <div ref="se" @keyup.enter="find">
                         <bip-search-cont ref="se" :env="env"></bip-search-cont>
                     </div>
                     <el-form label-position="right" label-width="120px">
@@ -22,7 +22,7 @@
             <bip-statistics-dlog ref="bi_tj"  :env="env" @makeOK="tjData"></bip-statistics-dlog>
         </template>
         <template>
-            <bip-menu-btn-dlg ref="bip_dlg"></bip-menu-btn-dlg>
+            <bip-menu-btn-dlg ref="bip_dlg" @Recheck="Recheck"></bip-menu-btn-dlg>
         </template>
     </el-row>
 </template>
@@ -54,11 +54,14 @@ import CData from '../../../classes/pub/CData';
 import { on } from 'cluster';
 import { types } from 'util';
 import { connect } from 'echarts';
+import { throws } from 'assert';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
+    @Prop() biType?:string;
+    @Prop() params:any;
     @Provide() fullscreenLoading: boolean = false;
     @Provide() cells: Array<Cells> = new Array<Cells>();
     @Provide() mbs: BipMenuBar = new BipMenuBar(0);
@@ -72,7 +75,7 @@ export default class CUnivSelect extends Vue {
     @Provide() TJ :boolean = false;//是否是统计图
     @Provide() TJDlog :boolean = false;//是否显示统计dlog
     @Provide() Statistics:any=null;//统计条件集
-    
+    @Provide() pmenuid:string = "";
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -134,7 +137,12 @@ export default class CUnivSelect extends Vue {
         console.log(ses)
         let height= ses.offsetHeight;
         console.log('ses height:'+height,he-height)
-        this.initData();
+        if(!this.params || !this.params.method){ 
+            this.initData(); 
+        }else{
+            this.pmenuid = this.$route.query.pmenuid+'';
+            this.initVal(); 
+        } 
     }
     initData(){
         if(this.uriParams && this.uriParams.pbds){
@@ -175,7 +183,11 @@ export default class CUnivSelect extends Vue {
         console.log(this.dsm_cont.currRecord)
     }
     find(){
-        this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+        if(this.biType == "SEL")
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+        else if(this.biType == "RPT"){
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        }
         this.qe.oprid = 13
         this.qe.type = 1
         this.qe.page.pageSize = 20
@@ -190,13 +202,37 @@ export default class CUnivSelect extends Vue {
 
     findServerData(queryCont:any){
         this.fullscreenLoading = true
-        this.dsm.queryData(queryCont).then(res=>{
+            if(this.biType =="SEL")
+            this.dsm.queryData(queryCont).then(res=>{
+                this.fullscreenLoading = false
+                let data = res.data;
+                if(data.id === 0){
+                    let cd : CData = new CData('');
+
+                    let retdata = data.data.data
+                    cd.obj_id = retdata.obj_id;
+                    cd.data = retdata.data;
+                    cd.page = retdata.page; 
+
+                    let page = retdata.page; 
+                    this.dsm.setCData(cd)
+                    this.dsm.index = (page.currPage - 1) * page.pageSize;
+                }else{
+                    this.$notify.error(data)
+                }
+                this.$bus.$emit("datachange")
+            }).catch(err=>{
+                this.fullscreenLoading = false
+                this.$notify.error(err)
+            });
+        else if(this.biType == "RPT")
+            this.dsm.queryRPTData(queryCont).then(res=>{
             this.fullscreenLoading = false
             let data = res.data;
             if(data.id === 0){
                 let cd : CData = new CData('');
 
-                let retdata = data.data.data
+                let retdata = data.data.rpt
                 cd.obj_id = retdata.obj_id;
                 cd.data = retdata.data;
                 cd.page = retdata.page; 
@@ -207,7 +243,7 @@ export default class CUnivSelect extends Vue {
             }else{
                 this.$notify.error(data)
             }
-
+            this.$bus.$emit("datachange")
         }).catch(err=>{
             this.fullscreenLoading = false
             this.$notify.error(err)
@@ -256,6 +292,7 @@ export default class CUnivSelect extends Vue {
         if(this.uriParams){
             let name = "DLG."+this.uriParams.pbuid;
             let str = name
+            // let dlg = await pubMethod.getConstant(str);
             str = ICL.AID_KEYCL+str;
             if(!this.aidValues.get(str)){
                 let vv  = window.sessionStorage.getItem(str)
@@ -288,5 +325,29 @@ export default class CUnivSelect extends Vue {
             }
         }
     } 
+    async initVal(){
+        if(this.params){
+            this.qe.page.currPage = 1;
+            this.qe.page.index = 0;
+            if(this.params.method =='BL'){
+                if(JSON.stringify(this.params.jsontj).length >2){
+                    this.dsm_cont.currRecord.data = this.params.jsontj;
+                    this.find();
+                } 
+            }
+        }
+    }
+    @Watch('params')
+    paramsWatch(){ 
+        if(this.pmenuid == this.$route.query.pmenuid){ 
+            this.initVal();
+        }
+    }
+    /**
+     * DLG 弹出框后重新查询
+     */
+    Recheck(){
+        this.find()
+    }
 }
 </script>

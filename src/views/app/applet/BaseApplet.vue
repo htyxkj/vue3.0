@@ -4,7 +4,7 @@
             <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
         </template>
         <template v-if="searchdia">
-            <bip-search-dialog ref="se" :cds_cont="dsm" @makeOK="findData"></bip-search-dialog>
+            <bip-search-dialog ref="se" :cds_cont="dsm" @makeOK="searchfindData"></bip-search-dialog>
         </template>
         
         <div class="bip-main-container" v-if="lay.binit">
@@ -64,7 +64,7 @@ export default class BaseApplet extends Vue{
     @Provide() listIndex: number = -1;
     @Provide() cea:CeaPars = new CeaPars({});
     @Provide() pmenuid:string ='';
-
+    @Provide() oprid:number = 13
 
     async invokecmd(btn:any) {
         let cmd = btn.cmd
@@ -89,7 +89,7 @@ export default class BaseApplet extends Vue{
             await this.saveData();
         } else if (cmd === "FIND") {
             this.searchdia = true;
-            this.qe.oprid = 13;
+            this.qe.oprid = this.oprid;
             this.qe.page.currPage = 1;
             this.qe.page.index = 0;
             setTimeout(() => {
@@ -292,14 +292,22 @@ export default class BaseApplet extends Vue{
                 this.dsm.setCData(vr.values);
                 crd =vr.values.getDataAtIndex(page.index);
             } else {
-                this.qe.oprid = 13;
+                this.qe.oprid = this.oprid;
+                if(this.oprid == 13)
                 this.qe.cont = JSON.stringify(this.dsm.cont);
+                else
+                this.qe.cont = this.dsm.cont;
             }
         }
         // console.log(JSON.stringify(crd), "获取记录");
         return crd;
     }
 
+    
+    async searchfindData(bok: boolean, cont: any) {
+        this.oprid = 13;
+        await this.findData(bok, cont); 
+    }
 //#endregion
 //#region 查询数据
     /**
@@ -307,14 +315,14 @@ export default class BaseApplet extends Vue{
      * @param bok 是否确定查询
      * @param cont 查询条件对象
      */
-    async findData(bok: boolean, cont: any,oprid:number = 13) {
+    async findData(bok: boolean, cont: any) {
         console.log("单据查询！")
         // console.log(bok,cont,this.dsm.ccells.obj_id)
         if (!bok) {
             return;
         }
         this.dsm.cont = cont;
-        this.qe.oprid = oprid;
+        this.qe.oprid = this.oprid;
         if (!this.qe.pcell || this.qe.pcell === "")
             this.qe = new QueryEntity(
                 this.dsm.p_cell,
@@ -324,8 +332,8 @@ export default class BaseApplet extends Vue{
         else {
             if (cont) this.qe.cont = JSON.stringify(cont);
         }
-        if(oprid == 14 ){
-            this.qe.oprid = oprid;
+        if(this.oprid == 14 ){
+            this.qe.oprid = this.oprid;
             this.qe.cont = cont;
         }
         // console.log(this.qe,'qe')
@@ -603,7 +611,8 @@ export default class BaseApplet extends Vue{
             this.dsm.createRecord();
             this.dsm.currRecord.c_state = 1
             if(this.uriParams && this.uriParams.pdata && this.uriParams.pdata.length>1){ 
-                this.findData(true,this.uriParams.pdata,14); 
+                this.oprid = 14;
+                this.findData(true,this.uriParams.pdata); 
             } 
         }else{
 
@@ -622,14 +631,17 @@ export default class BaseApplet extends Vue{
 
     async handleSizeChange(value:number){
         // console.log('handleSizeChange',value)
-        this.qe.oprid = 13
+        this.qe.oprid = this.oprid
         this.qe.type = 0
         this.qe.page.pageSize = value
         this.qe.page.currPage = 1
         console.log(this.qe)
+        if(this.oprid == 13)
         this.qe.cont = JSON.stringify(this.dsm.cont);
-         let vv = await this.findDataFromServe(this.qe);
-         console.log(vv,'服务器返回数据')
+        else
+        this.qe.cont = this.dsm.cont;
+        let vv = await this.findDataFromServe(this.qe);
+        console.log(vv,'服务器返回数据')
         if (vv != null) {
             this.qe.values = vv.data;
             this.qe.page = vv.page;
@@ -642,10 +654,13 @@ export default class BaseApplet extends Vue{
 
     async handleCurrentChange(value:number){
         // console.log('handleCurrentChange',value)
-        this.qe.oprid = 13
+        this.qe.oprid = this.oprid
         this.qe.type = 0
         this.qe.page.currPage = value
+        if(this.oprid == 13)
         this.qe.cont = JSON.stringify(this.dsm.cont);
+        else
+        this.qe.cont = this.dsm.cont;
          let vv = await this.findDataFromServe(this.qe);
         if (vv != null) {
             // this.qe = vv;
@@ -657,39 +672,34 @@ export default class BaseApplet extends Vue{
     }
 
     async initGetVal(){
-        this.searchdia = true;
-        this.qe.oprid = 13;
-        this.qe.page.currPage = 1;
-        this.qe.page.index = 0;
-        if(this.params && this.params.method =='pkfld'){
-            let data:any = {};
-            data[this.params.pkfld] = this.params.value
-            this.findData(true,data);
-        }else if(this.params && this.params.method =='dlg'){
-            if(JSON.stringify(this.params.jsontj).length >2)
-            var cData  = await this.findData(true,this.params.jsontj);
-            if(cData && cData.page)
-            if(cData.page.total ==0){
-                let obj_id = this.params.cellid;
-                let cont = this.params.jsoncont;
-                let data = this.finCellCurrRecord(this.env.dsm,obj_id) 
-            　　for(var key in cont){ 
-                    data.data[key] = cont[key]
-            　　} 
+        if(this.params){
+            this.oprid = 13;
+            this.searchdia = true;
+            this.qe.oprid = this.oprid;
+            this.qe.page.currPage = 1;
+            this.qe.page.index = 0;
+            if(this.params.method =='pkfld'){
+                let data:any = {};
+                data[this.params.pkfld] = this.params.value
+                this.findData(true,data);
+            }else if(this.params.method =='dlg'){
+                if(JSON.stringify(this.params.jsontj).length >2)
+                var cData  = await this.findData(true,this.params.jsontj);
+                if(cData && cData.page)
+                if(cData.page.total ==0){
+                    this.dsm.currRecord = new CRecord();
+                    let data = this.dsm.createRecord();
+                    let cont = this.params.jsoncont;
+                　　for(var key in cont){ 
+                        data.data[key] = cont[key]
+                　　} 
+                    // this.env.dsm.inc_Calc2(this.dsm.ccells,this.dsm.currRecord.data,-1);
+                }
+            }else if(this.params.method =='BL'){
+                if(JSON.stringify(this.params.jsontj).length >2)
+                await this.findData(true,this.params.jsontj);
             }
         }
-    }
-    /**
-     * 获取某个对象的当前选中的内容
-     */
-    finCellCurrRecord(dsm:CDataSet,obj_id:string):any{
-        if(dsm.ccells.obj_id == obj_id){
-            return dsm.currRecord;
-        }
-        for(var i =0;i< dsm.ds_sub.length ;i++){
-            return this.finCellCurrRecord(dsm.ds_sub[i],obj_id)
-        }
-        return null;
     }
     @Watch('params')
     paramsWatch(){ 

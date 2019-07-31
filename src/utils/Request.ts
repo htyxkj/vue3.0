@@ -84,6 +84,10 @@ export namespace BIPUtil {
         let param = tool.getQueryParams(JSON.stringify(qe));
         return this.getFromServer(param);
     }
+    queryRPT(qe:QueryEntity){
+        let param = tool.getQueryRPTParams(JSON.stringify(qe));
+        return this.getFromServer(param);
+    }
 
     getBULinks(buid:string){
         let param = tool.getBuidParams(buid)

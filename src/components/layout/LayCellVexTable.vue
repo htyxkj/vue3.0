@@ -63,10 +63,12 @@
             class="vxe-table-element"
             :data.sync="cds.cdata.data"
             :optimized="true"
-            height="300px"
+            height="450px"
             @cell-dblclick="openrefs"
             @cell-click="table_cell_click"
             >
+            <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
+            <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
             <vxe-table-column type="index" width="60"></vxe-table-column>
             <vxe-table-column
                 header-align="center"
@@ -124,7 +126,8 @@ import { Cell } from "@/classes/pub/coob/Cell";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
-
+import {CommICL} from '@/utils/CommICL'
+let ICL = CommICL
 
 import { BIPUtil } from "@/utils/Request"; 
 let tools = BIPUtil.ServApi
@@ -137,17 +140,21 @@ import CRecord from '../../classes/pub/CRecord';
 export default class LayCelVexTable extends Vue {
     @Prop() laycell!: BipLayCells;
     @Prop() cds!: CDataSet;
+    @Prop() pbuid!: string;
+    @Prop() beBill!: boolean;
+    @Prop() env!:CCliEnv;
+
     @Provide() info: string = "infos";
     @Provide() clearable: boolean = true;
-    // @Provide() cds: CDataSet = new CDataSet(null);
     @Provide() widths: Array<string> = new Array<string>();
-    @Prop() beBill!: boolean;
-
     @Provide() id: string = "";
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
-
+    
     @Provide() removeData :Array<CRecord> =[];
-
+    @State("aidValues", { namespace: "insaid" }) aidValues: any;
+    @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
+    @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
+    @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
+    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     created() {
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
@@ -225,7 +232,9 @@ export default class LayCelVexTable extends Vue {
         this.cds.cdata.clearValues();
         this.$emit("handleCurrentChange", value);
     }
-
+    /** 
+     * 字段点击进行跳转操作
+     */
     async openrefs(data:any,event:any){
         let row = data.row
         let rowIndex = data.rowIndex
@@ -247,7 +256,8 @@ export default class LayCelVexTable extends Vue {
                     let slkbuid = ''
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
-                    let data = null;//获取常量定义的 BL_菜单号_字段ID 进行菜单打开
+                    let data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
+                    data = await this.initBL(cell.id);
                     if(data == null){
                         if (slkid && slkbuid) { 
                             //获取业务定义
@@ -283,7 +293,50 @@ export default class LayCelVexTable extends Vue {
                             }  
                         }
                     }else{
+                        //BL字段点击
+                        let slink = data.slink;
+                        if(slink){
+                            slink = slink.split("&");
+                            let menuid = slink[0]
+                            let me = null; 
+                            for(let i = 0;i<this.menusList.length;i++){
+                                let m1 = this.findMenuById(menuid,this.menusList[i])
+                                if(m1!=null){
+                                    me = m1
+                                    break ;
+                                }
+                            } 
+                            if (!me) {
+                                this.$notify.error( "没有" + menuid + "菜单权限!" );
+                                return false;
+                            }else{
+                                let jsontj:any={};
+                                for(var i=1;i<slink.length;i++){
+                                    let oneTJ = slink[i].split("=")
+                                    let key = oneTJ[0];
+                                    let vl = oneTJ[1]
+                                    if(vl.indexOf("*") !=-1 ){
+                                        let cds = this.env.getDataSet(vl.split("*")[0]);
+                                        vl = cds.currRecord.data[vl.split("*")[1]]
+                                    }else{
+                                        vl = this.cds.currRecord.data[vl]
+                                    }
+                                    jsontj[key] = vl;
+                                }
 
+                                let command = me.command.split("&");
+                                let pbuid = command[0].split("=");
+                                let pmenuid = command[1].split("="); 
+                                this.$router.push({
+                                    path:'/layout',
+                                    name:'layout',
+                                    params:{method:"BL",pmenuid:pmenuid[1],jsontj:jsontj },
+                                    query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                                })
+                            }
+                        }
+
+                        console.log(data);
                     }
                 }else{
                     console.log('主键点击')
@@ -325,6 +378,32 @@ export default class LayCelVexTable extends Vue {
         for(var i=0;i<this.removeData.length;i++){
             this.removeData[i].c_state =4;
         }
+    }
+
+    /**
+     * BL_菜单参数_字段ID 定义
+     */
+    async initBL(id:string){
+        let name = "BL_"+this.pbuid+"_"+id;
+        let str = name
+        // let dlg = await pubMethod.getConstant(str);
+        str = ICL.AID_KEYCL+str;
+        if(!this.aidValues.get(str)){
+            let vv  = window.sessionStorage.getItem(str)
+            if(!vv){
+                let vars = {id:300,aid:name}
+                await this.fetchInsAid(vars);
+                let vv  = window.sessionStorage.getItem(str)
+                if(vv){
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                }
+            }else{
+                let vals = {key:str,value:JSON.parse(vv)}
+                this.setAidValue(vals)
+            } 
+        }
+        return this.aidValues.get(str);
     }
 }
 </script>

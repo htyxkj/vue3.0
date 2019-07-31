@@ -4,7 +4,7 @@
             <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable"/>
         </template>
         <template v-else>
-            <lay-cell-vex-table :laycell="laycell" :cds="cds" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :beBill="beBill"></lay-cell-vex-table>
+            <lay-cell-vex-table :laycell="laycell" :cds="cds" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :beBill="beBill" :pbuid="pbuid" :env="env"></lay-cell-vex-table>
         </template>
     </div>
 </template>
@@ -30,14 +30,14 @@ export default class LayCell extends Vue{
     @Provide() widths:Array<string> = new Array<string>()
     @Provide() beBill:boolean = true
     @Provide() cdata:CData = new CData("")
-    @Provide() bb:CRecord[] = []
+    @Provide() pbuid:string = "";
 
     created(){
         this.initWidth();
         this.cds = this.env.getDataSet(this.laycell.obj_id);
         this.beBill = this.env.uriParams.beBill
         this.cdata = this.cds.cdata
-        this.bb = this.cdata.data
+        this.pbuid = this.env.uriParams.pbuid;
     }
 
     addRecord(){

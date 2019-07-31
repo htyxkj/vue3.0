@@ -85,18 +85,24 @@ export default class BipGridInfo extends Vue{
 
     cellEdit(){
         let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
-        if(crd)
-            this.model = crd.data[this.cell.id]||''
-        else{
+        if(crd){
+            this.model = ''
+            if(crd.data[this.cell.id] != undefined){
+                this.model = (crd.data[this.cell.id]+'')||''
+            }
+        }else{
             this.model = ''
         }
     }
 
     dataloadchange(){
         let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
-        if(crd)
-            this.model = crd.data[this.cell.id]
-        else{
+        if(crd){
+            this.model = ''
+            if(crd.data[this.cell.id] != undefined){
+                this.model = (crd.data[this.cell.id]+'')||''
+            }
+        }else{
             this.model = ''
         }
     }
@@ -135,6 +141,17 @@ export default class BipGridInfo extends Vue{
         }   
     }
 
+    @Watch('aidInfo')
+    mapChanges(){
+        if(!this.bipInsAid){ 
+            if(this.linkName){
+                let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName)
+                if(rr)
+                    this.bipInsAid = rr
+            } 
+        }
+
+    }
 }
 </script>
 

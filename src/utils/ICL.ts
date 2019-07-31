@@ -10,6 +10,7 @@ export const GlobalVariable = Object.assign({},{
     APIID_CELLPARAMS:"cellparams",
     APIID_SAVEDATA:"savedata",
     APIID_QUERY:"finddata",
+    APIID_QUERYRPT:"rpt",
     APIID_BUID:"buid",
     APIID_CHK:"chkup",
     APIID_WORKFLOW:"workflow",

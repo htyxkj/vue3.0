@@ -4,8 +4,11 @@ import Home from './views/Home.vue'
 
 Vue.use(Router)
 
+const basePro = window.location.pathname;
+const basePro1 = basePro.substring(0,basePro.lastIndexOf('/')); 
 export default new Router({
-  mode: 'history', //这一句
+  mode: 'history',
+  base:basePro1,
   routes: [
     {
       path: '/',

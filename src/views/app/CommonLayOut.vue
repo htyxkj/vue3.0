@@ -4,7 +4,10 @@
             <base-applet :uriParams="uriParams" :params="$route.params"></base-applet>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect'">
-            <c-univ-select :uriParams="uriParams"></c-univ-select>
+            <c-univ-select :uriParams="uriParams" biType="SEL" :params="$route.params"></c-univ-select>
+        </template>
+        <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CRptTool'"> 
+            <c-univ-select :uriParams="uriParams" biType="RPT" :params="$route.params"></c-univ-select>
         </template>
         <!-- <template v-if="mbs&&mbs.initOK">
             <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>

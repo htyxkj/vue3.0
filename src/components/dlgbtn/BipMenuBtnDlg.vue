@@ -15,7 +15,7 @@
             </span>  
         </el-dialog> 
         <template v-if="openCell">
-            <el-dialog :title="Title" :visible.sync="openCell" width="80%"> 
+            <el-dialog :title="Title" :visible.sync="openCell" > 
                 <div class="">
                     <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
                         <el-form label-position="right" label-width="120px">
@@ -99,6 +99,7 @@ export default class BipMenuBtnDlg extends Vue {
             let vl = this.env.dsm.currRecord.data[key]
             this.getCell(cellId,key,vl)
         }else if(btn.dlgType == 'C'){ //打开菜单
+        console.log("打开菜单")
             let cont = btn.dlgCont.split(";");
             //H105;H103=H103P,bookclass.bid=bid,btype=btype,booklist.bcid=bcid;1=2
             let cont0 = cont[0]; //打开的菜单
@@ -119,7 +120,7 @@ export default class BipMenuBtnDlg extends Vue {
                 let zd = cont2arr[i].split("=")
                 let vl = data[zd[1]];
                 if(!vl)
-                    vl = zd[1]
+                    vl = "'"+zd[1]+"'"
                 jsontj[zd[0]] = vl
             }  
             //打开的菜单
@@ -174,6 +175,7 @@ export default class BipMenuBtnDlg extends Vue {
             this.sqlDlg0 = false;
             this.sqlDlg1 = false;
         }
+        this.$emit("Recheck")
     }
 
     /**
@@ -234,7 +236,8 @@ export default class BipMenuBtnDlg extends Vue {
      */
     async cellOk(isok:boolean){
         if(isok){
-            this.saveData();
+            await this.saveData(); 
+            this.$emit("Recheck")
         }
         this.openCell = false;
     }

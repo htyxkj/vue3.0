@@ -71,6 +71,15 @@ export namespace BIPUtils {
         qe: qe
       });
     }
+    getQueryRPTParams(qe: string) {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_QUERYRPT,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
+          .userCode,
+        qe: qe
+      });
+    }
 
     getWorkFlowDataParams(id:number,buidto:string,buidfr:string,qe: string) {
         return Object.assign({
