@@ -1,8 +1,5 @@
 <template>
-    <el-row class="menubar bip-row">
-        <!-- <template v-if="mbs&&mbs.bcheck">
-            <el-checkbox v-model="bInsert" label="录入"></el-checkbox>
-        </template> -->
+    <el-row class="menubar">
         <el-button-group v-if="mbs">
             <el-button v-for="(btn,index) in mbs.menuList" :key="index" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                 <template v-if="btn.hasIcon">
@@ -19,6 +16,7 @@
                 </el-button>
         </el-button-group>
     </el-row>
+
 </template>
 <script lang="ts">
 //压缩;浏览;查询;缓存;5:增加;删除;保存;非定位;审核;

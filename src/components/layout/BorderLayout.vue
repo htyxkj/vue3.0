@@ -1,57 +1,57 @@
 <template>
 <div class="bip-border-lay">
     <template v-if="btop">
-        <template v-if="!laycfg[0].bcells">
+        <el-card v-if="!laycfg[0].bcells">
             <base-layout :layout="laycfg[0].comp" :env="env"></base-layout >
-        </template>
-        <template v-else>
-            <el-row class="bip-row" :gutter="10">
+        </el-card>
+        <el-card v-else>
+            <!-- <el-row class="bip-row" :gutter="10"> -->
                 <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
-            </el-row>
-        </template>
+            <!-- </el-row> -->
+        </el-card>
     </template>
     <template v-if="bcenter">
-        <el-row class="bip-row" :gutter="10">
+        <!-- <el-row class="bip-row" :gutter="10"> -->
             <template v-if="bleft">
                 <el-col :span="wleft">
-                    <template v-if="!laycfg[3].bcells">
+                    <el-card v-if="!laycfg[3].bcells">
                         <base-layout :layout="laycfg[3].comp" :env="env"></base-layout >
-                    </template>
-                    <template v-else>
+                    </el-card>
+                    <el-card v-else>
                         <lay-cell :laycell="laycfg[3].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
-                    </template>
+                    </el-card>
                 </el-col>
             </template>
             <template v-if="bcenter">
-                <template v-if="!laycfg[wcenterIndex].bcells">
+                <el-card v-if="!laycfg[wcenterIndex].bcells">
                     <base-layout :layout="laycfg[wcenterIndex].comp" :env="env"></base-layout >
-                </template>
-                <template v-else>
+                </el-card>
+                <el-card v-else>
                     <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell></el-col>
-                </template>
+                </el-card>
             </template>
             <template v-if="bright">
                 <el-col :span="wright">
-                    <template v-if="!laycfg[4].bcells">
+                    <el-card v-if="!laycfg[4].bcells">
                         <base-layout :layout="laycfg[4].comp" :env="env"></base-layout >
-                    </template>
-                    <template v-else>
+                    </el-card>
+                    <el-card v-else>
                         <lay-cell :laycell="laycfg[4].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
-                    </template>
+                    </el-card>
                 </el-col>
             </template>
-        </el-row>
+        <!-- </el-row> -->
     </template>
     <template v-if="bbuttom">
-        <el-row class="bip-row" :gutter="10">
-            <template v-if="!laycfg[2].bcells">
+        <!-- <el-row class="bip-row" :gutter="10"> -->
+            <el-card v-if="!laycfg[2].bcells">
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env"></bip-comm-lay >
-            </template>
-            <template v-else>
+            </el-card>
+            <el-card v-else>
                 <lay-cell :laycell="laycfg[2].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
-            </template>
+            </el-card>
             
-        </el-row>
+        <!-- </el-row> -->
     </template>
 </div>
 
