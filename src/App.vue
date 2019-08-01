@@ -11,10 +11,9 @@
                 <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
             </el-header>
             <el-main class="bip-main">
-                <!-- <el-button @click="addTab(editableTabsValue2)">添加Tab</el-button> -->
                 <el-tabs
                 v-model="editableTabsValue2"
-                type="card"
+                type="border-card"
                 :closable="false"
                 @tab-remove="removeTab"
                 class="bip-tabs"
@@ -26,15 +25,12 @@
                     :name="item.name"
                     :closable="item.closable"
                     :lazy="true"
-                >
-                    
-                    <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">
-                        
+                    :style="style"
+                >    
+                    <lay-out :name="item.name" :bshow="item.name === editableTabsValue2" :height="height">     
                     </lay-out>
-                    <!-- <router-view/> -->
                 </el-tab-pane>
                 </el-tabs>
-                <!-- <router-view /> -->
             </el-main>
         </el-container>
       </el-container>
@@ -77,7 +73,6 @@ export default class App extends Vue {
     @Provide() dialogVisible = false;
     @Provide() menu1:string = "menu menu1";
     @Provide() menu2:string = "menu menu2";
-
     @State('login') profile!: LoginState
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
@@ -85,15 +80,36 @@ export default class App extends Vue {
     @Getter('user', { namespace: 'login' }) user?: User;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
-    
-    async mounted() {  
-        await this.$axios.get('./static/config.json').then((res:any) => { 
+    @Provide() style:string="height:400px";
+    @Provide() height:number = 400;
+    async mounted() {
+        const c0 = window.location.origin+window.location.pathname
+        let uri = window.location;
+        console.log(c0,'123456')
+        await this.$axios.get(c0+'/static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
             BaseVariable.BaseUri = res.data.ApiUrl; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
         }).catch((err:any) => {
             console.log(err)
         }) 
+
+        this.height = document.documentElement.clientHeight
+        console.log('style',this.height)
+        if(this.height>70){
+            this.height=this.height-150;
+        }
+        this.style= "height:"+this.height+"px";
+
+        window.onresize = () => {
+            return (() => {
+                this.height = document.documentElement.clientHeight
+                if(this.height>70){
+                    this.height=this.height-150;
+                }
+                this.style= "height:"+this.height+"px";
+            })()
+        }
 
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
@@ -103,12 +119,6 @@ export default class App extends Vue {
         }else{
             this.$router.push({ path: "/login" });
         }
-    } 
-    loginOK() {
-        // this.isLogin = true;
-        // if(this.editableTabs2.length==0){
-        //     this.addIndex();
-        // }
     }
     addIndex() {
         let tag = new BipTag("index", "首页", "/", false);
