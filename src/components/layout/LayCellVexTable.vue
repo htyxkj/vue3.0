@@ -51,7 +51,7 @@
         </vxe-table>
         <!-- 报表展示表格-->
         <vxe-table
-            ref="_vvt"
+            :ref="this.cds.ccells.obj_id"
             v-else
             border
             resizable
@@ -364,7 +364,7 @@ export default class LayCelVexTable extends Vue {
 
     table_cell_click(data:any,event:any){ 
         this.cds.index = data.rowIndex;
-        let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex};
+        let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         this.$bus.$emit("row_click",value);
     }
@@ -414,9 +414,15 @@ export default class LayCelVexTable extends Vue {
         this.$bus.$off('datachange',this.datachangeBusID)
     }
     datachange(){
-        let cc:any = this.$refs._vvt;
-        if(cc)
-            cc.setCurrentRow(this.cds.currRecord);
+        let cc:any = this.$refs[this.cds.ccells.obj_id];
+        if(cc){
+            if(this.cds.currRecord){
+                if(cc.selectRow == null)
+                    cc.setCurrentRow(this.cds.currRecord);
+                if(cc.selectRow.id != this.cds.currRecord.id)
+                    cc.setCurrentRow(this.cds.currRecord);
+            }
+        }
     }
 }
 </script>

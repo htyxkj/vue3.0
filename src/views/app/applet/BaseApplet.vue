@@ -131,7 +131,8 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
-
+                            // this.dsm.cdata.data.splice(this.dsm.page.index,1);
+                            // this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                         }).finally(()=>{
                             this.fullscreenLoading = false
                         })
@@ -679,7 +680,11 @@ export default class BaseApplet extends Vue{
             this.setListMenuName();
         }
     }
-
+    /**
+     * dlg弹出框
+     * 业务关联
+     * BL下钻
+     */
     async initGetVal(){
         if(this.params){
             this.oprid = 13;

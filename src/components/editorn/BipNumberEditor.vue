@@ -47,6 +47,7 @@ export default class BipNumberEditor extends Vue{
                 if(this.cds.ds_par){
                     this.cds.ds_par.setStateOrAnd(icl.R_EDITED)
                 }
+                this.cds.checkGS();
             }
         }else{
             this.model1 = this.model

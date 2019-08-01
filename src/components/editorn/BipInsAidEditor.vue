@@ -167,6 +167,7 @@ export default class BipInsAidEditor extends Vue{
                 if (dia) dia.close();
             }, 100);
         }
+        this.cds.checkGS();
     }
 //#region /**初始化多列参照 */
     initMulColInfo() {
@@ -355,6 +356,7 @@ export default class BipInsAidEditor extends Vue{
                 const key:string = this.cell.id
                 // this.cds.cdata.data[this.row].c_state |=2;
                 this.cds.setStateOrAnd(ICL.R_EDITED)
+                this.cds.checkGS();
             }else{
                 this.model1 = this.model
             }

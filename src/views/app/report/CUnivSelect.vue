@@ -8,7 +8,7 @@
                         <bip-search-cont ref="se" :env="env"></bip-search-cont>
                     </div>
                     <el-form label-position="right" label-width="120px">
-                        <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
+                        <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                     </el-form>
                 </el-scrollbar>
             </div>
@@ -76,6 +76,8 @@ export default class CUnivSelect extends Vue {
     @Provide() TJDlog :boolean = false;//是否显示统计dlog
     @Provide() Statistics:any=null;//统计条件集
     @Provide() pmenuid:string = "";
+    @Provide() handleSizeChangeBusID:number = 0
+    @Provide() handleCurrentChangeBusID:number = 0
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -144,6 +146,10 @@ export default class CUnivSelect extends Vue {
             this.initVal(); 
         } 
         this.$bus.$on("row_click",this.getCRecordByPk2) 
+        
+        
+        this.handleSizeChangeBusID = this.$bus.$on('handleSizeChange',this.handleSizeChangebus)
+        this.handleCurrentChangeBusID = this.$bus.$on('handleCurrentChange',this.handleCurrentChangebus)
     }
     initData(){
         if(this.uriParams && this.uriParams.pbds){
@@ -207,7 +213,7 @@ export default class CUnivSelect extends Vue {
 
     findServerData(queryCont:any){
         this.fullscreenLoading = true
-            if(this.biType =="SEL")
+        if(this.biType =="SEL")
             this.dsm.queryData(queryCont).then(res=>{
                 this.fullscreenLoading = false
                 let data = res.data;
@@ -225,7 +231,6 @@ export default class CUnivSelect extends Vue {
                 }else{
                     this.$notify.error(data)
                 }
-                this.$bus.$emit("datachange")
                 this.getCRecordByPk2();
             }).catch(err=>{
                 this.fullscreenLoading = false
@@ -255,8 +260,15 @@ export default class CUnivSelect extends Vue {
             this.$notify.error(err)
         });
     }
-
-    
+    beforeDestroy(){
+        this.$bus.$off('handleSizeChange',this.handleSizeChangeBusID)
+        this.$bus.$off('handleCurrentChange',this.handleCurrentChangeBusID)
+    }
+    handleSizeChangebus(value:any){
+        if(this.env.dsm.ccells.obj_id == value.obj_id){
+            this.handleSizeChange(value.value)
+        }
+    }
     handleSizeChange(value:number){
         console.log('handleSizeChange',value)
         this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
@@ -268,7 +280,11 @@ export default class CUnivSelect extends Vue {
         this.findServerData(this.qe);
         // this.$emit('handleSizeChange',value)
     }
-
+    handleCurrentChangebus(value:any){
+        if(this.env.dsm.ccells.obj_id == value.obj_id){
+            this.handleCurrentChange(value.value)
+        }
+    }
     handleCurrentChange(value:number){
         console.log('handleCurrentChange',value)
         // this.$emit('handleCurrentChange',value)
@@ -356,9 +372,16 @@ export default class CUnivSelect extends Vue {
         this.find()
     }
 
-    getCRecordByPk2(){
-        if(this.dsm.ds_sub.length>0)
-        this.getCRecordByPk(this.dsm.currRecord)
+    getCRecordByPk2(value:any=null){
+        console.log(this.dsm)
+        if(this.dsm){
+            if(value == null && this.dsm.ds_sub.length>0){
+                this.getCRecordByPk(this.dsm.currRecord)
+            }else if(value!=null && value.dsm.ds_sub.length>0){
+                this.getCRecordByPk(value.dsm.currRecord)
+            }
+            this.$bus.$emit("datachange")
+        }
     }
     /**
      * @description 根据主键获取记录

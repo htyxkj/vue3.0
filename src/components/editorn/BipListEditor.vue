@@ -118,6 +118,7 @@ export default class BipListEditor extends Vue{
                 const key:string = this.cell.id
                 this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
                 this.cds.cellChange(key,str);
+                this.cds.checkGS();
             }else{
                 this.model1 = this.model
             }   

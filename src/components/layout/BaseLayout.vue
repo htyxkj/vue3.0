@@ -42,10 +42,18 @@ export default class BaseLayout extends Vue{
 
     handleSizeChange(value:number){
         this.$emit('handleSizeChange',value)
+        if(this.env){
+            let v = {value:value,obj_id:this.env.dsm.ccells.obj_id};
+            this.$bus.$emit('handleSizeChange',v)
+        }
     }
 
     handleCurrentChange(value:number){
         this.$emit('handleCurrentChange',value)
+        if(this.env){
+            let v = {value:value,obj_id:this.env.dsm.ccells.obj_id};
+            this.$bus.$emit('handleCurrentChange',v)
+        }
     }
 }
 </script>
