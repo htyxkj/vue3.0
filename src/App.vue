@@ -86,7 +86,7 @@ export default class App extends Vue {
         const c0 = window.location.origin+window.location.pathname
         let uri = window.location;
         console.log(c0,'123456')
-        await this.$axios.get(c0+'/static/config.json').then((res:any) => { 
+        await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
             BaseVariable.BaseUri = res.data.ApiUrl; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
@@ -249,106 +249,3 @@ export default class App extends Vue {
     }
 }
 </script>
-
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  display: block;
-  margin: 0px;
-}
-.bip-main {
-  padding-left: 10px;
-  padding-top: 0px !important;
-  margin-top: 2px !important;
-}
-.el-tabs__item {
-    padding: 0 20px;
-    height: 30px !important;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    line-height: 30px !important;
-    display: inline-block;
-    list-style: none;
-    font-size: 14px;
-    font-weight: 500;
-    color: #303133;
-    position: relative;
-}
-.bip-tabs .el-tabs__header{
-    padding: 0;
-    position: relative;
-    margin: 0 0 5px;
-}
-
-.el-popover  { 
-    /* background-color: #20a0ff!important; */
-    /* border:0px !important;  */
-    padding: 0px !important;
-    box-shadow: rgb(200, 200, 200) 1px 1px 6px !important;
-    border-radius: 2px !important;
-} 
-.user_name{
-    font-size: 15px; 
-}
-.user_code{
-    font-size: 15px;   
-    opacity: .74;
-    padding: 2px 0px;
-}
-.user_button{ 
-    padding: 0px !important;
-    color:#606266 !important;
-}
-.user_padding{
-    padding: 10px 15px;
-    margin: 0px !important;;
-}
-.user_hr{ 
-    border-bottom: 1px solid #eeeeee;  
-}
-.header_badge_item{
-    top: -13px;
-    font-size: 22px;
-    color: white;
-    margin-right: 25px;
-}
-.menu{
-    z-index: 99999; 
-    position: absolute;
-    animation-fill-mode: both;
-    height: 100%;
-}
-.menu1{ 
-    animation-name: fadeInLeft; 
-    animation-duration: 0.3s;
-}
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translate3d(-100%, 0, 0);
-  } 
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.menu2{
-    animation-name: fadeInLeft2;
-    animation-duration: 0.3s;
-}
-@keyframes fadeInLeft2 { 
-    from {
-        opacity: 1;
-        transform: none;
-    }
-    to {
-        opacity: 0;
-        transform: translate3d(-100%, 0, 0);
-    }
-}
-</style>

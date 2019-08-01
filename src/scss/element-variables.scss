@@ -14,6 +14,85 @@ body{
     overflow-x: hidden;
 }
 
+#app {
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    display: block;
+    margin: 0px;
+  }
+  
+  .el-popover  { 
+      /* background-color: #20a0ff!important; */
+      /* border:0px !important;  */
+      padding: 0px !important;
+      box-shadow: rgb(200, 200, 200) 1px 1px 6px !important;
+      border-radius: 2px !important;
+  } 
+  .user_name{
+      font-size: 15px; 
+  }
+  .user_code{
+      font-size: 15px;   
+      opacity: .74;
+      padding: 2px 0px;
+  }
+  .user_button{ 
+      padding: 0px !important;
+      color:#606266 !important;
+  }
+  .user_padding{
+      padding: 10px 15px;
+      margin: 0px !important;;
+  }
+  .user_hr{ 
+      border-bottom: 1px solid #eeeeee;  
+  }
+  .header_badge_item{
+      top: -13px;
+      font-size: 22px;
+      color: white;
+      margin-right: 25px;
+  }
+  .menu{
+      z-index: 99999; 
+      position: absolute;
+      animation-fill-mode: both;
+      height: 100%;
+  }
+  .menu1{ 
+      animation-name: fadeInLeft; 
+      animation-duration: 0.3s;
+  }
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translate3d(-100%, 0, 0);
+    } 
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .menu2{
+      animation-name: fadeInLeft2;
+      animation-duration: 0.3s;
+  }
+  @keyframes fadeInLeft2 { 
+      from {
+          opacity: 1;
+          transform: none;
+      }
+      to {
+          opacity: 0;
+          transform: translate3d(-100%, 0, 0);
+      }
+  }
+
+
 .el-input-number--small{
     width: 100% !important;
 }
@@ -52,9 +131,9 @@ body{
     color:rgba(184, 29, 29, 0.8) !important ;   
 }
 
-.el-form-item__label{
-    font-weight:bold;  
-}
+// .el-form-item__label{
+//     // font-weight:bold;  
+// }
 
 /**拷贝定义*/
 .bip-copy {
@@ -268,3 +347,74 @@ body{
 
 
 /**自己的scss*/
+$--bip-bg-color:#f9f9f9;//f4f6fb
+$--bip-comm-color:#ffffff;//f4f6fb
+.bip-main {
+    // padding-left: 10px;
+    padding-top: 0px !important;
+    margin-top: 2px !important;
+  }
+.el-tabs__item {
+    padding: 0 20px;
+    height: 30px !important;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    line-height: 30px !important;
+    display: inline-block;
+    list-style: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #303133;
+    position: relative;
+}
+.bip-tabs .el-tabs__header{
+    padding: 0;
+    position: relative;
+    margin: 0 0 5px;
+    background: $--bip-comm-color;
+}
+.el-tabs__content{
+    background:$--bip-bg-color
+}
+.el-tabs--border-card {
+    background: $--bip-bg-color;
+}
+
+.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+    background: $--bip-bg-color;
+    border-bottom-color: $--bip-bg-color;
+}
+
+
+.el-tab-pane{
+    background: $--bip-comm-color;
+}
+
+.bip-input-item {
+    margin-bottom: 2px !important;
+}
+.bip-row {
+    margin-bottom: 2px !important;
+}
+.el-form-item {
+    margin-bottom: 0px !important;
+}
+.bip-main-container {
+    position: fixed; 
+    height: calc(100% - 180px) !important;
+    width: calc(100% - 70px) !important;
+    z-index: 1;
+    overflow: hidden;
+    margin-right: 20px;
+    .el-scrollbar {
+        height: 100%;
+        margin-bottom: 10px !important;
+        margin-right: 0px !important;
+        padding-bottom: 20px;
+        .el-scrollbar__wrap {
+            overflow-x: hidden !important;
+            padding-right: 5px;
+            height: 100%;
+        }
+    }
+}
