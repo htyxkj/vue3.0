@@ -95,7 +95,7 @@ export default class BipGridInfo extends Vue{
         }
     }
 
-    dataloadchange(){
+    dataloadchange(obj_id:string = ''){
         let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
         if(crd){
             this.model = ''

@@ -1,11 +1,11 @@
 <template>
-    <keep-alive>
-        <div height="100%">
-            <template v-if="bshow">
-                <router-view />
-            </template>
-        </div>
-    </keep-alive>
+    <div height="100%">
+        <keep-alive>
+                <template v-if="bshow">
+                    <router-view />
+                </template>
+        </keep-alive>
+    </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop } from "vue-property-decorator";

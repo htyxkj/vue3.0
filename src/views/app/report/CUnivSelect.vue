@@ -1,29 +1,44 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
-        <template v-if="!TJ">
-            <div class="bip-main-container" v-if="lay.binit">
-                <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                    <div ref="se" @keyup.enter="find">
-                        <bip-search-cont ref="se" :env="env"></bip-search-cont>
-                    </div>
-                    <el-form label-position="right" label-width="120px">
-                        <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
-                    </el-form>
-                </el-scrollbar>
-            </div>
-        </template>
-        <template v-else>
-            <!-- 统计结果展示 -->
-            <bip-statistics-chart :stat="Statistics" :env="env" @goTable="goTable"></bip-statistics-chart>
-        </template>
-        <template v-if="TJDlog">
-            <!-- 统计项弹框选择 -->
-            <bip-statistics-dlog ref="bi_tj"  :env="env" @makeOK="tjData"></bip-statistics-dlog>
-        </template>
-        <template>
-            <bip-menu-btn-dlg ref="bip_dlg" @Recheck="Recheck"></bip-menu-btn-dlg>
-        </template>
+        <div class="bip-main-container">
+            <el-scrollbar wrap-class="scrollbar-wrapper">
+                <template v-if="!initShowChar">
+                    <template v-if="!TJ">
+                        <div class="bip-main-container" v-if="lay.binit">
+                            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+                                <div ref="se" @keyup.enter="find">
+                                    <bip-search-cont ref="se" :env="env"></bip-search-cont>
+                                </div>
+                                <el-form label-position="right" label-width="120px">
+                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                                </el-form>
+                            </el-scrollbar>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <!-- 统计结果展示 -->
+                        <bip-statistics-chart :stat="Statistics" :env="env" @goTable="goTable"></bip-statistics-chart>
+                    </template>
+                </template>
+                <template v-else>
+                    <template v-if="env && env.dsm && env.dsm.ccells">
+                        <el-row>
+                            <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
+                                <bip-statistics-chart :stat="item" :env="env" @goTable="goTable"></bip-statistics-chart>
+                            </el-col>
+                        </el-row>
+                    </template>
+                </template>
+                <template v-if="TJDlog">
+                    <!-- 统计项弹框选择 -->
+                    <bip-statistics-dlog ref="bi_tj"  :env="env" @makeOK="tjData"></bip-statistics-dlog>
+                </template>
+                <template>
+                    <bip-menu-btn-dlg ref="bip_dlg" @Recheck="Recheck"></bip-menu-btn-dlg>
+                </template>
+            </el-scrollbar>
+        </div>
     </el-row>
 </template>
 <script lang="ts">
@@ -55,12 +70,13 @@ import { on } from 'cluster';
 import { types } from 'util';
 import { connect } from 'echarts';
 import { throws } from 'assert';
+import BipLayConf from '../../../classes/ui/BipLayConf';
+import { truncate } from 'fs';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
-    @Prop() biType?:string;
     @Prop() params:any;
     @Provide() fullscreenLoading: boolean = false;
     @Provide() cells: Array<Cells> = new Array<Cells>();
@@ -78,6 +94,8 @@ export default class CUnivSelect extends Vue {
     @Provide() pmenuid:string = "";
     @Provide() handleSizeChangeBusID:number = 0
     @Provide() handleCurrentChangeBusID:number = 0
+    @Provide() initShowChar:boolean = false;
+    @Provide() biType?:string;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -129,6 +147,15 @@ export default class CUnivSelect extends Vue {
     }
 
     async mounted(){
+        this.biType="SEL" 
+        if(this.uriParams){
+            if(this.uriParams.pclass=='inetbas.cli.systool.CRptTool'){
+                this.biType="RPT"
+            }
+            if((this.uriParams.pattr & 0x10000) >0){
+                this.biType="SQL"
+            }
+        }
         await this.initUI()
         this.initDlgBtn();
         this.qe.pcell = this.dsm.ccells.obj_id
@@ -146,10 +173,16 @@ export default class CUnivSelect extends Vue {
             this.initVal(); 
         } 
         this.$bus.$on("row_click",this.getCRecordByPk2) 
-        
-        
         this.handleSizeChangeBusID = this.$bus.$on('handleSizeChange',this.handleSizeChangebus)
         this.handleCurrentChangeBusID = this.$bus.$on('handleCurrentChange',this.handleCurrentChangebus)
+        if(this.uriParams && this.uriParams.bgroup){
+            if(this.uriParams.bgroupList.length ==0){
+                this.initShowChar = false;
+            }else{
+                this.initShowChar = true;
+            }
+        }
+
     }
     initData(){
         if(this.uriParams && this.uriParams.pbds){
@@ -173,6 +206,7 @@ export default class CUnivSelect extends Vue {
                 this.dsm_cont.currRecord.data[key] = "";
         　　} 
         }else if(cmd == 'FIND' ) {
+            this.qe.page.currPage=1;
             this.find()
         }else if(cmd == 'ISTAT'){
             this.TJDlog = true;
@@ -196,7 +230,7 @@ export default class CUnivSelect extends Vue {
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         if(this.biType == "SEL")
             this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
-        else if(this.biType == "RPT"){
+        else if(this.biType == "RPT" || this.biType == "SQL"){
             this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
         }
         this.qe.oprid = 13
@@ -213,52 +247,52 @@ export default class CUnivSelect extends Vue {
 
     findServerData(queryCont:any){
         this.fullscreenLoading = true
-        if(this.biType =="SEL")
+        if(this.biType =="SEL"){
             this.dsm.queryData(queryCont).then(res=>{
-                this.fullscreenLoading = false
-                let data = res.data;
-                if(data.id === 0){
-                    let cd : CData = new CData('');
-
-                    let retdata = data.data.data
-                    cd.obj_id = retdata.obj_id;
-                    cd.data = retdata.data;
-                    cd.page = retdata.page; 
-
-                    let page = retdata.page; 
-                    this.dsm.setCData(cd)
-                    this.dsm.index = (page.currPage - 1) * page.pageSize;
-                }else{
-                    this.$notify.error(data)
-                }
+                this.processingData(res,"SEL");
                 this.getCRecordByPk2();
             }).catch(err=>{
                 this.fullscreenLoading = false
                 this.$notify.error(err)
             });
-        else if(this.biType == "RPT")
+        }else if(this.biType == "RPT"){
+            queryCont.type = 2
             this.dsm.queryRPTData(queryCont).then(res=>{
-            this.fullscreenLoading = false
-            let data = res.data;
-            if(data.id === 0){
-                let cd : CData = new CData('');
-
-                let retdata = data.data.rpt
-                cd.obj_id = retdata.obj_id;
-                cd.data = retdata.data;
-                cd.page = retdata.page; 
-
-                let page = retdata.page; 
-                this.dsm.setCData(cd)
-                this.dsm.index = (page.currPage - 1) * page.pageSize;
-            }else{
-                this.$notify.error(data)
-            }
-            this.$bus.$emit("datachange")
-        }).catch(err=>{
-            this.fullscreenLoading = false
-            this.$notify.error(err)
-        });
+                this.processingData(res,"RPT");
+            }).catch(err=>{
+                this.fullscreenLoading = false
+                this.$notify.error(err)
+            });
+        }else if(this.biType == "SQL"){
+            queryCont.type = 3
+            this.dsm.queryRPTData(queryCont).then(res=>{
+                this.processingData(res,"RPT");
+            }).catch(err=>{
+                this.fullscreenLoading = false
+                this.$notify.error(err)
+            });
+        }
+    }
+    processingData(res:any,type:string){
+        this.fullscreenLoading = false
+        let data = res.data;
+        if(data.id === 0){
+            let cd : CData = new CData('');
+            let retdata = null
+            if(type == 'SEL')
+                retdata = data.data.data
+            else if(type == "RPT")
+                retdata = data.data.rpt
+            cd.obj_id = retdata.obj_id;
+            cd.data = retdata.data;
+            cd.page = retdata.page; 
+            let page = retdata.page; 
+            this.dsm.setCData(cd)
+            this.dsm.index = (page.currPage - 1) * page.pageSize;
+        }else{
+            this.$notify.error(data)
+        }
+        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
     }
     beforeDestroy(){
         this.$bus.$off('handleSizeChange',this.handleSizeChangeBusID)
@@ -302,10 +336,12 @@ export default class CUnivSelect extends Vue {
         this.Statistics["selValue"] = selValue;
         this.Statistics["chartTypeValue"] = chartTypeValue;
         this.Statistics["showChart"] = showChart; 
+        this.initShowChar=false;
         this.TJ =true;
     }
     goTable(){
         this.TJ = false;
+        this.initShowChar = false;
     }
     /**
      * 获取自定义按钮
@@ -380,7 +416,6 @@ export default class CUnivSelect extends Vue {
             }else if(value!=null && value.dsm.ds_sub.length>0){
                 this.getCRecordByPk(value.dsm.currRecord)
             }
-            this.$bus.$emit("datachange")
         }
     }
     /**
@@ -399,7 +434,7 @@ export default class CUnivSelect extends Vue {
             console.log(vv)
             if (vv != null) {
                 this.dsm.currRecord = vv.data[0]
-                this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
+                // this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
                 // this.qe.values = vv.data;
                 // this.qe.page = vv.page;
                 // this.dataLoaded(this.qe,vv);
@@ -442,6 +477,7 @@ export default class CUnivSelect extends Vue {
                         cds1.clear();
                         cds1.setCData(oneSubs)
                         cds1.page.total = vals.length||0
+                        this.$bus.$emit("datachange",cds1.ccells.obj_id)
                     }
                 }
             }

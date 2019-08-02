@@ -1,35 +1,31 @@
 <template> 
-<div class="bip-main-container">
-    <el-scrollbar wrap-class="scrollbar-wrapper">
-        <el-row v-loading.fullscreen.lock="fullscreenLoading" class="bi-chart">
-            <div class="titlebg">
-                <el-row>
-                    <el-col :span="2" style="text-align: left">
-                        <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
-                    </el-col>
-                    <el-col :span="22" class="charttitle">
-                            统计维度：{{this.getTitle()}}
-                    </el-col>
-                </el-row>
-            </div>
-            <div v-if="stat.showChart && option"  class="showchart" >
-                <bip-chart style="height :400px;padding-bottom:20px;margin-bottom:20px" :option="option"></bip-chart>
-            </div>
-            <div>
-                <!-- 报表表格-->
-                <vxe-table v-if="tableData && tjcell"
-                    ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-                    show-header-all-overflow class="vxe-table-element" :data.sync="tableData" 
-                    :optimized="true" height="350px">
-                    <vxe-table-column type="index" width="60"></vxe-table-column>
-                    <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
-                        :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
-                    </vxe-table-column>
-                </vxe-table>
-            </div>
-        </el-row>
-    </el-scrollbar>
-</div>
+    <el-row v-loading.fullscreen.lock="fullscreenLoading" class="bi-chart">
+        <div class="titlebg">
+            <el-row>
+                <el-col :span="2" style="text-align: left">
+                    <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
+                </el-col>
+                <el-col :span="22" class="charttitle">
+                        统计维度：{{this.getTitle()}}
+                </el-col>
+            </el-row>
+        </div>
+        <div v-if="stat.showChart && option"  class="showchart" >
+            <bip-chart style="height :400px;padding-bottom:20px;margin-bottom:20px" :option="option"></bip-chart>
+        </div>
+        <div>
+            <!-- 报表表格-->
+            <vxe-table v-if="tableData && tjcell"
+                ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+                show-header-all-overflow class="vxe-table-element" :data.sync="tableData" 
+                :optimized="true" height="350px">
+                <vxe-table-column type="index" width="60"></vxe-table-column>
+                <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
+                    :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
+                </vxe-table-column>
+            </vxe-table>
+        </div>
+    </el-row>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
@@ -43,7 +39,8 @@ import BipChart from "@/components/chart/BipChart.vue"
 let tools = BIPUtil.ServApi;
 let tool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from "vuex-class";
-
+import {CommICL} from '@/utils/CommICL'
+let ICL = CommICL
 @Component({
     components: { BipChart}
 })
@@ -57,17 +54,11 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() fullscreenLoading:boolean = false;
     @Provide() tableData:any =null;
 
-    @Getter("AID_INFOS", { namespace: "assit" }) aidMap: any;//辅助组成
-    @Getter("KEY_MAPS", { namespace: "assit" }) keyMaps: any;//查没查过
-    @Getter("AID_VALUES", { namespace: "assit" }) aidValues: any;//辅助的值
-    @Getter("CL_INFOS", { namespace: "assit" }) clMap: any;//常量信息
-    @Mutation("setAidInfo", { namespace: "assit" }) setAidInfo: any;
-    @Mutation("setCLInfo", { namespace: "assit" }) setCLInfo: any;
-    @Mutation("setAidValue", { namespace: "assit" }) setAidValue: any;
-    @Action("fetchAssist", { namespace: "assit" }) fetchAssist: any;
-    @Action("fetchCLById", { namespace: "assit" }) fetchCLById: any;
-    @Action("fetchRefById", { namespace: "assit" }) fetchRefById: any;
-    
+    @State("aidValues", { namespace: "insaid" }) aidValues: any;
+    @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
+    @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
+    @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
+
     mounted() {        
         this.searchData();    
     }
@@ -127,18 +118,10 @@ export default class BipStatisticsDialog extends Vue {
         var cell:any = this.getCellById(id);
         let labelString = cell.labelString 
         let pie = {
-            // title : {
-            //     text: "统计维度:"+this.getTitle(), 
-            //     x:'center'
-            // },
             tooltip : {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
-            // legend: {
-            //     x : 'center',
-            //     y : 'bottom',
-            // },
             legend: {
                 type: 'scroll',
                 orient: 'vertical', 
@@ -162,26 +145,17 @@ export default class BipStatisticsDialog extends Vue {
                         },
                         normal: {
                             //定义一个list，然后根据所以取得不同的值，这样就实现了，
-                            // color: function(params:any) {
-                            //     var colorList = [
-                            //         "#C1232B",
-                            //         "#B5C334",
-                            //         "#FCCE10",
-                            //         "#E87C25",
-                            //         "#27727B",
-                            //         "#FE8463",
-                            //         "#9BCA63",
-                            //         "#FAD860",
-                            //         "#F3A43B",
-                            //         "#60C0DD",
-                            //         "#D7504B",
-                            //         "#C6E579",
-                            //         "#F4E001",
-                            //         "#F0805A",
-                            //         "#26C0C0"
-                            //     ];
-                            //     return colorList[params.dataIndex];
-                            // }
+                            color: function(params:any) {
+                                var colorList = [
+                                    "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
+                                    "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
+                                    "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                ];
+                                let cc = params.dataIndex;
+                                if(cc >colorList.length)
+                                    cc = cc -colorList.length;
+                                return colorList[cc];
+                            }
                         }
                     }
                 }
@@ -205,14 +179,6 @@ export default class BipStatisticsDialog extends Vue {
     async makeColumnOpitons(chartData:any){ 
         let chartD = chartData.data.data.tjpages.celData; 
         let option = {
-            // title: {
-            //     left: 'left',
-            //     text: "统计维度："+this.getTitle(), 
-            //     backgroundColor:'rgb(242,242,242)',
-            //     textStyle:{
-            //         width:'100%'
-            //     }
-            // },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -274,7 +240,42 @@ export default class BipStatisticsDialog extends Vue {
                 bb.data[i] = item[fld];
                 series0[_idx] = bb;
             } else {
-                var bb:any = { name: colname, data: [] ,type:chartType};
+                var bb:any ={}
+                bb = { name: colname, data: [] ,type:chartType,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            },
+                            normal: {
+                                //定义一个list，然后根据所以取得不同的值，这样就实现了，
+                                color: function(params:any) {
+                                    var colorList = [
+                                        "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
+                                        "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
+                                        "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                    ];
+                                    let cc = params.dataIndex;
+                                    if(cc >colorList.length)
+                                        cc = cc -colorList.length;
+                                    return colorList[cc];
+                                },
+                            }
+                        }
+                };
+                if(chartType == 'line'){
+                    let color = "";
+                    var colorList = [
+                        "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
+                        "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
+                        "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",];
+                    let cc = i;
+                    if(cc >colorList.length)
+                        cc = cc -colorList.length;
+                    color = colorList[cc];
+                    bb ={ name: colname, data: [] ,type:chartType,color:color};
+                }
                 bb.data[i] = item[fld];
                 series0.push(bb);
             }
@@ -295,45 +296,72 @@ export default class BipStatisticsDialog extends Vue {
             var rr = cell.refValue;
             if(!rr)
                 return code;
-            rr = rr.substring(rr.indexOf("{"),rr.indexOf("}"));
+            rr = rr.substring(rr.indexOf("{")+1,rr.indexOf("}"));
 
             if(rr !=null && rr){
+                let editName = rr;
                 if(rr.indexOf("$")>=0){                   
                     rr = rr.replace("$","")
-                    let cl = this.clMap.get("CL_"+rr);
+                    editName = rr;
+                    rr = ICL.AID_KEYCL+rr;
+                    if(!this.aidValues.get(rr)){
+                        let vv  = window.sessionStorage.getItem(rr)
+                        if(!vv){
+                            let vars = {id:300,aid:editName}
+                            await this.fetchInsAid(vars);
+                            let vv  = window.sessionStorage.getItem(rr)
+                            if(vv){
+                                let vals = {key:rr,value:JSON.parse(vv)}
+                                this.setAidValue(vals)
+                            }
+                        }else{
+                            let vals = {key:rr,value:JSON.parse(vv)}
+                            this.setAidValue(vals)
+                        } 
+                    }
+                    let cl = this.aidValues.get(rr);
                     if(cl && cl.values.length>0){
+                        let key = cl.cells.cels[0].labelString;
+                        let value = cl.cells.cels[1].labelString;
                         cl.values.forEach((item:any)=> { 
-                            if (item.code == code) {
-                                name += item.name + "-";
-                                this.tableData[j][id] = item.name;
+                            if (item[key] == code) {
+                                name += item[value] + "-";
+                                this.tableData[j][id] = item[value];
                             }
                         });
                     }else{
-                        let dd = await this.fetchCLById(rr);
-                        let cl = this.clMap.get("CL_"+rr);
-                        if(cl && cl.values.length>0){
-                            cl.values.forEach((item:any)=> { 
-                                if (item.code == code) {
-                                    name += item.name + "-";
-                                    this.tableData[j][id] = item.name;
-                                }
-                            });
-                        }else{
-                            name += code + "-";
-                        }
+                        name += code + "-";
                     }
                 }else if(rr.indexOf("&")>=0){ 
                     rr = rr.replace("&","")
+                    editName = rr;
+                    rr = ICL.AID_KEY+rr;
+                    if(!this.aidValues.get(rr+"_"+code)){
+                        let vv  = window.sessionStorage.getItem(rr+"_"+code)
+                        if(!vv){
+                            let vars = {id:200,aid:editName}
+                            await this.fetchInsAid(vars);
+                            let vv  = window.sessionStorage.getItem(rr)
+                            if(vv){
+                                let vals = {key:rr,value:JSON.parse(vv)}
+                                this.setAidValue(vals)
+                            }
+                        }else{
+                            let vals = {key:rr,value:JSON.parse(vv)}
+                            this.setAidValue(vals)
+                        } 
+                    } 
                     let vl:any = await this.getAidValues(rr+"_"+code);
                     if(vl && vl.length>0){
                         if(vl instanceof Array)
                             vl = vl[0];
-                        let ref = this.aidMap.get(rr);
+                        let ref = this.aidValues.get(rr);
                         if(vl && ref){
                             name +=vl[ref.layCells[ref.showColsIndex[1]].id]+"-"
                             this.tableData[j][id] = vl[ref.layCells[ref.showColsIndex[1]].id];
                         }else{
-                            let ref1 = await this.fetchRefById({key:rr,model:code,cont:code}); 
+                            let vars = {id:200,aid:editName}
+                            let ref1 = await this.fetchInsAid(vars); 
                             if(ref1 && ref1 != undefined){
                                 ref1 = ref1.data.data.values;
                                 name +=vl[ref1.layCells[ref1.showColsIndex[1]].id]+"-"
@@ -342,10 +370,6 @@ export default class BipStatisticsDialog extends Vue {
                                 name += code;
                             }
                         }
-
-                    }else{
-                        name +=code+"-"
-                        this.tableData[j][id] = code;
                     }
                 }
             } 
@@ -377,7 +401,7 @@ export default class BipStatisticsDialog extends Vue {
         }
         if(!res || res.length ==0){
             let karr = key.split("_");
-            return await this.fetchAssist({ id: karr[0], value: karr[1] })
+            return await this.fetchInsAid({ id: karr[0], value: karr[1] })
             .then((res: any) => {
                 if (res && res.data.id === 0) { 
                     return res.data.data.values.values;

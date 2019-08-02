@@ -1,53 +1,60 @@
 <template>
-    <el-dialog class="bip-search"
-        width="50%" title="查询条件" :visible.sync="dialogVisible"
+    <el-dialog class="bip-search" width="50%" :visible.sync="dialogVisible"
         :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+        <span slot="title">
+            <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">查询条件</div>
+        </span>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-        <el-form ref="form" :model="currcont" label-width="120px" size="mini">
-            <el-row>
-            <el-form-item label="查询条件:">
-                <el-col :span="12">
-                    <el-select v-model="model" placeholder="请选择查询条件">
-                        <el-option
-                            v-for="(item,index) in options"
-                            :key="index"
-                            :label="item.label"
-                            :value="item.value"
-                        ></el-option>
-                    </el-select>
-                    <span>      </span>
-                    
-                </el-col>
-                <el-col :span="3">
-                    <el-button type="primary" @click="addTJ" size="mini" :disabled="canAdd">添 加</el-button>
-                </el-col>
-                <el-col :span="2">
-                    &nbsp;
-                </el-col>
-                <el-col :span="3">
-                    <el-button type="warning" size="mini" @click="clear">清空</el-button>
-                </el-col>
-                
-                
-            </el-form-item>
-            </el-row>
-            <el-row v-for="(sitem,index) in searchValues" :key="index" style="margin-top:5px">
-                <el-form-item  :label="sitem.name">
-                <el-col :span="10" :xs="10" :sm="10" :md="10">
-                    <el-input v-model="sitem.v1" size="small" :clearable="true" style="width: 100%;"></el-input>
-                </el-col>
-                <el-col class="line" :span="1">~</el-col>
-                <el-col :span="10" :xs="10" :sm="10" :md="10">
-                    <el-input v-model="sitem.v2" size="small" :clearable="true" style="width: 100%;"></el-input>
-                </el-col>
-                <el-col class="line" :span="3"><el-button type="danger" size="mini" @click="deleteItem(sitem)">删除</el-button></el-col>
-            </el-form-item>
-            </el-row>
-
-        </el-form>
+            <el-form ref="form" :model="currcont" label-width="100px" size="mini" label-position="left">
+                <el-row style="padding: 0px 15px 0px 10px;">
+                    <el-col :span="10">
+                        <el-row type="flex" justify="state">
+                            <el-form-item label="查询条件">
+                                <el-select v-model="model" placeholder="请选择查询条件" size="small">
+                                    <el-option
+                                        v-for="(item,index) in options"
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
+                                    ></el-option>
+                                </el-select> 
+                            </el-form-item>
+                        </el-row>
+                    </el-col>
+                    <el-col :span="10">&nbsp;</el-col>
+                    <el-col :span="4">
+                        <el-row type="flex" justify="end">
+                            <el-button type="text" @click="addTJ" size="mini" :disabled="canAdd"><i class="iconfont icon-bip-edit"></i>&nbsp;添加</el-button>
+                            &nbsp;&nbsp;
+                            <el-button type="text" size="mini" @click="clear" style="color:red"><i class="iconfont icon-bip-delete"></i>&nbsp;清空</el-button>
+                        </el-row>
+                    </el-col>
+                </el-row>
+                <el-row v-for="(sitem,index) in searchValues" :key="index" style="margin-top:5px;padding: 0px 15px 0px 10px;">
+                    <el-col :span="20">
+                        <el-row type="flex" justify="state">
+                            <el-form-item  :label="sitem.name">
+                                <el-col :span="10" :xs="10" :sm="10" :md="10">
+                                    <el-input v-model="sitem.v1" size="small" :clearable="true" style="width: 100%;"></el-input>
+                                </el-col>
+                                <el-col class="line" :span="1">~</el-col>
+                                <el-col :span="10" :xs="10" :sm="10" :md="10">
+                                    <el-input v-model="sitem.v2" size="small" :clearable="true" style="width: 100%;"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-row>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-row type="flex" justify="end">
+                            <el-button type="text" size="mini" @click="deleteItem(sitem)" style="color:red"><i class="iconfont icon-bip-delete"></i>&nbsp;删除</el-button>
+                        </el-row>
+                    </el-col>
+                </el-row> 
+            </el-form>
         </el-scrollbar>
         <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
+            &nbsp;
             <el-button type="primary" @click="searchOK" size="mini">确 定</el-button>
         </span>
     </el-dialog>

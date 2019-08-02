@@ -99,7 +99,7 @@
                 </template>
             </vxe-table-column>
         </vxe-table>
-        <el-pagination
+        <el-pagination  v-if="!cds.ds_par"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="cds.page.currPage"
@@ -111,7 +111,6 @@
         <el-col :span="4" :xs="4" :sm="4" :md="4">
             <el-button-group size="small" v-if="cds.ds_par">  
                 <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-                <el-button icon="el-icon-share"></el-button>
                 <el-button icon="el-icon-delete" @click="delRecord"></el-button>
             </el-button-group>
         </el-col>
@@ -413,14 +412,16 @@ export default class LayCelVexTable extends Vue {
     beforeDestroy(){
         this.$bus.$off('datachange',this.datachangeBusID)
     }
-    datachange(){
-        let cc:any = this.$refs[this.cds.ccells.obj_id];
-        if(cc){
-            if(this.cds.currRecord){
-                if(cc.selectRow == null)
-                    cc.setCurrentRow(this.cds.currRecord);
-                if(cc.selectRow.id != this.cds.currRecord.id)
-                    cc.setCurrentRow(this.cds.currRecord);
+    datachange(obj_id:string =''){
+        if(obj_id == this.cds.ccells.obj_id){
+            let cc:any = this.$refs[this.cds.ccells.obj_id];
+            if(cc){
+                if(this.cds.currRecord){
+                    if(cc.selectRow == null)
+                        cc.setCurrentRow(this.cds.currRecord);
+                    if(cc.selectRow.id != this.cds.currRecord.id)
+                        cc.setCurrentRow(this.cds.currRecord);
+                }
             }
         }
     }
