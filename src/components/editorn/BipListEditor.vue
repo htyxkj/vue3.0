@@ -122,7 +122,7 @@ export default class BipListEditor extends Vue{
                     this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
                 }
                 this.cds.cellChange(key,str);
-                // this.cds.checkGS();
+                this.cds.checkGS();
             }else{
                 this.model1 = this.model
             }   

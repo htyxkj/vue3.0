@@ -49,7 +49,7 @@ export default class BipInputEditor extends Vue{
                     this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
                 }
                 // this.cds.cdata.data[this.row].c_state |=2;
-                console.log(11);
+                // console.log(11);
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 this.cds.checkGS();
             }else{
