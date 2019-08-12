@@ -16,7 +16,6 @@ export default class LayOut extends Vue {
     @Provide() msg1:string = Math.random()+'';
     @Prop() name!:string;
     @Prop() bshow!:boolean;
-    @Prop() height!:number;
     @Provide() dialogVisible:boolean = false
 
     handleClose(){

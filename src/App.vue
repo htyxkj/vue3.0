@@ -27,7 +27,7 @@
                     :lazy="true"
                     :style="style"
                 >    
-                    <lay-out :name="item.name" :bshow="item.name === editableTabsValue2" :height="height">     
+                    <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
                     </lay-out>
                 </el-tab-pane>
                 </el-tabs>
@@ -83,8 +83,7 @@ export default class App extends Vue {
     @Provide() style:string="height:400px";
     @Provide() height:number = 400;
     async mounted() {
-        const c0 = window.location.origin+window.location.pathname
-        let uri = window.location;
+        // console.log('321321')
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
             BaseVariable.BaseUri = res.data.ApiUrl; 
@@ -103,17 +102,6 @@ export default class App extends Vue {
             this.height=this.height-104;
         }
         this.style= "height:"+this.height+"px";
-
-        window.onresize = () => {
-            return (() => {
-                this.height = document.documentElement.clientHeight
-                console.log(this.height)
-                if(this.height>70){
-                    this.height=this.height-104;
-                }
-                this.style= "height:"+this.height+"px";
-            })()
-        }
 
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
@@ -251,5 +239,6 @@ export default class App extends Vue {
             this.$router.push({ path: currTag.path });
         }
     }
+
 }
 </script>

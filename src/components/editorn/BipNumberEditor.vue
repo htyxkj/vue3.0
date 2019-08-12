@@ -50,7 +50,7 @@ export default class BipNumberEditor extends Vue{
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.cellChange(this.cell.id,this.model1);
                 if(this.cds.baseI){
-                    console.log('cellDataChange',this.model1)
+                    // console.log('cellDataChange',this.model1)
                     this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
                 }
                 this.cds.setStateOrAnd(icl.R_EDITED)
