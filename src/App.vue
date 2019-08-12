@@ -54,7 +54,6 @@ import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
 import { AxiosPromise } from 'axios'
-import { watch } from 'fs';
 const namespace: string = 'login'; 
 
 @Component({
@@ -78,10 +77,11 @@ export default class App extends Vue {
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Getter('user', { namespace: 'login' }) user?: User;
+    @Getter('bipHeight', { namespace: 'login' }) height!: number;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:400px";
-    @Provide() height:number = 400;
+    // @Provide() height:number = 400;
     async mounted() {
         // console.log('321321')
         await this.$axios.get('./static/config.json').then((res:any) => { 
@@ -96,12 +96,12 @@ export default class App extends Vue {
             console.log(err)
         }) 
 
-        this.height = document.documentElement.clientHeight
-        console.log('style',this.height)
-        if(this.height>70){
-            this.height=this.height-104;
-        }
-        this.style= "height:"+this.height+"px";
+        // this.height = document.documentElement.clientHeight
+        // console.log('style',this.height)
+        // if(this.height>70){
+        //     this.height=this.height-104;
+        // }
+        // this.style= "height:"+this.height+"px";
 
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
@@ -238,6 +238,11 @@ export default class App extends Vue {
         if(this.$route.path !== currTag.path){
             this.$router.push({ path: currTag.path });
         }
+    }
+
+    @Watch('height')
+    heightChange(){
+        this.style= "height:"+this.height+"px";
     }
 
 }

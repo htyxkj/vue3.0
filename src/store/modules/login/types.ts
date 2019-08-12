@@ -7,4 +7,5 @@ export interface LoginState {
     user: User
     menulist: Menu[]
     isOpenMenu:boolean
+    bipComHeight:number
   }

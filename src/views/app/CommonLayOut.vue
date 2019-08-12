@@ -17,6 +17,7 @@ import { URIParams } from "@/classes/URIParams";
 
 import BaseApplet from './applet/BaseApplet.vue'
 import CUnivSelect from './report/CUnivSelect.vue'
+import { Mutation } from 'vuex-class';
 // let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
@@ -28,6 +29,7 @@ export default class CommonLayOut extends Vue {
     @Provide() height:number = 400;
     @Provide() uriParams: URIParams = new URIParams();
     @Provide() fullscreenLoading: boolean = false;
+    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     async mounted() {
         if (this.$route.query) {
             this.pbuid = this.$route.query.pbuid + "";
@@ -57,6 +59,7 @@ export default class CommonLayOut extends Vue {
         if(this.height>70){
             this.height=this.height-104;
         }
+        this.setBipHeight(this.height)
         window.onresize = () => {
             return (() => {
                 this.height = document.documentElement.clientHeight
@@ -64,6 +67,7 @@ export default class CommonLayOut extends Vue {
                 if(this.height>70){
                     this.height=this.height-104;
                 }
+                this.setBipHeight(this.height)
 
             })()
         }
