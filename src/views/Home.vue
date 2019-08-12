@@ -1,15 +1,13 @@
 <template>
   <div class="bip-main-container">
-    <el-scrollbar wrap-class="scrollbar-wrapper">
-      <el-button type="primary" @click="getCoList">主要按钮</el-button>
-      <el-button type="primary" @click="saveCoList">保存</el-button>
+    <el-scrollbar wrap-class="scrollbar-wrapper"> 
       <grid-layout :layout="layout" :auto-size="true" :col-num="24" :row-height="50" :max-rows="1000"
         :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[10, 10]" :use-css-transforms="true" >
         <grid-item v-for="item in layout" :key="item.i" :x="item.x"
           :y="item.y" :w="item.w" :h="item.h" :i="item.i"
-          :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw"
+          :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" :isDraggable="isDraggable" :isResizable="isResizable"
           @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent" >
-          {{item}}
+          <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech"></home-component>
         </grid-item>
       </grid-layout>
     
@@ -57,6 +55,18 @@
         <el-button type="primary" @click="selectionSelectOK">确 定</el-button>
       </span>
     </el-dialog>
+
+    <div class="wrap">
+        <div class="inner">
+          <div @click="getCoList"><i class="iconfont icon-bip-zujian"/></div>
+          <div @click="saveCoList"><i class="iconfont icon-bip-baocun1"/></div>
+          <div @click="isDraggable =true,isResizable=true"><i class="iconfont icon-bip-bianji"/></div>
+          <div @click="reduction"><i class="iconfont icon-bip-fanhui"/></div>
+        </div>
+        <div class="home">
+          <div @click="imgMenuClikc"><i class="iconfont icon-bip-caidan"/></div>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -72,6 +82,7 @@ import BipTask from './app/taskMsg/bipTask.vue';
 import BipMsg from './app/taskMsg/bipMsg.vue';
 import CDataSet from "@/classes/pub/CDataSet"; 
 import { Cells } from "@/classes/pub/coob/Cells";
+import homeComponent from "@/components/homeComponent/HomeComponent.vue";
 import VueGridLayout from 'vue-grid-layout'
 Vue.use(VueGridLayout)
 var GridLayout = VueGridLayout.GridLayout;
@@ -90,6 +101,7 @@ let tools = BIPUtil.ServApi
     GridItem,
     BipTask,
     BipMsg,
+    homeComponent,
   }
 })
 export default class Home extends Vue { 
@@ -105,10 +117,22 @@ export default class Home extends Vue {
     @Provide() conditionItem:any = "-1";
     @Provide() selection:Array<any> = [];
     @Provide() myDesktop:CDataSet = new CDataSet('');
+    @Provide() isDraggable:boolean = false;//是否可拖动位置
+    @Provide() isResizable:boolean = false;//是否可改变大小
+    @Provide() menuIsShow:boolean=false //右下角菜单是否显示
     mounted() {
     }
-    created(){
-      this.selectCoList();
+    async created(){
+      this.isDraggable = false;
+      this.isResizable = false;
+      let dataStr = "usrcode = '*' ";
+      if(this.user)
+        dataStr = " usrcode ='"+this.user.userCode+"'";
+      await this.selectCoList(dataStr);
+      if(this.layout.length ==0){
+        dataStr = "usrcode = '*' ";
+        await this.selectCoList(dataStr);
+      }
     }
     moveEvent(i:any, newX:any, newY:any,e:any){
         //console.log(e)
@@ -126,6 +150,8 @@ export default class Home extends Vue {
     }
 
     async getCoList(){
+      this.isDraggable = true;
+      this.isResizable = true;
       let qe:QueryEntity = new QueryEntity('','');
       qe.page.currPage = this.page.currPage;
       qe.page.pageSize = this.page.pageSize;
@@ -166,21 +192,23 @@ export default class Home extends Vue {
     selectionSelectOK(){
       let newLayout:Array<any> = [];
       for(var i =0;i<this.selection.length;i++){
-        let layout ={i:i,x:0,y:0,w:0,h:0,minH:0,minW:0,maxH:0,maxW:0,sid:"",cont:"",comtype:"",rech:"",state:1}
+        let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:""}
         let cc = this.selection[i];
         if(this.layout.length==0){ 
           layout.x=0;
           layout.y=0,
           layout.w=cc.minw,
           layout.h=cc.minh,
-          layout.minW = cc.minw;
-          layout.minH = cc.minh;
-          layout.maxW = cc.maxw;
-          layout.maxH = cc.maxh;
+          layout.minw = cc.minw;
+          layout.minh = cc.minh;
+          layout.maxw = cc.maxw;
+          layout.maxh = cc.maxh;
           layout.sid = cc.sid;
           layout.rech = cc.rech;
-          layout.cont = JSON.stringify(cc);
-          layout.comtype = cc.comtype;
+          cc.cont = JSON.parse(cc.cont)
+          cc.cont.sname = cc.sname;
+          layout.cont = JSON.stringify(cc.cont);
+          layout.comtype = cc.comtype; 
           newLayout.push(layout);
           continue;
         }
@@ -201,14 +229,16 @@ export default class Home extends Vue {
           layout.y=0,
           layout.w=cc.minw,
           layout.h=cc.minh,
-          layout.minW = cc.minw;
-          layout.minH = cc.minh;
-          layout.maxW = cc.maxw;
-          layout.maxH = cc.maxh;
+          layout.minw = cc.minw;
+          layout.minh = cc.minh;
+          layout.maxw = cc.maxw;
+          layout.maxh = cc.maxh;
           layout.sid = cc.sid;
           layout.rech = cc.rech;
-          layout.cont = JSON.stringify(cc);
-          layout.comtype = cc.comtype;
+          cc.cont = JSON.parse(cc.cont)          
+          cc.cont.sname = cc.sname;
+          layout.cont = JSON.stringify(cc.cont);
+          layout.comtype = cc.comtype; 
           newLayout.push(layout); 
         }  
       } 
@@ -226,7 +256,9 @@ export default class Home extends Vue {
       for(var i=0;i<this.delLayout.length;i++){
         this.myDesktop.currRecord.data = this.delLayout[i];
         this.myDesktop.currRecord.c_state=4
-        this.myDesktop.saveData()
+        if(this.myDesktop.currRecord.data.usrcode != "*"){
+          this.myDesktop.saveData()
+        }
       }
       for(var i =0;i<this.layout.length;i++){
         let cc = this.layout[i]; 
@@ -237,24 +269,32 @@ export default class Home extends Vue {
         if(cc.state !=1)
           cc.state =2;
         this.myDesktop.currRecord = this.myDesktop.createOne();
-        let usrcode = this.myDesktop.currRecord.data.usrcode;
-        this.myDesktop.currRecord.data = cc; 
-        this.myDesktop.currRecord.data.usrcode = usrcode
-
+        let usrcode = this.myDesktop.currRecord.data.usrcode
+        this.myDesktop.currRecord.data = cc;   
+        let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+        if(userAttr <=1){
+          this.myDesktop.currRecord.data.usrcode = "*"
+        }else{
+          if(cc.usrcode == '*'){
+            cc.state = 1;
+            this.myDesktop.currRecord.data.usrcode = usrcode;
+          }
+        }
         this.myDesktop.currRecord.c_state=cc.state;
         this.myDesktop.saveData()
         cc.state =2;
       }
+      this.isDraggable = false;
+      this.isResizable = false;
+      this.$notify.success("保存成功！");
     }
     /**
      * 查询我的桌面
      */
-    async selectCoList(){
+    async selectCoList(dataStr:string){
       this.myDesktop = await this.getCell("INSMYDESK") 
-      let dataStr = "{usrcode:'*'}";
-      if(this.user)
-        dataStr = "{usrcode:'"+this.user.userCode+"'}";
       let qe:QueryEntity = new QueryEntity("INSMYDESK","INSMYDESK",dataStr);
+      qe.oprid = 14
       qe.page.pageSize=1000
       let vv = await tools.query(qe);
       console.log(vv)
@@ -265,8 +305,22 @@ export default class Home extends Vue {
           data.i = i;
           this.layout.push(data)
         }
-        console.log(this.layout)
       }
+    }
+    /**
+     * 还原桌面为管理员设置桌面
+     */
+    async reduction(){
+      for(var i=0;i<this.layout.length;i++){
+        this.myDesktop.currRecord.data = this.layout[i];
+        this.myDesktop.currRecord.c_state=4
+        if(this.myDesktop.currRecord.data.usrcode != "*"){
+          this.myDesktop.saveData()
+        }
+      }
+      this.layout=[];
+      let dataStr = "usrcode = '*' ";
+      await this.selectCoList(dataStr);
     }
     async getCell(cellid:string){
       let res = await tools.getCCellsParams(cellid); 
@@ -279,6 +333,71 @@ export default class Home extends Vue {
         return new CDataSet('');
       }
     }
+
+    /** 右下角扇形菜单 */
+    imgMenuClikc(){
+      if (this.menuIsShow) {
+          // this.style.transform = 'rotate(0deg)'
+          this.showInners()
+      } else {
+          // this.style.transform = 'rotate(-720deg)'
+          this.showInners()
+      }
+      this.menuIsShow = !this.menuIsShow
+    }
+    showInners() {
+      let long = 100
+      let delay = 0.1
+      let deg = 90
+
+      let inners = document.querySelectorAll('.inner > div')
+      let _this = this;
+      inners.forEach((item:any, index) => {
+          if (this.menuIsShow) {
+              item.style.transition = `1s ${delay * (inners.length - index)}s`;
+              item.style.transform = 'rotate(0deg) scale(1)'
+              item.style.top = 0 + 'px'
+              item.style.left = 0 + 'px'
+          } else {
+              let itemTranslate = this.getTranslate(index)
+              let itemDelay = delay * (index + 1)
+              item.style.transition = `1s ${itemDelay}s`;
+              item.style.transform = `rotate(-360deg) scale(1)`
+              item.style.top = -itemTranslate.y + 'px'
+              item.style.left = -itemTranslate.x + 'px' 
+              item.addEventListener('click', function () {
+                  item.style.transition = `0.3s`
+                  item.style.transform = `rotate(-360deg) scale(1.8)`
+                  item.style.opacity = 0.1
+                  item.addEventListener('transitionend', _this.scaleFun)
+              })
+              item.addEventListener('mousemove', function () {
+                  item.style.transition = `0.2s`
+                  item.style.transform = `rotate(-360deg) scale(1)`
+                  item.style.opacity = 0.5
+                  item.addEventListener('transitionend', _this.scaleFun)
+              })
+          }
+      })
+    }
+    scaleFun(event:any) {
+      let item = event.target, tmpTransform
+      item.style.transform = `rotate(-360deg) scale(1)`
+      item.style.opacity = 1
+      item.removeEventListener('transitionend', this.scaleFun)
+    }
+    getTranslate(index:any) {
+      let long = 100
+      let deg = 90
+      let inners = document.querySelectorAll('.inner > div')
+      let x = 0, y = 0, itemDeg = 0
+      itemDeg = (deg / (inners.length - 1)) * index
+      // 角度转弧度 (deg * Math.PI) / 180
+      x = Math.round(long * Math.sin((itemDeg * Math.PI) / 180))
+      y = Math.round(long * Math.cos((itemDeg * Math.PI) / 180))
+      return {x, y}
+    }
+    /** 右下角扇形菜单 end */
 }
 </script>
 <style lang="scss" >
@@ -314,17 +433,52 @@ export default class Home extends Vue {
   }
   .vue-grid-layout>div {
      position: absolute;
-     background: indianred;
+    //  background: indianred;
+  } 
+  .wrap {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    width: 50px;
+    height: 50px;
   }
-    .vxe-pager-size--select{
-      .is--show{
-        z-index: 99999 !important; 
-      }
-      z-index: 99999 !important; 
-    }
-    .vxe-pager-size--select.is--show{
-      z-index: 99999 !important; 
-    }
+  .inner {
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+  }
+  .inner > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 8px;
+    width: 70%;
+  }
+  .inner > div > i{
+    font-size: 30px;
+  }
+  .home {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: 2s;
+    border-radius: 50%;
+    width: 100%;
+  }
+  .home > div {
+    width: 45px;
+    height: 45px;
+    background-color: white;
+    text-align: center;
+    line-height: 45px;
+    border-radius: inherit;
+  }
+  .home > div > i{
+    font-size: 30px;
+  }
+  .home > div:hover {
+    transform: scale(1.1);
+  }
 </style>
 
 

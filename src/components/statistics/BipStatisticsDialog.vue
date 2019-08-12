@@ -195,7 +195,7 @@ export default class BipStatisticsDialog extends Vue {
                     let cell:CDataSet = cds1; 
                     cell.currRecord = cell.createOne();
                     let cont = {spflds:selValue,spbds:selGroup,charttype:this.chartTypeValue,
-                                showchart:this.showChart?1:0,cellid:this.$route.query.pmenuid,};
+                                showchart:this.showChart?1:0,menuid:this.$route.query.pmenuid,};
                     let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
                     if(userAttr <=1){
                         cell.currRecord.data.usrcode = "*";

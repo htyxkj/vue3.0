@@ -1,14 +1,13 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
-        <div class="bip-main-container">
+        <div class="bip-home-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
-                        <div class="bip-main-container" v-if="lay.binit">
+                        <div class="bip-home-container" v-if="lay.binit">
                             <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
                                 <div ref="se" @keyup.enter="find">
-                                    <bip-search-cont :env="env" ></bip-search-cont>
+                                    <bip-search-cont :env="env"></bip-search-cont>
                                 </div>
                                 <el-form label-position="right" label-width="120px">
                                     <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
@@ -18,22 +17,18 @@
                     </template>
                     <template v-else>
                         <!-- 统计结果展示 -->
-                        <bip-statistics-chart :stat="Statistics" :env="env" :showBack="true" @goTable="goTable"></bip-statistics-chart>
+                        <bip-statistics-chart :stat="Statistics" :env="env" :showBack="false"></bip-statistics-chart>
                     </template>
                 </template>
                 <template v-else>
                     <template v-if="env && env.dsm && env.dsm.ccells">
                         <el-row>
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart :stat="item" :env="env" @goTable="goTable" :showBack="true"></bip-statistics-chart>
+                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false"></bip-statistics-chart>
                             </el-col>
                         </el-row>
                     </template>
-                </template>
-                <template v-if="TJDlog">
-                    <!-- 统计项弹框选择 -->
-                    <bip-statistics-dlog ref="bi_tj"  :env="env" @makeOK="tjData"></bip-statistics-dlog>
-                </template>
+                </template>               
                 <template>
                     <bip-menu-btn-dlg ref="bip_dlg" @Recheck="Recheck"></bip-menu-btn-dlg>
                 </template>
@@ -65,13 +60,13 @@ import BipMenuBar from "@/classes/pub/BipMenuBar";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
-import CRecord from '../../../classes/pub/CRecord';
-import CData from '../../../classes/pub/CData';
+import CRecord from '../../classes/pub/CRecord';
+import CData from '../../classes/pub/CData';
 import { on } from 'cluster';
 import { types } from 'util';
 import { connect } from 'echarts';
 import { throws } from 'assert';
-import BipLayConf from '../../../classes/ui/BipLayConf';
+import BipLayConf from '../../classes/ui/BipLayConf';
 import { truncate } from 'fs';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
@@ -342,10 +337,6 @@ export default class CUnivSelect extends Vue {
         this.initShowChar=false;
         this.TJ =true;
     }
-    goTable(){
-        this.TJ = false;
-        this.initShowChar = false;
-    }
     /**
      * 获取自定义按钮
      */
@@ -503,3 +494,27 @@ export default class CUnivSelect extends Vue {
     }
 }
 </script>
+<style  lang="scss" >
+.bip-home-container {
+    position: fixed; 
+    height: 98% !important;
+    width: 100% !important;
+    z-index: 1;
+    overflow: hidden;
+    margin-right: 20px;
+    
+    .el-scrollbar {
+        height: 100%;
+        margin-bottom: 10px !important;
+        margin-right: 0px !important; 
+        .el-scrollbar__wrap {
+            overflow-x: hidden !important;
+            padding-right: 5px;
+            height: 100%;
+        }
+        .scrollbar-wrapper{
+          overflow-x: hidden !important;
+        }
+    }
+}
+</style>

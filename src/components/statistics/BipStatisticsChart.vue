@@ -3,7 +3,7 @@
         <div class="titlebg">
             <el-row>
                 <el-col :span="2" style="text-align: left">
-                    <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
+                    <el-button v-if="showBack" icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
                 </el-col>
                 <el-col :span="22" class="charttitle">
                     <template v-if="title">
@@ -53,6 +53,7 @@ let ICL = CommICL
 export default class BipStatisticsDialog extends Vue {
     @Prop() stat!:any;
     @Prop() env!:CCliEnv; 
+    @Prop() showBack!:boolean
     @Provide() selValue:Array<any> =[];
     @Provide() selGroup:Array<any> =[];
     @Provide() option:any = null;
