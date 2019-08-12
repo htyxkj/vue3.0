@@ -40,30 +40,30 @@ export default class BipLayCells {
     }
     this.obj_id = BIPUtils.baseUtil.getObjId(str);
     this.name = this.getName(str);
-    let index = str.indexOf("[");
-    if (index > 0) {
-      let end = str.indexOf("]");
-      let flds = str.substring(index + 1, end);
-      // 获取开始和结束下标
-      index = flds.indexOf("~");
-      if (index === -1) index = flds.indexOf("-");
-      if (index === 0) {
-        this.start = 0;
-        flds = flds.substring(1);
-        this.endP = this.findPosition(flds, this.cells);
-      } else {
-        let fld = flds.indexOf("~") > -1 ? flds.split("~") : flds.split("-");
-        this.start = this.findPosition(fld[0], this.cells);
-        if (fld[1]) {
-          this.endP = this.findPosition(fld[1], this.cells);
-        } else {
-          this.endP = this.cells.cels.length - 1;
-        }
-      }
-    } else {
-      this.start = 0;
-      this.endP = this.cells.cels.length - 1;
-    }
+    // let index = str.indexOf("[");
+    // if (index > 0) {
+    //   let end = str.indexOf("]");
+    //   let flds = str.substring(index + 1, end);
+    //   // 获取开始和结束下标
+    //   index = flds.indexOf("~");
+    //   if (index === -1) index = flds.indexOf("-");
+    //   if (index === 0) {
+    //     this.start = 0;
+    //     flds = flds.substring(1);
+    //     this.endP = this.findPosition(flds, this.cells);
+    //   } else {
+    //     let fld = flds.indexOf("~") > -1 ? flds.split("~") : flds.split("-");
+    //     this.start = this.findPosition(fld[0], this.cells);
+    //     if (fld[1]) {
+    //       this.endP = this.findPosition(fld[1], this.cells);
+    //     } else {
+    //       this.endP = this.cells.cels.length - 1;
+    //     }
+    //   }
+    // } else {
+    //   this.start = 0;
+    //   this.endP = this.cells.cels.length - 1;
+    // }
   }
   /**
    *
@@ -103,7 +103,7 @@ export default class BipLayCells {
   }
 
   makeUICells(layInfo:string){
-      let _startIndex = layInfo.indexOf('[');
+    let _startIndex = layInfo.indexOf('[');
     if(_startIndex>-1){
         let laystr = layInfo.substring(_startIndex+1,layInfo.indexOf(']'));
         _startIndex = laystr.indexOf(',')

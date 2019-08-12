@@ -6,10 +6,8 @@
         <template v-if="searchdia">
             <bip-search-dialog ref="se" :cds_cont="dsm" @makeOK="searchfindData"></bip-search-dialog>
         </template>
-        
-        <div class="bip-main-container" v-if="lay.binit">
-
-            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;    height: 100%;">
+        <div class="bip-main-container" v-if="lay.binit">            
+            <el-scrollbar :style="style">
                 <el-form label-position="right" label-width="120px">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
@@ -50,6 +48,7 @@ let tools = BIPUtil.ServApi
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
+    @Prop() height!:number;
     @Provide() cells: Array<Cells> = new Array<Cells>();
     @Provide() mbs: BipMenuBar = new BipMenuBar(0);
     @Provide() dsm: CDataSet = new CDataSet(null);
@@ -65,7 +64,7 @@ export default class BaseApplet extends Vue{
     @Provide() cea:CeaPars = new CeaPars({});
     @Provide() pmenuid:string ='';
     @Provide() oprid:number = 13
-
+    @Provide() style:string='';
     async invokecmd(btn:any) {
         let cmd = btn.cmd
         console.log(cmd);
@@ -635,6 +634,11 @@ export default class BaseApplet extends Vue{
     }
     async mounted(){
         // console.log(this.uriParams,'bbb')
+        if(this.height>0){
+            this.style = "margin-bottom:0px;  margin-right: 0px; height:"+(this.height-30)+"px;"
+        }else{
+             this.style = "margin-bottom:0px;  margin-right: 0px; ";
+        }
         this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
         if(!this.params || !this.params.method){
@@ -739,6 +743,15 @@ export default class BaseApplet extends Vue{
     paramsWatch(){ 
         if(this.pmenuid == this.$route.query.pmenuid){ 
             this.initGetVal();
+        }
+    }
+
+    @Watch('height')
+    heightChanges(){
+        if(this.height>0){
+            this.style = "margin-bottom:0px;  margin-right: 0px; height:"+(this.height-30)+"px;"
+        }else{
+             this.style = "margin-bottom:0px;  margin-right: 0px; ";
         }
     }
 //#endregion

@@ -216,11 +216,7 @@ export namespace BIPUtils {
         str = str.substring(0, index);
         return str;
       }
-      index = str.indexOf("*");
-      if (index > 0) {
-        str = str.substring(0, index);
-        return str;
-      }
+
       index = str.indexOf("[");
       if (index > 0) {
         str = str.substring(0, index);
@@ -228,6 +224,11 @@ export namespace BIPUtils {
       index = str.indexOf("/");
       if (index > 0) {
         str = str.substring(0, index);
+      }
+      index = str.indexOf("*");
+      if (index > 0) {
+        str = str.substring(0, index);
+        return str;
       }
       return str;
     }

@@ -100,22 +100,25 @@
                 </template>
             </vxe-table-column>
         </vxe-table>
-        <el-pagination  v-if="!cds.ds_par"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="cds.page.currPage"
-            :page-size="cds.page.pageSize"
-            :page-sizes="[10, 20, 30,40,50]"
-            layout="slot,total,prev, pager, next,sizes"
-            :total="cds.page.total"
-        >
-        <el-col :span="4" :xs="4" :sm="4" :md="4">
-            <el-button-group size="small" v-if="cds.ds_par">  
-                <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-                <el-button icon="el-icon-delete" @click="delRecord"></el-button>
-            </el-button-group>
-        </el-col>
-        </el-pagination>
+        <el-row v-if="cds.ds_par">
+            <el-pagination  
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page.sync="cds.page.currPage"
+                :page-size="cds.page.pageSize"
+                :page-sizes="[10, 20, 30,40,50]"
+                layout="slot,total,prev, pager, next,sizes"
+                :total="cds.page.total"
+            >
+            <el-col :span="18" :xs="18" :sm="18" :md="18" >
+                <el-button-group size="small" v-if="cds.ds_par">  
+                    <el-button icon="el-icon-edit" @click="addRecord"></el-button>
+                    <el-button icon="el-icon-delete" @click="delRecord"></el-button>
+                </el-button-group>
+            </el-col>
+            </el-pagination>
+        </el-row>
+        
 
     </div>
 </template>

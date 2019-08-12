@@ -1,10 +1,10 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <template v-if="uriParams.beBill">
-            <base-applet :uriParams="uriParams" :params="$route.params"></base-applet>
+            <base-applet :uriParams="uriParams" :params="$route.params" :height="height"></base-applet>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
-            <c-univ-select :uriParams="uriParams" :params="$route.params"></c-univ-select>
+            <c-univ-select :uriParams="uriParams" :params="$route.params" :height="height"></c-univ-select>
         </template>
     </el-row>
 </template>
@@ -25,6 +25,7 @@ let tools = BIPUtil.ServApi
 export default class CommonLayOut extends Vue {
     @Provide() pbuid: string = "";
     @Provide() pmenuid: string = "";
+    @Provide() height:number = 400;
     @Provide() uriParams: URIParams = new URIParams();
     @Provide() fullscreenLoading: boolean = false;
     async mounted() {
@@ -50,6 +51,21 @@ export default class CommonLayOut extends Vue {
             this.$notify.error(
                 "没有相关数据" + this.pbuid + ":" + this.pmenuid
             );
+        }
+
+        this.height = document.documentElement.clientHeight
+        if(this.height>70){
+            this.height=this.height-104;
+        }
+        window.onresize = () => {
+            return (() => {
+                this.height = document.documentElement.clientHeight
+                console.log(this.height)
+                if(this.height>70){
+                    this.height=this.height-104;
+                }
+
+            })()
         }
     }
 }

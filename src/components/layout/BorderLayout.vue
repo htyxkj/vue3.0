@@ -1,10 +1,10 @@
 <template>
 <div class="bip-border-lay">
     <template v-if="btop">
-        <el-card v-if="!laycfg[0].bcells" style="height:100%">
+        <el-card v-if="!laycfg[0].bcells" style="height:100%; margin-bottom:10px;">
             <base-layout :layout="laycfg[0].comp" :env="env"></base-layout >
         </el-card>
-        <el-card v-else style="height:100%">
+        <el-card v-else style="height:100% ; margin-bottom:10px;">
             <!-- <el-row class="bip-row" :gutter="10"> -->
                 <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
             <!-- </el-row> -->
@@ -23,10 +23,10 @@
                 </el-col>
             </template>
             <template v-if="bcenter">
-                <el-card v-if="!laycfg[wcenterIndex].bcells">
+                <el-card v-if="!laycfg[wcenterIndex].bcells"  style="height:100% ; margin-bottom:10px;">
                     <base-layout :layout="laycfg[wcenterIndex].comp" :env="env"></base-layout >
                 </el-card>
-                <el-card v-else>
+                <el-card v-else style="height:100% ; margin-bottom:10px;">
                     <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell></el-col>
                 </el-card>
             </template>
@@ -35,7 +35,7 @@
                     <el-card v-if="!laycfg[4].bcells">
                         <base-layout :layout="laycfg[4].comp" :env="env"></base-layout >
                     </el-card>
-                    <el-card v-else>
+                    <el-card v-else >
                         <lay-cell :laycell="laycfg[4].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
                     </el-card>
                 </el-col>
@@ -47,7 +47,7 @@
             <el-card v-if="!laycfg[2].bcells">
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env"></bip-comm-lay >
             </el-card>
-            <el-card v-else>
+            <el-card v-else style="height:100% ; margin-bottom:10px;">
                 <lay-cell :laycell="laycfg[2].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
             </el-card>
             
@@ -68,6 +68,7 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 export default class BorderLayout extends Vue{
     @Prop() laycfg!:Array<BipLayConf>
     @Prop() env?:CCliEnv
+    @Prop() height!:number
     @Provide() len:number = 0
     @Provide() btop:boolean = false
     @Provide() bcenter:boolean = false
@@ -78,6 +79,7 @@ export default class BorderLayout extends Vue{
     @Provide() wright = 0
     @Provide() wcenter = 0
     @Provide() wcenterIndex = 1
+    @Provide() style="";
     mounted(){
         this.initInfo()
     }
