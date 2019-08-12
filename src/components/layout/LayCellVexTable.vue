@@ -435,7 +435,7 @@ export default class LayCelVexTable extends Vue {
             }
         }
         
-        this.rowCheckGS();
+        // this.rowCheckGS();
     }
     rowCheckGS(){
         console.log("CheckGS")

@@ -4,6 +4,7 @@ import {CommICL} from '@/utils/CommICL'
 const icl = CommICL
 import Vue from 'vue';
 import XEUtils from 'xe-utils'
+import CRecord from '../CRecord';
 
 export class CCalcUI extends Vue implements BaseI{
     cds:CDataSet
@@ -50,14 +51,15 @@ export class CCalcUI extends Vue implements BaseI{
         }
     }
 
-    public caclQtyhs(crd:any,row:number,cds:CDataSet){
-        let _qrt = crd[this.qtyrt]
+    public caclQtyhs(crd:CRecord,row:number,cds:CDataSet){
+        let _qrt = crd.data[this.qtyrt]
         _qrt = _qrt?_qrt:1
-        const _qty = crd[this.qty]
-        crd[this.qtyhs] = _qrt*_qty
-        cds.cdata.data[row] = Object.assign({},crd)
+        const _qty = crd.data[this.qty]
+        crd.data[this.qtyhs] = _qrt*_qty
+        cds.cdata.data[row] = crd
+        this.$bus.$emit('datachange','')
         const mm1 = this.getMethordName(cds.ccells.obj_id,this.qtyhs)
-        this.$bus.$emit(mm1,{cellId:this.qtyhs,value:crd[this.qtyhs],row:row})
+        this.$bus.$emit(mm1,{cellId:this.qtyhs,value:crd.data[this.qtyhs],row:row})
     }
 
 
@@ -67,13 +69,13 @@ export class CCalcUI extends Vue implements BaseI{
      * @param crd 当前行数据
      * @param row 第几行
      */
-    public caclFcy(crd:any,row:number,cds:CDataSet){
-        let _nup = parseFloat(crd[this.nup])
-        let _qty = parseFloat(crd[this.qty])
-        crd[this.fcy] = _nup*_qty
+    public caclFcy(crd:CRecord,row:number,cds:CDataSet){
+        let _nup = parseFloat(crd.data[this.nup])
+        let _qty = parseFloat(crd.data[this.qty])
+        crd.data[this.fcy] = _nup*_qty
         cds.cdata.data[row] = crd
         const mm = this.getMethordName(cds.ccells.obj_id,this.fcy)
-        this.$bus.$emit(mm,{cellId:this.fcy,value:crd[this.fcy],row:row})
+        this.$bus.$emit(mm,{cellId:this.fcy,value:crd.data[this.fcy],row:row})
         this.caclRmbhs(crd,row,cds)
     }
 
@@ -82,9 +84,9 @@ export class CCalcUI extends Vue implements BaseI{
      * @param crd 要计算的行记录
      * @param row  第几行
      */
-    public caclRmbhs(crd:any,row:number,cds:CDataSet){
-        let _taxrt = crd[this.addtaxrt]
-        let _fcy = crd[this.fcy]
+    public caclRmbhs(crd:CRecord,row:number,cds:CDataSet){
+        let _taxrt = crd.data[this.addtaxrt]
+        let _fcy = crd.data[this.fcy]
         let _rmbhs = 0,_tax = 0
         //0：含税，1：不含税，2：无税
         switch(this.taxlb){
@@ -102,12 +104,17 @@ export class CCalcUI extends Vue implements BaseI{
                 break;
 
         }        
-        crd[this.rmbhs] = _rmbhs
-        crd[this.addtax] = _tax
+        crd.data[this.rmbhs] = _rmbhs
+        crd.data[this.addtax] = _tax
+        this.cds.currRecord = crd
+        this.cds.cdata.data[row] = crd
+        this.$bus.$emit('datachange','')
         const mm = this.getMethordName(cds.ccells.obj_id,this.rmbhs)
-        this.$bus.$emit(mm,{cellId:this.rmbhs,value:crd[this.rmbhs],row:row})
+        this.$bus.$emit(mm,{cellId:this.rmbhs,value:crd.data[this.rmbhs],row:row})
         const mm1 = this.getMethordName(cds.ccells.obj_id,this.addtax)
-        this.$bus.$emit(mm1,{cellId:this.addtax,value:crd[this.addtax],row:row})
+        this.$bus.$emit(mm1,{cellId:this.addtax,value:crd.data[this.addtax],row:row})
+
+        
     }
 
     getMethordName(obj_id:string,fld:string){

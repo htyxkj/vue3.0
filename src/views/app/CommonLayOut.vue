@@ -60,7 +60,7 @@ export default class CommonLayOut extends Vue {
         window.onresize = () => {
             return (() => {
                 this.height = document.documentElement.clientHeight
-                console.log(this.height)
+                // console.log(this.height)
                 if(this.height>70){
                     this.height=this.height-104;
                 }

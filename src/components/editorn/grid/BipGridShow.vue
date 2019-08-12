@@ -22,7 +22,6 @@ export default class BipGridShow extends Vue{
         if(this.cell&&this.cell.type==3){
             this.uiclass = 'bip-show-money'
             const point  = this.cell.ccPoint<0?2:this.cell.ccPoint
-            // this.model1 = XEUtils.toFixedString(this.model1,point)
             this.model1 = currutil.currency(this.model1,'',point);
         }
     }

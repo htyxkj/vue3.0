@@ -2,13 +2,13 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
          <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input-number size="small" v-model="model1" :clearable="clearable" 
-                :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input-number>
+                <el-input size="small" v-model="model1" :clearable="clearable" 
+                :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input>
             </el-form-item>
          </template>
          <template v-else>
-             <el-input-number size="small" v-model="model1" :clearable="clearable" 
-                :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input-number>
+             <el-input size="small" v-model="model1" :clearable="clearable" 
+                :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input>
          </template>
     </el-col>
 </template>
@@ -30,7 +30,12 @@ export default class BipNumberEditor extends Vue{
     @Provide() ccPoint:number = 0
     @Provide() span:number=  6
     mounted(){
-        this.model1 = parseFloat(this.model+'')
+        if(this.model){
+            this.model1 = parseFloat(this.model+'')
+        }else{
+            this.model1 = null
+        }
+       
         this.ccPoint = this.cell.ccPoint
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
@@ -43,14 +48,18 @@ export default class BipNumberEditor extends Vue{
         if(this.cds.currCanEdit()){
             if(this.model1 !== this.model){
                 this.cds.currRecord.data[this.cell.id] = this.model1;
+                if(this.cds.baseI){
+                    console.log('cellDataChange',this.model1)
+                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
+                }
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 if(this.cds.ds_par){
                     this.cds.ds_par.setStateOrAnd(icl.R_EDITED)
                 }
-                this.cds.checkGS();
+                this.cds.checkGS(this.cell);
             }
         }else{
-            this.model1 = this.model
+            this.model1 = parseFloat(this.model)
         }
     }
     @Watch("model")

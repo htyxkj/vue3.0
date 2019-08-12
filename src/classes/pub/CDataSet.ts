@@ -242,6 +242,7 @@ export default class CDataSet {
     // }
   }
   checkGS(cell?: Cell) {
+      console.log('checkGS')
     if (cell) {
       const attr = cell.attr;
       if ((attr & 0x100000) > 0) {
@@ -251,6 +252,11 @@ export default class CDataSet {
     // this.scriptProc.data = this.currRecord;
     this.ccells.cels.forEach(col => {
       let scstr = col.script;
+      if(cell){
+        if(col.id == cell.id){
+            scstr = ''
+        }
+    }
       if (scstr && scstr.indexOf("=:") === 0) {
         scstr = scstr.replace("=:", "");
         // 公式计算

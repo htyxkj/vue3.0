@@ -74,8 +74,16 @@ export default class BipPopView extends Vue{
     @Provide() currSelected:any = null
     mounted(){
         if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels){
-            this.showCols = this.bipInsAid.cells.cels.filter(item=>{
-                return item.isReq||item.isShow;
+            this.showCols = this.bipInsAid.cells.cels.filter((item,index)=>{
+                let _indexs:number[] = this.bipInsAid.showColsIndex
+                let en = _indexs.find(it=>{
+                    return it == index
+                })
+                if(en == undefined){
+                    return false
+                }
+                return en>-1;
+                // return item.isReq||item.isShow;
             })
         }
 
@@ -100,7 +108,6 @@ export default class BipPopView extends Vue{
                 if(cont&&cont.length>0){
                     this.qe.groupV = cont 
                         this.searchInsAidDatas()
-
                 }
             }
         }else{
