@@ -1,6 +1,6 @@
 <template>
     <el-row>  
-        <el-dialog :title="Title" :visible.sync="sqlDlg0" width="40%">
+        <el-dialog :title="Title" :visible.sync="sqlDlg0" width="40%" append-to-body>
             <el-dialog :title="Title" :visible.sync="sqlDlg1" width="30%" append-to-body>
                 <span :style="sqlStyle[1]">{{sqlCont[1]}}</span>
                 <span slot="footer" class="dialog-footer">
@@ -15,7 +15,7 @@
             </span>  
         </el-dialog> 
         <template v-if="openCell">
-            <el-dialog :title="Title" :visible.sync="openCell" > 
+            <el-dialog :title="Title" :visible.sync="openCell" append-to-body>
                 <div class="">
                     <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
                         <el-form label-position="right" label-width="120px">
@@ -170,12 +170,13 @@ export default class BipMenuBtnDlg extends Vue {
                 }
                 this.sqlDlg0 = false;
                 this.sqlDlg1 = false;
+                this.$emit("Recheck")
             }
+            
         }else{
             this.sqlDlg0 = false;
             this.sqlDlg1 = false;
         }
-        this.$emit("Recheck")
     }
 
     /**

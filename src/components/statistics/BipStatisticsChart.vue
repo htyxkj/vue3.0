@@ -6,7 +6,12 @@
                     <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
                 </el-col>
                 <el-col :span="22" class="charttitle">
+                    <template v-if="title">
+                        {{title}}
+                    </template>
+                    <template v-else>
                         统计维度：{{this.getTitle()}}
+                    </template>
                 </el-col>
             </el-row>
         </div>
@@ -36,6 +41,7 @@ import { BIPUtil } from "@/utils/Request";
 import { BIPUtils } from "@/utils/BaseUtil";
 import echarts from 'echarts';
 import BipChart from "@/components/chart/BipChart.vue"
+import QueryEntity from "@/classes/search/QueryEntity";
 let tools = BIPUtil.ServApi;
 let tool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from "vuex-class";
@@ -53,6 +59,7 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() tjcell:any = null; 
     @Provide() fullscreenLoading:boolean = false;
     @Provide() tableData:any =null;
+    @Provide() title:any = null;
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -68,18 +75,18 @@ export default class BipStatisticsDialog extends Vue {
         this.fullscreenLoading = true;
         this.selValue = this.stat.selValue;
         this.selGroup = this.stat.selGroup;
+        this.title = this.stat.title;
         this.option=null;
 
         let param:any=null;
-        let pcell,pdata,pageSize,currentPage,groupdatafilds,groupfilds,psearch;
-        pdata = JSON.stringify(this.env.ds_cont.currRecord);
-        pcell = this.env.dsm.ccells.obj_id;
-        psearch = this.env.ds_cont.ccells.obj_id;
+        let  groupdatafilds,groupfilds ; 
         groupfilds = JSON.stringify(this.selGroup);
-        groupdatafilds = JSON.stringify(this.selValue);
-        pageSize = 10000;
-        currentPage =1; 
-        param = tool.getBipStatisticsParams(pcell,pdata,pageSize,currentPage,groupfilds,groupdatafilds,psearch);
+        groupdatafilds = JSON.stringify(this.selValue); 
+        let qe: QueryEntity = new QueryEntity("","");
+        qe.pcell = this.env.dsm.ccells.obj_id
+        qe.tcell = this.env.ds_cont.ccells.obj_id
+        qe.cont = JSON.stringify(this.env.ds_cont.currRecord.data);
+        param = tool.getBipStatisticsParams(JSON.stringify(qe),groupfilds,groupdatafilds);
         let chartData = await tools.getFromServer(param); 
          
         this.tableData = chartData.data.data.tjpages.celData

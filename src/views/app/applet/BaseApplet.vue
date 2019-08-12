@@ -9,7 +9,7 @@
         
         <div class="bip-main-container" v-if="lay.binit">
 
-            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;    height: 100%;">
                 <el-form label-position="right" label-width="120px">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
@@ -131,14 +131,19 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
-                            // this.dsm.cdata.data.splice(this.dsm.page.index,1);
-                            // this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                            this.dsm.cdata.data.splice(this.dsm.page.index,1); 
+                            // if(this.dsm.page.index >= this.dsm.cdata.data.length){
+                            //     this.dsm.currRecord = this.dsm.cdata.data[this.dsm.cdata.data.length-1]
+                            // }else{
+                            //     this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                            // }
+                            this.dsm.currRecord = this.dsm.cdata.getDataAtIndex(this.dsm.page.index)
+                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
                         }).finally(()=>{
                             this.fullscreenLoading = false
                         })
                     });
                 }
-                
             }
 
         }else if(cmd === "CHECK"){
@@ -272,6 +277,8 @@ export default class BaseApplet extends Vue{
             }
         }
         this.setListMenuName();
+        console.log(this.dsm.ccells.obj_id)
+        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
     }
 //#endregion
 //#region 计算页码和获取缓存记录，记录有可能不存在
@@ -620,9 +627,15 @@ export default class BaseApplet extends Vue{
             }
         }
     }
-
+    getCRecordByPk2(value:any){
+        if(value.dsm.ccells.obj_id == this.dsm.ccells.obj_id){
+            this.dsm.page.index = value.rowIndex
+            this.setListMenuName();
+        }
+    }
     async mounted(){
         // console.log(this.uriParams,'bbb')
+        this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
         if(!this.params || !this.params.method){
             this.dsm.createRecord();
@@ -699,15 +712,22 @@ export default class BaseApplet extends Vue{
             }else if(this.params.method =='dlg'){
                 if(JSON.stringify(this.params.jsontj).length >2)
                 var cData  = await this.findData(true,this.params.jsontj);
-                if(cData && cData.page)
-                if(cData.page.total ==0){
-                    this.dsm.currRecord = new CRecord();
-                    let data = this.dsm.createRecord();
-                    let cont = this.params.jsoncont;
-                　　for(var key in cont){ 
-                        data.data[key] = cont[key]
-                　　} 
-                    this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
+                if(cData && cData.page){
+                    if(cData.page.total ==0){ 
+                        this.dsm.currRecord = new CRecord();
+                        let data = this.dsm.createRecord();
+                        let cont = this.params.jsoncont;
+                    　　for(var key in cont){ 
+                            data.data[key] = cont[key]
+                    　　} 
+                        let pk = this.dsm.ccells.pkindex
+                        for(var i=0;i<pk.length;i++){
+                            let cel = this.dsm.ccells.cels[pk[i]];
+                            if((cel.attr & 0x80 )>0){
+                                this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
+                            }
+                        }
+                    }
                 }
             }else if(this.params.method =='BL'){
                 if(JSON.stringify(this.params.jsontj).length >2)

@@ -196,6 +196,7 @@ export default class BipCommEditor extends Vue{
     @Watch('model')
     modelChange(){
         this.$bus.$emit('datachange','')
+        if(this.cds.currRecord)
         if(this.cds.currRecord.data[this.cell.id] != this.model){
             this.cds.currRecord.data[this.cell.id] = this.model
             this.cds.cdata.data[this.row] = this.cds.currRecord

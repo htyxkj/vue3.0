@@ -160,20 +160,16 @@ export namespace BIPUtils {
         return checkParasm
     }
 
-    getBipStatisticsParams(pcell:any,pdata:any,pageSize:any,currentPage:any,groupfilds:any,groupdatafilds:any,psearch:any){
-        return Object.assign({
-            apiId: GlobalVariable.APIID_FINDSTATDATA,
-            dbid: BaseVariable.COMM_FLD_VALUE_DBID,
-            usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode, 
-            pcell:pcell,
-            pdata:pdata,
-            pageSize:pageSize,
-            currentPage:currentPage,
-            groupfilds:groupfilds,
-            groupdatafilds:groupdatafilds,
-            psearch:psearch,
-            });
-        }
+    getBipStatisticsParams(qe:string,groupfilds:string,groupdatafilds:string){
+      return Object.assign({
+        apiId: GlobalVariable.APIID_FINDSTATDATA,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        groupfilds:groupfilds,
+        groupdatafilds:groupdatafilds, 
+        qe: qe
+      });
+    }
 
     /**
      * @description 获取辅助/常量元素对象
@@ -216,6 +212,11 @@ export namespace BIPUtils {
     getObjId(str: string): string {
       if (str.startsWith("@")) str = str.substring(1);
       let index = str.indexOf("#");
+      if (index > 0) {
+        str = str.substring(0, index);
+        return str;
+      }
+      index = str.indexOf("*");
       if (index > 0) {
         str = str.substring(0, index);
         return str;
@@ -357,7 +358,7 @@ export namespace BIPUtils {
         x1 = idx - 1,
         c0 = this.tolevel(fhs[x0]);
       if (c0 < 1 || c0 < this.tolevel(fhs[x1])) return idx; //注意赋值语句
-      ovs[x0] = this.calcTwoItem(ovs[x0], ovs[x1], fhs[x0]);
+      ovs[x0] = this.calcTwoItem(ovs[x0], ovs[x1], fhs[x0].charCodeAt(0));
       ovs[x1] = ovs[idx];
       fhs[x0] = fhs[x1];
       idx--;

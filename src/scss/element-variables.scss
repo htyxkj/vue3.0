@@ -110,7 +110,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
 
 //菜单栏位按钮样式
 .menubar{
-    // margin-bottom: 10px !important;
+    padding-bottom: 10px !important;
     background: $--bip-bg-color;
     // height: 60px;
     // margin-bottom: 20px;
@@ -372,7 +372,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
 
 .bip-main {
     // padding-left: 10px;
-    padding-top: 0px !important;
+    padding: 0px !important;
     margin-top: 2px !important;
   }
 .el-tabs__item {
@@ -425,11 +425,11 @@ $--bip-comm-color:#ffffff;//f4f6fb
 }
 .bip-main-container {
     position: fixed; 
-    height: calc(100% - 180px) !important;
-    width: calc(100% - 70px) !important;
+    height: calc(100% - 100px) !important;
+    // width: calc(100% - 70px) !important;
     z-index: 1;
     overflow: hidden;
-    margin-right: 20px;
+    // margin-right: 20px;
     .el-scrollbar {
         height: 100%;
         margin-bottom: 10px !important;

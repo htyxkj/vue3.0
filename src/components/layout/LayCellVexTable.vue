@@ -2,7 +2,7 @@
     <div v-if="laycell" class="bip-lay">
         <!-- 单据录入表格-->
         <vxe-table
-            ref="_vvt"
+            :ref="this.cds.ccells.obj_id"
             v-if="beBill"
             border
             size="small"
@@ -20,6 +20,7 @@
             height="300px"
             :selectRow="cds.currRecord"
             @select-all="selectAllEvent"
+            @cell-click="table_cell_click"
             @select-change="selectChangeEvent"
             >
             <vxe-table-column v-if="cds.ds_par" type="selection" width="40"></vxe-table-column>
@@ -119,6 +120,9 @@
     </div>
 </template>
 <script lang="ts">
+import { DateUtils } from "../../utils/DateUtils";
+import { GlobalVariable } from "../../utils/ICL";
+import BipScriptProc from "../../classes/pub/BipScriptProc";
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import BipLayCells from "@/classes/ui/BipLayCells";
 import { Cell } from "@/classes/pub/coob/Cell";
@@ -417,12 +421,58 @@ export default class LayCelVexTable extends Vue {
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 if(this.cds.currRecord){
-                    if(cc.selectRow == null)
+                    cc.clearCurrentRow()
+                    if(cc.selectRow == null){
                         cc.setCurrentRow(this.cds.currRecord);
-                    if(cc.selectRow.id != this.cds.currRecord.id)
+                    }
+                    if(cc.selectRow.id != this.cds.currRecord.id){
                         cc.setCurrentRow(this.cds.currRecord);
+                    }
                 }
             }
+        }
+        
+        this.rowCheckGS();
+    }
+    rowCheckGS(){
+        console.log("CheckGS")
+        for(var i=0;i<this.cds.cdata.data.length;i++){
+            let crd = this.cds.getRecordAtIndex(i);
+            let scriptProc = new BipScriptProc(crd, this.cds.ccells);
+            this.cds.ccells.cels.forEach(col => {
+                let scstr = col.script;
+                if (scstr && scstr.indexOf("=:") === 0) {
+                    scstr = scstr.replace("=:", "");
+                    // 公式计算
+                    var vl = scriptProc.execute(scstr, "", col);
+                    if (vl instanceof Array) {
+                    } else {
+                        if (vl == "Invalid date") {
+                            let dd = DateUtils.DateTool.now();
+                            if (col.type == 91) {
+                                crd.data[col.id] = DateUtils.DateTool.getDate(dd,GlobalVariable.DATE_FMT_YMD);
+                            } else {
+                                crd.data[col.id] = dd;
+                            }
+                        } else {
+                            crd.data[col.id] = vl;
+                        }
+                    } 
+                }
+                if(scstr){
+                    if(col.initValue && (col.attr &0x80 )>0){
+                        if(col.initValue.indexOf("%") >0 ){
+                            let scval = "%";
+                            if(crd.data[scstr]){
+                            scval = crd.data[scstr];
+                            }
+                            console.log(crd.data[col.id]);
+                            let vl = col.initValue.replace("%",scval);
+                            crd.data[col.id] = vl;
+                        }
+                    }
+                }
+            }); 
         }
     }
 }

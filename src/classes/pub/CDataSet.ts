@@ -427,8 +427,18 @@ export default class CDataSet {
             var cel = cell.cels[xinc];
             var s0 = cel.psAutoInc;
             if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12){
+              let cc = this.cdata.data[this.cdata.data.length-1]
+              if(cc){
+                let vl = cc.data[cel.id];
+                if (isNaN(vl)) {
+                  modal.data[cel.id] = this.cdata.data.length+1
+                }else{
+                  modal.data[cel.id] = parseInt(vl)+1
+                }
+              }else{
                 modal.data[cel.id] = this.cdata.data.length+1
-                return modal;
+              }
+              return modal;
             }
                 
             let ilnk = cel.lnk_inn;

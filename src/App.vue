@@ -85,11 +85,14 @@ export default class App extends Vue {
     async mounted() {
         const c0 = window.location.origin+window.location.pathname
         let uri = window.location;
-        console.log(c0,'123456')
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
             BaseVariable.BaseUri = res.data.ApiUrl; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
+            BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
+            BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
+            BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
+            BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
         }).catch((err:any) => {
             console.log(err)
         }) 
@@ -97,15 +100,16 @@ export default class App extends Vue {
         this.height = document.documentElement.clientHeight
         console.log('style',this.height)
         if(this.height>70){
-            this.height=this.height-150;
+            this.height=this.height-104;
         }
         this.style= "height:"+this.height+"px";
 
         window.onresize = () => {
             return (() => {
                 this.height = document.documentElement.clientHeight
+                console.log(this.height)
                 if(this.height>70){
-                    this.height=this.height-150;
+                    this.height=this.height-104;
                 }
                 this.style= "height:"+this.height+"px";
             })()
@@ -117,7 +121,7 @@ export default class App extends Vue {
                 this.addIndex();
             }  
         }else{
-            this.$router.push({ path: "/login" });
+            this.$router.push({ path: "/" });
         }
     }
     addIndex() {
@@ -144,7 +148,7 @@ export default class App extends Vue {
     }
     loginOut(){
         this.editableTabs2=[];
-        this.$router.push({ path: "/login" });
+        this.$router.push({ path: "/" });
         this.setIsLogin(false);
         sessionStorage.clear(); 
     } 

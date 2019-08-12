@@ -1,10 +1,10 @@
 <template>
 <div class="bip-border-lay">
     <template v-if="btop">
-        <el-card v-if="!laycfg[0].bcells">
+        <el-card v-if="!laycfg[0].bcells" style="height:100%">
             <base-layout :layout="laycfg[0].comp" :env="env"></base-layout >
         </el-card>
-        <el-card v-else>
+        <el-card v-else style="height:100%">
             <!-- <el-row class="bip-row" :gutter="10"> -->
                 <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
             <!-- </el-row> -->

@@ -8,7 +8,7 @@
                         <div class="bip-main-container" v-if="lay.binit">
                             <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
                                 <div ref="se" @keyup.enter="find">
-                                    <bip-search-cont ref="se" :env="env"></bip-search-cont>
+                                    <bip-search-cont :env="env"></bip-search-cont>
                                 </div>
                                 <el-form label-position="right" label-width="120px">
                                     <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
@@ -51,9 +51,10 @@ import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
 import { URIParams } from "@/classes/URIParams";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
-import { State, Action, Getter, Mutation } from "vuex-class";
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
+import { State, Action, Getter, Mutation } from "vuex-class";
+
 
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 
@@ -188,7 +189,7 @@ export default class CUnivSelect extends Vue {
         if(this.uriParams && this.uriParams.pbds){
             let pbds:any = this.uriParams.pbds;
             if(pbds.ptran){
-                let ptran = pbds.ptran.substring(1,pbds.ptran.length-1);
+                let ptran = pbds.ptran;//.substring(0,pbds.ptran.lastIndexOf());
                 ptran = ptran.split("&")
                 for(var i=0 ; i< ptran.length;i++){
                     let cc = ptran[i].split("=");
@@ -246,6 +247,7 @@ export default class CUnivSelect extends Vue {
     }
 
     findServerData(queryCont:any){
+        console.log("sdds")
         this.fullscreenLoading = true
         if(this.biType =="SEL"){
             this.dsm.queryData(queryCont).then(res=>{
@@ -336,6 +338,7 @@ export default class CUnivSelect extends Vue {
         this.Statistics["selValue"] = selValue;
         this.Statistics["chartTypeValue"] = chartTypeValue;
         this.Statistics["showChart"] = showChart; 
+        this.Statistics["title"] = null; 
         this.initShowChar=false;
         this.TJ =true;
     }

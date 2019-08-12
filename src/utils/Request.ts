@@ -134,8 +134,7 @@ export namespace BIPUtil {
         
         let data = JSON.stringify({"id":200,"sid":9999,"jsondata":[{"id":222}]})
         return axios.post("http://127.0.0.1:9000/mesapi/udp", data);
-    }
-    
+    } 
   }
 
   export let ServApi = new ServerUtils();
