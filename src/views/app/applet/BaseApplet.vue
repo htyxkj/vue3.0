@@ -131,14 +131,15 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
-                            this.dsm.cdata.data.splice(this.dsm.page.index,1); 
+                            this.findData(true,this.dsm.cont)
+                            // this.dsm.cdata.data.splice(this.dsm.page.index,1); 
                             // if(this.dsm.page.index >= this.dsm.cdata.data.length){
                             //     this.dsm.currRecord = this.dsm.cdata.data[this.dsm.cdata.data.length-1]
                             // }else{
                             //     this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                             // }
-                            this.dsm.currRecord = this.dsm.cdata.getDataAtIndex(this.dsm.page.index)
-                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                            // this.dsm.currRecord = this.dsm.cdata.getDataAtIndex(this.dsm.page.index)
+                            // this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
                         }).finally(()=>{
                             this.fullscreenLoading = false
                         })
