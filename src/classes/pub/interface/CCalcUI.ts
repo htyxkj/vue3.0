@@ -106,8 +106,8 @@ export class CCalcUI extends Vue implements BaseI{
         }        
         crd.data[this.rmbhs] = _rmbhs
         crd.data[this.addtax] = _tax
-        this.cds.currRecord = crd
-        this.cds.cdata.data[row] = crd
+        cds.currRecord = crd
+        cds.cdata.data[row] = crd
         this.$bus.$emit('datachange','')
         const mm = this.getMethordName(cds.ccells.obj_id,this.rmbhs)
         this.$bus.$emit(mm,{cellId:this.rmbhs,value:crd.data[this.rmbhs],row:row})

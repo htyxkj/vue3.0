@@ -116,9 +116,13 @@ export default class BipListEditor extends Vue{
                 this.cds.currRecord = Object.assign({},record);
                 this.cds.cdata.data[this.cds.index] = Object.assign({},record)
                 const key:string = this.cell.id
-                this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
+                // this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
+                console.log('3213')
+                if(this.cds.baseI){
+                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
+                }
                 this.cds.cellChange(key,str);
-                this.cds.checkGS();
+                // this.cds.checkGS();
             }else{
                 this.model1 = this.model
             }   
