@@ -1,9 +1,11 @@
 <template>
-    <el-row class="bip-lay">
+    <el-card style="height:100% ; margin-bottom:10px;">
+    <el-row class="bip-lay" >
         <el-form label-position="right" label-width="120px">
             <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cds" :row="0" :bgrid="false"/>
         </el-form>
     </el-row>
+    </el-card>
 </template>
 
 <script lang="ts">

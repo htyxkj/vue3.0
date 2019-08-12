@@ -67,12 +67,12 @@ import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
-import { on } from 'cluster';
-import { types } from 'util';
+// import { on } from 'cluster';
+// import { types } from 'util';
 import { connect } from 'echarts';
-import { throws } from 'assert';
+// import { throws } from 'assert';
 import BipLayConf from '../../../classes/ui/BipLayConf';
-import { truncate } from 'fs';
+// import { truncate } from 'fs';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
 })
@@ -161,12 +161,12 @@ export default class CUnivSelect extends Vue {
         this.initDlgBtn();
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
-        let he = document.documentElement.clientHeight;
-        console.log('height:'+he)
-        let ses:any = this.$refs.se
-        console.log(ses)
-        let height= ses.offsetHeight;
-        console.log('ses height:'+height,he-height)
+        // let he = document.documentElement.clientHeight;
+        // console.log('height:'+he)
+        // let ses:any = this.$refs.se
+        // console.log(ses)
+        // let height= ses.offsetHeight;
+        // console.log('ses height:'+height,he-height)
         if(!this.params || !this.params.method){ 
             this.initData(); 
         }else{
