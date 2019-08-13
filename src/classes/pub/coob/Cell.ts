@@ -25,5 +25,7 @@ export class Cell {
   unNull: boolean = true;
   refValue:string=''
   refValues:any
+  pRefIds:Array<string> = []
+  refCellIds:Array<string> = []
   constructor(){}
 }

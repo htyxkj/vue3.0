@@ -68,7 +68,6 @@ export default class CommonLayOut extends Vue {
                     this.height=this.height-104;
                 }
                 this.setBipHeight(this.height)
-
             })()
         }
     }

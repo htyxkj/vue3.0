@@ -100,24 +100,40 @@
                 </template>
             </vxe-table-column>
         </vxe-table>
-        <el-row v-if="cds.ds_par">
-            <el-pagination  
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page.sync="cds.page.currPage"
-                :page-size="cds.page.pageSize"
-                :page-sizes="[10, 20, 30,40,50]"
-                layout="slot,total,prev, pager, next,sizes"
-                :total="cds.page.total"
-            >
-            <el-col :span="18" :xs="18" :sm="18" :md="18" >
-                <el-button-group size="small" v-if="cds.ds_par">  
-                    <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-                    <el-button icon="el-icon-delete" @click="delRecord"></el-button>
-                </el-button-group>
-            </el-col>
-            </el-pagination>
-        </el-row>
+        <template v-if="beBill">
+            <el-row v-if="cds.ds_par">
+                <el-pagination  
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="cds.page.currPage"
+                    :page-size="cds.page.pageSize"
+                    :page-sizes="[10, 20, 30,40,50]"
+                    layout="slot,total,prev, pager, next,sizes"
+                    :total="cds.page.total"
+                >
+                <el-col :span="18" :xs="18" :sm="18" :md="18" >
+                    <el-button-group size="small" v-if="cds.ds_par">  
+                        <el-button icon="el-icon-edit" @click="addRecord"></el-button>
+                        <el-button icon="el-icon-delete" @click="delRecord"></el-button>
+                    </el-button-group>
+                </el-col>
+                </el-pagination>
+            </el-row>
+        </template>
+        <template v-else>
+            <el-row style="margin-bottom:50px;">
+                <el-pagination  
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="cds.page.currPage"
+                    :page-size="cds.page.pageSize"
+                    :page-sizes="[10, 20, 30,40,50]"
+                    layout="total,prev, pager, next,sizes"
+                    :total="cds.page.total"
+                ></el-pagination>
+                </el-row>
+        </template>
+       
         
 
     </div>
