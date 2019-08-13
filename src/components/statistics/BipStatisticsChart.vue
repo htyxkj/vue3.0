@@ -20,7 +20,7 @@
         </div>
         <div>
             <!-- 报表表格-->
-            <vxe-table v-if="tableData && tjcell"
+            <vxe-table v-if="tableData && tjcell && showTable"
                 ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
                 show-header-all-overflow class="vxe-table-element" :data.sync="tableData" 
                 :optimized="true" height="350px">
@@ -54,6 +54,7 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() stat!:any;
     @Prop() env!:CCliEnv; 
     @Prop() showBack!:boolean
+    @Prop() showTable!:boolean
     @Provide() selValue:Array<any> =[];
     @Provide() selGroup:Array<any> =[];
     @Provide() option:any = null;
@@ -89,13 +90,13 @@ export default class BipStatisticsDialog extends Vue {
         qe.cont = JSON.stringify(this.env.ds_cont.currRecord.data);
         param = tool.getBipStatisticsParams(JSON.stringify(qe),groupfilds,groupdatafilds);
         let chartData = await tools.getFromServer(param); 
-         
-        this.tableData = chartData.data.data.tjpages.celData
+
         if(chartData.data.id == 0){
+            this.tableData = chartData.data.data.tjpages.celData
             this.tjcell = chartData.data.data.tjlayCels
             await this.initChartData(chartData);
         }else{ 
-            this.$notify.warning(chartData.data.data.message);
+            this.$notify.warning(chartData.data.message);
         }
         this.fullscreenLoading = false;
     }

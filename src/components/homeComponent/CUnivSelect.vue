@@ -1,30 +1,23 @@
 <template>
-    <el-row v-loading.fullscreen.lock="fullscreenLoading">
+    <el-row v-loading="fullscreenLoading" >
         <div class="bip-home-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
                         <div class="bip-home-container" v-if="lay.binit">
                             <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                                <div ref="se" @keyup.enter="find">
-                                    <bip-search-cont :env="env"></bip-search-cont>
-                                </div>
                                 <el-form label-position="right" label-width="120px">
                                     <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                                 </el-form>
                             </el-scrollbar>
                         </div>
                     </template>
-                    <template v-else>
-                        <!-- 统计结果展示 -->
-                        <bip-statistics-chart :stat="Statistics" :env="env" :showBack="false"></bip-statistics-chart>
-                    </template>
                 </template>
                 <template v-else>
                     <template v-if="env && env.dsm && env.dsm.ccells">
                         <el-row>
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false"></bip-statistics-chart>
+                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false" :showTable="false"></bip-statistics-chart>
                             </el-col>
                         </el-row>
                     </template>
@@ -158,10 +151,6 @@ export default class CUnivSelect extends Vue {
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         let he = document.documentElement.clientHeight;
         console.log('height:'+he)
-        let ses:any = this.$refs.se
-        console.log(ses)
-        let height= ses.offsetHeight;
-        console.log('ses height:'+height,he-height)
         if(!this.params || !this.params.method){ 
             this.initData(); 
         }else{
@@ -497,12 +486,10 @@ export default class CUnivSelect extends Vue {
 <style  lang="scss" >
 .bip-home-container {
     position: fixed; 
-    height: 98% !important;
-    width: 100% !important;
+    height: 95% !important;
     z-index: 1;
-    overflow: hidden;
-    margin-right: 20px;
-    
+    overflow: hidden;  
+    width: calc(100% - 3px) !important;
     .el-scrollbar {
         height: 100%;
         margin-bottom: 10px !important;

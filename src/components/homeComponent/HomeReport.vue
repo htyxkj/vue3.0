@@ -64,6 +64,14 @@ export default class BipStatisticsDialog extends Vue {
             cc.showChart = cont.showchart ==1?true:false;
             uri.bgroupList.push(cc);
             uri.bgroup = cont.showchart ==1?true:false;
+            let ptran = "";
+            for(var key in rech){
+                ptran+= key+"="+rech[key]+"&"
+            };
+            if(ptran.length>1)
+            ptran = ptran.substring(0,ptran.length-1);
+            let pbds = {ptran:ptran};
+            uri.pbds = pbds
             this.uriParams = uri;
         } else {
             this.$notify.error("没有菜单参数！");

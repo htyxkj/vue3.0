@@ -122,11 +122,10 @@ export default class BaseApplet extends Vue{
                     let _idx = this.dsm.ccells.x_pk;
                     let id = this.dsm.ccells.cels[_idx].id
                     let sid = crd.data[id]
-                    this.$alert(`确定删除当前${sid}记录吗？`,
+                    this.$confirm(`确定删除当前${sid}记录吗？`,
                         `系统提醒`,
                         { type: "warning" }
-                    ).catch(() => {
-                    }).then(()=>{
+                    ).then(()=>{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData().then(res=>{
@@ -142,6 +141,8 @@ export default class BaseApplet extends Vue{
                         }).finally(()=>{
                             this.fullscreenLoading = false
                         })
+                    }).catch(() => {
+                        return;
                     });
                 }
             }

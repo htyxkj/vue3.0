@@ -18,14 +18,14 @@
                     </template>
                     <template v-else>
                         <!-- 统计结果展示 -->
-                        <bip-statistics-chart :stat="Statistics" :env="env" :showBack="true" @goTable="goTable"></bip-statistics-chart>
+                        <bip-statistics-chart :stat="Statistics" :env="env" :showBack="true" :showTable="true" @goTable="goTable"></bip-statistics-chart>
                     </template>
                 </template>
                 <template v-else>
                     <template v-if="env && env.dsm && env.dsm.ccells">
                         <el-row>
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart :stat="item" :env="env" @goTable="goTable" :showBack="true"></bip-statistics-chart>
+                                <bip-statistics-chart :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
                             </el-col>
                         </el-row>
                     </template>

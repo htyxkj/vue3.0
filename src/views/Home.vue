@@ -1,55 +1,23 @@
 <template>
   <div class="bip-main-container">
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
-      <grid-layout :layout="layout" :auto-size="true" :col-num="24" :row-height="50" :max-rows="1000"
+      <grid-layout :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
         :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[10, 10]" :use-css-transforms="true" >
         <grid-item v-for="item in layout" :key="item.i" :x="item.x"
           :y="item.y" :w="item.w" :h="item.h" :i="item.i"
-          :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" :isDraggable="isDraggable" :isResizable="isResizable"
-          @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent" >
+          :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" 
+          :isDraggable="isDraggable" :isResizable="isResizable"
+          @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
+          style="margin:5px;"
+          >
           <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech"></home-component>
         </grid-item>
       </grid-layout>
     
     </el-scrollbar>
-    <el-dialog class="bipinsaid" :visible.sync="showCoList" width="30%"  :append-to-body="true" >
-        <!--弹出框头部-->
-        <span slot="title">
-            <div class="el-dialog__title" style="padding-bottom:5px">组件选择</div>
-            <div @keyup.enter="getCoList">
-                <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >
-                    <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
-                        <el-option label="全局匹配" value="-1"></el-option>
-                        <el-option label="编码" value="sid"></el-option>
-                        <el-option label="名称" value="sname"></el-option>
-                    </el-select>
-                    <el-button slot="append" icon="el-icon-search" @click="getCoList"></el-button>
-                </el-input>
-            </div>
-        </span>
-      <vxe-table
-          border @select-change ="selectChange" @cell-click="cellClick" @select-all="selectChange"
-          highlight-hover-row row-key="sid"
-          class="checkbox-table"
-          ref="xTable3" 
-          :data.sync="CoList" 
-          :select-config="{checkField: 'checked',reserve:true,trigger:'row'}"> 
-          
-          <vxe-table-column type="selection" width="60"></vxe-table-column> 
-          <vxe-table-column prop="sid" label="编码"></vxe-table-column>
-          <vxe-table-column prop="sname" label="名称"></vxe-table-column>
-      </vxe-table>
- 
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="page.currPage"
-        :page-sizes="[10, 20, 30, 40,50,100]"
-        :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.total">
-      </el-pagination>
-
+    <el-dialog title="组件选择"  class="bipinsaid" :visible.sync="showCoList" width="40%"  :append-to-body="true" >
+      <el-transfer :titles="['可选组件', '已选组件']" v-model="selection" :props="{key: 'sid',label: 'sname'}" 
+      :data="CoList" filterable style="margin: 20px 0px 5px 26px;"></el-transfer>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showCoList = false">取 消</el-button>
         <el-button type="primary" @click="selectionSelectOK">确 定</el-button>
@@ -59,8 +27,8 @@
     <div class="wrap">
         <div class="inner">
           <div @click="getCoList"><i class="iconfont icon-bip-zujian"/></div>
-          <div @click="saveCoList"><i class="iconfont icon-bip-baocun1"/></div>
           <div @click="isDraggable =true,isResizable=true"><i class="iconfont icon-bip-bianji"/></div>
+          <div @click="saveCoList"><i class="iconfont icon-bip-baocun1"/></div>
           <div @click="reduction"><i class="iconfont icon-bip-fanhui"/></div>
         </div>
         <div class="home">
@@ -112,7 +80,8 @@ export default class Home extends Vue {
     @Provide() historyLayout:Array<any> = [];
     @Provide() showCoList:boolean = false;
     @Provide() CoList:Array<any> = new Array<any>();
-    @Provide() page:any ={pageSize:10,currPage:1,total:0};
+    @Provide() mapList:any = {};
+    @Provide() page:any ={pageSize:2000,currPage:1,total:0};
     @Provide() conditionValue:any = null;
     @Provide() conditionItem:any = "-1";
     @Provide() selection:Array<any> = [];
@@ -164,9 +133,15 @@ export default class Home extends Vue {
       }
       let cc = await tools.getBipInsAidInfo("COMPU",210,qe)
       if(cc.data.id ==0 ){
+
+        
         this.CoList = cc.data.data.data.values;
         this.page = cc.data.data.data.page;
         this.showCoList = true;
+        for(var i=0;i<this.CoList.length;i++){
+          let dd = this.CoList[i];
+          this.mapList[dd.sid] = dd;
+        }
       }  
     }
 
@@ -188,12 +163,16 @@ export default class Home extends Vue {
       // let xTable3:any = this.$refs.xTable3;
       // let cc:boolean = true;
       // xTable3.setSelection(value.row,true);
-    }   
+    }
+    /**
+     *设置选中桌面
+     *  */ 
     selectionSelectOK(){
       let newLayout:Array<any> = [];
       for(var i =0;i<this.selection.length;i++){
         let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:""}
-        let cc = this.selection[i];
+        let dd = this.selection[i];
+        let cc = this.mapList[dd];
         if(this.layout.length==0){ 
           layout.x=0;
           layout.y=0,
@@ -256,7 +235,8 @@ export default class Home extends Vue {
       for(var i=0;i<this.delLayout.length;i++){
         this.myDesktop.currRecord.data = this.delLayout[i];
         this.myDesktop.currRecord.c_state=4
-        if(this.myDesktop.currRecord.data.usrcode != "*"){
+        let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+        if(this.myDesktop.currRecord.data.usrcode != "*" || userAttr<=1){
           this.myDesktop.saveData()
         }
       }
@@ -304,6 +284,7 @@ export default class Home extends Vue {
           let data = cc[i].data;
           data.i = i;
           this.layout.push(data)
+          this.selection.push(data.sid);
         }
       }
     }
