@@ -136,7 +136,7 @@ export default class BipDateEditor extends Vue{
                         this.cds.cdata.data[this.cds.index] = Object.assign({},this.cds.currRecord)
                         const key:string = this.cell.id
                         this.$bus.$emit(this.methodName,{cellId:key,value:value,row:this.cds.index})
-                        this.cds.checkGS()
+                        this.cds.checkGS(this.cell)
                         this.model1 = value
                         this.cds.setStateOrAnd(icl.R_EDITED)
                     }

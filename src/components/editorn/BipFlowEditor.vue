@@ -112,7 +112,7 @@ export default class BipFlowEditor extends Vue{
                 const key:string = this.cell.id
                 this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
                 this.cds.cellChange(key,str);
-                this.cds.checkGS();
+                this.cds.checkGS(this.cell);
             }else{
                 this.model1 = this.model
             }   
