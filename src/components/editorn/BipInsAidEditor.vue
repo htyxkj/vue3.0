@@ -36,6 +36,7 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import BipInsAidNew from '../../classes/BipInsAidNew';
 import { BIPUtil } from '@/utils/Request';
 import BipPopView from './cutil/BipPopView.vue'
+import CRecord from '../../classes/pub/CRecord';
 let tools = BIPUtil.ServApi
 @Component({
     components:{BipPopView}
@@ -134,8 +135,8 @@ export default class BipInsAidEditor extends Vue{
     }
 
     selectOK(val:any,close:boolean = false){
-        let record: any = this.cds.getRecordAtIndex(this.row<0?0:this.row);
-        this.cds.currRecord = record;
+        let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
+        // this.cds.currRecord = record;
         this.cds.setStateOrAnd(ICL.R_EDITED);
         this.model1 = val[this.bipInsAid.cells.cels[0].id]
         record.data[this.cell.id] = this.model1
@@ -155,11 +156,10 @@ export default class BipInsAidEditor extends Vue{
             this.refLink.values = []
             this.refLink.values[0] = val
         }
-
-        record = Object.assign({},record)
         this.cds.currRecord = record
-        this.cds.setRecordAtIndex(record,this.row<0?0:this.row)
-        this.$bus.$emit('cell_edit')
+        this.cds.cdata.data[this.row<0?0:this.row]= record
+        // this.cds.setRecordAtIndex(record,this.row<0?0:this.row)
+        // this.$bus.$emit('cell_edit')
         this.getRefValues()
         if(close){
             setTimeout(() => {
@@ -353,10 +353,10 @@ export default class BipInsAidEditor extends Vue{
             if(this.cds.currCanEdit()){
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.cdata.data[this.cds.index].data[this.cell.id] = this.model1
-                // this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
+                this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
                 // const key:string = this.cell.id
                 // this.cds.cdata.data[this.row].c_state |=2;
-                // this.cds.setStateOrAnd(ICL.R_EDITED)
+                this.cds.setStateOrAnd(ICL.R_EDITED)
                 this.cds.checkGS(this.cell);
             }else{
                 this.model1 = this.model
