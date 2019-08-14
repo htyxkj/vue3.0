@@ -3,15 +3,17 @@
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
       <grid-layout :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
         :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[10, 10]" :use-css-transforms="true" >
-        <grid-item v-for="item in layout" :key="item.i" :x="item.x"
-          :y="item.y" :w="item.w" :h="item.h" :i="item.i"
-          :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" 
-          :isDraggable="isDraggable" :isResizable="isResizable"
-          @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
-          style="margin:5px;"
-          >
-          <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech"></home-component>
-        </grid-item>
+        <template v-if="layout.length>0">
+          <grid-item v-for="item in layout" :key="item.i" :x="item.x"
+            :y="item.y" :w="item.w" :h="item.h" :i="item.i"
+            :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" 
+            :isDraggable="isDraggable" :isResizable="isResizable"
+            @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
+            style="margin:5px;"
+            >
+            <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech" @menuChange="menuChange" :sid="item.sid"></home-component>
+          </grid-item>
+        </template>
       </grid-layout>
     
     </el-scrollbar>
@@ -26,10 +28,26 @@
 
     <div class="wrap">
         <div class="inner">
-          <div @click="getCoList"><i class="iconfont icon-bip-zujian"/></div>
-          <div @click="isDraggable =true,isResizable=true"><i class="iconfont icon-bip-bianji"/></div>
-          <div @click="saveCoList"><i class="iconfont icon-bip-baocun1"/></div>
-          <div @click="reduction"><i class="iconfont icon-bip-fanhui"/></div>
+          <div @click="getCoList">
+            <el-tooltip class="item" effect="dark" content="组件选择" placement="top-start">
+              <i class="iconfont icon-bip-zujian"/>
+            </el-tooltip>
+          </div>
+          <div @click="isDraggable =true,isResizable=true">
+            <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
+              <i class="iconfont icon-bip-bianji"/>
+            </el-tooltip>
+          </div>
+          <div @click="saveCoList">
+            <el-tooltip class="item" effect="dark" content="保存" placement="top-start">
+              <i class="iconfont icon-bip-baocun1"/>
+            </el-tooltip>
+          </div>
+          <div @click="reduction">
+            <el-tooltip class="item" effect="dark" content="还原" placement="top-start">              
+              <i class="iconfont icon-bip-fanhui"/>
+            </el-tooltip>
+          </div>
         </div>
         <div class="home">
           <div @click="imgMenuClikc"><i class="iconfont icon-bip-caidan"/></div>
@@ -103,21 +121,31 @@ export default class Home extends Vue {
         await this.selectCoList(dataStr);
       }
     }
+    //组件移动时
     moveEvent(i:any, newX:any, newY:any,e:any){
         //console.log(e)
-        //console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
+        // console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
     }
+    //组件大小改变时
     resizeEvent(i:any, newH:any, newW:any){
-        //console.log("RESIZE i=" + i + ", H=" + newH + ", W=" + newW);
+        // console.log("RESIZE i=" + i + ", H=" + newH + ", W=" + newW);
     }
+    //组件移动结束时
     movedEvent(i:any, newX:any, newY:any,e:any){
         //console.log(e)
         //console.log("MOVED i=" + i + ", X=" + newX + ", Y=" + newY);
     }
+    //组件大小改变结束时
     resizedEvent(i:any, newH:any, newW:any, newHPx:any, newWPx:any){
-        //console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW + ", H(px)=" + newHPx + ", W(px)=" + newWPx);
+      let dl = this.layout[i];
+      if(dl.comtype =='Report'){//报表组件
+        this.$bus.$emit('componentsizechange','')
+      }
+        // console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW + ", H(px)=" + newHPx + ", W(px)=" + newWPx);
     }
-
+    /**
+     * 获取全部组件
+     */
     async getCoList(){
       this.isDraggable = true;
       this.isResizable = true;
@@ -144,33 +172,13 @@ export default class Home extends Vue {
         }
       }  
     }
-
-    handleSizeChange(pageSize:number){
-      this.page.pageSize = pageSize
-      this.getCoList()
-    }
-    handleCurrentChange(currentPage:number, ) {
-      this.page.currPage = currentPage
-      this.getCoList()
-    }
-
-    selectChange(value:any){
-      this.selection = value.selection;
-    }
-    cellClick(value:any){
-      // if(value.column.type =="selection")
-      //   return;
-      // let xTable3:any = this.$refs.xTable3;
-      // let cc:boolean = true;
-      // xTable3.setSelection(value.row,true);
-    }
     /**
      *设置选中桌面
      *  */ 
     selectionSelectOK(){
       let newLayout:Array<any> = [];
       for(var i =0;i<this.selection.length;i++){
-        let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:""}
+        let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:"",usrcode:""}
         let dd = this.selection[i];
         let cc = this.mapList[dd];
         if(this.layout.length==0){ 
@@ -188,6 +196,13 @@ export default class Home extends Vue {
           cc.cont.sname = cc.sname;
           layout.cont = JSON.stringify(cc.cont);
           layout.comtype = cc.comtype; 
+          let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+          if(userAttr <=1){
+            layout.usrcode = "*"
+          }else{
+            if(this.user)
+              layout.usrcode = this.user.userCode 
+          }
           newLayout.push(layout);
           continue;
         }
@@ -218,15 +233,42 @@ export default class Home extends Vue {
           cc.cont.sname = cc.sname;
           layout.cont = JSON.stringify(cc.cont);
           layout.comtype = cc.comtype; 
+          let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+          if(userAttr <=1){
+            layout.usrcode = "*"
+          }else{
+            if(this.user)
+              layout.usrcode = this.user.userCode 
+          }
           newLayout.push(layout); 
         }  
       } 
 
       
-      this.delLayout = JSON.parse(JSON.stringify(this.layout));
+      this.delLayout=this.delLayout.concat(JSON.parse(JSON.stringify(this.layout)));
       this.layout = []
       this.layout = newLayout;
       this.showCoList = false;
+    }
+    /**
+     * 快捷菜单发生改变
+     */
+    menuChange(selection:any,sid:string){
+      let menuid = "";
+      for(var i=0;i<selection.length;i++){
+        if(i == selection.length -1){
+          menuid+=selection[i]
+        }else{
+          menuid+=selection[i]+";"
+        }
+      }
+      this.layout.forEach(item => {
+        if(item.sid == sid){
+          let cont = JSON.parse(item.cont)
+          cont.menuid = menuid;
+          item.cont = JSON.stringify(cont);
+        }
+      });
     }
     /**
      * 保存我的桌面
@@ -240,6 +282,7 @@ export default class Home extends Vue {
           this.myDesktop.saveData()
         }
       }
+      this.delLayout = [];
       for(var i =0;i<this.layout.length;i++){
         let cc = this.layout[i]; 
         cc.x = this.layout[i].x

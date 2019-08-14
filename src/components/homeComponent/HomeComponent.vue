@@ -4,7 +4,7 @@
             <home-report :cont ="cont" :rech="rech"></home-report>
         </template>
         <template v-else-if="type == 'Menu' ">
-            <home-menu :cont ="cont" :rech="rech"></home-menu>
+            <home-menu :cont ="cont" :rech="rech" @menuChange="menuChange"></home-menu>
         </template>
     </el-row>
 </template>
@@ -19,8 +19,12 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() type!:string;
     @Prop() cont!:string;
     @Prop() rech!:string;
+    @Prop() sid!:string;
     mounted() {        
        
+    }
+    menuChange(selection:any){
+        this.$emit("menuChange",selection,this.sid);
     }
 }
 </script>
