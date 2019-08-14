@@ -1,5 +1,5 @@
 <template>
-    <el-row v-loading="fullscreenLoading" >
+    <el-row>
         <div class="bip-home-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <template v-if="!initShowChar">

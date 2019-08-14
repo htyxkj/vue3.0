@@ -93,5 +93,9 @@ export default class BipStatisticsDialog extends Vue {
             return null;
         }
     }
+    @Watch("cont")
+    contChange(){
+        this.init();
+    }
 }
 </script>

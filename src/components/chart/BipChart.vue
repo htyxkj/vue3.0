@@ -9,9 +9,11 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() stat!:any; 
     @Prop() option!:any;
     @Provide() myChart:any = null;
+    @Provide() componentsizechangeBusID:any = null;
     mounted() {  
         this.myChart = echarts.init(this.$refs.chart as HTMLCanvasElement); 
         this.myChart.setOption(this.option);  
+        this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.sizeChange)
     }
     @Watch("option")
     optionChange(){
@@ -19,6 +21,12 @@ export default class BipStatisticsDialog extends Vue {
             this.myChart = echarts.init(this.$refs.chart as HTMLCanvasElement); 
         }
         this.myChart.setOption(this.option);  
+    }
+    sizeChange(){
+        this.myChart.resize();
+    }
+    beforeDestroy(){
+        this.$bus.$off('componentsizechange',this.componentsizechangeBusID)
     }
 }
 </script>

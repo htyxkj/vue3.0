@@ -91,7 +91,7 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() selGroup:any =[];
     @Provide() selValue:any = [];
     @Provide() chartTypeValue:any=0;
-    @Provide() chartType:any =  [{id:"line",name:"线图"},{id:"pie",name:"饼图"},{id:"bar",name:"柱状图"}];
+    @Provide() chartType:any =  [{id:"line",name:"线图"},{id:"pie",name:"饼图"},{id:"bar",name:"柱状图"},{id:"lineArea",name:"面积图"}];
     @Provide() showChart:boolean = true;
     @Provide() groupCells:Array<Cell>=[]
     @Provide() valuesCells:Array<Cell>=[]

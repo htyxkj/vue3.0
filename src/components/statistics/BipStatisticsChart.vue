@@ -200,10 +200,11 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    magicType: {show: true, type: ['line', 'bar']},
-                    restore: {show: true},
+                    // magicType: {show: true, type: ['line', 'bar']},
+                    // restore: {show: true},
                     saveAsImage: {show: true}
-                }
+                },
+                right:"2%"
             },
             xAxis: {
                 type: 'category',
@@ -271,9 +272,9 @@ export default class BipStatisticsDialog extends Vue {
                                     return colorList[cc];
                                 },
                             }
-                        }
+                        },
                 };
-                if(chartType == 'line'){
+                if(chartType == 'line' || chartType =='lineArea'){
                     let color = "";
                     var colorList = [
                         "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
@@ -283,9 +284,16 @@ export default class BipStatisticsDialog extends Vue {
                     if(cc >colorList.length)
                         cc = cc -colorList.length;
                     color = colorList[cc];
-                    bb ={ name: colname, data: [] ,type:chartType,color:color};
+                    if(chartType == 'line')
+                        bb ={ name: colname, data: [] ,type:chartType,color:color,};
+                    if(chartType =='lineArea'){
+                        chartType ='line'
+                        bb ={ name: colname, data: [] ,type:chartType,color:color,areaStyle: {}};
+                    }
+                            
                 }
                 bb.data[i] = item[fld];
+                console.log(bb);
                 series0.push(bb);
             }
             });
