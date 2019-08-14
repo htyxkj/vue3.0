@@ -121,7 +121,7 @@ export default class BipCopyInfo extends Vue{
         //  this.visible = false
         if(!this.mul){
             if(this.mSelection){
-                let crd = this.ref_cds.currRecord
+                let crd:CRecord = this.ref_cds.currRecord
                 let obj_id = this.cds.ccells.obj_id
                 let scopys:Array<any> = this.currFlow.scopys
                 let index = scopys.findIndex(item=>{
@@ -132,8 +132,7 @@ export default class BipCopyInfo extends Vue{
                     let scopy = scopys[index]
                     let toList:Array<string> = scopy.toFldList
                     let frList:Array<string> = scopy.fromFldList
-                    let crd0 = this.makeRecord(toList,frList,this.ref_cds,this.mSelection)
-
+                    let crd0:CRecord = this.makeRecord(toList,frList,this.ref_cds,this.mSelection)
                     if(this.cds.ds_sub.length>0&&this.ref_cds.ds_sub.length>0){
                         obj_id = this.cds.ds_sub[0].ccells.obj_id
                         let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata.data
@@ -146,12 +145,16 @@ export default class BipCopyInfo extends Vue{
                             toList = scopy.toFldList
                             frList = scopy.fromFldList
                             cds1.clear()
-                            subV.forEach(item=>{
+                            subV.forEach((item,index)=>{
                                 cds1.createRecord();
                                 let crd11 = this.makeRecord(toList,frList,cds1,item)
+                                cds1.currRecord = crd11
+                                cds1.setRecordAtIndex(crd11,index)
                             })
+                            crd0.subs.push(cds1.cdata)
                         }
                     }
+                    this.ref_cds.currRecord = crd0
 
 
                 }
@@ -163,26 +166,22 @@ export default class BipCopyInfo extends Vue{
 
     }
 
-    makeRecord(toList:Array<string>,frList:Array<string>,cds1:CDataSet,item:any):any{
-        let crd:any = cds1.currRecord
+    makeRecord(toList:Array<string>,frList:Array<string>,cds1:CDataSet,item:CRecord):CRecord{
+        let crd:CRecord = cds1.currRecord
         toList.forEach((fld,index)=>{
-            
-            let m = cds1.ccells.cels.findIndex((cel:any)=>{
+            let m = cds1.ccells.cels.findIndex((cel:Cell)=>{
                 return cel.id == fld
             })
-            if(m>=0){
+            if(m>-1){
                 let f1 = frList[index]
-                let v = item[f1]
+                let v = item.data[f1]
                 if(v!=undefined){
-                    crd[fld] = v
-                    let methodName=icl.EV_CELL_CHANGE+'_'+cds1.ccells.obj_id+'_'+fld
-                    this.$bus.$emit(methodName,{cellId:fld,value:v,row:cds1.index})
-                    this.cds.cellChange(fld,v);
-                }
-                
+                    crd.data[fld] = v                    
+                }   
             }
         })
-        crd.sys_stated = 3
+        crd.c_state = 3
+        // cds1.checkGS()
         return crd
     }
 

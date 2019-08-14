@@ -47,7 +47,7 @@ import {
   Popover,
   Progress,
   Transfer,
-  Avatar
+//   Avatar
 
 } from "element-ui";
 
@@ -95,7 +95,7 @@ Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Progress)
 Vue.use(Transfer)
-Vue.use(Avatar)
+// Vue.use(Avatar)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

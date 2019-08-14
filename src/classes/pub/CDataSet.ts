@@ -254,7 +254,7 @@ export default class CDataSet {
                         scstr = scstr.replace("=:", "");
                         let vl = this.scriptProc.execute(scstr, "", col);
                         if (vl instanceof Array) {
-                            console.log('公式计算返回数组')
+                            console.log('公式计算返回数组',vl)
                         } else {
                           if (vl == "Invalid date") {
                             let dd = DateUtils.DateTool.now();
@@ -274,6 +274,7 @@ export default class CDataSet {
                     if (col.initValue && (col.attr & 0x80) > 0) {
                         this.incCalc(this.ccells,this.currRecord);
                     }
+                    this.checkGS(col)
 
                 }
             }
@@ -642,7 +643,7 @@ export default class CDataSet {
     } else {
       this.currRecord.c_state &= state;
     }
-    if (this.index > -1) this.cdata.data[this.index] = this.currRecord;
+    if (this.index > -1) this.cdata.data[this.index].c_state = this.currRecord.c_state;
   }
 
   isPosted(): boolean {
