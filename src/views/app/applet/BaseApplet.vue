@@ -420,7 +420,7 @@ export default class BaseApplet extends Vue{
         for(let i=0;i<n;i++){
             let cds1 = this.dsm.ds_sub[i]
             cds1.clear();
-            for(let j=0;j<this.dsm.currRecord.subs.length;j++){
+            for(let j=0;this.dsm.currRecord.subs&&j<this.dsm.currRecord.subs.length;j++){
                 let oneSubs:any = this.dsm.currRecord.subs[j]
                 if(oneSubs.obj_id == cds1.ccells.obj_id){
                     let vals = oneSubs.data;

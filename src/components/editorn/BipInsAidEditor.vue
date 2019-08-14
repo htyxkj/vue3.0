@@ -352,10 +352,11 @@ export default class BipInsAidEditor extends Vue{
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
                 this.cds.currRecord.data[this.cell.id] = this.model1;
-                this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
-                const key:string = this.cell.id
+                this.cds.cdata.data[this.cds.index].data[this.cell.id] = this.model1
+                // this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
+                // const key:string = this.cell.id
                 // this.cds.cdata.data[this.row].c_state |=2;
-                this.cds.setStateOrAnd(ICL.R_EDITED)
+                // this.cds.setStateOrAnd(ICL.R_EDITED)
                 this.cds.checkGS(this.cell);
             }else{
                 this.model1 = this.model
