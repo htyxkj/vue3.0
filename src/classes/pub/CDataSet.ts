@@ -526,12 +526,12 @@ export default class CDataSet {
   /**
    * 保存数据
    */
-  saveData() {
+  saveData(buid:string='') {
     for (let i = 0; i < this.ds_sub.length; i++) {
       const cds_0 = this.ds_sub[i];
       this.currRecord.subs[i] = cds_0.cdata;
     }
-    return tools.saveData(this.currRecord, this.p_cell);
+    return tools.saveData(this.currRecord, this.p_cell,buid);
   }
 
   /**
@@ -572,15 +572,16 @@ export default class CDataSet {
       this.cdata.data[_i] = crd;
       this.index = _i;
     }
+    let crd1:CRecord = JSON.parse(JSON.stringify(crd))
     if (this.ds_sub.length > 0) {
       for (let i = 0; i < this.ds_sub.length; i++) {
         let cds1 = this.ds_sub[i];
         cds1.clear();
-        let _index = crd.subs.findIndex(item => {
+        let _index = crd1.subs.findIndex(item => {
           return item.obj_id == cds1.ccells.obj_id;
         });
         if (_index > -1) {
-          let vals = crd.subs[_index];
+          let vals = crd1.subs[_index];
           if (vals) {
             cds1.setValues(vals.data, true);
           }

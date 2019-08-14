@@ -74,9 +74,9 @@ export namespace BIPUtil {
       return Vue.$axios.post(GlobalVariable.API_UPD, data);
     }
 
-    saveData(record:any,pcellId:string){
+    saveData(record:any,pcellId:string,buid:string){
         let param = tool.getSaveParams()
-        param = Object.assign(param, { pcell: pcellId, jsonstr: JSON.stringify(record) })
+        param = Object.assign(param, { pcell: pcellId,buid:buid, jsonstr: JSON.stringify(record) })
         return this.getFromServer(param);
     }
 

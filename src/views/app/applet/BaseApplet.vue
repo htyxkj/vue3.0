@@ -128,7 +128,7 @@ export default class BaseApplet extends Vue{
                     ).then(()=>{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
-                        this.dsm.saveData().then(res=>{
+                        this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
                             this.findData(true,this.dsm.cont)
                             // this.dsm.cdata.data.splice(this.dsm.page.index,1); 
                             // if(this.dsm.page.index >= this.dsm.cdata.data.length){
@@ -499,23 +499,34 @@ export default class BaseApplet extends Vue{
         //保存数据
         if ((this.dsm.currRecord.c_state & icl.R_EDITED) > 0) {
             this.fullscreenLoading = true;
-            let res = await this.dsm.saveData();
-            this.fullscreenLoading = false;
-            if (res.status == 200) {
-                let data = res.data;
-                if (data.id == 0) {
-                    let ord: any = data.data; 
-                    this.dsm.currRecord.data = Object.assign(
-                        this.dsm.currRecord.data,
-                        ord
-                    );
-                    this.dsm.setState(icl.R_POSTED);
-                    this.$message.success("保存成功！");
-                    console.log(this.dsm.currRecord);
-                }
-            } else {
-            }
-            console.log(res);
+            this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
+                this.fullscreenLoading = false;
+                console.log(res)
+                if (res.status == 200) {
+                    let data = res.data;
+                    if (data.id == 0) {
+                        let ord: any = data.data; 
+                        this.dsm.currRecord.data = Object.assign(
+                            this.dsm.currRecord.data,
+                            ord
+                        );
+                        this.dsm.setState(icl.R_POSTED);
+                        if(data.message == '操作成功！'){
+                            this.$message.success(data.message);
+                        }else{
+                            this.$message.warning(data.message);
+                        }
+                        
+                        console.log(this.dsm.currRecord);
+                    }else{
+
+                    }
+                } else {
+                }   
+            }).catch(err=>{
+                this.fullscreenLoading = false;
+                this.$message.error(err);
+            });
         } else {
             console.log(
                 this.dsm.currRecord.c_state,

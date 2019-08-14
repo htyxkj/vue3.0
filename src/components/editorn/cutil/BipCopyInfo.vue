@@ -288,7 +288,8 @@ export default class BipCopyInfo extends Vue{
             tools.getWorkFlows(buid).then(res=>{
                 if(res.data.id==0){
                     this.flowList = res.data.data.flowlist
-                    this.initCopyInfo(0);    
+                    this.initCopyInfo(0);
+                    this.find()   
                 }
             }).catch(err=>{
                 console.log(err)
