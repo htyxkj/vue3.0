@@ -4,12 +4,10 @@
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
-                        <div class="bip-home-container" v-if="lay.binit">
-                            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                                <el-form label-position="right" label-width="120px">
-                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
-                                </el-form>
-                            </el-scrollbar>
+                        <div v-if="lay.binit">
+                            <el-form label-position="right" label-width="120px">
+                                <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                            </el-form>
                         </div>
                     </template>
                 </template>
@@ -42,12 +40,8 @@ let tools = BIPUtil.ServApi
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { State, Action, Getter, Mutation } from "vuex-class";
-
-
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
-
 import { Cells } from "@/classes/pub/coob/Cells";
-import BipLayCells from "@/classes/ui/BipLayCells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipMenuBar from "@/classes/pub/BipMenuBar"; 
 import CCliEnv from "@/classes/cenv/CCliEnv";
@@ -55,12 +49,6 @@ import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../classes/pub/CRecord';
 import CData from '../../classes/pub/CData';
-import { on } from 'cluster';
-import { types } from 'util';
-import { connect } from 'echarts';
-import { throws } from 'assert';
-import BipLayConf from '../../classes/ui/BipLayConf';
-import { truncate } from 'fs';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
 })
@@ -483,7 +471,7 @@ export default class CUnivSelect extends Vue {
     }
 }
 </script>
-<style  lang="scss" >
+<style  lang="scss" scoped>
 .bip-home-container {
     position: fixed; 
     height: 95% !important;

@@ -293,15 +293,35 @@ $--bip-comm-color:#ffffff;//f4f6fb
 /** 统计图表样式*/
 
 .titlebg {
-    background-color: #f2f2f2;
+    // background-color: #f9f9f9;
     text-align: center;
     line-height: 30px;
+}
+.charttitle-left {
+    text-align: left;
+    padding-left: 10px;
+}
+.charttitle-right {
+    text-align: right;
+    padding-right: 10px;
+    cursor: pointer;
+}
+.charttitle-right span {
+    font-size: 10px;
+    padding-left: 5px;
 }
 .showchart {
     border: 1px solid #E4E7ED;
 }
 .charttitle {
     text-align: center;
+    background-color: #ffffff;
+    // border-top: 1px solid #ededed;
+    // border-left: 1px solid #ededed;
+    // border-right: 1px solid #ededed;
+}
+.returnbak {
+    margin-right: 20px;
 }
 // .bi-chart{
 //     height: 600px;

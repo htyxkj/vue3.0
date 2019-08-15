@@ -1,5 +1,5 @@
 <template>
-    <div ref="chart" style="width: 100%;height:100%;"></div>
+    <div ref="chart" style="width: 100%;height:100%;backgroundColor:#ffffff"></div>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";

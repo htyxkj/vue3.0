@@ -2,7 +2,7 @@
   <div class="bip-main-container">
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
       <grid-layout :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
-        :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[10, 10]" :use-css-transforms="true" >
+        :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[5, 5]" :use-css-transforms="true" >
         <template v-if="layout.length>0">
           <grid-item v-for="item in layout" :key="item.i" :x="item.x"
             :y="item.y" :w="item.w" :h="item.h" :i="item.i"
@@ -62,7 +62,6 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { User } from '@/classes/User';
 import echarts from 'echarts'; 
 import { Menu } from "@/classes/Menu";
-import BipMenu from "@/components/menu/BipMenu.vue";
 import { Route, RawLocation } from 'vue-router';
 import BipTask from './app/taskMsg/bipTask.vue';
 import BipMsg from './app/taskMsg/bipMsg.vue';
@@ -77,12 +76,9 @@ var GridItem = VueGridLayout.GridItem;
 
 import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request";
-import { watch } from 'fs';
-import { constants } from 'crypto';
 let tools = BIPUtil.ServApi
 @Component({
   components: {
-    BipMenu,
     GridLayout,
     GridItem,
     BipTask,

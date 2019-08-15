@@ -20,14 +20,15 @@ import { BIPUtil } from "@/utils/Request";
 import { URIParams } from "@/classes/URIParams";
 import CUnivSelect from './CUnivSelect.vue'
 let tools = BIPUtil.ServApi
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 @Component({
     components:{CUnivSelect}
 })
-export default class BipStatisticsDialog extends Vue { 
+export default class HomeReport extends Vue { 
     @Prop() cont!:string;
     @Prop() rech!:string;
     @Provide() menuid:string = '';
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Provide() uriParams: URIParams = new URIParams();
     @Provide() message:any = null;
     mounted() {   
@@ -38,14 +39,7 @@ export default class BipStatisticsDialog extends Vue {
         let cont = JSON.parse(this.cont) 
         let rech = JSON.parse(this.rech)
         this.menuid = cont.menuid;
-        let menu = null;
-        for(let i = 0;i<this.menusList.length;i++){
-            let m1 = this.findMenuById(this.menuid,this.menusList[i])
-            if(m1!=null){
-                menu = m1
-                break ;
-            }
-        }  
+        let menu = baseTool.findMenu(this.menuid); 
         if(menu ==  null){
             this.message = "没有菜单"+this.menuid+"操作权限！";
             this.$notify.error("没有菜单"+this.menuid+"操作权限！");

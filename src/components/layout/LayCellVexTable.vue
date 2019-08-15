@@ -156,6 +156,8 @@ let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Menu } from "@/classes/Menu";
 import CRecord from '../../classes/pub/CRecord';
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 @Component({
     components: {  BipGridInfo }
 })
@@ -176,7 +178,6 @@ export default class LayCelVexTable extends Vue {
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
 
     @Provide() datachangeBusID:number=0;
     created() {
@@ -292,14 +293,7 @@ export default class LayCelVexTable extends Vue {
                                     this.$notify.error("业务" + slkbuid + "没有绑定菜单!"); 
                                     return false;
                                 }
-                                let me = null; 
-                                for(let i = 0;i<this.menusList.length;i++){
-                                    let m1 = this.findMenuById(opera.pmenuid,this.menusList[i])
-                                    if(m1!=null){
-                                        me = m1
-                                        break ;
-                                    }
-                                } 
+                                let me = baseTool.findMenu(opera.pmenuid);
                                 if (!me) {
                                     this.$notify.error( "没有" + opera.pmenuid + "菜单权限!" );
                                     return false;
@@ -322,14 +316,7 @@ export default class LayCelVexTable extends Vue {
                         if(slink){
                             slink = slink.split("&");
                             let menuid = slink[0]
-                            let me = null; 
-                            for(let i = 0;i<this.menusList.length;i++){
-                                let m1 = this.findMenuById(menuid,this.menusList[i])
-                                if(m1!=null){
-                                    me = m1
-                                    break ;
-                                }
-                            } 
+                            let me = baseTool.findMenu(menuid);
                             if (!me) {
                                 this.$notify.error( "没有" + menuid + "菜单权限!" );
                                 return false;

@@ -52,7 +52,6 @@ export default class LayHeader extends Vue {
     @Provide() msgNum:Number = 0;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Prop() isLogin!:boolean;
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @State('login') profile!: LoginState 
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;

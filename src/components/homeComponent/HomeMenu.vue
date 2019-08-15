@@ -2,22 +2,33 @@
     <el-row>
          <div class="bip-home-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
+             <div class="main-title">
+                <el-row>
+                    <el-col :span="20">
+                        <i class="iconfont icon-bip-menu"></i>
+                        快捷菜单
+                    </el-col>
+                    <el-col :span="4" class="main-title-icon"  >
+                        <i class="el-icon-edit pointer" @click="showMenuList = true"></i>  
+                    </el-col>
+                </el-row>
+             </div>
                 <el-row :gutter="10">
                     <template v-if="menuList.length>0" >
-                        <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding-top:5px">
+                        <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding:10px 0">
                             <el-row >
                                 <el-col :span="24" class="imgcol">
                                     <img class="img pointer" src="../../assets/48.jpg" @click="menuClick(item.menuId,item.command)"/>
                                 </el-col>
                                 <el-col :span="24" class="imgcol pointer">
-                                    <span @click="menuClick(item.menuId,item.command)">
+                                    <span @click="menuClick(item.menuId,item.command)" class="menuname">
                                         {{item.menuName}}
                                     </span>
                                 </el-col>
                             </el-row>
                         </el-col>
                     </template>
-                    <el-col style="width:120px;padding-top:5px">
+                    <!-- <el-col style="width:120px;padding-top:5px">
                         <el-row >
                             <el-col :span="24" class="imgcol">
                                 <i class=" iconfont icon-bip-xinjian2 insertMenu" @click="showMenuList = true"></i>
@@ -26,7 +37,7 @@
                                 &nbsp;
                             </el-col>
                         </el-row>
-                    </el-col> 
+                    </el-col>  -->
                 </el-row>
                 <el-dialog title="菜单选择"  class="bipinsaid" :visible.sync="showMenuList" width="40%"  :append-to-body="true" >
                     <el-transfer :titles="['可选菜单', '已选菜单']" v-model="selection" :props="{key: 'menuId',label: 'menuName'}" 
@@ -44,18 +55,13 @@
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
-import {CommICL} from '@/utils/CommICL'
-let ICL = CommICL
 import { Menu } from "@/classes/Menu";
-import { BIPUtil } from "@/utils/Request"; 
-import { URIParams } from "@/classes/URIParams";
-import CUnivSelect from './CUnivSelect.vue'
-import { format } from 'path';
-let tools = BIPUtil.ServApi
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 @Component({
-    components:{CUnivSelect}
+    components:{}
 })
-export default class BipStatisticsDialog extends Vue { 
+export default class HomeMenu extends Vue { 
     @Prop() cont!:string;
     @Prop() rech!:string;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
@@ -74,7 +80,7 @@ export default class BipStatisticsDialog extends Vue {
             let menu:any = cc.menuid.split(";");
             for(var i=0;i<this.menusList.length;i++){
                 menu.forEach( (item:any) => {
-                    let menu = this.findMenuById(item,this.menusList[i]);
+                    let menu = baseTool.findMenuById(item,this.menusList[i]);
                     if(menu){
                         this.menuList.push(menu);
                         this.selection.push(menu.menuId)
@@ -86,21 +92,6 @@ export default class BipStatisticsDialog extends Vue {
         this.menusList.forEach(item => {
             this.findLastMenu(item);            
         });
-    }
-    findMenuById(menuId:string,menu:Menu):any{
-        if(menu.menuId==menuId){
-            return menu
-        }else{
-            if(menu.haveChild){
-                for(let i = 0;i<menu.childMenu.length;i++){
-                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
-                    if(m1!=null){
-                        return m1;
-                    }
-                }
-            }
-            return null;
-        }
     }
     /**
      * 查询最后一个节点的菜单
@@ -125,14 +116,7 @@ export default class BipStatisticsDialog extends Vue {
      * 菜单点击
      */
     menuClick(menuid:string,command:string){
-        let menu = null;
-        for(let i = 0;i<this.menusList.length;i++){
-            let m1 = this.findMenuById(menuid,this.menusList[i])
-            if(m1!=null){
-                menu = m1
-                break ;
-            }
-        }  
+        let menu = baseTool.findMenu(menuid);
         if(menu ==  null){
             this.$notify.error("没有菜单"+menuid+"操作权限！");
             return;
@@ -182,4 +166,40 @@ export default class BipStatisticsDialog extends Vue {
     .insertMenu{
         font-size: 50px;
     }
+    .menuname {
+        font-size: 14px;
+    }
+    .bip-home-container {
+        border:  1px solid #dedede;
+        background-color: #ffffff;
+        position: fixed; 
+        height: 95% !important;
+        z-index: 1;
+        overflow: hidden;  
+        width: calc(100% - 3px) !important;
+        .el-scrollbar {
+            height: 100%;
+            margin-bottom: 10px !important;
+            margin-right: 0px !important; 
+            .el-scrollbar__wrap {
+                overflow-x: hidden !important;
+                padding-right: 5px;
+                height: 100%;
+            }
+            .scrollbar-wrapper{
+            overflow-x: hidden !important;
+            }
+        }
+    }
+    .main-title{
+        border-bottom:  1px solid #dedede;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        padding: 0 10px; 
+    }
+    .main-title-icon {
+        font-size: 20px;
+        text-align: right;
+    } 
 </style>

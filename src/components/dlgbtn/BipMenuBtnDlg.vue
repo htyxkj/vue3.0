@@ -49,11 +49,12 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import CData from '../../classes/pub/CData';
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 @Component({
     components: { }
 })
 export default class BipMenuBtnDlg extends Vue { 
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Provide() btn:any = ""; 
     @Provide() env:CCliEnv = new CCliEnv();
 
@@ -124,14 +125,7 @@ export default class BipMenuBtnDlg extends Vue {
                 jsontj[zd[0]] = vl
             }  
             //打开的菜单
-            let me = null; 
-            for(let i = 0;i<this.menusList.length;i++){
-                let m1 = this.findMenuById(cont0,this.menusList[i])
-                if(m1!=null){
-                    me = m1
-                    break ;
-                }
-            } 
+            let me = baseTool.findMenu(cont0);  
             if (!me) {
                 this.$notify.error( "没有" + cont0 + "菜单权限!" );
                 return false;

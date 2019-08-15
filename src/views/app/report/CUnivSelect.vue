@@ -53,13 +53,13 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
+
 import { State, Action, Getter, Mutation } from "vuex-class";
-
-
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
-
 import { Cells } from "@/classes/pub/coob/Cells";
-import BipLayCells from "@/classes/ui/BipLayCells";
+// import BipLayCells from "@/classes/ui/BipLayCells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipMenuBar from "@/classes/pub/BipMenuBar"; 
 import CCliEnv from "@/classes/cenv/CCliEnv";
@@ -67,11 +67,12 @@ import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
+import { Menu } from '../../../classes/Menu';
 // import { on } from 'cluster';
 // import { types } from 'util';
-import { connect } from 'echarts';
+// import { connect } from 'echarts';
 // import { throws } from 'assert';
-import BipLayConf from '../../../classes/ui/BipLayConf';
+// import BipLayConf from '../../../classes/ui/BipLayConf';
 // import { truncate } from 'fs';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
@@ -223,8 +224,47 @@ export default class CUnivSelect extends Vue {
                     dia.open(btn,this.env); 
                 }, 100);
             }
+        }else if(cmd === 'DOWNLOADFILE'){
+            this.getExcel();
         }
         console.log(this.dsm_cont.currRecord)
+    }
+    /**导出Excel */
+    async getExcel(){
+        this.qe.pcell = this.dsm.ccells.obj_id
+        this.qe.tcell = this.dsm_cont.ccells.obj_id
+        if(this.biType == "SEL")
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+        else if(this.biType == "RPT" || this.biType == "SQL"){
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        }
+        this.qe.oprid = 13
+        this.qe.type = 1
+        this.qe.page.pageSize = 20
+        var res = await tools.queryExcel(this.qe);
+        const content = res.data;
+        let me:Menu = baseTool.findMenu(this.$route.query.pmenuid+'');
+        let title = "文件导出";
+        if(me !=null)
+            title = me.menuName;
+        this.exportFilesServ(content,title);
+    }
+    /**导出Excel */
+    exportFilesServ(content:any,title:string){
+      const blob = new Blob([content]);
+      const fileName = title+'.xls'
+      if ('download' in document.createElement('a')) { // 非IE下载
+        const elink = document.createElement('a')
+        elink.download = fileName
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href) // 释放URL 对象
+        document.body.removeChild(elink)
+      } else { // IE10+下载
+        navigator.msSaveBlob(blob, fileName)
+      }
     }
     find(){
         this.qe.pcell = this.dsm.ccells.obj_id

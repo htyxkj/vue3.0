@@ -50,7 +50,8 @@ import { Menu } from "@/classes/Menu";
 import router from "@/router";
 import { User } from '@/classes/User';
 import { BaseVariable } from "@/utils/BaseICL";
-
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
 import { AxiosPromise } from 'axios'
@@ -93,6 +94,7 @@ export default class App extends Vue {
             BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
         }).catch((err:any) => {
             console.log(err)
+            window.location.reload()
         }) 
 
         if(this.height){
@@ -155,6 +157,7 @@ export default class App extends Vue {
         }
         // console.log(to,from)
         if (to.name === 'index') {
+            this.$bus.$emit('componentsizechange','')
             this.editableTabsValue2 = 'index';
         }
         if(to.fullPath ==='layout?undefined'){
@@ -162,14 +165,7 @@ export default class App extends Vue {
         }
         if (to.name === 'layout') {
             if (this.menusList.length > 0) { 
-                let me:any
-                for(let i = 0;i<this.menusList.length;i++){
-                    let m1 = this.findMenuById(to.query.pmenuid+'',this.menusList[i])
-                    if(m1!=null){
-                        me = m1
-                        break ;
-                    }
-                }
+                let me:any = baseTool.findMenu(to.query.pmenuid+''); 
                 // console.log(me)
                 let menu:Menu = me;
                 let currTag = this.editableTabs2.filter(

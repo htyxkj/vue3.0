@@ -2,16 +2,34 @@
     <el-row v-loading.fullscreen.lock="fullscreenLoading" class="bi-chart">
         <div class="titlebg">
             <el-row>
-                <el-col :span="2" style="text-align: left">
-                    <el-button v-if="showBack" icon="iconfont icon-bip-back" @click="goTable" size="mini">返回</el-button>
-                </el-col>
-                <el-col :span="22" class="charttitle">
-                    <template v-if="title">
-                        {{title}}
-                    </template>
-                    <template v-else>
-                        统计维度：{{this.getTitle()}}
-                    </template>
+                <!-- <el-col :span="2" style="text-align: left">
+                   
+                </el-col> -->
+                <el-col :span="24" >
+                    <div class="charttitle">
+                        <template v-if="title">
+                            <el-row>
+                                <el-col :span="20">
+                                    <div class="charttitle-left">
+                                        <el-button v-if="showBack" icon="iconfont icon-bip-back" @click="goTable" size="mini" class="returnbak">
+                                            返回
+                                        </el-button>
+                                        <i class="iconfont icon-bip-shuju"></i>
+                                        {{title}}  
+                                    </div>
+                                </el-col>
+                                <el-col :span="4">
+                                    <div class="charttitle-right">
+                                        <i class="iconfont icon-bip-kucun"></i> 
+                                        <span>MORE</span>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </template>
+                        <template v-else> 
+                            统计维度：{{this.getTitle()}}
+                        </template>
+                     </div>
                 </el-col>
             </el-row>
         </div>
@@ -280,15 +298,14 @@ export default class BipStatisticsDialog extends Vue {
                         "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
                         "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
                         "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",];
-                    let cc = i;
+                    let cc = key1;
                     if(cc >colorList.length)
                         cc = cc -colorList.length;
                     color = colorList[cc];
                     if(chartType == 'line')
-                        bb ={ name: colname, data: [] ,type:chartType,color:color,};
+                        bb ={ name: colname, data: [] ,type:chartType,color:color,smooth:true};
                     if(chartType =='lineArea'){
-                        chartType ='line'
-                        bb ={ name: colname, data: [] ,type:chartType,color:color,areaStyle: {}};
+                        bb ={ name: colname, data: [] ,type:'line',color:color,areaStyle: {},smooth:true};
                     }
                             
                 }

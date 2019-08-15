@@ -71,6 +71,11 @@ export default class BipMenuBar{
             btn.setIconFontIcon('tongji');
             this.menuList.push(btn)
         }
+        if(((menuAttr&CommICL.B_IFILE)>0)&&this.search){
+            let btn = new BipMenuBtn(CommICL.B_CMD_IFILE,"导出文件")
+            btn.setIconFontIcon('xiazai1');
+            this.menuList.push(btn)
+        }
         if(!this.search){
             btn = new BipMenuBtn(CommICL.B_CMD_FIRST,"第一个")
             btn.setIconFontIcon('first-page');

@@ -92,7 +92,6 @@ export default class bipTask extends Vue {
     @Provide() initDialog:boolean = false;
     @Provide() dialogVl:any = null;
 
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Getter('user', { namespace: 'login' }) user?: User;
     /**
      * 	APIID_TA_MSG  = "taskmsg";//apiid

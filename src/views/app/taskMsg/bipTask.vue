@@ -45,7 +45,8 @@ import BaseApplet from '../applet/BaseApplet.vue'
 import CUnivSelect from '../report/CUnivSelect.vue' 
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 let tools = BIPUtil.ServApi 
-
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 @Component({
     components:{BipGridInfo}
 })
@@ -64,7 +65,6 @@ export default class bipTask extends Vue {
     @Provide() uiCels:Array<any>= [];
     @Provide() taskValue:Array<any>= [];
 
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Getter('user', { namespace: 'login' }) user?: User;
     async mounted() { 
       let res = await tools.getCCellsParams('SYRW'); 
@@ -149,14 +149,7 @@ export default class bipTask extends Vue {
                                     this.$notify.error("业务" + slkbuid + "没有绑定菜单!"); 
                                     return false;
                                 }
-                                let me = null; 
-                                for(let i = 0;i<this.menusList.length;i++){
-                                    let m1 = this.findMenuById(opera.pmenuid,this.menusList[i])
-                                    if(m1!=null){
-                                        me = m1
-                                        break ;
-                                    }
-                                } 
+                                let me = baseTool.findMenu(opera.pmenuid);  
                                 if (!me) {
                                     this.$notify.error( "没有" + opera.pmenuid + "菜单权限!" );
                                     return false;

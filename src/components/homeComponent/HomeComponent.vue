@@ -6,16 +6,20 @@
         <template v-else-if="type == 'Menu' ">
             <home-menu :cont ="cont" :rech="rech" @menuChange="menuChange"></home-menu>
         </template>
+        <template v-else-if="type == 'Calendar'">
+            <home-calendar :cont ="cont" :rech="rech" @menuChange="menuChange"></home-calendar>
+        </template>
     </el-row>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import HomeReport from './HomeReport.vue';
 import HomeMenu from './HomeMenu.vue';
+import HomeCalendar from './HomeCalendar.vue';
 @Component({
-    components:{HomeReport,HomeMenu}
+    components:{HomeReport,HomeMenu,HomeCalendar}
 })
-export default class BipStatisticsDialog extends Vue { 
+export default class HomeComponent extends Vue { 
     @Prop() type!:string;
     @Prop() cont!:string;
     @Prop() rech!:string;

@@ -68,6 +68,11 @@ export namespace BIPUtil {
         //dubbo格式请求时，不需要将数据转jsonstring
         // return Vue.$axios.post(GlobalVariable.API, param,{headers:{'content-type':"application/json;charset=UTF-8"}});
     }
+    async fileDown(param:any){
+        let data = qs.stringify(param);
+        let config:any ={responseType:"arraybuffer"};
+        return Vue.$axios.post(GlobalVariable.API, data,config);
+    }
 
     fileOPeration(param:any){
       let data = qs.stringify(param);
@@ -83,6 +88,10 @@ export namespace BIPUtil {
     query(qe:QueryEntity){
         let param = tool.getQueryParams(JSON.stringify(qe));
         return this.getFromServer(param);
+    }
+    queryExcel(qe:QueryEntity){
+        let param = tool.getExcelParams(JSON.stringify(qe));
+        return this.fileDown(param);
     }
     queryRPT(qe:QueryEntity){
         let param = tool.getQueryRPTParams(JSON.stringify(qe));
@@ -129,7 +138,11 @@ export namespace BIPUtil {
         let param = tool.getTaskMsgParams(tskim,iid,state,buno,buid,tousr,page,size,keyword);
         return this.getFromServer(param)
     }
-
+    /**获取服务器时间 */
+    getServerTime(){
+        let param = {apiId: GlobalVariable.APIID_TIME,};
+        return this.getFromServer(param)
+    }
     test(){
         
         let data = JSON.stringify({"id":200,"sid":9999,"jsondata":[{"id":222}]})

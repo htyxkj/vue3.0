@@ -5,6 +5,7 @@ import { User } from '@/classes/User';
 import BipInsAidNew from '@/classes/BipInsAidNew';
 import { Cells } from '@/classes/pub/coob/Cells';
 import { Cell } from '@/classes/pub/coob/Cell';
+import { Menu } from "@/classes/Menu";
 export namespace BIPUtils {
   class BaseUtil {
     getLoginParmasUri() {
@@ -65,6 +66,15 @@ export namespace BIPUtils {
     getQueryParams(qe: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_QUERY,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
+          .userCode,
+        qe: qe
+      });
+    }
+    getExcelParams(qe: string) {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_EXPDATA,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID,
         usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
           .userCode,
@@ -502,6 +512,40 @@ export namespace BIPUtils {
             keyword:keyword,
         });
       }
+    
+    findMenu(menuId:string){
+      let menu = window.sessionStorage.getItem('menulist');
+      let m1 =null;
+      if(menu!=null){
+        let ml = JSON.parse(menu);
+        for (let index = 0; index < ml.length; index++) {
+          const item = ml[index];
+          m1 = this.findMenuById(menuId,item)
+          if(m1!=null){
+              return m1;
+          }
+        }
+      }else{
+        return  null;
+      }
+      return m1;
+    }
+    findMenuById(menuId:string,menu:Menu):any{
+        if(menu.menuId==menuId){
+            return menu
+        }else{
+            if(menu.haveChild){
+                for(let i = 0;i<menu.childMenu.length;i++){
+                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
+                    if(m1!=null){
+                        return m1;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+      
   }
   export const baseUtil = new BaseUtil();
 }
