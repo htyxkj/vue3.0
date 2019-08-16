@@ -10,7 +10,7 @@
                                 <div ref="se" @keyup.enter="find">
                                     <bip-search-cont :env="env" ></bip-search-cont>
                                 </div>
-                                <el-form label-position="right" label-width="120px">
+                                <el-form @submit.native.prevent label-position="right" label-width="120px">
                                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                                 </el-form>
                             </el-scrollbar>

@@ -5,7 +5,7 @@
             <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">查询条件</div>
         </span>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-            <el-form ref="form" :model="currcont" label-width="100px" size="mini" label-position="left">
+            <el-form @submit.native.prevent ref="form" :model="currcont" label-width="100px" size="mini" label-position="left">
                 <el-row style="padding: 0px 15px 0px 10px;">
                     <el-col :span="10">
                         <el-row type="flex" justify="state">

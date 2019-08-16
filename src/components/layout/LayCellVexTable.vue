@@ -87,6 +87,7 @@
                 show-header-overflow
                 show-overflow
                 :sortable ="(cel.attr&0x400000)>0"
+                :fixed="(cel.attr&0x400000)>0?'left':''"
             >
                 <template v-slot="{row,rowIndex}">
                     <!-- <bip-grid-cell-info

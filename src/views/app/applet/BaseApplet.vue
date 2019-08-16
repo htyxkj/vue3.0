@@ -8,7 +8,7 @@
         </template>
         <div class="bip-main-container" v-if="lay.binit">            
             <el-scrollbar :style="style">
-                <el-form label-position="right" label-width="120px">
+                <el-form @submit.native.prevent label-position="right" label-width="120px">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
             </el-scrollbar>

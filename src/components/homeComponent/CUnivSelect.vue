@@ -5,7 +5,7 @@
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
                         <div v-if="lay.binit">
-                            <el-form label-position="right" label-width="120px">
+                            <el-form @submit.native.prevent label-position="right" label-width="120px">
                                 <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                             </el-form>
                         </div>

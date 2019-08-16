@@ -3,7 +3,7 @@
     :close-on-press-escape="true" :close-on-click-modal="false">
         <!-- <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;"> -->
             <bip-search-cont :env="env" />
-            <el-form label-position="right" label-width="120px">
+            <el-form @submit.native.prevent label-position="right" label-width="120px">
                 <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" />
             </el-form>
         <!-- </el-scrollbar> -->

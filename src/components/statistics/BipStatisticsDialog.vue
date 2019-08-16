@@ -5,7 +5,7 @@
                 <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">统计</div>
             </span>
             <el-row style="padding:10px 25px 0px 25px">
-                <el-form ref="form" label-width="120px" size="mini">
+                <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
                     <el-form-item class="bip-form-item" label="已保存方案">
                         <el-select v-model="programModel" collapse-tags style="margin-left: 20px;" placeholder="请选择">
                             <el-option key="-1" label=" 　" :value="-1"> </el-option>
@@ -47,7 +47,7 @@
                 <span slot="title">
                     <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">保存方案</div>
                 </span> 
-                <el-form ref="form" label-width="120px" size="mini">
+                <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
                     <el-row style="padding:10px 45px 0px 25px">
                         <el-form-item class="bip-form-item" label="方案名称" :required="true">
                             <el-input v-model="program.name" placeholder="请输入内容"></el-input>

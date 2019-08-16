@@ -18,7 +18,7 @@
             <el-dialog :title="Title" :visible.sync="openCell" append-to-body>
                 <div class="">
                     <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                        <el-form label-position="right" label-width="120px">
+                        <el-form @submit.native.prevent label-position="right" label-width="120px">
                             <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cellCds" :row="cellCds.index" :bgrid="false"/>
                         </el-form> 
                     </el-scrollbar>

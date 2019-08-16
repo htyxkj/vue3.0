@@ -4,7 +4,7 @@
       <div class="login-title">欢迎登陆BIP管理平台</div>
       <div class="login-cont" @keyup.enter="login">
 
-        <el-form label-position="left" label-width="55px" >
+        <el-form @submit.native.prevent label-position="left" label-width="55px" >
           <el-form-item class="bip-form-item" label="账户:" style="font-size:16px">
             <el-input v-model="user.userCode"></el-input>
           </el-form-item>

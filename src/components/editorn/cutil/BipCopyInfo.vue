@@ -5,7 +5,7 @@
     :title="aIdTitle" class="bip-copy" :visible.sync="visible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
     <!-- <template v-if="init"> -->
         <el-row class="bip-row">
-            <el-form label-position="right" label-width="120px">
+            <el-form @submit.native.prevent label-position="right" label-width="120px">
                 <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cd_cont" :row="cds.index" :bgrid="false"></bip-comm-editor>
             </el-form>
         </el-row>
