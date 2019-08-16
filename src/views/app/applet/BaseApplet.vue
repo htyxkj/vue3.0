@@ -129,15 +129,15 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
-                            this.findData(true,this.dsm.cont)
-                            // this.dsm.cdata.data.splice(this.dsm.page.index,1); 
-                            // if(this.dsm.page.index >= this.dsm.cdata.data.length){
-                            //     this.dsm.currRecord = this.dsm.cdata.data[this.dsm.cdata.data.length-1]
-                            // }else{
-                            //     this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
-                            // }
-                            // this.dsm.currRecord = this.dsm.cdata.getDataAtIndex(this.dsm.page.index)
-                            // this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                            this.dsm.cdata.data.splice(this.dsm.page.index,1); 
+                            if(this.dsm.page.index >= this.dsm.cdata.data.length){
+                                this.findData(true,this.dsm.cont)
+                            }else{
+                                this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                            }
+                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                            this.dsm.page.total--;
+                            this.setListMenuName();
                         }).finally(()=>{
                             this.fullscreenLoading = false
                         })
@@ -263,7 +263,6 @@ export default class BaseApplet extends Vue{
         console.log('跳转'+_idx,crd)
         if(crd){
             this.dsm.currRecord  =crd
-            await this.getCRecordByPk(crd);
         }else{
             let vv = await this.findDataFromServe(this.qe);
             if (vv && vv.data.length > 0) {
@@ -274,11 +273,9 @@ export default class BaseApplet extends Vue{
                 this.dsm.setValues(vv.data, true);
                 crd = vv.data[vv.page.index];
                 this.dsm.currRecord = crd
-                await this.getCRecordByPk(crd);
             }
         }
         this.setListMenuName();
-        console.log(this.dsm.ccells.obj_id)
         this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
     }
 //#endregion

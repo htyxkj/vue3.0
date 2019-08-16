@@ -71,11 +71,14 @@
             @sort-change="sortChange"
             remote-sort
             :sort-config="{trigger: 'cell'}"
+            :span-method="rowspanMethod"
+            :footer-method="footerMethod"
+            show-footer
             > 
             <!-- cds.page.pageSize<cds.page.total -->
             <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
             <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
-            <vxe-table-column type="index" width="60"></vxe-table-column>
+            <vxe-table-column type="index" width="60" fixed="left"></vxe-table-column>
             <vxe-table-column
                 header-align="center"
                 align="center"
@@ -87,7 +90,7 @@
                 show-header-overflow
                 show-overflow
                 :sortable ="(cel.attr&0x400000)>0"
-                :fixed="(cel.attr&0x400000)>0?'left':''"
+                :fixed="isFixed(index)"
             >
                 <template v-slot="{row,rowIndex}">
                     <!-- <bip-grid-cell-info
@@ -146,6 +149,7 @@
     </div>
 </template>
 <script lang="ts">
+import XEUtils from 'xe-utils'
 import { DateUtils } from "../../utils/DateUtils";
 import { GlobalVariable } from "../../utils/ICL";
 import BipScriptProc from "../../classes/pub/BipScriptProc";
@@ -180,6 +184,9 @@ export default class LayCelVexTable extends Vue {
     @Provide() clearable: boolean = true;
     @Provide() widths: Array<string> = new Array<string>();
     @Provide() id: string = "";
+    @Provide() fixedColumn:number=0;//固定列数
+    @Provide() span_id:any={};//合并列id
+    @Provide() sum_id:any={};//合计列id
 
     @Provide() removeData :Array<CRecord> =[];
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -189,6 +196,7 @@ export default class LayCelVexTable extends Vue {
 
     @Provide() datachangeBusID:number=0;
     created() {
+        this.initSfix();
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
         // this.beBill = this.env.uriParams.beBill;
@@ -426,9 +434,9 @@ export default class LayCelVexTable extends Vue {
             if(cc){
                 if(this.cds.currRecord){
                     setTimeout(() => {
+                        cc.refreshData();
                         cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
-                        console.log(this.cds.currRecord)
                     }, 200);
                 }
             }
@@ -477,6 +485,112 @@ export default class LayCelVexTable extends Vue {
             }); 
         }
     }
+    /**解析分组字段 目前只解析了固定表头 */
+    initSfix(){
+        let sfix = this.cds.ccells.sfix;
+        this.fixedColumn =0;
+        if(sfix){
+            let num:string = '';
+            if(sfix.indexOf("/") >=0){
+                num = sfix.substring(0,sfix.indexOf("/") )
+            }else{
+                if(sfix.indexOf("&") >=0){ 
+                num = "0";
+                }else{
+                num = sfix;
+                }
+            }
+            this.fixedColumn = parseInt(num);
+          }
+    }
+    isFixed(index:number) {
+      //固定列
+      if (this.cds.ccells.sfix) {
+        if (index < this.fixedColumn) {
+          return "left";
+        }
+      }
+    }
+    //合并行或列，该函数 Function({seq, row, rowIndex, column, columnIndex, data}) 返回计算后的值
+    rowspanMethod (row:any) {  
+        let $rowIndex = row.$rowIndex;
+        let data = row.data;
+        let column = row.column;
+        if(this.span_id !=null){ 
+            var arr = Object.keys(this.span_id);
+            if(arr.length ==0){
+            let cels = this.cds.ccells.cels;
+            for(var i=0 ;i<cels.length;i++){
+                let cel = cels[i];
+                if((cel.attr & 0x10000000)>0){
+                this.span_id[cel.id]=cel.id;
+                }
+            }
+            var arr = Object.keys(this.span_id);
+                if(arr.length ==0){ 
+                    this.span_id =null;
+                    return;
+                }
+            }
+            let prevRow = data[$rowIndex - 1]
+            let nextRow = data[$rowIndex + 1]
+            if (this.span_id[column.property]) {
+                let cellValue = row.row.data[column.property]
+                if (prevRow && prevRow.data[column.property] === cellValue) {
+                    return {rowspan: 0,colspan: 0}
+                }else{
+                    let countRowspan = 1
+                    while (nextRow && nextRow.data[column.property] === cellValue) {
+                        nextRow = data[++countRowspan + $rowIndex]
+                    }
+                    if (countRowspan > 1) {
+                        return { rowspan: countRowspan, colspan: 1 }
+                    }
+                }
+            }
+        }
+    } 
+
+    //表尾合计
+    footerMethod(obj:any){
+        if(this.sum_id !=null){ 
+            var arr = Object.keys(this.sum_id);
+            if(arr.length ==0){
+            let cels = this.cds.ccells.cels;
+            for(var i=0 ;i<cels.length;i++){
+                let cel = cels[i];
+                if((cel.attr & 0x2000)>0){
+                this.sum_id[cel.id]=cel.id;
+                }
+            }
+            var arr = Object.keys(this.sum_id);
+                if(arr.length ==0){ 
+                    this.sum_id =null;
+                    return;
+                }
+            }
+
+            let columns:any = obj.columns;
+            let data = obj.data
+            return [
+                columns.map((column:any, columnIndex:any) => {
+                    if (columnIndex === 0) {
+                        return '合计'
+                    }
+                    if (this.sum_id[column.property]) {
+                        let dl = []
+                        for (let index = 0; index < data.length; index++) {
+                            const element = data[index].data;
+                            dl.push(element);
+                        }
+                        return XEUtils.sum(dl, column.property)
+                    }
+                    return null
+                })
+            ]
+        }
+    }
+
 }
 </script>
 
