@@ -12,15 +12,15 @@
             ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
             show-header-all-overflow class="vxe-table-element" :data.sync="msgValue"
             :optimized="true" height="450px">
-            <vxe-table-column type="index" label="编号" width="60"></vxe-table-column>
-            <vxe-table-column header-align="center" align="center" prop="title" label="标题" show-header-overflow show-overflow ></vxe-table-column>
-            <vxe-table-column header-align="center" align="center" prop="dmake" label="时间" show-header-overflow show-overflow ></vxe-table-column>
-            <vxe-table-column header-align="center" align="center" prop="brd" label="消息状态" show-header-overflow show-overflow >
+            <vxe-table-column type="index" title="编号" width="60"></vxe-table-column>
+            <vxe-table-column header-align="center" align="center" field="title" title="标题" show-header-overflow show-overflow ></vxe-table-column>
+            <vxe-table-column header-align="center" align="center" field="dmake" title="时间" show-header-overflow show-overflow ></vxe-table-column>
+            <vxe-table-column header-align="center" align="center" field="brd" title="消息状态" show-header-overflow show-overflow >
               <template v-slot="{ row}">
                 {{getMsgState(row) }}
               </template>
             </vxe-table-column>
-            <vxe-table-column header-align="center" align="center" label="操作" show-header-overflow show-overflow >
+            <vxe-table-column header-align="center" align="center" title="操作" show-header-overflow show-overflow >
             <template v-slot="{ rowIndex}">
               <vxe-button type="text" @click="showMsg(rowIndex)">查看</vxe-button>
               <vxe-button type="text" @click="delMsg(rowIndex)">删除</vxe-button>

@@ -11,7 +11,7 @@
                                     <bip-search-cont :env="env" ></bip-search-cont>
                                 </div>
                                 <el-form label-position="right" label-width="120px">
-                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                                 </el-form>
                             </el-scrollbar>
                         </div>
@@ -225,6 +225,7 @@ export default class CUnivSelect extends Vue {
                 }, 100);
             }
         }else if(cmd === 'DOWNLOADFILE'){
+            this.fullscreenLoading=true;
             this.getExcel();
         }
         console.log(this.dsm_cont.currRecord)
@@ -241,7 +242,11 @@ export default class CUnivSelect extends Vue {
         this.qe.oprid = 13
         this.qe.type = 1
         this.qe.page.pageSize = 20
+        setTimeout(() => {
+            this.fullscreenLoading=false;
+        }, 6000);
         var res = await tools.queryExcel(this.qe);
+        this.fullscreenLoading=false;
         const content = res.data;
         let me:Menu = baseTool.findMenu(this.$route.query.pmenuid+'');
         let title = "文件导出";
@@ -287,7 +292,6 @@ export default class CUnivSelect extends Vue {
     }
 
     findServerData(queryCont:any){
-        console.log("sdds")
         this.fullscreenLoading = true
         if(this.biType =="SEL"){
             this.dsm.queryData(queryCont).then(res=>{
@@ -452,7 +456,6 @@ export default class CUnivSelect extends Vue {
     }
 
     getCRecordByPk2(value:any=null){
-        console.log(this.dsm)
         if(this.dsm){
             if(value == null && this.dsm.ds_sub.length>0){
                 this.getCRecordByPk(this.dsm.currRecord)
@@ -540,6 +543,12 @@ export default class CUnivSelect extends Vue {
             }
         })
         return cd;
+    }
+
+    /** 进行排序 */
+    sortChange(orderby:string){
+        this.qe.orderBy=orderby;
+        this.find();
     }
 }
 </script>

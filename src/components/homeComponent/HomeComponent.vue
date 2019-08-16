@@ -1,7 +1,7 @@
 <template>
-    <el-row>
+    <el-row style="height:100%">
         <template v-if="type == 'Report' ">
-            <home-report :cont ="cont" :rech="rech"></home-report>
+            <home-report :cont ="cont" :rech="rech" :sid="sid"></home-report>
         </template>
         <template v-else-if="type == 'Menu' ">
             <home-menu :cont ="cont" :rech="rech" @menuChange="menuChange"></home-menu>

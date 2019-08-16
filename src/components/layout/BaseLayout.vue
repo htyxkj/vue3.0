@@ -1,16 +1,16 @@
 <template>
 <div>
     <template v-if="layout&&layout.layType === 'B'">
-        <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></border-layout>
+        <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></border-layout>
     </template>
     <template v-else-if="layout&&layout.layType === 'T'">
-        <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></tabs-layout>
+        <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></tabs-layout>
     </template>
     <template v-else-if="layout&&layout.layType === 'H'">
-        <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></bip-horizontal-lay>
+        <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></bip-horizontal-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'V'">
-        <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></bip-vertical-lay>
+        <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></bip-vertical-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'U'">
         <div>自定义布局</div>
@@ -54,6 +54,9 @@ export default class BaseLayout extends Vue{
             let v = {value:value,obj_id:this.env.dsm.ccells.obj_id};
             this.$bus.$emit('handleCurrentChange',v)
         }
+    }
+    sortChange(orderby:string){
+        this.$emit("sortChange", orderby);
     }
 }
 </script>

@@ -6,7 +6,7 @@
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                <lay-cell :laycell="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></lay-cell>
             </el-row>
         </template>
     </el-col>
@@ -16,7 +16,7 @@
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                <lay-cell :laycell="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></lay-cell>
             </el-row>
         </template>
     </el-col>
@@ -63,7 +63,9 @@ export default class BipHorizontalLay extends Vue{
     handleCurrentChange(value:number){
         this.$emit('handleCurrentChange',value)
     }
-
+    sortChange(orderby:string){
+        this.$emit("sortChange", orderby);
+    }
     @Watch('laycfg')
     layCfgChange(){
         this.initLayCell()

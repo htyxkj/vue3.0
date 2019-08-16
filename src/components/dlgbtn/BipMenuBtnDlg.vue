@@ -285,26 +285,6 @@ export default class BipMenuBtnDlg extends Vue {
         }
         return null;
     }
- 
-    /**
-     * 查找菜单  判断是否有权限
-     */
-    findMenuById(menuId:string,menu:Menu):any{
-        if(menu.menuId==menuId){
-            return menu
-        }else{
-            if(menu.haveChild){
-                for(let i = 0;i<menu.childMenu.length;i++){
-                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
-                    if(m1!=null){
-                        return m1;
-                    }
-                }
-            }
-            return null;
-        }
-    }
-
     bitOperation(attr:any,val:any){
         attr = attr.toString(2);
         val = val.toString(2);

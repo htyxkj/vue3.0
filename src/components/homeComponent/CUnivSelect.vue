@@ -15,7 +15,7 @@
                     <template v-if="env && env.dsm && env.dsm.ccells">
                         <el-row>
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false" :showTable="false"></bip-statistics-chart>
+                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false" :showTable="false" :height="height"></bip-statistics-chart>
                             </el-col>
                         </el-row>
                     </template>
@@ -55,6 +55,7 @@ import CData from '../../classes/pub/CData';
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
+    @Prop() height!:number;
     @Provide() fullscreenLoading: boolean = false;
     @Provide() cells: Array<Cells> = new Array<Cells>();
     @Provide() mbs: BipMenuBar = new BipMenuBar(0);
@@ -480,7 +481,7 @@ export default class CUnivSelect extends Vue {
     width: calc(100% - 3px) !important;
     .el-scrollbar {
         height: 100%;
-        margin-bottom: 10px !important;
+        margin-bottom: 0px !important;
         margin-right: 0px !important; 
         .el-scrollbar__wrap {
             overflow-x: hidden !important;

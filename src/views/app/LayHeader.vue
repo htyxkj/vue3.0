@@ -153,21 +153,6 @@ export default class LayHeader extends Vue {
         if(this.taskNum >0 || this.msgNum>0)
             this.haveTask = true;
     }
-    findMenuById(menuId:string,menu:Menu):any{
-        if(menu.menuId==menuId){
-            return menu
-        }else{
-            if(menu.haveChild){
-                for(let i = 0;i<menu.childMenu.length;i++){
-                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
-                    if(m1!=null){
-                        return m1;
-                    }
-                }
-            }
-            return null;
-        }
-    }
 }
 </script>
 <style scoped>

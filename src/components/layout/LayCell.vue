@@ -4,7 +4,7 @@
             <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable"/>
         </template>
         <template v-else>
-            <lay-cell-vex-table :laycell="laycell" :cds="cds" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :beBill="beBill" :pbuid="pbuid" :env="env"></lay-cell-vex-table>
+            <lay-cell-vex-table :laycell="laycell" :cds="cds" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :beBill="beBill" :pbuid="pbuid" :env="env"></lay-cell-vex-table>
         </template>
     </div>
 </template>
@@ -74,7 +74,9 @@ export default class LayCell extends Vue{
     handleCurrentChange(value:number){
         this.$emit('handleCurrentChange',value)
     }
-
+    sortChange(orderby:string){
+        this.$emit("sortChange", orderby);
+    }
 }
 </script>
 

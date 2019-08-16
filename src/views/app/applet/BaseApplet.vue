@@ -369,6 +369,8 @@ export default class BaseApplet extends Vue{
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
             this.$bus.$emit('dataloadchange')
+            
+            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
         }else{
             this.$notify.info("没有查询到数据");
             this.$bus.$emit('dataloadchange')

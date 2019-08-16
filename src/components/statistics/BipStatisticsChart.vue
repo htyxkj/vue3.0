@@ -34,7 +34,7 @@
             </el-row>
         </div>
         <div v-if="stat.showChart && option"  class="showchart" >
-            <bip-chart style="height :400px;padding-bottom:20px;margin-bottom:20px" :option="option"></bip-chart>
+            <bip-chart :style="chartStyle" :option="option" :chartStyle="chartStyle"></bip-chart>
         </div>
         <div>
             <!-- 报表表格-->
@@ -73,6 +73,7 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() env!:CCliEnv; 
     @Prop() showBack!:boolean
     @Prop() showTable!:boolean
+    @Prop() height!:number;
     @Provide() selValue:Array<any> =[];
     @Provide() selGroup:Array<any> =[];
     @Provide() option:any = null;
@@ -80,13 +81,19 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() fullscreenLoading:boolean = false;
     @Provide() tableData:any =null;
     @Provide() title:any = null;
+    @Provide() chartStyle:string = "height :400px;";
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
 
-    mounted() {        
+    mounted() {
+        if(this.height){
+            this.chartStyle = "height :"+(this.height-50)+"px;";
+        }else{
+            this.chartStyle = "height :400px;";
+        }
         this.searchData();    
     }
 
@@ -477,5 +484,13 @@ export default class BipStatisticsDialog extends Vue {
     StatisticsWatch(){
         this.searchData(); 
     } 
+    @Watch("height")
+    chartHeightChange(){
+        if(this.height){
+            this.chartStyle = "height :"+(this.height-50)+"px;";
+        }else{
+            this.chartStyle = "height :400px;";
+        }
+    }
 }
 </script>

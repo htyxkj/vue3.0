@@ -7,7 +7,7 @@
             <vxe-table-column type="index" width="60"></vxe-table-column>
             <vxe-table-column 
               header-align="center" align="center" v-for="(cel,index) in laycell.uiCels"
-              :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow >
+              :key="index" :field="cel.id" :title="cel.labelString" show-header-overflow show-overflow >
               <template v-slot="{row,rowIndex}">
                   <bip-grid-info
                       :cds="cds"
@@ -176,21 +176,6 @@ export default class bipTask extends Vue {
                 }
             }
         }
-    }
-    findMenuById(menuId:string,menu:Menu):any{
-      if(menu.menuId==menuId){
-          return menu
-      }else{
-          if(menu.haveChild){
-              for(let i = 0;i<menu.childMenu.length;i++){
-                  let m1 = this.findMenuById(menuId,menu.childMenu[i])
-                  if(m1!=null){
-                      return m1;
-                  }
-              }
-          }
-          return null;
-      }
     }
     //修改任务已读状态
     //单据号,业务号

@@ -1,12 +1,12 @@
 <template>
-    <el-row >
+    <el-row :id="sid" style="height:100%">
         <template v-if="message">
             <div style="  text-align: center;">
                 {{message}}
             </div>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
-            <c-univ-select :uriParams="uriParams" :params="$route.params"></c-univ-select>
+            <c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight'></c-univ-select>
         </template>
     </el-row>
 </template>
@@ -28,12 +28,21 @@ let baseTool = BIPUtils.baseUtil;
 export default class HomeReport extends Vue { 
     @Prop() cont!:string;
     @Prop() rech!:string;
+    @Prop() sid!:string;
     @Provide() menuid:string = '';
     @Provide() uriParams: URIParams = new URIParams();
     @Provide() message:any = null;
+    @Provide() chartHeight:number = 400;
+    @Provide() componentsizechangeBusID:any = null;
     mounted() {   
         this.message = null;
         this.init();
+        setTimeout(() => {
+            var x:any =document.getElementById(this.sid);
+            this.chartHeight = x.clientHeight     
+        }, 200);        
+        this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.itemChange)
+        console.log(this.chartHeight)
     }
     async init(){
         let cont = JSON.parse(this.cont) 
@@ -72,24 +81,16 @@ export default class HomeReport extends Vue {
         } 
 
     }
-    findMenuById(menuId:string,menu:Menu):any{
-        if(menu.menuId==menuId){
-            return menu
-        }else{
-            if(menu.haveChild){
-                for(let i = 0;i<menu.childMenu.length;i++){
-                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
-                    if(m1!=null){
-                        return m1;
-                    }
-                }
-            }
-            return null;
-        }
-    }
     @Watch("cont")
     contChange(){
         this.init();
+    }
+    itemChange(){
+        var x:any =document.getElementById(this.sid);
+        this.chartHeight = x.clientHeight 
+    }
+    beforeDestroy(){
+        this.$bus.$off('componentsizechange',this.componentsizechangeBusID)
     }
 }
 </script>

@@ -15,7 +15,6 @@
           </grid-item>
         </template>
       </grid-layout>
-    
     </el-scrollbar>
     <el-dialog title="组件选择"  class="bipinsaid" :visible.sync="showCoList" width="40%"  :append-to-body="true" >
       <el-transfer :titles="['可选组件', '已选组件']" v-model="selection" :props="{key: 'sid',label: 'sname'}" 
@@ -52,7 +51,7 @@
         <div class="home">
           <div @click="imgMenuClikc"><i class="iconfont icon-bip-caidan"/></div>
         </div>
-    </div>
+    </div>     
   </div>
 </template>
 
@@ -87,6 +86,7 @@ let tools = BIPUtil.ServApi
   }
 })
 export default class Home extends Vue { 
+    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Provide() layout:Array<any> = [];
     @Provide() delLayout:Array<any> = [];
@@ -103,7 +103,11 @@ export default class Home extends Vue {
     @Provide() isDraggable:boolean = false;//是否可拖动位置
     @Provide() isResizable:boolean = false;//是否可改变大小
     @Provide() menuIsShow:boolean=false //右下角菜单是否显示
+    @Provide() height:number=400;
+    @Provide() cc:Array<any> = new Array<any>();
     mounted() {
+      this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
+      this.initHeight();
     }
     async created(){
       this.isDraggable = false;
@@ -418,6 +422,23 @@ export default class Home extends Vue {
       return {x, y}
     }
     /** 右下角扇形菜单 end */
+    initHeight(){
+      this.height = document.documentElement.clientHeight
+      if(this.height>70){
+          this.height=this.height-104;
+      }
+      this.setBipHeight(this.height)
+      window.onresize = () => {
+          return (() => {
+              this.height = document.documentElement.clientHeight
+              // console.log(this.height)
+              if(this.height>70){
+                  this.height=this.height-104;
+              }
+              this.setBipHeight(this.height)
+          })()
+      }
+    }
 }
 </script>
 <style lang="scss" >

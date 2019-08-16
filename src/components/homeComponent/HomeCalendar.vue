@@ -7,7 +7,11 @@
                 <el-row>&nbsp;</el-row>
                 <el-row style="width:100%" v-for="(item,index) in taskDate" :key="index">
                     <el-col :span="8">{{item.data.ddate}}</el-col>
-                    <el-col :span="16">{{item.data.sevent}}</el-col>
+                    <el-col :span="16">
+                        <span @click="taskClick(item)">
+                            {{item.data.sevent}}
+                        </span>
+                    </el-col>
                 </el-row>
             </el-row>
         </el-scrollbar>
@@ -24,7 +28,9 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
-
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
+import moment from 'moment';
 @Component({
     components:{
         Calendar
@@ -43,13 +49,22 @@ export default class HomeMenu extends Vue {
     }
     async init(){
         this.getTaskNum();
+        let vl = await tools.getServerTime();
+        let date =null;
+        if(vl.data.id ==0){
+            date = new Date(vl.data.data.data.time);
+        }else{
+            date = new Date();
+        }
+        date = moment(date).format("YYYY-MM-DD")
+        this.getTask(date);
     } 
     /**获取每天的任务数量 */
-    async getTaskNum(){
+    async getTaskNum(date:string = ''){
         let qe:QueryEntity = new QueryEntity('','');
         qe.page.currPage = 1;
         qe.page.pageSize = 50;
-        let dd = await this.getTJDate();
+        let dd = await this.getTJDate(date);
         let ddarr = dd.split("~");
         let sql = "~ddate >='"+ddarr[0]+"'  and ddate<='"+ddarr[1]+"'";
         let cc = await tools.getBipInsAidInfo("MYNOTEBK",210,qe)
@@ -90,7 +105,7 @@ export default class HomeMenu extends Vue {
       }
     }
 
-    async getTJDate(){
+    async getTJDate(dd:string){
         let vl = await tools.getServerTime();
         let date =null;
         if(vl.data.id ==0){
@@ -98,6 +113,9 @@ export default class HomeMenu extends Vue {
         }else{
             date = new Date();
         } 
+        if(dd != ''){
+            date = new Date(dd);
+        }
         let d1m = date.getMonth()+1;//当前月份
         let styear = date.getFullYear();
         let stmonth = date.getMonth()+1;
@@ -120,11 +138,44 @@ export default class HomeMenu extends Vue {
     }
 
     clickDay(data:any) {
-      console.log(data); //选中某天
       this.getTask(data);
     }
     changeDate(data:any) {
-    //   console.log(data); //左右点击切换月份
+        //   console.log(data); //左右点击切换月份
+        this.taskDate = [];
+        this.getTaskNum(data)
+    }
+
+    async taskClick(item:any){
+        let slkbuid = item.data.slkbuid,slkid=item.data.slkid;
+        if (slkid && slkbuid) { 
+            //获取业务定义
+            let param = await tools.getBULinks(slkbuid);
+            if(param.data.id ==0){
+                let opera = param.data.data.opt;
+                if (opera&&!opera.pmenuid) {
+                    this.$notify.error("业务" + slkbuid + "没有绑定菜单!"); 
+                    return false;
+                }
+                let me = baseTool.findMenu(opera.pmenuid);  
+                if (!me) {
+                    this.$notify.error( "没有" + opera.pmenuid + "菜单权限!" );
+                    return false;
+                }else{
+                    let command = me.command.split("&");
+                    let pbuid = command[0].split("=");
+                    let pmenuid = command[1].split("="); 
+                    this.$router.push({
+                        path:'/layout',
+                        name:'layout',
+                        params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
+                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                    })
+                }
+            } else{
+                this.$notify.error("没有业务：" + slkbuid ); 
+            }
+        }
     }
 }
 </script>

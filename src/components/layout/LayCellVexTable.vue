@@ -1,5 +1,6 @@
 <template>
     <div v-if="laycell" class="bip-lay">
+        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true}" style="height:35px;padding:0px"></vxe-toolbar>
         <!-- 单据录入表格-->
         <vxe-table
             :ref="this.cds.ccells.obj_id"
@@ -29,9 +30,9 @@
                 align="center"
                 v-for="(cel,index) in laycell.uiCels"
                 :key="index"
-                :prop="cel.id"
+                :field="cel.id"
                 :width="widths[index]"
-                :label="cel.labelString"
+                :title="cel.labelString"
                 show-header-overflow
                 :edit-render="{name: 'default'}"
                 show-overflow
@@ -67,7 +68,11 @@
             height="450px"
             @cell-dblclick="openrefs"
             @cell-click="table_cell_click"
-            >
+            @sort-change="sortChange"
+            remote-sort
+            :sort-config="{trigger: 'cell'}"
+            > 
+            <!-- cds.page.pageSize<cds.page.total -->
             <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
             <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
             <vxe-table-column type="index" width="60"></vxe-table-column>
@@ -76,11 +81,12 @@
                 align="center"
                 v-for="(cel,index) in laycell.uiCels"
                 :key="index"
-                :prop="cel.id"
+                :field="cel.id"
                 :width="widths[index]"
-                :label="cel.labelString"
+                :title="cel.labelString"
                 show-header-overflow
                 show-overflow
+                :sortable ="(cel.attr&0x400000)>0"
             >
                 <template v-slot="{row,rowIndex}">
                     <!-- <bip-grid-cell-info
@@ -157,6 +163,7 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Menu } from "@/classes/Menu";
 import CRecord from '../../classes/pub/CRecord';
 import { BIPUtils } from "@/utils/BaseUtil";
+import { connect } from 'echarts';
 let baseTool = BIPUtils.baseUtil;
 @Component({
     components: {  BipGridInfo }
@@ -172,7 +179,7 @@ export default class LayCelVexTable extends Vue {
     @Provide() clearable: boolean = true;
     @Provide() widths: Array<string> = new Array<string>();
     @Provide() id: string = "";
-    
+
     @Provide() removeData :Array<CRecord> =[];
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -256,6 +263,11 @@ export default class LayCelVexTable extends Vue {
         }
         this.cds.cdata.clearValues();
         this.$emit("handleCurrentChange", value);
+    }
+    /**排序发生变化 */
+    sortChange(column:any){
+        let orderby = column.prop+" "+column.order;
+        this.$emit("sortChange", orderby);
     }
     /** 
      * 字段点击进行跳转操作
@@ -355,21 +367,6 @@ export default class LayCelVexTable extends Vue {
             }
         }
     }
-    findMenuById(menuId:string,menu:Menu):any{
-        if(menu.menuId==menuId){
-            return menu
-        }else{
-            if(menu.haveChild){
-                for(let i = 0;i<menu.childMenu.length;i++){
-                    let m1 = this.findMenuById(menuId,menu.childMenu[i])
-                    if(m1!=null){
-                        return m1;
-                    }
-                }
-            }
-            return null;
-        }
-    }
 
     table_cell_click(data:any,event:any){ 
         this.cds.index = data.rowIndex;
@@ -427,13 +424,11 @@ export default class LayCelVexTable extends Vue {
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 if(this.cds.currRecord){
-                    cc.clearCurrentRow()
-                    if(cc.selectRow == null){
+                    setTimeout(() => {
+                        cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
-                    }
-                    if(cc.selectRow.id != this.cds.currRecord.id){
-                        cc.setCurrentRow(this.cds.currRecord);
-                    }
+                        console.log(this.cds.currRecord)
+                    }, 200);
                 }
             }
         }

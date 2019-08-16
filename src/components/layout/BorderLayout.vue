@@ -6,7 +6,7 @@
         </el-card>
         <el-card v-else style="height:100% ; margin-bottom:10px;">
             <!-- <el-row class="bip-row" :gutter="10"> -->
-                <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" ></lay-cell>
             <!-- </el-row> -->
         </el-card>
     </template>
@@ -18,7 +18,7 @@
                         <base-layout :layout="laycfg[3].comp" :env="env"></base-layout >
                     </el-card>
                     <el-card v-else>
-                        <lay-cell :laycell="laycfg[3].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                        <lay-cell :laycell="laycfg[3].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" ></lay-cell>
                     </el-card>
                 </el-col>
             </template>
@@ -27,7 +27,7 @@
                     <base-layout :layout="laycfg[wcenterIndex].comp" :env="env"></base-layout >
                 </el-card>
                 <el-card v-else style="height:100% ; margin-bottom:10px;">
-                    <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell></el-col>
+                    <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" ></lay-cell></el-col>
                 </el-card>
             </template>
             <template v-if="bright">
@@ -36,7 +36,7 @@
                         <base-layout :layout="laycfg[4].comp" :env="env"></base-layout >
                     </el-card>
                     <el-card v-else >
-                        <lay-cell :laycell="laycfg[4].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                        <lay-cell :laycell="laycfg[4].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" ></lay-cell>
                     </el-card>
                 </el-col>
             </template>
@@ -48,7 +48,7 @@
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env"></bip-comm-lay >
             </el-card>
             <el-card v-else style="height:100% ; margin-bottom:10px;">
-                <lay-cell :laycell="laycfg[2].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                <lay-cell :laycell="laycfg[2].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" ></lay-cell>
             </el-card>
             
         <!-- </el-row> -->
@@ -126,7 +126,9 @@ export default class BorderLayout extends Vue{
     handleCurrentChange(value:number){
         this.$emit('handleCurrentChange',value)
     }
-
+    sortChange(orderby:string){
+        this.$emit("sortChange", orderby);
+    }
 
 
 }

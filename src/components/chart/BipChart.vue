@@ -1,5 +1,5 @@
 <template>
-    <div ref="chart" style="width: 100%;height:100%;backgroundColor:#ffffff"></div>
+    <div ref="chart" :style="chartStyle" class="chart"></div>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
@@ -8,6 +8,7 @@ import echarts from 'echarts';
 export default class BipStatisticsDialog extends Vue {
     @Prop() stat!:any; 
     @Prop() option!:any;
+    @Prop() chartStyle!:string;
     @Provide() myChart:any = null;
     @Provide() componentsizechangeBusID:any = null;
     mounted() {  
@@ -22,6 +23,10 @@ export default class BipStatisticsDialog extends Vue {
         }
         this.myChart.setOption(this.option);  
     }
+    @Watch("chartStyle")
+    styleChange(){
+        this.sizeChange();
+    }
     sizeChange(){
         this.myChart.resize();
     }
@@ -30,3 +35,9 @@ export default class BipStatisticsDialog extends Vue {
     }
 }
 </script>
+<style scoped>
+.chart{
+    background-color:#ffffff;
+    width: 100%;
+}
+</style>

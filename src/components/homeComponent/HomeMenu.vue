@@ -176,7 +176,7 @@ export default class HomeMenu extends Vue {
         height: 95% !important;
         z-index: 1;
         overflow: hidden;  
-        width: calc(100% - 3px) !important;
+        width: calc(100% - 7px) !important;
         .el-scrollbar {
             height: 100%;
             margin-bottom: 10px !important;
