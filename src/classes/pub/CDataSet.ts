@@ -334,6 +334,9 @@ export default class CDataSet {
   initModal(isNew: boolean): CRecord {
     // let user = JSON.parse(window.sessionStorage.getItem('user')+'')
     // let deptInfo = user.deptInfo
+    if(this.ccells==null)
+        return new CRecord();
+    // console.log(this.ccells,'fdsfds')
     let xinc = this.ccells.autoInc;
     if (xinc > 0) xinc = xinc - 1;
     let cel = this.ccells.cels[xinc];
