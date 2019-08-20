@@ -383,6 +383,10 @@ export default class LayCelVexTable extends Vue {
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         this.$bus.$emit("row_click",value);
     }
+    /**current 发送变化  键盘事件 暂未用到 */
+    current_change(data:any,event:any){ 
+        this.table_cell_click(data,event)
+    }
 
     selectAllEvent ({ selection,checked }:any) {
         this.removeData = selection;
@@ -565,8 +569,11 @@ export default class LayCelVexTable extends Vue {
             }
             var arr = Object.keys(this.sum_id);
                 if(arr.length ==0){ 
-                    this.sum_id =null;
-                    return;
+                    this.sum_id ={};
+                    obj.columns.map((column:any, columnIndex:any) => { 
+                    return null
+                });
+                return [];
                 }
             }
 

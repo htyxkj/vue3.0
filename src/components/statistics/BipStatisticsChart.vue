@@ -1,34 +1,34 @@
 <template> 
+<div class="bipchart">
     <el-row v-loading.fullscreen.lock="fullscreenLoading" class="bi-chart">
         <div class="titlebg">
             <el-row>
-                <!-- <el-col :span="2" style="text-align: left">
-                   
-                </el-col> -->
                 <el-col :span="24" >
                     <div class="charttitle">
-                        <template v-if="title">
-                            <el-row>
-                                <el-col :span="20">
-                                    <div class="charttitle-left">
-                                        <el-button v-if="showBack" icon="iconfont icon-bip-back" @click="goTable" size="mini" class="returnbak">
-                                            返回
-                                        </el-button>
-                                        <i class="iconfont icon-bip-shuju"></i>
+
+                        <el-row>
+                            <el-col :span="20">
+                                <div class="charttitle-left">
+                                    <el-button v-if="showBack" icon="iconfont icon-bip-back" @click="goTable" size="mini" class="returnbak">
+                                        返回
+                                    </el-button>
+                                    <i class="iconfont icon-bip-shuju"></i>
+                                    <template v-if="title">
                                         {{title}}  
-                                    </div>
-                                </el-col>
-                                <el-col :span="4">
-                                    <div class="charttitle-right">
-                                        <i class="iconfont icon-bip-kucun"></i> 
-                                        <span>MORE</span>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </template>
-                        <template v-else> 
-                            统计维度：{{this.getTitle()}}
-                        </template>
+                                    </template>
+                                    <template v-else> 
+                                        统计维度：{{this.getTitle()}}
+                                    </template>
+                                </div>
+                            </el-col>
+                            <el-col :span="4">
+                                <div class="charttitle-right">
+                                    <i class="iconfont icon-bip-kucun"></i> 
+                                    <span>MORE</span>
+                                </div>
+                            </el-col>
+                        </el-row>
+
                      </div>
                 </el-col>
             </el-row>
@@ -49,6 +49,7 @@
             </vxe-table>
         </div>
     </el-row>
+</div>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
@@ -141,10 +142,188 @@ export default class BipStatisticsDialog extends Vue {
     async initChartData(chartData:any){
         if(this.stat.chartTypeValue == "pie"){
             await this.makePieOpitons(chartData);
-        }else{
+        }else if ( this.stat.chartTypeValue =="barGraph"){
+            await this.makebarGraph(chartData);
+        }else if( this.stat.chartTypeValue == "pieAnnular"){
+            await this.makepieAnnular(chartData);
+        }else {
             await this.makeColumnOpitons(chartData);
         }
     }
+    // 环形图
+    async makepieAnnular(chartData:any){
+        let chartD = chartData.data.data.tjpages.celData; 
+        var id = this.selValue[0];
+        var cell:any = this.getCellById(id);
+        let labelString = cell.labelString 
+        let pie = {
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                type: 'scroll',
+                orient: 'vertical', 
+                right: 10,
+                top: 20,
+                bottom: 20,
+                // data: [], //统计轴 //["赵杜", "董奚孔萧常·伍陶", "殷闵", "姚"] 图例
+            },
+            series : [
+                {
+                    name: '值',
+                    type: 'pie',
+                    radius : ['50%', '70%'],
+                    center: ['40%', '50%'],
+                    data: [],//统计结果值 seriesData: [{name: "赵杜", value: 13525},{name: "董奚孔萧常·伍陶", value: 23335}{name: "殷闵", value: 57860}]
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        normal: {
+                            //定义一个list，然后根据所以取得不同的值，这样就实现了，
+                            color: function(params:any) {
+                                var colorList = [
+                                    "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
+                                    "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
+                                    "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                ];
+                                let cc = params.dataIndex;
+                                if(cc >colorList.length)
+                                    cc = cc -colorList.length;
+                                return colorList[cc];
+                            }
+                        }
+                    }
+                }
+            ]
+        };
+        if(labelString){
+            pie.series[0].name = labelString;
+        }
+        var data:any = [];
+        for(let i=0;i<chartD.length;i++){
+            var item = chartD[i];
+            var name = await this.getGroupFldName(item,i);
+            // let name = item[this.selGroup[0]]
+            let d1 = { name: name, value: item[this.selValue[0]] }
+            data.push(d1);
+        }
+        pie.series[0].data = data;
+        this.option = pie;
+    }
+    // 条形图
+    async makebarGraph(chartData:any){
+       let chartD = chartData.data.data.tjpages.celData; 
+        let option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    // magicType: {show: true, type: ['line', 'bar']},
+                    // restore: {show: true},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },
+            xAxis: {
+                type: 'value',
+                axisLabel: {  
+                    interval:0,  
+                    rotate:20 ,
+                   
+                }
+            },
+            grid: {
+                left: '1%',
+                right: '1%',
+                bottom: '1%',
+                top:'8%',
+                containLabel: true
+            },
+            legend: { 
+                 left: '45%',
+                 top: 5,
+            },
+            yAxis: {
+                type: 'category',
+                data: [],
+                splitLine:{
+                    show:false
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                         color:'#242287'  
+                    }
+                },
+            },
+            series : [ ]
+        };
+        let chartType = this.stat.chartTypeValue;
+        
+        var categories:any = [];
+        var series0:any = []; 
+
+        for(let i=0;i<chartD.length;i++){
+            var item = chartD[i];
+            var name = await this.getGroupFldName(item,i);
+            categories.push(name);
+            
+            this.selValue.forEach((fld, key1) => {
+            let colname = this.getFldName(fld);
+            var _idx = series0.findIndex(function(im:any) {
+                return im.name == colname;
+            });
+            if (_idx >= 0) {
+                var bb = series0[_idx];
+                bb.data[i] = item[fld];
+                series0[_idx] = bb;
+            } else {
+                var bb:any ={}
+                bb = { name: colname, data: [] ,type:'bar',
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            },
+                            normal: {
+                                //定义一个list，然后根据所以取得不同的值，这样就实现了，
+                                color: function(params:any) {
+                                    var colorList = [
+                                        "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
+                                        "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
+                                        "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                    ];
+                                    let cc = params.dataIndex;
+                                    if(cc >colorList.length)
+                                        cc = cc -colorList.length;
+                                    return colorList[cc];
+                                },
+                            }
+                        },
+                };
+                bb.data[i] = item[fld];
+                series0.push(bb);
+            }
+            });
+        }
+        option.yAxis.data = categories;
+        option.series = series0;
+        this.option = option;
+    }
+
     //饼图
     async makePieOpitons(chartData:any){  
         let chartD = chartData.data.data.tjpages.celData; 
@@ -236,8 +415,9 @@ export default class BipStatisticsDialog extends Vue {
                 data: [],
                 axisLabel: {  
                     interval:0,  
-                    rotate:20  
-                }  
+                    rotate:20 ,
+                   
+                }
             },
             grid: {
                 left: '1%',
@@ -251,7 +431,16 @@ export default class BipStatisticsDialog extends Vue {
                  top: 5,
             },
             yAxis: {
-                type: 'value'
+                type: 'value',
+                splitLine:{
+                    show:false
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                         color:'#242287'  
+                    }
+                },
             },
             series : [ ]
         };

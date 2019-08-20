@@ -129,15 +129,19 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.c_state = 4
                         this.fullscreenLoading = true
                         this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
-                            this.dsm.cdata.data.splice(this.dsm.page.index,1); 
-                            if(this.dsm.page.index >= this.dsm.cdata.data.length){
-                                this.findData(true,this.dsm.cont)
+                            if(res.data.id ==0){
+                                this.dsm.cdata.data.splice(this.dsm.page.index,1); 
+                                if(this.dsm.page.index >= this.dsm.cdata.data.length){
+                                    this.findData(true,this.dsm.cont)
+                                }else{
+                                    this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                }
+                                this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                                this.dsm.page.total--;
+                                this.setListMenuName();
                             }else{
-                                this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                this.$notify.error(res.data.message);
                             }
-                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
-                            this.dsm.page.total--;
-                            this.setListMenuName();
                         }).finally(()=>{
                             this.fullscreenLoading = false
                         })

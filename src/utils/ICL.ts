@@ -3,6 +3,8 @@ export const GlobalVariable = Object.assign({},{
     API_UPD:"/upd",
     API_ID: "apiId",
     API_ID_LOGIN: "login",
+    APIID_LOGOUT:"logout",
+    APIID_UPPWD:"uppwd",
     APIID_MPARAMS:"mparam",
     APIID_CLPARAMS:"constant",
     APIID_AIDPARAMS:"assist",

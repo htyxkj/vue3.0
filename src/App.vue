@@ -56,7 +56,7 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
 import { AxiosPromise } from 'axios'
 const namespace: string = 'login'; 
-
+import { BIPUtil } from "@/utils/Request";
 @Component({
   components: {
     Login,
@@ -132,7 +132,9 @@ export default class App extends Vue {
         this.editableTabsValue2 = activeName;
         this.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
     }
-    loginOut(){
+    async loginOut(){
+        if(this.user!=null)
+            await BIPUtil.ServApi.loginOut(this.user);
         this.editableTabs2=[];
         this.$router.push({ path: "/" });
         this.setIsLogin(false);

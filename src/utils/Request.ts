@@ -14,7 +14,20 @@ export namespace BIPUtil {
       param.pwd = tool.base64Encode(user.password);
       return this.getFromServer(param);
     }
-
+    loginOut(user: User) {
+        let param = tool.getLoginOutParmasUri();
+        param.usercode = user.userCode;
+        param.username = user.userName;
+        param.snkey =  JSON.parse(window.sessionStorage.getItem('snkey')+'');
+        return this.getFromServer(param);
+    }
+    upPwd(user:User,newPwd:string,oldPwd:string){
+        let param = tool.getUpPwdParmasUri();
+        param.usercode = user.userCode;
+        param.newPwd = tool.base64Encode(newPwd);
+        param.oldPwd = tool.base64Encode(oldPwd);
+        return this.getFromServer(param);
+    }
     getMenuParams(sbuid:string,menuid:string) {
       let param = tool.getMenuParmasURI(sbuid,menuid);
       return this.getFromServer(param);

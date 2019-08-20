@@ -3,13 +3,22 @@
          <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
                 <el-input size="small" v-model="model1" :clearable="clearable" 
-                :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input>
+                :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"
+                >
+                <el-button slot="append" icon="iconfont icon-bip-calculator" @click="calculatorClick($event)" :id="cell.id" ></el-button>
+                </el-input>
+                <template v-if="showCalculator">
+                    <div style="position: fixed;z-index: 2014;background-color: #ececec;width: 280px;" @click="stopBubble($event)">
+                        <Calculator @valueChange="valueChange" ></Calculator>
+                    </div>
+                </template>
             </el-form-item>
          </template>
          <template v-else>
              <el-input size="small" v-model="model1" :clearable="clearable" 
                 :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input>
          </template>
+        <div></div>
     </el-col>
 </template>
 <script lang="ts">
@@ -18,7 +27,10 @@ import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
-@Component({})
+import Calculator from '@/components/calculator/Calculator.vue'
+@Component({
+    components:{Calculator}
+})
 export default class BipNumberEditor extends Vue{
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
@@ -29,6 +41,8 @@ export default class BipNumberEditor extends Vue{
     @Provide() clearable:boolean = false
     @Provide() ccPoint:number = 0
     @Provide() span:number=  6
+    @Provide() showCalculator:boolean = false;
+    @Provide() datachangeBusID :number =0;
     mounted(){
         if(this.model){
             this.model1 = parseFloat(this.model+'')
@@ -42,6 +56,7 @@ export default class BipNumberEditor extends Vue{
         }else{
             this.span = 24
         }
+        this.datachangeBusID= this.$bus.$on('CalculatorClick',this.busCalculatorClick)
     }
 
     dataChange(value:string|number){
@@ -68,6 +83,37 @@ export default class BipNumberEditor extends Vue{
         if( this.model !== this.model1){
             this.model1 = parseFloat(this.model)
         }
+    }
+    valueChange(val:number){
+        this.model1 = val;
+    }
+        
+    beforeDestroy(){
+        this.$bus.$off('CalculatorClick',this.datachangeBusID)
+    }
+    calculatorClick(event:any){
+        this.$bus.$emit('CalculatorClick',this.cell.id)
+        this.showCalculator = !this.showCalculator; 
+        this.stopBubble(event);
+        let _this = this;
+        document.onclick=function(){ 
+            _this.showCalculator=false;
+        　　document.onclick=null;　 
+        }
+    }
+      //阻止冒泡函数
+    stopBubble(e:any){  
+        if(e && e.stopPropagation){
+            e.stopPropagation();  //w3c
+        }else{
+            if(window.event)
+            window.event.cancelBubble=true; //IE
+        }
+    }
+
+    busCalculatorClick(id:string){
+        if(this.cell.id != id)
+            this.showCalculator =false;
     }
 }
 </script>

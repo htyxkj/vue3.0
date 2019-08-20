@@ -22,10 +22,10 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
-import BipFileEditor from './cutil/BipFileInfo.vue'
+import BipFileInfo from './cutil/BipFileInfo.vue'
 // import { BIPUtil } from '@/utils/Request';
 @Component({
-    components:{BipFileEditor}
+    components:{BipFileInfo}
 })
 export default class BipUpDownEditor extends Vue{
   @Prop() cds!: CDataSet;

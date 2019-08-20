@@ -77,6 +77,7 @@ export default class HomeReport extends Vue {
             uri.pbds = pbds
             this.uriParams = uri;
         } else {
+            console.log(res);
             this.$notify.error("没有菜单参数！");
         } 
 

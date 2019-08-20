@@ -1,34 +1,55 @@
 <template>
-    <el-row style="margin-bottom:0px"> 
-        <el-col :span="4"> 
-            <el-row style="text-align:start;margin: 16px 0px;"> 
-                <i class="iconfont icon-bip-menu menuicon pointer" @click="showMenu"></i>
-            </el-row>
-        </el-col>
-        <el-col :span="20">
-            <el-row style="text-align:end;margin-bottom:0px" > 
-                <el-badge :value="taskNum" class="header_badge_item">
-                    <i class="el-icon-mobile pointer" @click="myTask"></i>    
-                </el-badge>
-                <el-badge :value="msgNum" class="header_badge_item">
-                    <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
-                </el-badge> 
-                <el-popover  width="160" placement="bottom-end" >
-                    <el-row style="margin: 0px;">
-                        <el-col :span="24">
-                            <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
-                            <el-row class="user_code user_padding">{{user.userCode}}</el-row>
-                            <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
-                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button">修改密码</el-button></el-row>                            
-                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
-                            <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">注销</el-button></el-row>
-                        </el-col>
-                    </el-row>  
-                    <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
-                </el-popover>
-            </el-row>
-        </el-col>
-    </el-row>
+    <div>
+        <el-row style="margin-bottom:0px"> 
+            <el-col :span="4"> 
+                <el-row style="text-align:start;margin: 16px 0px;"> 
+                    <i class="iconfont icon-bip-menu menuicon pointer" @click="showMenu"></i>
+                </el-row>
+            </el-col>
+            <el-col :span="20">
+                <el-row style="text-align:end;margin-bottom:0px" > 
+                    <el-badge :value="taskNum" class="header_badge_item">
+                        <i class="el-icon-mobile pointer" @click="myTask"></i>    
+                    </el-badge>
+                    <el-badge :value="msgNum" class="header_badge_item">
+                        <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
+                    </el-badge> 
+                    <el-popover  width="160" placement="bottom-end" >
+                        <el-row style="margin: 0px;">
+                            <el-col :span="24">
+                                <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
+                                <el-row class="user_code user_padding">{{user.userCode}}</el-row>
+                                <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
+                                <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
+                                <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
+                                <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">注销</el-button></el-row>
+                            </el-col>
+                        </el-row>  
+                        <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
+                    </el-popover>
+                </el-row>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-dialog title="修改密码" :visible.sync="uppwddia" width="35%" >
+                <el-form ref="pwdForm" :model="pwdForm" label-width="80px" :rules="rules">
+                    <el-form-item label="旧密码" prop="oldPwd" style="padding-top:20px;">
+                        <el-input type="password" v-model="pwdForm.oldPwd" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="newPwd" style="padding-top:20px;">
+                        <el-input type="password" v-model="pwdForm.newPwd" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="确认密码" prop="newPwd1" style="padding-top:20px;">
+                        <el-input type="password" v-model="pwdForm.newPwd1" autocomplete="off"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="uppwddia = false">取 消</el-button>
+                    <el-button type="primary" @click="upPwd">确 定</el-button>
+                </span>
+            </el-dialog>
+        </el-row>
+    </div>
 </template>
 <script lang="ts">
 import { User } from '@/classes/User';
@@ -50,17 +71,47 @@ export default class LayHeader extends Vue {
     @Provide() client:any = null;
     @Provide() taskNum:Number = 0;
     @Provide() msgNum:Number = 0;
+    @Provide() uppwddia:boolean = false;
+    @Provide() pwdForm:any={oldPwd:"",newPwd:"",newPwd1:"",};
+    @Provide() rules:any = null;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Prop() isLogin!:boolean;
     @State('login') profile!: LoginState 
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     async mounted() {
+        this.rules={
+            oldPwd: [
+                { required: true, message: '请填写旧密码！', trigger: 'blur' }
+            ],
+            newPwd: [
+                { required: true,validator: this.validatePass, trigger: 'blur' }
+            ], 
+            newPwd1: [
+               { required: true,validator: this.validatePass2, trigger: 'blur' }
+            ] 
+        }
         if(this.isLogin){ 
             await this.connectQ(); 
             this.getTaskMsgNum();
         } 
     }
+    validatePass = (rule:any, value:any, callback:any) => {
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        } else {
+          callback();
+        }
+      };
+    validatePass2 = (rule:any, value:any, callback:any) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.pwdForm.newPwd) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+    };
     loginOut(){
         if(this.client){
             this.client.disconnect();
@@ -152,6 +203,27 @@ export default class LayHeader extends Vue {
     upmsgNum(){
         if(this.taskNum >0 || this.msgNum>0)
             this.haveTask = true;
+    }
+    /**点击修改密码按钮 */
+    uppwdClick(){
+        this.pwdForm.oldPwd= ''
+        this.pwdForm.newPwd= ''
+        this.pwdForm.newPwd1= ''
+        this.uppwddia = true;
+    }
+    /**进行密码修改 */
+    async upPwd(){
+        if(this.user){
+            let cc = await tools.upPwd(this.user,this.pwdForm.newPwd,this.pwdForm.oldPwd);
+            if(cc.data.id ==0){
+                this.$notify.success(cc.data.message)
+                this.uppwddia = false;
+            }else{
+                this.$notify.error(cc.data.message)
+            }
+        }else{
+            this.loginOut()
+        }
     }
 }
 </script>

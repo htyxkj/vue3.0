@@ -14,6 +14,18 @@ export namespace BIPUtils {
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+    getLoginOutParmasUri() {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_LOGOUT,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID
+      });
+    }
+    getUpPwdParmasUri() {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_UPPWD,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID
+      });
+    }
 
     getMenuParmasURI(sbuid: string, menuId: string) {
       return Object.assign({

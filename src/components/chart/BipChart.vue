@@ -5,7 +5,7 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import echarts from 'echarts'; 
 @Component({})
-export default class BipStatisticsDialog extends Vue {
+export default class BipChart extends Vue {
     @Prop() stat!:any; 
     @Prop() option!:any;
     @Prop() chartStyle!:string;

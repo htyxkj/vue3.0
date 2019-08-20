@@ -222,7 +222,7 @@ export default class BipFileInfo extends Vue {
                 if(this.cds&&this.cell){
                     let record:any = this.cds.currRecord
                     if(this.fj_root_index>0){
-                        record['fj_root'] = this.upLoadDid
+                        record.data['fj_root'] = this.upLoadDid
                     }
                     let fis = ''
                     this.fileList.forEach(file => {
@@ -230,7 +230,7 @@ export default class BipFileInfo extends Vue {
                     });
                     if(fis.length>0)
                         fis = fis.substring(0,fis.length-1)
-                    record[this.cell.id] = fis   
+                    record.data[this.cell.id] = fis   
                     this.cds.setStateOrAnd(icl.R_EDITED)
                     this.$bus.$emit('cell_edit');
                 }
@@ -238,7 +238,7 @@ export default class BipFileInfo extends Vue {
                 if(this.cds&&this.cell){
                     let record:any = this.cds.currRecord
                     if(this.fj_root_index>0){
-                        record['fj_root'] = this.upLoadDid
+                        record.data['fj_root'] = this.upLoadDid
                     }
                     let fis = ''
                     this.fileList.forEach(file => {
@@ -246,7 +246,7 @@ export default class BipFileInfo extends Vue {
                     });
                     if(fis.length>0)
                         fis = fis.substring(0,fis.length-1)
-                    record[this.cell.id] = fis   
+                    record.data[this.cell.id] = fis   
                     this.cds.setStateOrAnd(icl.R_EDITED)
                     this.$bus.$emit('cell_edit');
                 }
@@ -278,7 +278,7 @@ export default class BipFileInfo extends Vue {
             }else{
                 record = this.cds.currRecord
             }
-            this.upLoadDid = record?record['fj_root']:'';
+            this.upLoadDid = record?record.data['fj_root']:'';
             if(!this.upLoadDid){
                 this.upLoadDid = ''
             }
