@@ -42,7 +42,6 @@ export default class HomeReport extends Vue {
             this.chartHeight = x.clientHeight     
         }, 200);        
         this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.itemChange)
-        console.log(this.chartHeight)
     }
     async init(){
         let cont = JSON.parse(this.cont) 

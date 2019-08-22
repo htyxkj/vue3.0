@@ -1,7 +1,6 @@
 <template>
     <el-row>
          <div class="bip-home-container">
-            <el-scrollbar wrap-class="scrollbar-wrapper">
              <div class="main-title">
                 <el-row>
                     <el-col :span="20">
@@ -13,6 +12,7 @@
                     </el-col>
                 </el-row>
              </div>
+             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <el-row :gutter="10">
                     <template v-if="menuList.length>0" >
                         <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding:10px 0">
@@ -178,7 +178,7 @@ export default class HomeMenu extends Vue {
         overflow: hidden;  
         width: calc(100% - 7px) !important;
         .el-scrollbar {
-            height: 100%;
+            height: 90%;
             margin-bottom: 10px !important;
             margin-right: 0px !important; 
             .el-scrollbar__wrap {

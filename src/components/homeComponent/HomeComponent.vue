@@ -7,7 +7,13 @@
             <home-menu :cont ="cont" :rech="rech" @menuChange="menuChange"></home-menu>
         </template>
         <template v-else-if="type == 'Calendar'">
-            <home-calendar :cont ="cont" :rech="rech" @menuChange="menuChange"></home-calendar>
+            <home-calendar :cont ="cont" :rech="rech"></home-calendar>
+        </template>
+        <template v-else-if="type == 'news'">
+            <home-news :type="type"></home-news>
+        </template>
+        <template v-else-if="type == 'bulletin'">
+            <home-news :type="type"></home-news>
         </template>
     </el-row>
 </template>
@@ -16,8 +22,9 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import HomeReport from './HomeReport.vue';
 import HomeMenu from './HomeMenu.vue';
 import HomeCalendar from './HomeCalendar.vue';
+import HomeNews from './HomeNews.vue';
 @Component({
-    components:{HomeReport,HomeMenu,HomeCalendar}
+    components:{HomeReport,HomeMenu,HomeCalendar,HomeNews}
 })
 export default class HomeComponent extends Vue { 
     @Prop() type!:string;
