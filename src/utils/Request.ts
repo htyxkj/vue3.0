@@ -14,6 +14,11 @@ export namespace BIPUtil {
       param.pwd = tool.base64Encode(user.password);
       return this.getFromServer(param);
     }
+    loginWithOutPwd(secret:string){
+        let param = tool.getLoginWithOutPwdParmasUri();
+        param.wxAppLetsSecret = secret;
+        return this.getFromServer(param);
+    }
     loginOut(user: User) {
         let param = tool.getLoginOutParmasUri();
         param.usercode = user.userCode;

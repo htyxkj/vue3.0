@@ -49,6 +49,7 @@ import { BIPUtils } from '@/utils/BaseUtil'
 import BipInsAidNew from '../../classes/BipInsAidNew';
 import CRecord from '../../classes/pub/CRecord';
 let baseTool = BIPUtils.baseUtil
+import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
     components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor}
 })
@@ -57,6 +58,7 @@ export default class BipCommEditor extends Vue{
     @Prop() cell!:Cell
     @Prop() row!:number
     @Prop() bgrid!:boolean
+    @Prop() cdsCount!:CDataSet
     @Provide() editorType:number = 0
     @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
     // @Provide() I_EDITOR_DATE = ICL.I_EDITOR_DATE
@@ -163,6 +165,17 @@ export default class BipCommEditor extends Vue{
             }
         }else{
             this.model = '';
+        }
+        if(this.model ==''){
+            let script = this.cell.script;
+            if((this.cell.attr & 0x1000)<=0){
+                if(script && script.indexOf("*")!=-1){
+                    let cc = script.split("*");
+                    let cds1  = this.cdsCount.getCdsByObjID(cc[0]);
+                    if(cds1 && cds1.currRecord && cds1.currRecord.data)
+                        this.model = cds1.currRecord.data[cc[1]]
+                } 
+            }
         }
         return this.model||''
     }

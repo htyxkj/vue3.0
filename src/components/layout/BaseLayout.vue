@@ -1,16 +1,16 @@
 <template>
 <div>
     <template v-if="layout&&layout.layType === 'B'">
-        <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></border-layout>
+        <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></border-layout>
     </template>
     <template v-else-if="layout&&layout.layType === 'T'">
-        <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></tabs-layout>
+        <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></tabs-layout>
     </template>
     <template v-else-if="layout&&layout.layType === 'H'">
-        <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></bip-horizontal-lay>
+        <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-horizontal-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'V'">
-        <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></bip-vertical-lay>
+        <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-vertical-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'U'">
         <div>自定义布局</div>
@@ -34,6 +34,7 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 export default class BaseLayout extends Vue{
     @Prop() layout?:BipLayout
     @Prop() env?:CCliEnv
+    @Prop() config?:any
     @Provide() comps:Array<BipLayConf> = []
     mounted(){
         if(this.layout)

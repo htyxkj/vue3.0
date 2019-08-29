@@ -252,7 +252,16 @@ export default class CDataSet {
                 if(_i>-1){
                     if(scstr && scstr.indexOf("=:") === 0) {
                         scstr = scstr.replace("=:", "");
-                        let vl = this.scriptProc.execute(scstr, "", col);
+                        let vl;
+                        if(scstr.indexOf("[^") != -1){
+                          if(col.pRefIds.length >0){
+                            if(this.ds_par){
+                              vl = this.ds_par.currRecord.data[col.pRefIds[0]]
+                            }
+                          }
+                        }else{
+                          vl = this.scriptProc.execute(scstr, "", col);
+                        }
                         if (vl instanceof Array) {
                             console.log('公式计算返回数组',vl)
                         } else {
@@ -289,9 +298,17 @@ export default class CDataSet {
         let scstr = col.script;
         if (scstr && scstr.indexOf("=:") === 0) {
             scstr = scstr.replace("=:", "");
-            // 公式计算
-            var vl = this.scriptProc.execute(scstr, "", col);
-  
+            // 公式计算 
+            let vl;
+            if(scstr.indexOf("[^") != -1){
+              if(col.pRefIds.length >0){
+                if(this.ds_par){
+                  vl = this.ds_par.currRecord.data[col.pRefIds[0]]
+                }
+              }
+            }else{
+              vl = this.scriptProc.execute(scstr, "", col);
+            }
             if (vl instanceof Array) {
             } else {
                 if (vl == "Invalid date") {
@@ -411,6 +428,12 @@ export default class CDataSet {
           }
         }
         modal.data[item.id] = iniVl ? iniVl : "";
+      }
+      //获取父级字段内容
+      if(item.pRefIds.length >0){
+        if(this.ds_par){
+          modal.data[item.id] = this.ds_par.currRecord.data[item.pRefIds[0]]
+        }
       }
     });
     return modal;
@@ -711,5 +734,36 @@ export default class CDataSet {
     // const _index = this.hjList.findIndex(id=>{
     //     return id == cellId
     // })
+  }
+  /**根据obj_id 获取cds */
+  getCdsByObjID(obj_id:string){
+    let cc = false;
+    let cds = null;
+    if(this.ds_par){
+      cds = this.ds_par;
+      cc=true
+    }else{
+      cds =this;
+    }
+    while(cc){
+      if(cds.ds_par){
+        cds = cds.ds_par
+      }else{
+        cc = false;
+      }
+    }
+    return this.getChildCds(cds,obj_id);
+  }
+  getChildCds(cds:CDataSet,obj_id:string){
+
+    if(cds.ccells.obj_id == obj_id){
+      return cds;
+    } 
+    for(var i =0;i<cds.ds_sub.length;i++){
+      let cd:CDataSet = this.getChildCds(cds.ds_sub[i],obj_id);
+      if(cd)
+        return cd;
+    } 
+    return new CDataSet('')
   }
 }

@@ -11,7 +11,7 @@
                                     <bip-search-cont :env="env" ></bip-search-cont>
                                 </div>
                                 <el-form @submit.native.prevent label-position="right" label-width="120px">
-                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                                 </el-form>
                             </el-scrollbar>
                         </div>
@@ -98,6 +98,8 @@ export default class CUnivSelect extends Vue {
     @Provide() handleCurrentChangeBusID:number = 0
     @Provide() initShowChar:boolean = false;
     @Provide() biType?:string;
+    @Provide() config:any={};
+
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -149,6 +151,7 @@ export default class CUnivSelect extends Vue {
     }
 
     async mounted(){
+        this.config['type']=2;
         this.biType="SEL" 
         if(this.uriParams){
             if(this.uriParams.pclass=='inetbas.cli.systool.CRptTool'){
@@ -332,6 +335,7 @@ export default class CUnivSelect extends Vue {
             cd.obj_id = retdata.obj_id;
             cd.data = retdata.data;
             cd.page = retdata.page; 
+            cd.sumData = retdata.sumData;
             let page = retdata.page; 
             this.dsm.setCData(cd)
             this.dsm.index = (page.currPage - 1) * page.pageSize;
@@ -350,8 +354,15 @@ export default class CUnivSelect extends Vue {
         }
     }
     handleSizeChange(value:number){
+
+        this.qe.pcell = this.dsm.p_cell
+        this.qe.tcell = this.dsm_cont.ccells.obj_id
         console.log('handleSizeChange',value)
-        this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        if(this.biType == "SEL")
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+        else if(this.biType == "RPT" || this.biType == "SQL"){
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        }
         this.qe.oprid = 13
         this.qe.type = 1
         this.qe.page.pageSize = value
@@ -366,9 +377,15 @@ export default class CUnivSelect extends Vue {
         }
     }
     handleCurrentChange(value:number){
+        this.qe.pcell = this.dsm.p_cell
+        this.qe.tcell = this.dsm_cont.ccells.obj_id
         console.log('handleCurrentChange',value)
         // this.$emit('handleCurrentChange',value)
-        this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        if(this.biType == "SEL")
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+        else if(this.biType == "RPT" || this.biType == "SQL"){
+            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+        }
         this.qe.oprid = 13
         this.qe.type = 1
         this.qe.page.currPage = value
@@ -470,7 +487,7 @@ export default class CUnivSelect extends Vue {
      */
     async getCRecordByPk(crd: CRecord) {
         console.log(crd)
-        if (crd.c_state == undefined || crd.c_state == 0) {
+        if (crd && (crd.c_state == undefined || crd.c_state == 0)) {
             this.qe.pcell = this.dsm.p_cell
             this.qe.tcell = this.dsm.ccells.obj_id
             this.qe.oprid = 15;

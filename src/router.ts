@@ -27,6 +27,14 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/login/Login.vue')
     },
     {
+      path: '/WxApplets',
+      name: 'WxApplets',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "about" */ './views/login/WxApplets.vue')
+    }, 
+    {
       path: '/layout',
       name: 'layout',
       // route level code-splitting

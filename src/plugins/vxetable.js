@@ -13,7 +13,9 @@ VXETable.interceptor.add('event.clear_actived', (params, event) => {
     if (event.target.className.indexOf('bip')>-1||event.target.className.indexOf('cell')>-1
     ||event.target.className.indexOf('el-button')>-1 ||event.target.className=='' 
     || event.target.className.indexOf('scrolling')>-1 || event.target.className.indexOf('el-')>-1
-    ||event.target.className=='number' ) {
+    ||event.target.className=='number'|| event.target.className.indexOf("empty")>-1 
+    ||event.target.className.indexOf("body")>-1
+    ) {
       return false
     }
   })

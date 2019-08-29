@@ -2,13 +2,13 @@
     <el-dialog :title="bipInsAid.title" class="bip-query" :visible.sync="visible" :append-to-body="true" 
     :close-on-press-escape="true" :close-on-click-modal="false">
         <!-- <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;"> -->
-            <bip-search-cont :env="env" />
+            <bip-search-cont :env="env" :cdsCount="cds"/>
             <el-form @submit.native.prevent label-position="right" label-width="120px">
-                <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" />
+                <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config" />
             </el-form>
         <!-- </el-scrollbar> -->
          <span slot="footer" class="dialog-footer">
-            <el-button size="small" @click="open(false)">取 消</el-button>
+            <el-button size="small" @click="close">取 消</el-button>
             <el-button size="small" type="primary" @click="selectOK">选中</el-button>            
             <el-button size="small" type="primary" @click="find">查找</el-button>
             <!-- <el-button size="small" type="warning" @click="findSub">选中</el-button> -->
@@ -46,7 +46,9 @@ export default class BipQueryInfo extends Vue{
     @Provide() mkey:number = 0
     @Provide() tomaps:string = ''
     @Provide() qcopyconf:QCopyConf = new QCopyConf();
+    @Provide() config:any={};
     mounted(){
+        this.config['type']=3
         this.cells = this.bipInsAid.cells
         this.contCell = this.bipInsAid.contCells
         let arrcell = []
@@ -192,6 +194,9 @@ export default class BipQueryInfo extends Vue{
     open(vis:boolean){
         this.visible = vis
     }
+    close(){
+        this.$emit('select')
+    }
 
     handleCurrentChange(curr:number){
         this.qe.page.currPage = curr
@@ -260,6 +265,12 @@ export default class BipQueryInfo extends Vue{
     }
 
     makeUIRecord(conf:QCopyConf,crd:CRecord,crd0:CRecord,cells:Cells){
+        let tr:Array<any> = conf.trans 
+        for(var i=0;i<tr.length;i++){
+            let cc = tr[i];
+            crd0.data[cc[1]] = crd.data[cc[0]]||''
+        }
+
         let fc = conf.fromCols
         let tcols = conf.toCols
         for(let i=0;i<fc.length;i++){

@@ -1,6 +1,12 @@
 <template>
     <div v-if="laycell" class="bip-lay">
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true}" style="height:35px;padding:0px"></vxe-toolbar>
+        <el-row  v-show="this.cds.cdata.sumData.length>0" style="padding-bottom: 20px;">
+            <template v-for="(item,index) in this.cds.cdata.sumData">
+                <span class="sum">{{item.labelString}}: {{item.initval}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </template>
+        </el-row>
+
+        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <!-- 单据录入表格-->
         <vxe-table
             :ref="this.cds.ccells.obj_id"
@@ -65,14 +71,13 @@
             class="vxe-table-element"
             :data.sync="cds.cdata.data"
             :optimized="true"
-            height="450px"
+            :height="height"
             @cell-dblclick="openrefs"
             @cell-click="table_cell_click"
             @sort-change="sortChange"
             remote-sort
             :sort-config="{trigger: 'cell'}"
             :span-method="rowspanMethod"
-            :footer-method="footerMethod"
             show-footer
             > 
             <!-- cds.page.pageSize<cds.page.total -->
@@ -131,7 +136,7 @@
             </el-row>
         </template>
         <template v-else>
-            <el-row style="margin-bottom:50px;">
+            <el-row style="margin-bottom:7px;">
                 <el-pagination  
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
@@ -179,7 +184,9 @@ export default class LayCelVexTable extends Vue {
     @Prop() pbuid!: string;
     @Prop() beBill!: boolean;
     @Prop() env!:CCliEnv;
+    @Prop() config?:any
 
+    @Provide() height:string = "300px";
     @Provide() info: string = "infos";
     @Provide() clearable: boolean = true;
     @Provide() widths: Array<string> = new Array<string>();
@@ -196,6 +203,13 @@ export default class LayCelVexTable extends Vue {
 
     @Provide() datachangeBusID:number=0;
     created() {
+        if(this.config){
+            if(this.config.type ==2){
+                this.height = "450px"
+            }else if(this.config.type ==3){
+                this.height = "250px"
+            }
+        }
         this.initSfix();
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
@@ -555,49 +569,12 @@ export default class LayCelVexTable extends Vue {
         }
     } 
 
-    //表尾合计
-    footerMethod(obj:any){
-        if(this.sum_id !=null){ 
-            var arr = Object.keys(this.sum_id);
-            if(arr.length ==0){
-            let cels = this.cds.ccells.cels;
-            for(var i=0 ;i<cels.length;i++){
-                let cel = cels[i];
-                if((cel.attr & 0x2000)>0){
-                this.sum_id[cel.id]=cel.id;
-                }
-            }
-            var arr = Object.keys(this.sum_id);
-                if(arr.length ==0){ 
-                    this.sum_id ={};
-                    obj.columns.map((column:any, columnIndex:any) => { 
-                    return null
-                });
-                return [];
-                }
-            }
-
-            let columns:any = obj.columns;
-            let data = obj.data
-            return [
-                columns.map((column:any, columnIndex:any) => {
-                    if (columnIndex === 0) {
-                        return '合计'
-                    }
-                    if (this.sum_id[column.property]) {
-                        let dl = []
-                        for (let index = 0; index < data.length; index++) {
-                            const element = data[index].data;
-                            dl.push(element);
-                        }
-                        return XEUtils.sum(dl, column.property)
-                    }
-                    return null
-                })
-            ]
-        }
-    }
-
 }
 </script>
-
+<style lang="scss" scoped>
+.sum{
+    padding: 10px;
+    background-color: red;
+    border-radius: 60px;
+}
+</style>

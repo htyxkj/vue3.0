@@ -1,7 +1,8 @@
 <template >
   <div id="app">
-    <template v-if="!isLogin">
-      <login></login>
+    <template v-if="!isLogin"> 
+      <login v-if="isLoginPage == 0"></login>
+      <wx-applets v-if="isLoginPage == 3" :query="query"></wx-applets>
     </template>
     <template v-else>
       <el-container> 
@@ -41,6 +42,7 @@
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import Login from "@/views/login/Login.vue";
+import WxApplets from "@/views/login/WxApplets.vue";
 import BipAside from "@/views/app/BipAside.vue";
 import LayOut from "@/views/app/LayOut.vue";
 import LayHeader from "@/views/app/LayHeader.vue";
@@ -57,12 +59,14 @@ import { LoginState } from './store/modules/login/types';
 import { AxiosPromise } from 'axios'
 const namespace: string = 'login'; 
 import { BIPUtil } from "@/utils/Request";
+import QueryEntity from './classes/search/QueryEntity';
 @Component({
   components: {
     Login,
     BipAside,
     LayOut,
-    LayHeader
+    LayHeader,
+    WxApplets
   }
 })
 export default class App extends Vue {
@@ -73,6 +77,8 @@ export default class App extends Vue {
     @Provide() dialogVisible = false;
     @Provide() menu1:string = "menu menu1";
     @Provide() menu2:string = "menu menu2";
+    @Provide() isLoginPage:number = 0;
+    @Provide() query:any=null;
     @State('login') profile!: LoginState
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
@@ -83,7 +89,6 @@ export default class App extends Vue {
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
     async mounted() {
-        // console.log('321321')
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
             BaseVariable.BaseUri = res.data.ApiUrl; 
@@ -107,7 +112,14 @@ export default class App extends Vue {
                 this.addIndex();
             }  
         }else{
-            this.$router.push({ path: "/" });
+            if (this.$route.query) {
+                this.query = this.$route.query;
+                if(this.query.isLoginPage){
+                    this.isLoginPage = parseInt(this.query.isLoginPage+'');
+                }
+            } else{
+                this.$router.push({ path: "/" });
+            }
         }
     }
     addIndex() {

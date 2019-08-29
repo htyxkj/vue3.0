@@ -4,12 +4,12 @@
             <!-- {{cfg.name}} -->
             <template v-if="!cfg.bcells">
                 <!-- {{111}} -->
-                <base-layout :layout="cfg.comp" :env="env"></base-layout >
+                <base-layout :layout="cfg.comp" :env="env" :config="config"></base-layout >
             </template>
             <template v-else>
                 <!-- {{222}} -->
                 <el-row>
-                    <lay-cell :laycell="cfg.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></lay-cell>
+                    <lay-cell :laycell="cfg.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config"></lay-cell>
                 </el-row>
             </template>
         </el-tab-pane>
@@ -27,6 +27,7 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 export default class TabsLayout extends Vue{
     @Prop() laycfg!:Array<BipLayConf>
     @Prop() env?:CCliEnv
+    @Prop() config?:any
     @Provide() activeName:string = ""
 
     handleClick(tab:any, event:EventListener){

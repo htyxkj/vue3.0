@@ -12,9 +12,10 @@
                  <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
              </el-input>
         </template>
-        <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select"></bip-query-info>
+        <template v-if="showQueryInfo">
+            <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select"></bip-query-info>
+        </template>
     </el-col>
-</template>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
@@ -42,7 +43,7 @@ export default class BipQueryEditor extends Vue{
     @Provide() clearable:boolean = true
 
     @Provide() attr:CommATTR = new CommATTR()
-
+    @Provide() showQueryInfo:boolean =false;
     mounted(){
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
@@ -55,6 +56,7 @@ export default class BipQueryEditor extends Vue{
     iconClick(){
         if(this.bipInsAid){
             if (!((this.cell.attr & 0x40) > 0)) {
+                this.showQueryInfo = true;
                 // this.dia = true;
                 setTimeout(() => {
                     let dia: any = this.$refs.queryinfo;
@@ -68,7 +70,10 @@ export default class BipQueryEditor extends Vue{
 
     select(bcl:boolean){
         let dia: any = this.$refs.queryinfo;
-        if (dia) dia.open(false);
+        if (dia){
+            dia.open(false);
+            this.showQueryInfo = false;
+        }
     }
 
     /**

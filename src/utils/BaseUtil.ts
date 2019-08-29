@@ -14,6 +14,12 @@ export namespace BIPUtils {
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+    getLoginWithOutPwdParmasUri() {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_OUTLOGIN,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID
+      });
+    }
     getLoginOutParmasUri() {
       return Object.assign({
         apiId: GlobalVariable.APIID_LOGOUT,

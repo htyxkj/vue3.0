@@ -2,21 +2,21 @@
 <el-row v-if="laycfg" :gutter="10">
     <el-col :span="lspan" v-if="laycfg.length>1" >
         <template v-if="!cfgL.bcells">
-            <base-layout :layout="cfgL.comp" :env="env"></base-layout>
+            <base-layout :layout="cfgL.comp" :env="env" :config="config"></base-layout>
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></lay-cell>
+                <lay-cell :laycell="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></lay-cell>
             </el-row>
         </template>
     </el-col>
     <el-col :span="rspan" v-if="laycfg.length>1">
         <template v-if="!cfgR.bcells">
-            <base-layout :layout="cfgR.comp" :env="env"></base-layout>
+            <base-layout :layout="cfgR.comp" :env="env" :config="config"></base-layout>
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange"></lay-cell>
+                <lay-cell :laycell="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></lay-cell>
             </el-row>
         </template>
     </el-col>
@@ -35,6 +35,7 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 export default class BipHorizontalLay extends Vue{
     @Prop() laycfg!:Array<BipLayConf>
     @Prop() env?:CCliEnv
+    @Prop() config?:any
     @Provide() cfgL!:BipLayConf
     @Provide() cfgR!:BipLayConf
     @Provide() lspan:number = 12
