@@ -15,7 +15,7 @@ body{
 }
 
 #app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    // font-family: "Avenir", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -128,7 +128,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
         background-color: #20a0ff
     }
     .el-dialog__body{
-        padding: 10px 10px !important;
+        padding: 10px 0px !important;
     }
 }
 
@@ -182,6 +182,10 @@ $--bip-comm-color:#ffffff;//f4f6fb
         .el-icon-close{
             color: black;
         }
+        .el-dialog__title{
+            color: #ffffff;
+            font-size: 16px;
+        }
     }
     .el-dialog__body{
         padding:4px 12px;
@@ -189,7 +193,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
     .el-dialog__footer{
         padding-top: 5px;
         padding-bottom: 10px;
-        text-align: center;
+        
     }
     hr{
         color:#ccc;
@@ -199,6 +203,31 @@ $--bip-comm-color:#ffffff;//f4f6fb
     }
 }
 
+// 统计方案样式
+.bip-search {
+    .el-dialog__header{
+        background-color: $--color-primary !important;
+        .el-icon-close{
+            color: black;
+        }
+        .el-dialog__title{
+            color: #ffffff;
+            font-size: 16px;
+        }
+    }
+    .el-dialog__body{
+        padding:4px 12px;
+    }
+    .el-dialog__footer{
+        padding-top: 5px;
+        padding-bottom: 10px;
+    }
+    hr{
+        color:#ccc;
+    }
+}
+
+
 /**辅助弹出框*/
 .bipinsaid {
     .el-dialog__header{
@@ -206,6 +235,13 @@ $--bip-comm-color:#ffffff;//f4f6fb
         .el-icon-close{
             color: black;
         }
+        .el-dialog__title{
+            color: #ffffff;
+            font-size: 16px;
+        }
+    }
+    .search {
+        margin: 3px 0;
     }
     .el-dialog__body{
         padding:2px 2px;
@@ -221,6 +257,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
     .el-table__body tr.current-row > td {
         background-color: #13a8a1 !important;
     }
+   
 }
 
 /**文件样式*/
@@ -330,12 +367,12 @@ $--bip-comm-color:#ffffff;//f4f6fb
 
 
  
-.bip-search{
-    .el-dialog__header{
-        background-color: #ffffff !important;
-        // 20a0ff
-    }
-}
+// .bip-search{
+//     .el-dialog__header{
+//         background-color: #ffffff !important;
+//         // 20a0ff
+//     }
+// }
 .bip-form-item {
   margin-bottom: 22px !important;
 }
@@ -353,10 +390,10 @@ $--bip-comm-color:#ffffff;//f4f6fb
         }
     .el-dialog__header {
         background-color: rgb(32, 160, 255);
-        padding-top: 8px;
+        // padding-top: 8px;
         .el-dialog__title{
             color: #ffffff;
-            font-weight:bold;
+            // font-weight:bold;
         }
     }
     .el-dialog__headerbtn {
@@ -376,9 +413,9 @@ $--bip-comm-color:#ffffff;//f4f6fb
             margin-bottom: 0px;
     }
 
-    .el-dialog__footer{
-        text-align: center
-    }
+    // .el-dialog__footer{
+    //     text-align: center
+    // }
 
     .el-dialog__body {
         padding: 15px 20px 5px;
@@ -387,7 +424,6 @@ $--bip-comm-color:#ffffff;//f4f6fb
         word-break: break-all;
     }
 }
-
 
 /**自己的scss*/
 

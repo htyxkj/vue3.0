@@ -1,41 +1,89 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span">
-        <template v-if="!bgrid">
-            <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <template v-if="condition"><!-- 报表条件 -->
-                    <el-date-picker size="small" style="width:100%"
-                        v-model="model1"
-                        type="datetimerange"
-                        :picker-options="pickerOptions"
-                        range-separator="~"
-                        :format="dateFormat"
-                        :value-format="dateFormat"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+        <template v-if="dateTime">
+            <template v-if="!bgrid">
+                <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                    <template v-if="condition"><!-- 报表条件 -->
+                        <el-date-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                            v-model="model1"
+                            type="datetimerange"
+                            :picker-options="pickerOptions"
+                            range-separator="~"
+                            :format="dateFormat"
+                            :value-format="dateFormat"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                            </el-date-picker>
+                    </template>
+                    <template v-else>
+                        <el-date-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                            v-model="model1"
+                            :type="dateType"
+                            :format="dateFormat"
+                            :value-format="dateFormat"
+                            placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                         </el-date-picker>
-                </template>
-                <template v-else>
-                    <el-date-picker size="small" style="width:100%"
-                        v-model="model1"
-                        :type="dateType"
-                        :format="dateFormat"
-                        :value-format="dateFormat"
-                        placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
-                    </el-date-picker>
-                </template>
-                
-
-            </el-form-item>
+                    </template>
+                    <template v-if="cell.desc">
+                        <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                            <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                                <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                            </el-tooltip>
+                        </span>
+                    </template>
+                </el-form-item>
+            </template>
+            <template v-else>
+                <el-date-picker size="small" style="width:100%"
+                    v-model="model1"
+                    :type="dateType"
+                    :format="dateFormat"
+                    :value-format="dateFormat"
+                    placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                </el-date-picker>
+            </template>
         </template>
         <template v-else>
-            <el-date-picker size="small" style="width:100%"
-                v-model="model1"
-                :type="dateType"
-                :format="dateFormat"
-                :value-format="dateFormat"
-                placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
-            </el-date-picker>
+            <template v-if="!bgrid">
+                <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                    <template v-if="condition"><!-- 报表条件 -->
+                        <el-time-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                            v-model="model1"
+                            :picker-options="pickerOptions"
+                            range-separator="~"
+                            :format="dateFormat"
+                            :value-format="dateFormat"
+                            start-placeholder="开始时间"
+                            end-placeholder="结束时间"
+                            placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                            </el-time-picker>
+                    </template>
+                    <template v-else>
+                        <el-time-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                            v-model="model1"
+                            :format="dateFormat"
+                            :value-format="dateFormat"
+                            placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                        </el-time-picker>
+                    </template>                    
+                    <template v-if="cell.desc">
+                        <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                            <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                                <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                            </el-tooltip>
+                        </span>
+                    </template>
+                </el-form-item>
+            </template>
+            <template v-else>
+                <el-time-picker size="small" style="width:100%"
+                    v-model="model1"
+                    :format="dateFormat"
+                    :value-format="dateFormat"
+                    placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                </el-time-picker>
+            </template>
         </template>
     </el-col>
 </template>
@@ -64,6 +112,7 @@ export default class BipDateEditor extends Vue{
     @Provide() condition:boolean = false;
     @Provide() span:number = 6
     @Provide() pickerOptions:any = null;
+    @Provide() dateTime:boolean = true;
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
         this.model1 = this.model
@@ -79,6 +128,17 @@ export default class BipDateEditor extends Vue{
             }else if(this.cell.editName == 'YM'){
                 this.dateType = 'month';
                 this.dateFormat = 'yyyyMM'
+            }else if(this.bipInsAid.bType == 'CHSMEditor'){
+                this.dateTime = false;
+                if(this.bipInsAid.id == 'HS'){
+                    this.dateFormat = 'HHmm';
+                }else if(this.bipInsAid.id == 'H_S'){
+                    this.dateFormat = 'HH:mm';
+                }else if(this.bipInsAid.id == 'H_SM'){
+                    this.dateFormat = 'HH:mmss';
+                }else if(this.bipInsAid.id == 'H_S_M'){
+                    this.dateFormat = 'HH:mm:ss';
+                }
             }
             this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         // }
@@ -141,6 +201,7 @@ export default class BipDateEditor extends Vue{
                         this.cds.setStateOrAnd(icl.R_EDITED)
                     }
                 }
+                this.cds.currRecord.c_state |= 2;
             }else{
                 this.model1 = this.model
             }

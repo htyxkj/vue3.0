@@ -2,13 +2,20 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" 
+                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" 
                         @focus="getFocus(true)"
                         @blur="getFocus(false)"
                         @change="dataChange"
                     >
                     <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
                 </el-input>
+                <template v-if="cell.desc">
+                    <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                        <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                            <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                        </el-tooltip>
+                    </span>
+                </template>
             </el-form-item>
         </template>
         <template v-else>
@@ -358,6 +365,7 @@ export default class BipInsAidEditor extends Vue{
                 // this.cds.cdata.data[this.row].c_state |=2;
                 this.cds.setStateOrAnd(ICL.R_EDITED)
                 this.cds.checkGS(this.cell);
+                this.cds.currRecord.c_state |= 2;
             }else{
                 this.model1 = this.model
             }

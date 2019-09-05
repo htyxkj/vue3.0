@@ -88,6 +88,20 @@ export default class App extends Vue {
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
+    async created(){
+        await this.$axios.get('./static/config.json').then((res:any) => { 
+            this.$axios.defaults.baseURL = res.data.ApiUrl; 
+            BaseVariable.BaseUri = res.data.ApiUrl; 
+            BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
+            BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
+            BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
+            BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
+            BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
+        }).catch((err:any) => {
+            console.log(err)
+            window.location.reload()
+        }) 
+    }
     async mounted() {
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 

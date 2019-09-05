@@ -88,7 +88,7 @@ export default class BipStatisticsDialog extends Vue {
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-
+    @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
     mounted() {
         if(this.height){
             this.chartStyle = "height :"+(this.height-50)+"px;";
@@ -506,7 +506,6 @@ export default class BipStatisticsDialog extends Vue {
                             
                 }
                 bb.data[i] = item[fld];
-                console.log(bb);
                 series0.push(bb);
             }
             });
@@ -566,36 +565,21 @@ export default class BipStatisticsDialog extends Vue {
                     rr = rr.replace("&","")
                     editName = rr;
                     rr = ICL.AID_KEY+rr;
-                    if(!this.aidValues.get(rr+"_"+code)){
-                        let vv  = window.sessionStorage.getItem(rr+"_"+code)
-                        if(!vv){
-                            let vars = {id:200,aid:editName}
-                            await this.fetchInsAid(vars);
-                            let vv  = window.sessionStorage.getItem(rr)
-                            if(vv){
-                                let vals = {key:rr,value:JSON.parse(vv)}
-                                this.setAidValue(vals)
-                            }
-                        }else{
-                            let vals = {key:rr,value:JSON.parse(vv)}
-                            this.setAidValue(vals)
-                        } 
-                    } 
                     let vl:any = await this.getAidValues(rr+"_"+code);
-                    if(vl && vl.length>0){
+                    if(vl){
                         if(vl instanceof Array)
                             vl = vl[0];
                         let ref = this.aidValues.get(rr);
                         if(vl && ref){
-                            name +=vl[ref.layCells[ref.showColsIndex[1]].id]+"-"
-                            this.tableData[j][id] = vl[ref.layCells[ref.showColsIndex[1]].id];
+                            name +=vl[ref.cells.cels[ref.showColsIndex[1]].id]+"-"
+                            this.tableData[j][id] = vl[ref.cells.cels[ref.showColsIndex[1]].id];
                         }else{
                             let vars = {id:200,aid:editName}
                             let ref1 = await this.fetchInsAid(vars); 
                             if(ref1 && ref1 != undefined){
-                                ref1 = ref1.data.data.values;
-                                name +=vl[ref1.layCells[ref1.showColsIndex[1]].id]+"-"
-                                this.tableData[j][id] = vl[ref1.layCells[ref1.showColsIndex[1]].id];
+                                ref1 = ref1.data.data.data;
+                                name +=vl[ref1.cells.cels[ref1.showColsIndex[1]].id]+"-"
+                                this.tableData[j][id] = vl[ref1.cells.cels[ref1.showColsIndex[1]].id];
                             }else{
                                 name += code;
                             }
@@ -619,7 +603,7 @@ export default class BipStatisticsDialog extends Vue {
     
     async getAidValues(key:string){
         let res = this.aidValues.get(key)
-        if(res && res.length>0){
+        if(res){
             return res;
         }
         if(!res ){
@@ -630,20 +614,30 @@ export default class BipStatisticsDialog extends Vue {
             }
         }
         if(!res || res.length ==0){
-            let karr = key.split("_");
-            return await this.fetchInsAid({ id: karr[0], value: karr[1] })
-            .then((res: any) => {
-                if (res && res.data.id === 0) { 
-                    return res.data.data.values.values;
-                } else {
-                    this.$notify.error(res.message);
-                }
-            })
-            .catch((err: any) => {
-                    
-            });
+            let karr = key.split("_"); 
+            let ref = this.aidValues.get(karr[0]+"_"+karr[1]);
+            if(!ref){
+                let vars = {id:200,aid:karr[1]}
+                ref = await this.fetchInsAid(vars); 
+                ref = ref.data.data.data
+            }
+            if(ref){
+                let cont = ref.cells.cels[0].id+"='"+karr[2]+"' "
+                let vvs = {id:karr[1],key:key,cont:cont}
+                return await this.fetchInsDataByCont(vvs).then((res: any) => {
+                    if (res && res.data.id === 0) { 
+                        return res.data.data.data.values;
+                    } else {
+                        this.$notify.error(res.data.message);
+                    }
+                })
+                .catch((err: any) => {
+                        
+                });
+            }
         }
     } 
+
     getFldName(id:any) {
         if(this.tjcell){
             var _idx = this.tjcell.cels.findIndex(function(cell:any) {

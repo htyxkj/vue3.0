@@ -1,5 +1,5 @@
 <template>
-<el-col span="24" v-if="laycfg">
+<el-col :span="24" v-if="laycfg">
     <template v-if="cfgUp">
         <template v-if="!cfgUp.bcells">
             <base-layout :layout="cfgUp.comp" :env="env" :config="config"></base-layout >
@@ -39,9 +39,11 @@ export default class BipVerticalLay extends Vue{
     @Provide() cfgUp!:BipLayConf
     @Provide() cfgDown!:BipLayConf
     mounted(){
+        
+    }
+    created(){
         this.initLayCell()
     }
-
     initLayCell(){
         if(this.laycfg){
             this.cfgUp = this.laycfg[0]

@@ -83,6 +83,11 @@ export default class BaseApplet extends Vue{
                 return 
             }
             this.dsm.createRecord();
+            if(this.dsm.ds_sub){
+                for(var i=0;i<this.dsm.ds_sub.length ;i++){
+                    this.dsm.ds_sub[i].clear();
+                }
+            }
             this.setListMenuName();
         } else if (cmd === "SAVE") {
             await this.saveData();

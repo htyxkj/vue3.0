@@ -2,7 +2,8 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" :required="cell.isReq">
-                <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="small" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
+                <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="small" 
+                :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                     <el-option
                         v-for="item in options"
                         :key="item[cels[0].id]"
@@ -10,6 +11,13 @@
                         :value="item[cels[0].id]">
                     </el-option>
                 </el-select>
+                <template v-if="cell.desc">
+                    <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                        <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                            <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                        </el-tooltip>
+                    </span>
+                </template>
             </el-form-item>
         </template>
         <template v-else>
@@ -123,6 +131,7 @@ export default class BipListEditor extends Vue{
                 }
                 this.cds.cellChange(key,str);
                 this.cds.checkGS(this.cell);
+                this.cds.currRecord.c_state |= 2;
             }else{
                 this.model1 = this.model
             }   

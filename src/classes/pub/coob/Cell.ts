@@ -27,5 +27,6 @@ export class Cell {
   refValues:any
   pRefIds:Array<string> = []
   refCellIds:Array<string> = []
+  widthIndex!:number
   constructor(){}
 }

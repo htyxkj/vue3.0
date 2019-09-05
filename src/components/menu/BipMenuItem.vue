@@ -10,15 +10,24 @@
 
             <el-submenu v-else :index="item.menuId">
                 <template slot="title" >
-                    <i class="el-icon-menu"></i>
+                    <template v-if="item.menuIcon">
+                        <img class="imgpointer" :src="uri+item.menuIcon"/>
+                    </template>
+                    <template v-else>
+                        <i class="el-icon-menu"></i>
+                    </template>
                     {{item.menuName}}
                 </template>
-
                 <template v-for="child in item.childMenu">
                     <bip-menu-item v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
                     <template v-else>
                         <el-menu-item v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  :route="'layout?'+child.command" @click="closeMenu">
-                            <i class="el-icon-location"></i>
+                            <template v-if="child.menuIcon">
+                                <img class="imgpointer" :src="uri+child.menuIcon"/>
+                            </template>
+                            <template v-else>
+                                <i class="el-icon-location"></i>
+                            </template>
                             {{child.menuName}}
                         </el-menu-item> 
                     </template>
@@ -27,7 +36,12 @@
         </template>
         <template v-else>
             <el-menu-item :key="item.menuId" :index="item.menuId" v-if="item.menuattr != 4" :route="'layout?'+item.command" @click="closeMenu">
-                <i class="el-icon-menu"></i>
+                <template v-if="item.menuIcon">
+                    <img class="imgpointer" :src="uri+item.menuIcon"/>
+                    </template>
+                <template v-else>
+                    <i class="el-icon-menu"></i>
+                </template>
                 {{item.menuName}}
             </el-menu-item>
         </template>
@@ -38,6 +52,7 @@ import { Component, Vue,Provide,Prop} from "vue-property-decorator";
 import { Menu } from '@/classes/Menu';
 import { LoginState } from '../../store/modules/login/types';
 import { State, Action, Getter, Mutation } from 'vuex-class';
+import {BaseVariable} from "@/utils/BaseICL"
 
 @Component({
 })
@@ -46,12 +61,19 @@ export default class BipMenuItem extends Vue{
     @Prop() private item!:Menu;
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
-
+    @Provide() uri:string='';
     closeMenu(){
         this.setIsOpenMenu(false);
     }
-
+    created(){
+        this.uri = BaseVariable.BaseUri+'/'
+    }
 }
 </script>
-
+<style lang="scss" scoped>
+.imgpointer{
+    width: 18px;
+    height: 18px;
+}
+</style>
 

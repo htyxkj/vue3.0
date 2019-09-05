@@ -2,15 +2,22 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
          <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input size="small" v-model="model1" :clearable="clearable" 
+                <el-input size="small" v-model="model1" :clearable="clearable" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                 :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"
                 >
-                <el-button slot="append" icon="iconfont icon-bip-calculator" @click="calculatorClick($event)" :id="cell.id" ></el-button>
+                <el-button slot="append" icon="iconfont icon-bip-calculator" :disabled="(cell.attr&0x40)>0" @click="calculatorClick($event)" :id="cell.id" ></el-button>
                 </el-input>
                 <template v-if="showCalculator">
                     <div style="position: fixed;z-index: 2014;background-color: #ececec;width: 280px;" @click="stopBubble($event)">
-                        <Calculator @valueChange="valueChange" ></Calculator>
+                        <Calculator @valueChange="valueChange"></Calculator>
                     </div>
+                </template>
+                <template v-if="cell.desc">
+                    <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                        <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                            <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                        </el-tooltip>
+                    </span>
                 </template>
             </el-form-item>
          </template>
@@ -46,6 +53,8 @@ export default class BipNumberEditor extends Vue{
     mounted(){
         if(this.model){
             this.model1 = parseFloat(this.model+'')
+            if(isNaN(this.model1))
+                this.model1 ='';
         }else{
             this.model1 = null
         }
@@ -73,15 +82,21 @@ export default class BipNumberEditor extends Vue{
                     this.cds.ds_par.setStateOrAnd(icl.R_EDITED)
                 }
                 this.cds.checkGS(this.cell);
+                this.cds.currRecord.c_state |= 2;
             }
         }else{
             this.model1 = parseFloat(this.model)
+            if(isNaN(this.model1))
+                this.model1 ='';
         }
     }
     @Watch("model")
     cdataSetRecordChange(){
+        console.log("modelChange")
         if( this.model !== this.model1){
             this.model1 = parseFloat(this.model)
+            if(isNaN(this.model1))
+                this.model1 ='';
         }
     }
     valueChange(val:number){

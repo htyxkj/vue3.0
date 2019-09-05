@@ -5,15 +5,17 @@ export class Menu{
     command:string;
     menuAttr:number;
     top: boolean;
+    menuIcon:string;
     private _childMenu:Array<Menu>=[];
 
-    constructor(menuid:string,menuname:string,command:string,menuatr:number,btop:boolean,bchild:boolean){
+    constructor(menuid:string,menuname:string,command:string,menuatr:number,btop:boolean,bchild:boolean,menuIcon:string){
         this.menuId = menuid
         this.menuName = menuname
         this.command = command
         this.menuAttr = menuatr
         this.top = btop;
         this.haveChild = bchild;
+        this.menuIcon = menuIcon;
     }
 
     public get childMenu() {

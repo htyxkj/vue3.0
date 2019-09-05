@@ -1,9 +1,9 @@
 <template>
-    <div>
-        <el-dialog class="bip-search" width="35%" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
-            <span slot="title">
+    <div >
+        <el-dialog  title="统计" class="bip-search " width="35%" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+            <!-- <span slot="title">
                 <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">统计</div>
-            </span>
+            </span> -->
             <el-row style="padding:10px 25px 0px 25px">
                 <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
                     <el-form-item class="bip-form-item" label="已保存方案">
@@ -35,18 +35,19 @@
                     </el-form-item>        
                 </el-form> 
             </el-row>
+            <hr/>
             <span slot="footer" class="dialog-footer" style="padding-top:0px">
                 <el-button @click="close" size="mini">取  消</el-button>
-                <el-button @click="searchOK" type="primary" size="mini">确  定</el-button>
                 <el-button @click="showProgram" size="mini" type="warning">保存方案</el-button>
+                <el-button @click="searchOK" type="primary" size="mini">确  定</el-button>    
             </span>
 
 
 
-            <el-dialog class="bip-search" width="45%" :visible.sync="saveProgram" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
-                <span slot="title">
+            <el-dialog title="保存方案" class="bip-search" width="45%" :visible.sync="saveProgram" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+                <!-- <span slot="title">
                     <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">保存方案</div>
-                </span> 
+                </span>  -->
                 <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
                     <el-row style="padding:10px 45px 0px 25px">
                         <el-form-item class="bip-form-item" label="方案名称" :required="true">
@@ -63,6 +64,7 @@
                         <bip-search-cont :env="programEnv"></bip-search-cont>
                     </el-row>
                 </template>
+                 <hr/>
                 <span slot="footer" class="dialog-footer" style="padding-top:0px">
                     <el-button @click="saveProgram =false" size="mini">取  消</el-button>
                     <el-button @click="saveProg" type="primary" size="mini">确  定</el-button>
@@ -221,7 +223,9 @@ export default class BipStatisticsDialog extends Vue {
             }
             this.getProgram();
             this.saveProgram = false;
-        } 
+        }else{
+            this.$notify.error("对象INSPARA不存在！")
+        }
     }
     /**
      * 查询统计方案

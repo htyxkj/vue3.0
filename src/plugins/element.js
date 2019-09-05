@@ -34,6 +34,7 @@ import {
   Form,
   FormItem,
   DatePicker,
+  TimePicker,
   Switch,
   Radio,
   Pagination,
@@ -81,6 +82,7 @@ Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Option);
 Vue.use(DatePicker);
+Vue.use(TimePicker);
 Vue.use(Switch);
 Vue.use(Radio);
 Vue.use(Pagination);

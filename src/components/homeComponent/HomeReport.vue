@@ -6,7 +6,7 @@
             </div>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
-            <c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight'></c-univ-select>
+            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight'></home-c-univ-select>
         </template>
     </el-row>
 </template>
@@ -18,12 +18,12 @@ let ICL = CommICL
 import { Menu } from "@/classes/Menu";
 import { BIPUtil } from "@/utils/Request"; 
 import { URIParams } from "@/classes/URIParams";
-import CUnivSelect from './CUnivSelect.vue'
+import HomeCUnivSelect from './HomeCUnivSelect.vue'
 let tools = BIPUtil.ServApi
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 @Component({
-    components:{CUnivSelect}
+    components:{HomeCUnivSelect}
 })
 export default class HomeReport extends Vue { 
     @Prop() cont!:string;

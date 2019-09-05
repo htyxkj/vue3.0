@@ -3,7 +3,8 @@
         <!--弹出框头部-->
         <span slot="title">
             <div class="el-dialog__title" style="padding-bottom:5px">{{Title}}</div>
-            <div @keyup.enter="searchInsAidDatas">
+        </span>
+         <div @keyup.enter="searchInsAidDatas" class="search">
                 <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >
                     <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
                         <el-option label="全局匹配" value="-1"></el-option>
@@ -11,14 +12,14 @@
                     </el-select>
                     <el-button slot="append" icon="el-icon-search" @click="searchInsAidDatas"></el-button>
                 </el-input>
-            </div>
-        </span>
+        </div>
         <el-table ref="assTable" height="250"
             :data="datas" size="mini" border stripe
             style="width: 100%" highlight-current-row 
             row-class-name="bip-assist-row" cell-class-name="bip-assist-cell"
             @current-change="selectionChange">
             <el-table-column type="index" width="40"></el-table-column>
+            <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column v-for="(item,index) in showCols" :key="index"
             :prop="item['id']"
             :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
@@ -27,7 +28,38 @@
             </template>
             </el-table-column>
         </el-table>
-            <div class="block">
+
+    <!-- <vxe-table
+      border
+      highlight-hover-row
+      class="checkbox-table"
+      ref="xTable3"
+      :row-class-name="rowClassName"
+      :data.sync="datas"
+      :select-config="{checkField: 'checked', trigger: 'row'}">
+      <vxe-table-column type="selection" width="60"></vxe-table-column>
+      <vxe-table-column field="name" title="Name"></vxe-table-column>
+      <vxe-table-column field="sex" title="Sex"></vxe-table-column>
+      <vxe-table-column field="age" title="Age"></vxe-table-column>
+      <vxe-table-column field="address" title="Address" show-overflow></vxe-table-column>
+    </vxe-table>
+
+        <vxe-table  
+            highlight-hover-row class="checkbox-table"
+            ref="assTable" :row-class-name="rowClassName" :data.sync="datas"
+            :select-config="{checkField: 'checked', trigger: 'row'}">
+            <vxe-table-column type="selection" width="40"></vxe-table-column>
+            <vxe-table-column type="index" width="40"></vxe-table-column>
+            <vxe-table-column v-for="(item,index) in showCols" :key="index"
+            :prop="item['id']"
+            :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
+            <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row[item.id]}}</span>
+            </template>
+            </vxe-table-column>
+        </vxe-table> -->
+
+        <div class="block">
             <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -41,7 +73,7 @@
         <hr />
         <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="cancel()">取 消</el-button>
-            <el-button size="small" type="info" @click="selectOK(false)">选中</el-button>
+            <el-button size="small" type="info" @click="selectOK(false)">选 中</el-button>
             <el-button size="small" type="primary" @click="selectOK(true)">选中并关闭</el-button>
         </span>
 
@@ -188,6 +220,20 @@ export default class BipPopView extends Vue{
         }
         return ""
     }
-    
+    rowClassName(row:any) {
+        console.log(row)
+        return {
+        'row-checked': row.row.checked
+        }
+    }
 }
 </script>
+<style lang="scss">
+    .assTable{
+        .vxe-table--body{
+            .vxe-body--row.row-checked {
+                background-color:#61b3d3cc ;
+            }
+        }
+    }
+</style>

@@ -19,9 +19,10 @@
     <el-dialog title="组件选择"  class="bipinsaid" :visible.sync="showCoList" width="40%"  :append-to-body="true" >
       <el-transfer :titles="['可选组件', '已选组件']" v-model="selection" :props="{key: 'sid',label: 'sname'}" 
       :data="CoList" filterable style="margin: 20px 0px 5px 26px;"></el-transfer>
+      <hr/>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showCoList = false">取 消</el-button>
-        <el-button type="primary" @click="selectionSelectOK">确 定</el-button>
+        <el-button @click="showCoList = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="selectionSelectOK" size="small">确 定</el-button>
       </span>
     </el-dialog>
 

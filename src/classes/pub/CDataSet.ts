@@ -181,7 +181,7 @@ export default class CDataSet {
           let cell = this.ccells.cels[this.i_state];
           let statestr = crd.data[cell.id];
           let state: number = parseInt(statestr);
-          if (state == 0) crd.c_state |= 2;
+          // if (state == 0) crd.c_state |= 2;
           return state == 0;
         } else {
           crd.c_state |= 2;
@@ -249,18 +249,23 @@ export default class CDataSet {
                 let _i = col.refCellIds.findIndex(item=>{
                     return item == id
                 });
+                
+                let vl;
                 if(_i>-1){
                     if(scstr && scstr.indexOf("=:") === 0) {
                         scstr = scstr.replace("=:", "");
-                        let vl;
-                        if(scstr.indexOf("[^") != -1){
-                          if(col.pRefIds.length >0){
-                            if(this.ds_par){
-                              vl = this.ds_par.currRecord.data[col.pRefIds[0]]
-                            }
+                        //获取父级字段内容
+                        if(col.pRefIds.length >0){
+                          if(this.ds_par){
+                            vl= this.ds_par.currRecord.data[col.pRefIds[0]]
                           }
-                        }else{
+                        } else{
+                          if(this.scriptProc.data.id != this.currRecord.id){
+                            this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
+                          }
                           vl = this.scriptProc.execute(scstr, "", col);
+                          if(vl.isNaN || vl == 'NaN')
+                            vl = 0;
                         }
                         if (vl instanceof Array) {
                             console.log('公式计算返回数组',vl)
@@ -283,11 +288,17 @@ export default class CDataSet {
                     if (col.initValue && (col.attr & 0x80) > 0) {
                         this.incCalc(this.ccells,this.currRecord);
                     }
+                    if((col.attr & 0x2000) >0)
+                      this.cellChange(col.id,vl);
                     this.checkGS(col)
-
+                    
                 }
             }
         })
+        for(var i=0;i<this.ds_sub.length;i++){
+          let cd = this.ds_sub[i];
+          cd.checkGSByRefId(id);
+        }
     }else{
         this.checkAllGS()
     }
@@ -300,14 +311,18 @@ export default class CDataSet {
             scstr = scstr.replace("=:", "");
             // 公式计算 
             let vl;
-            if(scstr.indexOf("[^") != -1){
-              if(col.pRefIds.length >0){
-                if(this.ds_par){
-                  vl = this.ds_par.currRecord.data[col.pRefIds[0]]
-                }
+            //获取父级字段内容
+            if(col.pRefIds.length >0){
+              if(this.ds_par){
+                vl= this.ds_par.currRecord.data[col.pRefIds[0]]
               }
-            }else{
+            } else{
+              if(this.scriptProc.data.id != this.currRecord.id){
+                this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
+              }
               vl = this.scriptProc.execute(scstr, "", col);
+              if(vl.isNaN || vl == 'NaN')
+                vl = 0;
             }
             if (vl instanceof Array) {
             } else {
@@ -340,6 +355,37 @@ export default class CDataSet {
           }
         }
       });
+  }
+
+  checkGSByRefId(id:string){
+    if(this.cdata && this.cdata.data && this.cdata.data.length>0){
+      this.ccells.cels.forEach(col => {
+        let scstr = col.script;
+        if (scstr && scstr.indexOf("=:") === 0) {
+          scstr = scstr.replace("=:", "");
+          // 公式计算 
+          let vl;
+          //获取父级字段内容
+          if(col.pRefIds.length >0){
+            if(this.ds_par){
+              if(col.pRefIds[0] == id){
+                vl= this.ds_par.currRecord.data[col.pRefIds[0]]
+                let currRecord = this.currRecord;
+                for(var j=0;j<this.cdata.data.length;j++){
+                  this.currRecord = this.cdata.data[j];
+                  this.currRecord.data[col.id] = vl;
+                  this.checkGS(col);
+                  if(this.currRecord.id == currRecord.id){
+                    currRecord = this.currRecord;
+                  }
+                }
+                this.currRecord = currRecord;
+              }
+            }
+          }
+        }  
+      });
+    }
   }
 
   getCell(id: string) {
@@ -721,11 +767,16 @@ export default class CDataSet {
       if (this.ds_par) {
         this.hjList.forEach((fld: string, index) => {
           let cds: CDataSet = this.ds_par;
+          let cel;
           let _i = cds.ccells.cels.findIndex(cell => {
+            if(cell.id == fld ){
+              cel =cell;
+            }
             return cell.id == fld;
           });
           if (_i > -1) {
             cds.currRecord.data[fld] = vvs[index];
+            cds.checkGS(cel);
           }
         });
       }

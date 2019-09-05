@@ -1,17 +1,16 @@
 <template>
     <el-dialog :title="bipInsAid.title" class="bip-query" :visible.sync="visible" :append-to-body="true" 
-    :close-on-press-escape="true" :close-on-click-modal="false">
-        <!-- <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;"> -->
+    :close-on-press-escape="true" :close-on-click-modal="false" width="60%">
             <bip-search-cont :env="env" :cdsCount="cds"/>
             <el-form @submit.native.prevent label-position="right" label-width="120px">
                 <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config" />
             </el-form>
-        <!-- </el-scrollbar> -->
+         <hr/>
          <span slot="footer" class="dialog-footer">
-            <el-button size="small" @click="close">取 消</el-button>
-            <el-button size="small" type="primary" @click="selectOK">选中</el-button>            
-            <el-button size="small" type="primary" @click="find">查找</el-button>
-            <!-- <el-button size="small" type="warning" @click="findSub">选中</el-button> -->
+            <el-button size="small" @click="close">取 消</el-button>   
+            <el-button size="small" type="info" @click="find">查 找</el-button>
+            <el-button size="small" type="primary" @click="selectOK">选中并关闭</el-button>  
+           
         </span>
     </el-dialog>
 </template>
@@ -193,6 +192,11 @@ export default class BipQueryInfo extends Vue{
 
     open(vis:boolean){
         this.visible = vis
+        if(vis){
+            setTimeout(() => {
+                this.find()
+            }, 300);
+        }
     }
     close(){
         this.$emit('select')
@@ -211,6 +215,7 @@ export default class BipQueryInfo extends Vue{
     selectOK(){
         let crd = this.dsmfrom.currRecord
         let crd0 = this.cds.currRecord
+        console.log(crd0.subs)
         crd0 = this.makeUIRecord(this.qcopyconf,crd,crd0,this.cds.ccells)
         crd0.c_state |= 2
         // console.log(this.qcopyconf)
@@ -268,7 +273,16 @@ export default class BipQueryInfo extends Vue{
         let tr:Array<any> = conf.trans 
         for(var i=0;i<tr.length;i++){
             let cc = tr[i];
-            crd0.data[cc[1]] = crd.data[cc[0]]||''
+            let ff = cc[0]
+            let tf = cc[1]
+            let cels;
+            let _i = cells.cels.findIndex(item=>{
+                if(item.id == tf)
+                    cels = item;
+                return item.id == tf
+            })
+            crd0.data[cc[1]] = crd.data[cc[0]]||'' 
+            this.cds.checkGS(cels)
         }
 
         let fc = conf.fromCols
@@ -276,11 +290,15 @@ export default class BipQueryInfo extends Vue{
         for(let i=0;i<fc.length;i++){
             let ff = fc[i]
             let tf = tcols[i]
+            let cels;
             let _i = cells.cels.findIndex(item=>{
+                if(item.id == tf)
+                    cels = item;
                 return item.id == tf
             })
             if(_i>-1){
                 crd0.data[tf] = crd.data[ff]||''
+                this.cds.checkGS(cels)
             }
         }
         return crd0

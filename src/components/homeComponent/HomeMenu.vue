@@ -18,7 +18,8 @@
                         <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding:10px 0">
                             <el-row >
                                 <el-col :span="24" class="imgcol">
-                                    <img class="img pointer" src="../../assets/48.jpg" @click="menuClick(item.menuId,item.command)"/>
+                                    <!-- <img class="img pointer" src="../../assets/48.jpg" @click="menuClick(item.menuId,item.command)"/> -->
+                                    <img class="img pointer" :src="uri+item.menuIcon" @click="menuClick(item.menuId,item.command)"/>
                                 </el-col>
                                 <el-col :span="24" class="imgcol pointer">
                                     <span @click="menuClick(item.menuId,item.command)" class="menuname">
@@ -43,9 +44,10 @@
                     <el-transfer :titles="['可选菜单', '已选菜单']" v-model="selection" :props="{key: 'menuId',label: 'menuName'}" 
                     :data="optionalMenu" filterable style="margin: 20px 0px 5px 26px;" @change="selectionChange">
                     </el-transfer>
+                    <hr/>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="showMenuList = false">取 消</el-button>
-                        <el-button type="primary" @click="selectionSelectOK">确 定</el-button>
+                        <el-button @click="showMenuList = false" size="small">取 消</el-button>
+                        <el-button type="primary" @click="selectionSelectOK" size="small">确 定</el-button>
                     </span>
                 </el-dialog>
             </el-scrollbar>
@@ -58,6 +60,8 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import { Menu } from "@/classes/Menu";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
+import {BaseVariable} from "@/utils/BaseICL"
+
 @Component({
     components:{}
 })
@@ -69,6 +73,10 @@ export default class HomeMenu extends Vue {
     @Provide() showMenuList:boolean = false;
     @Provide() selection:Array<any> = new Array<any>();
     @Provide() optionalMenu:Array<any> = new Array<any>();
+    @Provide() uri:string = '';
+    created(){
+        this.uri = BaseVariable.BaseUri+'/'
+    }
     mounted() {   
         this.init();
     }
@@ -172,6 +180,7 @@ export default class HomeMenu extends Vue {
     .bip-home-container {
         border:  1px solid #dedede;
         background-color: #ffffff;
+        box-shadow: 0 0 5px #8d8d8d;
         position: fixed; 
         height: 95% !important;
         z-index: 1;
