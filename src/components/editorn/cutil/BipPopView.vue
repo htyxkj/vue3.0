@@ -17,9 +17,11 @@
             :data="datas" size="mini" border stripe
             style="width: 100%" highlight-current-row 
             row-class-name="bip-assist-row" cell-class-name="bip-assist-cell"
-            @current-change="selectionChange">
+            @current-change="selectionChange"
+            @selection-change="handleSelectionChange"
+            >
             <el-table-column type="index" width="40"></el-table-column>
-            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column v-if="multiple" type="selection" width="55"></el-table-column>
             <el-table-column v-for="(item,index) in showCols" :key="index"
             :prop="item['id']"
             :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
@@ -28,36 +30,6 @@
             </template>
             </el-table-column>
         </el-table>
-
-    <!-- <vxe-table
-      border
-      highlight-hover-row
-      class="checkbox-table"
-      ref="xTable3"
-      :row-class-name="rowClassName"
-      :data.sync="datas"
-      :select-config="{checkField: 'checked', trigger: 'row'}">
-      <vxe-table-column type="selection" width="60"></vxe-table-column>
-      <vxe-table-column field="name" title="Name"></vxe-table-column>
-      <vxe-table-column field="sex" title="Sex"></vxe-table-column>
-      <vxe-table-column field="age" title="Age"></vxe-table-column>
-      <vxe-table-column field="address" title="Address" show-overflow></vxe-table-column>
-    </vxe-table>
-
-        <vxe-table  
-            highlight-hover-row class="checkbox-table"
-            ref="assTable" :row-class-name="rowClassName" :data.sync="datas"
-            :select-config="{checkField: 'checked', trigger: 'row'}">
-            <vxe-table-column type="selection" width="40"></vxe-table-column>
-            <vxe-table-column type="index" width="40"></vxe-table-column>
-            <vxe-table-column v-for="(item,index) in showCols" :key="index"
-            :prop="item['id']"
-            :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
-            <template slot-scope="scope">
-                <span style="margin-left: 10px">{{ scope.row[item.id]}}</span>
-            </template>
-            </vxe-table-column>
-        </vxe-table> -->
 
         <div class="block">
             <el-pagination
@@ -94,16 +66,21 @@ export default class BipPopView extends Vue{
     @Prop() cell!:Cell
     @Prop() bipInsAid!:BipInsAidNew
     @Prop() row!:number
+    @Prop() value!:string
 
     @Provide() visibles:boolean = false
     @Provide() showCols:Array<Cell> = new Array<Cell>();
     @Provide() conditionItem:string = "-1";
     @Provide() conditionValue:string = "";
-
     @Provide() datas:Array<any> = []
-
     @Provide() qe:QueryEntity = new QueryEntity("","")
-    @Provide() currSelected:any = null
+    @Provide() currSelected:any = null // 当前页选中的数据
+
+    @Provide() multiple:boolean = false;
+    @Provide() checkSelected:any = [];
+    @Provide() multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
+    @Provide() idKey:string = "usrcode"; // 标识列表数据中每一行的唯一键的名称(需要按自己的数据改一下)
+
     mounted(){
         if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels){
             this.showCols = this.bipInsAid.cells.cels.filter((item,index)=>{
@@ -117,6 +94,8 @@ export default class BipPopView extends Vue{
                 return en>-1;
                 // return item.isReq||item.isShow;
             })
+            this.idKey = this.bipInsAid.cells.cels[0].id;
+
         }
 
     }
@@ -131,6 +110,7 @@ export default class BipPopView extends Vue{
     }
 
     open(){
+        this.multiple = (this.cell.attr & 0x200000)>0
         this.visibles = true
         if(this.bipInsAid.bType === 'CGroupEditor'){
             let gfld = this.bipInsAid.sref;
@@ -146,7 +126,17 @@ export default class BipPopView extends Vue{
             if(this.datas.length==0)
                 this.searchInsAidDatas()
         }
-
+        if(this.value){
+            let cc = this.value.split(";")
+            this.multipleSelectionAll =[];
+            for(var i=0;i<cc.length;i++){
+                let k = this.idKey;
+                let kk:any = {};
+                kk[k] = cc[i];
+                this.multipleSelectionAll.push(kk)
+            }
+        }
+        this.setSelectRow();
     }
 
     close(){
@@ -180,13 +170,24 @@ export default class BipPopView extends Vue{
     }
 
     selectOK(close:boolean){
-        if(this.currSelected)
-            this.$emit('select',this.currSelected,close)
+        let cc = [];
+        if(this.multiple){
+            // let reft:any = this.$refs.assTable;
+            // if(reft){
+            //     reft.toggleRowSelection(this.currSelected, true);
+            // }
+            this.changePageCoreRecordData();            
+            cc = this.multipleSelectionAll;
+        }else{
+            cc = this.currSelected
+        }
+        if(cc)
+            this.$emit('select',cc,close)
     }
 
-    searchInsAidDatas(){
+    async searchInsAidDatas(){
         this.makeCont();
-        tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
+        await tools.getBipInsAidInfo(this.bipInsAid.id,210,this.qe).then(res=>{
             if(res.data.id==0){
                 this.datas = res.data.data.data.values
                 this.qe.page = res.data.data.data.page
@@ -197,21 +198,30 @@ export default class BipPopView extends Vue{
     }
 
     selectionChange(val:any){
-        this.currSelected = val
+        // let reft:any = this.$refs.assTable;
+        // if(reft){
+        //     reft.toggleRowSelection(val, true);
+        // }
+        this.currSelected = [];
+        this.currSelected.push(val);
     }
 
-    handleSizeChange(val:number) {
+    async handleSizeChange(val:number) {
+        this.changePageCoreRecordData();
         let totalPage = this.qe.page.total/this.qe.page.pageSize
         if(val<this.qe.page.total||this.qe.page.currPage<totalPage){
             this.qe.page.pageSize = val
-            this.searchInsAidDatas()
+            await this.searchInsAidDatas()
         }
+        this.setSelectRow();
     }
-    handleCurrentChange(val:number) {
+    async handleCurrentChange(val:number) {
+        this.changePageCoreRecordData();
         if(val!= this.qe.page.currPage){
             this.qe.page.currPage = val
-            this.searchInsAidDatas()
-        }
+            await this.searchInsAidDatas()
+        } 
+        this.setSelectRow();
     }
 
     get Title():string{
@@ -220,11 +230,100 @@ export default class BipPopView extends Vue{
         }
         return ""
     }
-    rowClassName(row:any) {
-        console.log(row)
-        return {
-        'row-checked': row.row.checked
+    
+    //清空所有选中
+    handleClearData () {				
+        this.multipleSelectionAll = []
+        this.$emit('handleChooseData', [])
+        this.visibles = false
+    }
+    //确定按钮
+    handleAddData () {				
+        this.changePageCoreRecordData();
+        if (this.multipleSelectionAll.length <= 0) {           
+            this.$message({  message: '无勾选数据！', type: 'warning' });
+                return;
+            }
+        this.$emit('handleChooseData', this.multipleSelectionAll);
+        this.visibles = false;
+    }
+    // 设置选中的方法
+    setSelectRow() {
+        if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
+            return;
         }
+        // 标识当前行的唯一键的名称
+        let idKey = this.idKey;
+        let selectAllIds:any = [];
+        let that = this;
+        this.multipleSelectionAll.forEach(row => {
+            selectAllIds.push(row[idKey]);
+        });
+        let reft:any = this.$refs.assTable;
+        if(reft){
+            reft.clearSelection();
+            for (var i = 0; i < this.datas.length; i++) {
+                if (selectAllIds.indexOf(this.datas[i][idKey]) >= 0) {
+                    // 设置选中，记住table组件需要使用ref="table"
+                    reft.toggleRowSelection(this.datas[i], true);
+                }
+            }
+        }
+    }
+    // 记忆选择核心方法
+    changePageCoreRecordData() {
+      // 标识当前行的唯一键的名称
+      let idKey = this.idKey;
+      let that = this;
+      // 如果总记忆中还没有选择的数据，那么就直接取当前页选中的数据，不需要后面一系列计算
+      if (this.multipleSelectionAll.length <= 0) {
+        this.multipleSelectionAll = this.checkSelected;
+        return;
+      }
+      // 总选择里面的key集合
+      let selectAllIds:any = [];
+      this.multipleSelectionAll.forEach(row => {
+        selectAllIds.push(row[idKey]);
+      });
+      let selectIds:any = [];
+      // 获取当前页选中的id
+      this.checkSelected.forEach((row:any) => {
+        selectIds.push(row[idKey]);
+        // 如果总选择里面不包含当前页选中的数据，那么就加入到总选择集合里
+        if (selectAllIds.indexOf(row[idKey]) < 0) {
+          that.multipleSelectionAll.push(row);
+        }
+      });
+      let noSelectIds:any = [];
+      // 得到当前页没有选中的id
+      this.datas.forEach(row => {
+        if (selectIds.indexOf(row[idKey]) < 0) {
+          noSelectIds.push(row[idKey]);
+        }
+      });
+      noSelectIds.forEach((id:any) => {
+        if (selectAllIds.indexOf(id) >= 0) {
+          for (let i = 0; i < that.multipleSelectionAll.length; i++) {
+            if (that.multipleSelectionAll[i][idKey] == id) {
+              // 如果总选择中有未被选中的，那么就删除这条
+              that.multipleSelectionAll.splice(i, 1);
+              break;
+            }
+          }
+        }
+      });
+    } 
+    handleSelectionChange(val:any) {
+      // table组件选中事件,记得加上@selection-change="handleSelectionChange"
+        this.checkSelected = val; 
+    }
+     // 得到选中的所有数据
+    getAllSelectionData() {
+      // 再执行一次记忆勾选数据匹配，目的是为了在当前页操作勾选后直接获取选中数据
+      this.changePageCoreRecordData(); 
+    }
+    rowClass(val:any){
+        // console.log(val)
     }
 }
 </script>

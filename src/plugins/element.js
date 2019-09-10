@@ -48,6 +48,7 @@ import {
   Popover,
   Progress,
   Transfer,
+  Tree,
 
 } from "element-ui";
 
@@ -96,6 +97,7 @@ Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Progress)
 Vue.use(Transfer)
+Vue.use(Tree)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

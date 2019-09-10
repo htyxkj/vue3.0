@@ -16,3 +16,7 @@ declare module 'vue-calendar-component' {
   const vue_bip_calendar: any;
   export default vue_bip_calendar;
 }
+declare module 'wangeditor' {
+  const wangeditor: any;
+  export default wangeditor;
+}

@@ -13,6 +13,9 @@
             <template v-else-if="bipInsAid.bType === 'CQueryEditor'">
                 <bip-query-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-query-editor>
             </template>
+             <template v-else-if="bipInsAid.bType === 'CTreePopEditor'">
+                <bip-tree-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-tree-editor>
+            </template>
             <template v-else>
                 <bip-ins-aid-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-ins-aid-editor>
             </template>    
@@ -23,6 +26,9 @@
             </template>
             <template v-else-if="editorType==I_EDITOR_LIST">
                 <bip-list-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-list-editor>
+            </template>
+            <template v-else-if="editorType == I_EDITOR_RTEXT">
+                <bip-rich-text-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-editor>
             </template>
             <template v-else>
                 <bip-input-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-editor>
@@ -43,6 +49,8 @@ import BipDateEditor from './BipDateEditor.vue'
 import BipFlowEditor from './BipFlowEditor.vue'
 import BipUpDownEditor from './BipUpDownEditor.vue'
 import BipQueryEditor from './BipQueryEditor.vue'
+import BipRichTextEditor from './BipRichTextEditor.vue'
+import BipTreeEditor from './BipTreeEditor.vue'
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { BIPUtils } from '@/utils/BaseUtil'
@@ -51,7 +59,7 @@ import CRecord from '../../classes/pub/CRecord';
 let baseTool = BIPUtils.baseUtil
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -61,6 +69,7 @@ export default class BipCommEditor extends Vue{
     @Prop() cdsCount!:CDataSet
     @Provide() editorType:number = 0
     @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
+    @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT
     // @Provide() I_EDITOR_DATE = ICL.I_EDITOR_DATE
     // @Provide() I_EDITOR_UPDOWN = ICL.I_EDITOR_UPDOWN
     // @Provide() I_EDITOR_SELECT = ICL.I_EDITOR_SELECT
@@ -90,6 +99,7 @@ export default class BipCommEditor extends Vue{
             }else{
                 //没有辅助，但是编辑器类型是下拉列表，需要处理参照信息
                 let type = this.cell.type;
+                console.log(this.cell.type)
                 if(this.cell.editType === 1){
                     this.editorType = this.I_EDITOR_LIST
                     let str = this.cell.refValue
@@ -102,6 +112,8 @@ export default class BipCommEditor extends Vue{
                             this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
                         }
                     }
+                }else if(this.cell.editType == 10){
+                    this.editorType = this.I_EDITOR_RTEXT
                 }else if(type>=2&&type<12){
                     let str = this.cell.refValue
                     if(str){

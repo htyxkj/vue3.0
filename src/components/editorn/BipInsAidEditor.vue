@@ -26,7 +26,7 @@
 
         <!-- <template v-if="dia"> -->
             <bip-pop-view :cell="cell" :cds="cds" :bipInsAid="bipInsAid" :row="row"
-                ref="ak" @select="selectOK"
+                ref="ak" @select="selectOK" :value="refLink.realV"
             ></bip-pop-view>
         <!-- </template> -->
 
@@ -142,27 +142,39 @@ export default class BipInsAidEditor extends Vue{
     }
 
     selectOK(val:any,close:boolean = false){
+        console.log(val);
         let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
-        // this.cds.currRecord = record;
+
         this.cds.setStateOrAnd(ICL.R_EDITED);
-        this.model1 = val[this.bipInsAid.cells.cels[0].id]
-        record.data[this.cell.id] = this.model1
-        this.setAidValue({key:this.bipInsAid.id+"_"+this.model1,value:val})
+        this.model1 = "";
+        let strval = "";
+        for(var i=0;i<val.length;i++){
+            let oneVal = val[i];
+            let key = oneVal[this.bipInsAid.cells.cels[0].id] 
+            this.model1 += key+";" 
+            this.setAidValue({key:this.bipInsAid.id+"_"+key,value:oneVal});
+            strval+=oneVal[this.bipInsAid.cells.cels[1].id]+";"
+        }
+
         if (this.mulcols) {
             this.othCols.forEach((fld, index) => {
                 let idx = this.othColsIndex[index];
                 let layC = this.bipInsAid.cells.cels[idx];
                 if (layC) {
-                    record.data[fld] = val[layC.id]||"";
+                    record.data[fld] = val[0][layC.id]||"";
                 }
             });
         }
+        if(this.model1.length>1)
+        this.model1 = this.model1.substring(0,this.model1.length-1);
+        record.data[this.cell.id] = this.model1
         if(this.refLink){
             this.refLink.realV = this.model1
-            this.refLink.showV = val[this.bipInsAid.cells.cels[1].id]
+            this.refLink.showV = strval
             this.refLink.values = []
-            this.refLink.values[0] = val
+            this.refLink.values = val
         }
+
         this.cds.currRecord = record
         this.cds.cdata.data[this.row<0?0:this.row]= record
         // this.cds.setRecordAtIndex(record,this.row<0?0:this.row)
@@ -206,9 +218,14 @@ export default class BipInsAidEditor extends Vue{
     makeShow() {
         if(!this.bcode){
             if(this.refLink.values&&this.refLink.values.length>0){
-                let vv = this.refLink.values[0];
-                if(vv){
-                    this.refLink.showV = vv[this.refLink.cells.cels[1].id]||this.refLink.realV
+                if(this.refLink.values){
+                    this.refLink.showV = ''
+                    for(var i=0;i<this.refLink.values.length;i++){
+                        let vv = this.refLink.values[i];
+                        this.refLink.showV += vv[this.refLink.cells.cels[1].id]+";"||this.refLink.realV+";"
+                    }
+                    if(this.refLink.showV.length>1)
+                    this.refLink.showV = this.refLink.showV.substring(0,this.refLink.showV.length-1)
                 }else{
                     this.refLink.showV = this.refLink.realV
                 }
@@ -226,29 +243,56 @@ export default class BipInsAidEditor extends Vue{
     }
 
     getRefValues(){
+        console.log(this.model)
         if(this.refLink&&this.refLink.id.length>0&&this.model1.length>0){
              this.refLink.values = []
             if(this.model&&this.model.length>0){
-                let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
-                let key = ICL.AID_KEY+this.linkName+"_"+this.model
-                let vrs = this.aidValues.get(key);
-                if(!vrs){
-                    let str = window.sessionStorage.getItem(key)
-                    if(!str){
-                        let vvs = {id:this.linkName,key:key,cont:cont}
-                        this.fetchInsDataByCont(vvs)
+                let vlarr = this.model.split(";")
+                let values = [];
+                for(var i=0;i<vlarr.length;i++){
+                    let val = vlarr[i]
+                    let cont = this.refLink.cells.cels[0].id+"='"+val+"' "
+                    let key = ICL.AID_KEY+this.linkName+"_"+val
+                    let vrs = this.aidValues.get(key);
+                    if(!vrs){
+                        let str = window.sessionStorage.getItem(key)
+                        if(!str){
+                            let vvs = {id:this.linkName,key:key,cont:cont}
+                            this.fetchInsDataByCont(vvs)
+                        }else{
+                            vrs = JSON.parse(str);
+                            this.setAidValue({key:key,value:vrs})
+                            values.push(vrs);
+                            this.makeShow()
+                        }
                     }else{
-                        vrs = JSON.parse(str);
-                        this.setAidValue({key:key,value:vrs})
-                        this.refLink.values = []
-                        this.refLink.values[0] = vrs
-                        this.makeShow()
+                        values.push(vrs);
                     }
-                }else{
-                    this.refLink.values = []
-                    this.refLink.values[0] = vrs
-                    this.makeShow()
+
                 }
+                this.refLink.values = []
+                this.refLink.values = values
+                this.makeShow()
+                // let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
+                // let key = ICL.AID_KEY+this.linkName+"_"+this.model
+                // let vrs = this.aidValues.get(key);
+                // if(!vrs){
+                //     let str = window.sessionStorage.getItem(key)
+                //     if(!str){
+                //         let vvs = {id:this.linkName,key:key,cont:cont}
+                //         this.fetchInsDataByCont(vvs)
+                //     }else{
+                //         vrs = JSON.parse(str);
+                //         this.setAidValue({key:key,value:vrs})
+                //         this.refLink.values = []
+                //         this.refLink.values[0] = vrs
+                //         this.makeShow()
+                //     }
+                // }else{
+                //     this.refLink.values = []
+                //     this.refLink.values[0] = vrs
+                //     this.makeShow()
+                // }
 
             }else{
                 this.refLink.realV = this.model
@@ -335,15 +379,21 @@ export default class BipInsAidEditor extends Vue{
     @Watch('aidValues')
     aidValuesChange(){
         if(this.refLink&&this.refLink.id.length>0&&this.model1){
-            let key = ICL.AID_KEY+this.linkName+"_"+this.model
-            let vvs = this.aidValues.get(key);
-            if(vvs){
-                this.refLink.realV = this.model
+            if(this.model&&this.model.length>0){
+                let vlarr = this.model.split(";")
+                var values:any = [];
+                for(var i=0;i<vlarr.length;i++){
+                    let key = ICL.AID_KEY+this.linkName+"_"+vlarr[i]
+                    let vvs = this.aidValues.get(key);
+                    if(vvs){
+                        this.refLink.realV = this.model
+                        values.push(vvs);
+                    }
+                }
                 this.refLink.values = []
-                this.refLink.values[0] = vvs
+                this.refLink.values = values
                 this.makeShow()
             }
-
         }
     }
 
