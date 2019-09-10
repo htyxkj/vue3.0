@@ -2,7 +2,7 @@
     <div v-if="laycell" class="bip-lay" style="position: relative;">
         <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0" style="padding-bottom: 20px;">
             <template v-for="(item,index) in this.cds.cdata.sumData">
-                <span class="sum">{{item.labelString}}: {{item.initval}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="sum" :key="index">{{item.labelString}}: {{item.initval}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
             </template>
         </el-row>
 
@@ -33,7 +33,7 @@
             <vxe-table-column v-if="cds.ds_par" type="selection" width="40"></vxe-table-column>
             <template v-for="(item,index) in groupCells">
                 <template v-if="item.type == ''">
-                    <vxe-table-column header-align="center" align="center"
+                    <vxe-table-column :key="index" header-align="center" align="center"
                         :field="item.cel.id" :width="widths[item.cel.widthIndex]" :title="item.cel.labelString"
                         show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.cel.attr&0x40)>0">
                         <template v-slot:edit="{row,rowIndex}">
@@ -45,7 +45,7 @@
                     </vxe-table-column>
                 </template>
                 <template v-else-if="item.type == 'g'">
-                    <vxe-table-column :title="item.name" header-align="center">
+                    <vxe-table-column :key="index" :title="item.name" header-align="center">
                         <vxe-table-column 
                             v-for="(cel,indexg) in item.cel" :key="indexg"
                             header-align="center" align="center" 
@@ -118,7 +118,7 @@
             <vxe-table-column type="index" width="60" fixed="left"></vxe-table-column>
             <template v-for="(item,index) in groupCells">
                 <template v-if="item.type == ''">
-                    <vxe-table-column header-align="center" align="center" :field="item.cel.id"
+                    <vxe-table-column :key="index" header-align="center" align="center" :field="item.cel.id"
                         :width="widths[item.cel.widthIndex]" :title="item.cel.labelString" show-header-overflow 
                         show-overflow :sortable ="(item.cel.attr&0x400000)>0" :fixed="isFixed(item.cel.widthIndex)" >
                         <template v-slot="{row,rowIndex}"> 
@@ -127,7 +127,7 @@
                     </vxe-table-column> 
                 </template>
                 <template v-else-if="item.type == 'g'">
-                    <vxe-table-column :title="item.name" header-align="center">
+                    <vxe-table-column :key="index" :title="item.name" header-align="center">
                         <vxe-table-column 
                             v-for="(cel,indexg) in item.cel" :key="indexg"
                             header-align="center" align="center" :field="cel.id"
