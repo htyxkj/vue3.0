@@ -5,10 +5,16 @@
         <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px; height:200px;">
                 <el-tree class="filter-tree" :data="data" node-key="id"
+<<<<<<< HEAD
                     :props="defaultProps" accordion :currentNodeKey="currkey" @node-click="nodeClick" :highlight-current="true"
                     :filter-node-method="filterNode" style="height:80%"
                     ref="tree">
                     </el-tree>
+=======
+                    :props="defaultProps" accordion
+                    :filter-node-method="filterNode" style="height:80%" icon-class="iconfont icon-bip-wenjianjia4"
+                    ref="tree"></el-tree>
+>>>>>>> d902b2c6af6af8f0ee3c593e9a5f3c1f5a52c41c
         </el-scrollbar>
     <!-- </div> -->
     
