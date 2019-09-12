@@ -149,6 +149,7 @@ export default class BipStatisticsDialog extends Vue {
         }else {
             await this.makeColumnOpitons(chartData);
         }
+        console.log(this.option)
     }
     // 环形图
     async makepieAnnular(chartData:any){
@@ -608,7 +609,7 @@ export default class BipStatisticsDialog extends Vue {
         }
         if(!res ){
             res = JSON.parse(window.sessionStorage.getItem(key) + "");
-            if(res && res.length>0){
+            if(res && res !=''){
                 this.setAidInfo({ key: key, value: res });
                 return res;
             }

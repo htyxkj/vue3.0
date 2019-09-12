@@ -20,7 +20,7 @@
              </el-input>
         </template>
         <template v-if="showQueryInfo">
-            <bip-tree-info ref="treeinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select"></bip-tree-info>
+            <bip-tree-info ref="treeinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select" :row="row"></bip-tree-info>
         </template>
     </el-col>
 </template>
@@ -80,10 +80,10 @@ export default class BipTreeEditor extends Vue{
         }
     }
 
-    select(bcl:boolean){
+    select(vv:string,data:any){
         let dia: any = this.$refs.treeinfo;
         if (dia){
-            dia.open(false);
+            this.model1 = vv
             this.showQueryInfo = false;
         }
     }

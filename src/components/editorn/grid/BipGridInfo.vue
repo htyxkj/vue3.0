@@ -49,7 +49,7 @@ export default class BipGridInfo extends Vue{
         
         this.cellEdit()
         this.eventId = this.$bus.$on('cell_edit',this.cellEdit)
-         this.eventId1 = this.$bus.$on('datachange',this.dataloadchange)
+        this.eventId1 = this.$bus.$on('datachange',this.dataloadchange)
         //获取关联】参照的CellId
         this.getLinkedName(this.cell)
     }

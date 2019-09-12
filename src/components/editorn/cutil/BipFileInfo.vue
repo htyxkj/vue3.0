@@ -266,6 +266,7 @@ export default class BipFileInfo extends Vue {
         let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');
         let fjroot = this.upLoadDid
         let updid =  '36';
+        snkey = encodeURIComponent(snkey);
         window.open(this.uri+'?snkey='+snkey+'&fjroot='+fjroot+'&updid='+updid+'&fjname='+name);
     }
 

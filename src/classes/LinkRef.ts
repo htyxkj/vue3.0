@@ -37,23 +37,6 @@ export default class LinkRef{
         }
     }
 
-    // async initRef(){
-    //     if(this.refId.length>1){
-    //         let res = await tool.getRefById(this.refId,this.realV)
-    //         if(res&&res.data.id==0){
-    //             let r = res.data.data.values
-    //             this.layCells = r.layCells
-    //             this.title = r.title
-    //             this.initOK = true
-    //             if(this.bCL){
-    //                 this.values = r.values
-    //             }
-    //         }else{
-    //             this.initOK = false
-    //         }
-    //     }
-    // }
-
     makeSearchCont(){
         let cont = ''
         if(this.multiple){

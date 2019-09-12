@@ -6,26 +6,45 @@ import BipInsAidNew from '@/classes/BipInsAidNew';
 import { Cells } from '@/classes/pub/coob/Cells';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { Menu } from "@/classes/Menu";
+/**
+ * @description 基础工具类，用于包装访问API参数
+ */
 export namespace BIPUtils {
   class BaseUtil {
+    /**
+     * @description 获取登录参数 只提供apiId和dbid，
+     * @returns 返回是一个object{apiId:'login',dbid:'xx'}
+     */
     getLoginParmasUri() {
       return Object.assign({
         apiId: GlobalVariable.API_ID_LOGIN,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+    /**
+     * @description 获取免密登录系统参数
+     * @returns 返回是一个object{apiId:'xxx',dbid:'xx'}
+     */
     getLoginWithOutPwdParmasUri() {
       return Object.assign({
         apiId: GlobalVariable.APIID_OUTLOGIN,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+     /**
+     * @description 获取登出系统参数
+     * @returns 返回是一个object{apiId:'xxx',dbid:'xx'}
+     */
     getLoginOutParmasUri() {
       return Object.assign({
         apiId: GlobalVariable.APIID_LOGOUT,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+    /**
+     * @description 获取更新密码参数
+     * @returns 返回是一个object{apiId:'xxx',dbid:'xx'}
+     */
     getUpPwdParmasUri() {
       return Object.assign({
         apiId: GlobalVariable.APIID_UPPWD,
@@ -33,6 +52,12 @@ export namespace BIPUtils {
       });
     }
 
+    /**
+     * @description 根据菜单号和菜单参数好获取菜单参数信息
+     * @param sbuid  菜单参数标志
+     * @param menuId  菜单号
+     * @returns 返回是一个object{apiId:'xxx',dbid:'xx',usercode:'xxx',pbuid:'xxx',pmenuid:'xxx'}
+     */
     getMenuParmasURI(sbuid: string, menuId: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_MPARAMS,
@@ -44,11 +69,20 @@ export namespace BIPUtils {
       });
     }
 
+    /**
+     * @description 获取当前登录用户
+     * @returns 返回的User
+     */
     getUser():User{
        let user = JSON.parse(window.sessionStorage.getItem("user") + "")
        return user
     }
 
+    /**
+     * @description 获取访问后台获取对象定义的参数
+     * @param cellId 对象定义标志 cellId(cellId1;cellId2)
+     * @returns 返回是一个object{}
+     */
     getCCellsURI(cellId: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_CELLPARAMS,
@@ -59,6 +93,10 @@ export namespace BIPUtils {
       });
     }
 
+    /**
+     * @description 获取保存数据的参数
+     * @returns 返回的是一个Object{xxx:xxx}
+     */
     getSaveParams() {
       return Object.assign({
         dbid: BaseVariable.COMM_FLD_VALUE_DBID,
@@ -71,16 +109,11 @@ export namespace BIPUtils {
       });
     }
 
-    getConstParams(constId: string) {
-      return Object.assign({
-        apiId: GlobalVariable.APIID_AIDPARAMS,
-        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
-        usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
-          .userCode,
-        assistid: constId
-      });
-    }
-
+    /**
+     * @description 获取查询参数信息
+     * @param qe 查询对象字符串（经过JSON.stringfy()）
+     * @returns 返回的是一个Object{xxx:xxx}
+     */
     getQueryParams(qe: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_QUERY,
@@ -90,6 +123,11 @@ export namespace BIPUtils {
         qe: qe
       });
     }
+    /**
+     * @description 获取淡出excel参数
+     * @param qe 查询条件
+     * @returns 返回的是一个Object{xxx:xxx}
+     */
     getExcelParams(qe: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_EXPDATA,
@@ -99,6 +137,12 @@ export namespace BIPUtils {
         qe: qe
       });
     }
+
+    /**
+     * @description 获取RPT查询参数
+     * @param qe 查询条件
+     * @returns 返回的是一个Object{xxx:xxx}
+     */
     getQueryRPTParams(qe: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_QUERYRPT,
@@ -109,6 +153,14 @@ export namespace BIPUtils {
       });
     }
 
+    /**
+     * @description 获取工作流取数参数
+     * @param id 205：获取主表数据id，210:子对象数据id
+     * @param buidto 目标业务号
+     * @param buidfr 来源业务好
+     * @param qe 查询条件
+     * @returns 返回的是一个Object{xxx:xxx} 
+     */
     getWorkFlowDataParams(id:number,buidto:string,buidfr:string,qe: string) {
         return Object.assign({
             apiId: GlobalVariable.APIID_WORKFLOW,
@@ -122,30 +174,11 @@ export namespace BIPUtils {
         });
     }
 
-    getAIdParams(aId: string, cons?: string, page = 1, pageSize = 20) {
-      return Object.assign({
-        apiId: GlobalVariable.APIID_AID_ASSIST_DATA,
-        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
-        usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
-          .userCode,
-        assistid: aId,
-        cont: cons ? cons : "",
-        page: page,
-        pageSize: pageSize
-      });
-    }
-
-    getRefParams(aId: string, cons?: string) {
-      return Object.assign({
-        apiId: GlobalVariable.APIID_AIDPARAMS,
-        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
-        usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
-          .userCode,
-        assistid: aId,
-        cont: cons ? cons : ""
-      });
-    }
-
+    /**
+     * @description 获取业务信息参数
+     * @param buid 业务号
+     * @returns 返回的是一个Object{xxx:xxx} 
+     */
     getBuidParams(buid: string) {
       return Object.assign({
         apiId: GlobalVariable.APIID_BUID,
@@ -156,6 +189,11 @@ export namespace BIPUtils {
       });
     }
 
+    /**
+     * @description 获取工作流信息参数
+     * @param buid 业务号
+     * @returns 返回的是一个Object{xxx:xxx} 
+     */
     getWorkFlowParams(buid: string) {
         return Object.assign({
             apiId: GlobalVariable.APIID_WORKFLOW,
@@ -166,17 +204,11 @@ export namespace BIPUtils {
         });
       }
 
-    getRefValuesParams(aId: string, cons?: string) {
-      return Object.assign({
-        apiId: GlobalVariable.APIID_AID_ASSIST_DATA,
-        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
-        usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
-          .userCode,
-        assistid: aId,
-        cont: cons ? cons : ""
-      });
-    }
-
+    /**
+     * @description 获取执行审核信息参数
+     * @param ceaParam 审核信息
+     * @param id 参数ID 33:获取下一个审批节点，34：审核通过
+     */
     getCheckInfoParam(ceaParam:any,id:number){
         let checkParasm = {
             dbid:BaseVariable.COMM_FLD_VALUE_DBID,
@@ -188,6 +220,12 @@ export namespace BIPUtils {
         return checkParasm
     }
 
+    /**
+     * @description 获取对象统计参数
+     * @param qe 查询条件
+     * @param groupfilds 分组字段
+     * @param groupdatafilds 数据字段
+     */
     getBipStatisticsParams(qe:string,groupfilds:string,groupdatafilds:string){
       return Object.assign({
         apiId: GlobalVariable.APIID_FINDSTATDATA,
@@ -230,6 +268,11 @@ export namespace BIPUtils {
       });
     }
 
+    /**
+     * @description 字符串base64编码
+     * @param str 要编码字符串
+     * @returns 返回编码后的字符串
+     */
     base64Encode(str: string) {
       var pwd = encodeURIComponent(str);
       pwd = unescape(pwd);
@@ -237,6 +280,11 @@ export namespace BIPUtils {
       return pwd;
     }
 
+    /**
+     * @description 根据对象字符串组成，获取对象ID
+     * @param str 含有对象标志Id的字符串
+     * @returns 返回对象标志Id
+     */
     getObjId(str: string): string {
       if (str.startsWith("@")) str = str.substring(1);
       let index = str.indexOf("#");
@@ -260,7 +308,14 @@ export namespace BIPUtils {
       }
       return str;
     }
-
+    /**
+     * @description 查找下一个符号
+     * @param buf 新的字符串
+     * @param cs0 要查找的字符串数组
+     * @param x0 开始位置
+     * @param x1 结束位置
+     * @param ch 要查找的符号
+     */
     nextQuote(
       buf: string,
       cs0: string[],
@@ -288,6 +343,15 @@ export namespace BIPUtils {
       }
       return [x1, buf];
     }
+
+    /**
+     * @description 查找下一个引用的位置
+     * @param cs0 要超找的字符串数组
+     * @param x0 开始位置
+     * @param x1 结束位置
+     * @param ch 要查找的字符
+     * @returns 返回下标
+     */
     nextQuote4(cs0: string[], x0: number, x1: number, ch: string): number {
       for (x0++; x0 < x1; x0++) {
         var c0 = cs0[x0];
@@ -297,6 +361,13 @@ export namespace BIPUtils {
       return x1;
     }
 
+    /**
+     * @description 查找另一半字符
+     * @param cs0 要查找的字符串数组
+     * @param x0 开始位置
+     * @param x1 结束2位置
+     * @param chL "(" "[" "{"
+     */
     nextBarcket4(cs0: string[], x0: number, x1: number, chL: string) {
       let chR = chL == "[" ? "]" : chL == "(" ? ")" : "}";
       let ct = 0;
@@ -315,7 +386,14 @@ export namespace BIPUtils {
       }
       return x1;
     }
-
+    /**
+     * @description 查找另一半字符
+     * @param buf 空或者是新的字符串
+     * @param cs0 要查找的字符串数组
+     * @param x0 开始位置
+     * @param x1 结束2位置
+     * @param chL "(" "[" "{"
+     */
     nextBarcket(
       buf: string,
       cs0: string[],
@@ -349,7 +427,13 @@ export namespace BIPUtils {
       return [x1, buf];
     }
 
-    // 两个数值做运算
+    /**
+     * 两个数值做运算
+     * @param o0 要计算的字符1
+     * @param o1 字符2
+     * @param cfh 运算符
+     * @param cpnt 小数位数
+     */
     calcTwoNumber(o0: any, o1: any, cfh: string, cpnt: number) {
       if (cfh == "+" || cfh == "-" || cfh == "*" || cfh == "/") {
         let n1 = new Number(o0).valueOf();
@@ -406,7 +490,13 @@ export namespace BIPUtils {
       return 0;
     }
 
-    //最终的两个数值运算，可以直接在接口中调用。
+    
+   /**
+    * 最终的两个数值运算，可以直接在接口中调用。
+    * @param o0 
+    * @param o1 
+    * @param ysf 
+    */
     calcTwoValue(o0: any, o1: any, ysf: string) {
       if (ysf == "+" || ysf == "|") {
         if (o0 == null) return o1;
@@ -420,11 +510,20 @@ export namespace BIPUtils {
       }
       return this.calcTwoObject(o0, o1, ysf, 0);
     }
-
+    /**
+     * 两个对象做加减乘除
+     * @param o0 对象1
+     * @param o1 对象2
+     * @param ysf 运算符
+     * @param cpnt 小数位数
+     */
     calcTwoObject(o0: any, o1: any, ysf: string, cpnt: number) {
       return this.calcTwoNumber(o0, o1, ysf, cpnt);
     }
-
+    /**
+     * 日期加
+     * @param fps 
+     */
     dateAdd(fps: Array<any>) {
       let d1 = fps[0];
       var day1 = moment(d1);
@@ -471,6 +570,13 @@ export namespace BIPUtils {
       }
     }
 
+    /**
+     * @description 字符串日期或者日期格式化
+     * @param d1 日期或者字符串
+     * @param type 类型
+     * @param format 格式 YYYY-MM-DD ..
+     * @returns 返回格式化以后的日期
+     */
     dateFormat(d1: string | Date | number, type: number,format:any): string {
       if (type == 93) {
         let n1 = moment(d1).format(GlobalVariable.DATE_FMT_ALL);
@@ -482,6 +588,12 @@ export namespace BIPUtils {
       return moment(d1).format(format);
     }
 
+    /**
+     * @description 根据字符串将对象上的0:xx,1:xx转换为统一的BipInaAid
+     * @param str 字符串
+     * @param id id
+     * @returns BipInsAidNew
+     */
     makeBipInsAidByStr(str:string,id:string):BipInsAidNew{
         let insAid = new BipInsAidNew(id);
         let cells = new Cells();
@@ -531,6 +643,11 @@ export namespace BIPUtils {
         });
       }
     
+    /**
+     * 根据菜单号查找菜单
+     * @param menuId 菜单号
+     * @returns 返回菜单或者是空
+     */
     findMenu(menuId:string){
       let menu = window.sessionStorage.getItem('menulist');
       let m1 =null;
@@ -548,6 +665,11 @@ export namespace BIPUtils {
       }
       return m1;
     }
+    /**
+     * @description 根据菜单号查找菜单
+     * @param menuId 菜单号
+     * @param menu 要查询的菜单
+     */
     findMenuById(menuId:string,menu:Menu):any{
         if(menu.menuId==menuId){
             return menu

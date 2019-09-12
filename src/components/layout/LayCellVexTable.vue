@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <!-- 单据录入表格-->
         <vxe-table
             :ref="this.cds.ccells.obj_id"
