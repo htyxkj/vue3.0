@@ -1,6 +1,6 @@
 <template>
     <div v-if="laycell" class="bip-lay" style="position: relative;">
-        <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0" style="padding-bottom: 20px;">
+        <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0 && this.cds.page.total>0" style="padding-bottom: 20px;">
             <template v-for="(item,index) in this.cds.cdata.sumData">
                 <span class="sum" :key="index">{{item.labelString}}: {{item.initval}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
             </template>
@@ -165,7 +165,7 @@
             </vxe-table-column> -->
         </vxe-table>
         <template v-if="beBill">
-            <el-row v-if="cds.ds_par">
+            <el-row >
                 <el-pagination  
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"

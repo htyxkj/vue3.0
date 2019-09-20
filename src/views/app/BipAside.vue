@@ -2,8 +2,8 @@
   <div style="width:100%">
     <el-aside width="280px" style="float:left; position: absolute;" >
       <el-row>
-        <el-col :span="24" class="menu-title" style="background-color:#20a0ff;">
-          <h5>华泰益兴科技ERP系统</h5>
+        <el-col :span="24" class="menu-title" >
+          <div>BIP配置型集成平台</div>
         </el-col>
       </el-row>
       <el-row>
@@ -47,7 +47,14 @@ export default class BipAside extends Vue {
 <style scoped>
 .menu-title{
     height:60px;
-    padding-left: 10px;
+    text-align: center;
+    color: #ffffff;
+    background-color:#20a0ff;
+}
+.menu-title div {
+  line-height: 60px;
+  font-size: 17px;
+  letter-spacing: 1.5px;
 }
 .el-row {
   margin-bottom: 20px; 

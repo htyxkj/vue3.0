@@ -89,6 +89,7 @@ export const CommICL = Object.assign({
     CELL_CHSMEditor:'CHSMEditor',
     //#endregion
     AID_KEY:'KEY_',
-    AID_KEYCL:'$KEY_'
+    AID_KEYCL:'$KEY_',
+    AID_TREE:'TREE_KEY_'
 
 });

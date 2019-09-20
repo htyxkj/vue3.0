@@ -392,6 +392,7 @@ export default class BaseApplet extends Vue{
         if ((vv.oprid == 13) || (vv.oprid == 14)) {
                 let page = cd.page;
                 this.dsm.setCData(cd);
+                this.dsm.index = page.index;
                 this.setSubData()
                 // let dc = new DataCache(page.currPage, cd);
                 // console.log(dc, "缓存数据");
@@ -648,9 +649,11 @@ export default class BaseApplet extends Vue{
         }
     }
     getCRecordByPk2(value:any){
-        if(value.dsm.ccells.obj_id == this.dsm.ccells.obj_id){
-            this.dsm.page.index = value.rowIndex
-            this.setListMenuName();
+        if(this.dsm.ccells){
+            if(value.dsm.ccells.obj_id == this.dsm.ccells.obj_id){
+                this.dsm.page.index = value.rowIndex
+                this.setListMenuName();
+            }
         }
     }
     async mounted(){
@@ -717,6 +720,7 @@ export default class BaseApplet extends Vue{
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
         }
+        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
     }
     /**
      * dlg弹出框

@@ -5,7 +5,7 @@
                 <Calendar class="homeCalendar" @choseDay="clickDay" @changeMonth="changeDate"
                     :markDateMore="markDate"></Calendar>
                 <el-row>&nbsp;</el-row>
-                <el-row style="width:100%" v-for="(item,index) in taskDate" :key="index">
+                <el-row style="width:100%;" v-for="(item,index) in taskDate" :key="index">
                     <el-col :span="8">{{item.data.ddate}}</el-col>
                     <el-col :span="16">
                         <span @click="taskClick(item)">
@@ -202,10 +202,68 @@ export default class HomeMenu extends Vue {
 }
 </style>
 <style lang="scss">
+.homeCalendar .wh_content_all {
+    background-color: #ffffff;
+    border-radius: 6px 6px 0px 0px;
+    box-shadow: 1px 2px 10px #dde2e4;
+}
 .homeCalendar {
+
     .mark1{
         background-color: red;
         border-radius: 50%;
+    }
+   
+    .wh_content_all {
+        background-color: #ffffff;
+        
+    }
+    .wh_jiantou1 {
+        width: 8px;
+        height: 8px;
+        border-top: 2px solid #4A77FA;
+        border-left: 2px solid #4A77FA;
+        transform: rotate(-45deg);
+    }
+    .wh_top_changge .wh_content_li {
+        cursor: auto;
+        flex: 2.5;
+        font-size: 14px;
+    }
+    .wh_jiantou2 {
+        width: 8px;
+        height: 8px;
+        border-top: 2px solid #4A77FA;
+        border-right: 2px solid #4A77FA;
+        transform: rotate(45deg);
+    }
+    .wh_top_changge li {
+       color: #4A77FA;
+       font-weight: 500;
+       letter-spacing: 2px;
+    }
+    .wh_content_item {
+        color: #60656A;
+    }
+    .wh_content_item .wh_isToday {
+        color: #ffffff;
+        background: #4A77FA;
+        border-radius: 100px;
+    }
+    .wh_item_date:hover {
+         color: #ffffff;
+        background: #71c7a5;
+        border-radius: 100px;
+        cursor: pointer;
+    }
+    .wh_item_date:active {
+         color: #ffffff;
+        
+    }
+    .wh_content_item .wh_chose_day{
+        color: #ffffff;
+        background: green;
+        border-radius: 100px;
     }
 }
 </style>

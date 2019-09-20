@@ -1,6 +1,6 @@
 export const GlobalVariable = Object.assign({},{
     API:"/sysapi",
-    API_UPD:"/upd",
+    API_UPD:"/sysupd",
     API_ID: "apiId",
     API_ID_LOGIN: "login",
     APIID_OUTLOGIN: "outlogin",

@@ -450,7 +450,7 @@ export default class Home extends Vue {
     z-index: 1;
     overflow: hidden;
     margin-right: 20px;
-    
+    background-color: #f8f8f8;
     .el-scrollbar {
         height: 100%;
         margin-bottom: 10px !important;

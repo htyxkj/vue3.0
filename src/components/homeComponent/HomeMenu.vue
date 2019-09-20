@@ -178,14 +178,17 @@ export default class HomeMenu extends Vue {
         font-size: 14px;
     }
     .bip-home-container {
-        border:  1px solid #dedede;
+        // border:  1px solid #dedede;
         background-color: #ffffff;
-        box-shadow: 0 0 5px #8d8d8d;
+        // box-shadow: 0 0 5px #8d8d8d;
         position: fixed; 
         height: 95% !important;
         z-index: 1;
         overflow: hidden;  
         width: calc(100% - 7px) !important;
+        color: #868D94;
+        border-radius: 6px;
+        box-shadow: 1px 2px 10px #dde2e4;
         .el-scrollbar {
             height: 90%;
             margin-bottom: 10px !important;
@@ -202,10 +205,13 @@ export default class HomeMenu extends Vue {
     }
     .main-title{
         border-bottom:  1px solid #dedede;
-        height: 30px;
-        line-height: 30px;
+        height: 40px;
+        line-height: 40px;
         font-size: 14px;
         padding: 0 10px; 
+        color: #4A77FA;
+        letter-spacing: 1px;
+        font-weight: 600;
     }
     .main-title-icon {
         font-size: 20px;

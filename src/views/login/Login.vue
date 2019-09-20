@@ -43,17 +43,14 @@ import { LoginState } from "@/store/modules/login/types";
 const namespace: string = "login";
 @Component
 export default class Login extends Vue {
-  //   @Provide() user: User = new User("", "", "");
-
   @Provide() fullscreenLoading: boolean = false;
-  //   @Provide() menus:Array<Menu> = [];
   @Getter("user", { namespace }) user?: User;
   @Getter("menulist", { namespace }) menus?: Menu[];
   @Mutation("isLogin", { namespace }) setIsLogin: any;
   @Mutation("snkey", { namespace }) setSnkey: any;
   @Mutation("user", { namespace }) setUserInfo: any;
   @Mutation("menulist", { namespace }) setMenusInfo: any;
-  // @Prop() isLogin:boolean = false;
+  
   mounted() {
     if (!this.user) {
       this.user = new User("", "", "");
@@ -64,6 +61,9 @@ export default class Login extends Vue {
   }
 
   login() {
+    if(this.fullscreenLoading)
+      return;
+    this.fullscreenLoading = true;
     const loading = this.$loading({
       lock: true,
       text: "登陆中",
@@ -95,10 +95,12 @@ export default class Login extends Vue {
           this.$notify.error(data.message);
         }
         loading.close();
+        this.fullscreenLoading = false;
       })
       .catch((res: any) => {
         this.$notify.error("服务没有启动！");
         loading.close();
+        this.fullscreenLoading = false;
       });
   }
 

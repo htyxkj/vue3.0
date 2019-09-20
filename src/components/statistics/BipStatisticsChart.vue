@@ -5,7 +5,6 @@
             <el-row>
                 <el-col :span="24" >
                     <div class="charttitle">
-
                         <el-row>
                             <el-col :span="20">
                                 <div class="charttitle-left">
@@ -149,7 +148,6 @@ export default class BipStatisticsDialog extends Vue {
         }else {
             await this.makeColumnOpitons(chartData);
         }
-        console.log(this.option)
     }
     // 环形图
     async makepieAnnular(chartData:any){
@@ -187,9 +185,7 @@ export default class BipStatisticsDialog extends Vue {
                             //定义一个list，然后根据所以取得不同的值，这样就实现了，
                             color: function(params:any) {
                                 var colorList = [
-                                    "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
-                                    "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
-                                    "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                   "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                 ];
                                 let cc = params.dataIndex;
                                 if(cc >colorList.length)
@@ -265,7 +261,7 @@ export default class BipStatisticsDialog extends Vue {
                 axisLabel: {
                     show: true,
                     textStyle: {
-                         color:'#242287'  
+                         color:'#333333'  
                     }
                 },
             },
@@ -303,9 +299,7 @@ export default class BipStatisticsDialog extends Vue {
                                 //定义一个list，然后根据所以取得不同的值，这样就实现了，
                                 color: function(params:any) {
                                     var colorList = [
-                                        "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
-                                        "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
-                                        "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                        "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                     ];
                                     let cc = params.dataIndex;
                                     if(cc >colorList.length)
@@ -361,9 +355,7 @@ export default class BipStatisticsDialog extends Vue {
                             //定义一个list，然后根据所以取得不同的值，这样就实现了，
                             color: function(params:any) {
                                 var colorList = [
-                                    "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
-                                    "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
-                                    "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                    "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                 ];
                                 let cc = params.dataIndex;
                                 if(cc >colorList.length)
@@ -439,7 +431,7 @@ export default class BipStatisticsDialog extends Vue {
                 axisLabel: {
                     show: true,
                     textStyle: {
-                         color:'#242287'  
+                         color:'#333333'  
                     }
                 },
             },
@@ -477,9 +469,7 @@ export default class BipStatisticsDialog extends Vue {
                                 //定义一个list，然后根据所以取得不同的值，这样就实现了，
                                 color: function(params:any) {
                                     var colorList = [
-                                        "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
-                                        "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
-                                        "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",
+                                       "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                     ];
                                     let cc = params.dataIndex;
                                     if(cc >colorList.length)
@@ -492,9 +482,7 @@ export default class BipStatisticsDialog extends Vue {
                 if(chartType == 'line' || chartType =='lineArea'){
                     let color = "";
                     var colorList = [
-                        "#8bc34a","#ff962e","#ff4d4d","#2979ff","#26c6da","#7d5fff","#26C0C0",
-                        "#C1232B","#B5C334","#FCCE10","#E87C25","#27727B","#FE8463","#9BCA63",
-                        "#FAD860","#F3A43B","#60C0DD","#D7504B","#C6E579","#F4E001","#F0805A",];
+                        "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
                     let cc = key1;
                     if(cc >colorList.length)
                         cc = cc -colorList.length;
@@ -609,7 +597,7 @@ export default class BipStatisticsDialog extends Vue {
         }
         if(!res ){
             res = JSON.parse(window.sessionStorage.getItem(key) + "");
-            if(res && res !=''){
+            if(res && res.length>0){
                 this.setAidInfo({ key: key, value: res });
                 return res;
             }

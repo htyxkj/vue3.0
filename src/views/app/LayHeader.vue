@@ -31,7 +31,7 @@
             </el-col>
         </el-row>
         <el-row>
-            <el-dialog title="修改密码" :visible.sync="uppwddia" width="35%" >
+            <el-dialog title="修改密码"  :visible.sync="uppwddia" width="35%"  class="changePass">
                 <el-form ref="pwdForm" :model="pwdForm" label-width="80px" :rules="rules">
                     <el-form-item label="旧密码" prop="oldPwd" style="padding-top:20px;">
                         <el-input type="password" v-model="pwdForm.oldPwd" autocomplete="off"></el-input>
@@ -43,9 +43,10 @@
                         <el-input type="password" v-model="pwdForm.newPwd1" autocomplete="off"></el-input>
                     </el-form-item>
                 </el-form>
+
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="uppwddia = false">取 消</el-button>
-                    <el-button type="primary" @click="upPwd">确 定</el-button>
+                    <el-button @click="uppwddia = false" size="small">取 消</el-button>
+                    <el-button type="primary" @click="upPwd" size="small">确 定</el-button>
                 </span>
             </el-dialog>
         </el-row>
@@ -229,7 +230,7 @@ export default class LayHeader extends Vue {
 </script>
 <style scoped>
 .menuicon{
-    color: white;
+    color: #fff;
     font-size: 28px; 
 }
 .pointer{
@@ -238,4 +239,5 @@ export default class LayHeader extends Vue {
 .userimg{
     border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 10px;margin-right:10px 
 }
+
 </style>

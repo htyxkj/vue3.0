@@ -4,23 +4,18 @@
     <!-- <div style="height:200px;"> -->
         <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px; height:200px;">
-                <el-tree class="filter-tree" :data="data" node-key="id"
-<<<<<<< HEAD
+                <el-tree class="filter-tree" node-key="id"
+                    lazy :load="loadNode" 
                     :props="defaultProps" accordion :currentNodeKey="currkey" @node-click="nodeClick" :highlight-current="true"
                     :filter-node-method="filterNode" style="height:80%"
                     ref="tree">
                     </el-tree>
-=======
-                    :props="defaultProps" accordion
-                    :filter-node-method="filterNode" style="height:80%" icon-class="iconfont icon-bip-wenjianjia4"
-                    ref="tree"></el-tree>
->>>>>>> d902b2c6af6af8f0ee3c593e9a5f3c1f5a52c41c
         </el-scrollbar>
     <!-- </div> -->
     
          <span slot="footer" class="dialog-footer">
             <el-button size="small" type="danger" @click="close">取     消</el-button>  
-             <el-button size="small" @click="find">刷      新</el-button>  
+             <!-- <el-button size="small" @click="find">刷      新</el-button>   -->
             <el-button size="small" type="primary" @click="selectOK">选     中</el-button>    
         </span>
     </el-dialog>
@@ -35,6 +30,8 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import { BIPUtil } from "@/utils/Request";
 import QueryEntity from '../../../classes/search/QueryEntity';
 let tools = BIPUtil.ServApi;
+import {CommICL} from '@/utils/CommICL'
+let ICL = CommICL
 @Component({
 })
 export default class BipTreeInfo extends Vue{
@@ -62,7 +59,7 @@ export default class BipTreeInfo extends Vue{
           children: 'children',
           label: 'label',
         }
-        this.treeKey = 'TREE_KEY_'+this.bipInsAid.id;
+        this.treeKey = ICL.AID_TREE+this.bipInsAid.id;
         let br = this.inProcess.get(this.treeKey);
         if(!br){
             this.setKeyMap(this.treeKey)
@@ -90,17 +87,21 @@ export default class BipTreeInfo extends Vue{
     open(){
         this.visible = true;
         this.count++;
-        if(this.count<2)
-            this.find()
+        if(this.count<2){
+            // this.find()
+        }
         if(this.count>100){
             this.count = 1;
         }
     } 
 
-    find(){
+    async find(cont:any = ''){
         let aid = this.bipInsAid.id
         let qe = new QueryEntity("","")
-        tools.getBipInsAidInfo(aid, 210,qe).then(res=>{
+        qe.cont = cont;
+        qe.page.pageSize = 10000;
+        qe.page.currPage = 1;
+        return await tools.getBipInsAidInfo(aid, 210,qe).then(res=>{
             // console.log(res);
             let d0 = res.data;
             if(d0.id==0){
@@ -110,6 +111,7 @@ export default class BipTreeInfo extends Vue{
                 let vars = {key:this.treeKey,value:this.data}
                 this.setAidValue(vars);
                 this.initOK = true
+                return data;
             }
         })
     }
@@ -120,13 +122,14 @@ export default class BipTreeInfo extends Vue{
 
     selectOK(){
         if(this.currkey){
-            let r = this.row>-1?this.row:0
-            let crd = this.cds.getRecordAtIndex(r);
-            crd.data[this.cell.id] = this.currkey
-            crd.c_state |= 2;
-            this.cds.currRecord = Object.assign({},crd)
+            // let r = this.row>-1?this.row:0
+            // let crd = this.cds.getRecordAtIndex(r);
+            // crd.data[this.cell.id] = this.currkey
+            // crd.c_state |= 2;
+            // this.cds.currRecord = Object.assign({},crd)
             this.$bus.$emit('datachange')
-            this.$emit('select',this.currkey);
+            this.$bus.$emit('TreeDataChange',this.currkey)
+            // this.$emit('select',this.currkey);
             this.visible = false;
             return 
         }else{
@@ -138,6 +141,26 @@ export default class BipTreeInfo extends Vue{
     filterNode(value:any, data:any) {
         if (!value) return true;
         return data.label.indexOf(value) !== -1;
+    }
+
+    async loadNode(node:any, resolve:any) {
+        let cont = "";
+        if (node.level === 0) {
+          cont = ""
+        } else {
+            let v = node.data.id
+            cont = v;
+        }
+        let data = await this.find(cont)
+        if(data){
+            if(Array.isArray(data)){
+                resolve(data);
+            }else{
+                resolve([data]); 
+            }
+        }else{
+            resolve([]); 
+        }
     }
 
     @Watch('filterText')

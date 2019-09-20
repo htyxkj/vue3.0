@@ -168,6 +168,7 @@ export default class CDataSet {
   }
 
   currCanEdit(_i: number = -1) {
+    console.log("currCanEdit")
     if (this.ds_par != null) {
       return this.ds_par.currCanEdit();
     }
@@ -184,7 +185,7 @@ export default class CDataSet {
           // if (state == 0) crd.c_state |= 2;
           return state == 0;
         } else {
-          crd.c_state |= 2;
+          // crd.c_state |= 2;
           return true;
         }
       }
@@ -285,7 +286,7 @@ export default class CDataSet {
                           }
                         }
                     }
-                    if (col.initValue && (col.attr & 0x80) > 0) {
+                    if ((col.initValue && (col.attr & 0x80) > 0) &&  (this.currRecord.c_state & 1)>0) {
                         this.incCalc(this.ccells,this.currRecord);
                     }
                     if((col.attr & 0x2000) >0)

@@ -233,6 +233,26 @@ export default class App extends Vue {
             } else {
                 this.editableTabsValue2 = 'myMsg';
             }
+        }else{
+            if(to.fullPath != '/'){
+                if (this.menusList.length > 0) { 
+                    let me:any = baseTool.findMenu(to.query.pmenuid+''); 
+                    // console.log(me)
+                    let menu:Menu = me;
+                    let currTag = this.editableTabs2.filter(
+                    tab => 
+                        tab.name == menu.menuId
+                    )[0];
+                    // console.log(currTag)
+                    if (!currTag) {
+                        let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
+                        this.editableTabs2.push(tag);
+                        this.editableTabsValue2 = menu.menuId;
+                    } else {
+                        this.editableTabsValue2 = menu.menuId;
+                    }
+                }
+            }
         }
     }
 

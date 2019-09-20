@@ -28,21 +28,21 @@
                 </el-col>
                 <el-col :span="18">
                   <el-row>
-                    <el-col :span="14">
+                    <el-col :span="24">
                       <div class="newtext title">{{item.data.title}}</div>
                     </el-col>
-                    <el-col :span="10">
+                    <!-- <el-col :span="10">
                       <div class="newtext mkdate">{{item.data.mkdate}}</div>
-                    </el-col>
+                    </el-col> -->
                   </el-row>
                   <el-row>
                     <div class="newtext newcontent">{{item.data.content}}</div>
                   </el-row>
-                  <!-- <el-row>
-                           <div class="newtext">
+                  <el-row>
+                           <div class="mkdate">
                                {{item.data.mkdate}}
                            </div>
-                  </el-row>-->
+                  </el-row>
                 </el-col>
               </el-row>
             </div>
@@ -61,7 +61,7 @@
         </div>
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-row v-for="(item,index) in ggList" :key="index" style="padding:3px 8px;">
-            <div @click="showcontent(item.data.content)">
+            <div @click="showcontent(item.data.content)" >
               <el-col :span="17">
                 <div class="newstitle">· {{item.data.title}}</div>
               </el-col>
@@ -158,14 +158,16 @@ export default class HomeNews extends Vue {
 </script>
 <style lang="scss" scoped>
 .bip-home-container {
-  border: 1px solid #dedede;
+  // border: 1px solid #dedede;
   background-color: #ffffff;
-  box-shadow: 0 0 5px #8d8d8d;
+  border-radius: 6px;
   position: fixed;
   height: 95% !important;
   z-index: 1;
   overflow: hidden;
   width: calc(100% - 7px) !important;
+  color: #868D94;
+  box-shadow: 1px 2px 10px #dde2e4;
   .el-scrollbar {
     height: 90%;
     margin-bottom: 10px !important;
@@ -186,27 +188,40 @@ export default class HomeNews extends Vue {
   background-size: 100% 100%;
 }
 .main-title {
-  border-bottom: 1px solid #dedede;
-  height: 30px;
-  line-height: 30px;
+  border-bottom: 2px solid #efefef;
+  height: 40px;
+  line-height: 40px;
   font-size: 14px;
   padding: 0 10px;
+  color: #4A77FA;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 8px;
+
 }
 .new {
-  margin-top: 5px;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 .title {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: 0.8px;
+  color: #333333;
+  
 }
 .mkdate {
-    text-align: right;
+    text-align: left;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 12px;
+    padding-left: 10px;  
+    color: #888888;
 }
 .newtext {
   font-size: 13px;
@@ -214,13 +229,16 @@ export default class HomeNews extends Vue {
 }
 .newcontent {
   font-size: 12px;
-  text-indent: 2em;
+  // text-indent: 2em;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: 1px;
+  color: #555555;
+  margin: 2px 0
 }
 .newstitle {
   padding: 3px 0;
@@ -229,6 +247,9 @@ export default class HomeNews extends Vue {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: 0.8px;
+  color: #333333;
+  
 }
 .newstitletime {
   padding: 3px 0;
@@ -236,5 +257,7 @@ export default class HomeNews extends Vue {
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
+  text-align: right;
+  color: #868D94;
 }
 </style>
