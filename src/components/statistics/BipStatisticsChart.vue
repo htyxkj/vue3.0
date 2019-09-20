@@ -597,12 +597,12 @@ export default class BipStatisticsDialog extends Vue {
         }
         if(!res ){
             res = JSON.parse(window.sessionStorage.getItem(key) + "");
-            if(res && res.length>0){
+            if(res){
                 this.setAidInfo({ key: key, value: res });
                 return res;
             }
         }
-        if(!res || res.length ==0){
+        if(!res){
             let karr = key.split("_"); 
             let ref = this.aidValues.get(karr[0]+"_"+karr[1]);
             if(!ref){
