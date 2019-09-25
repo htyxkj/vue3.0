@@ -1,6 +1,6 @@
 <template> 
 <div class="bipchart">
-    <el-row v-loading.fullscreen.lock="fullscreenLoading" class="bi-chart">
+    <el-row v-loading="fullscreenLoading" class="bi-chart">
         <div class="titlebg">
             <el-row>
                 <el-col :span="24" >
@@ -27,12 +27,11 @@
                                 </div>
                             </el-col>
                         </el-row>
-
                      </div>
                 </el-col>
             </el-row>
         </div>
-        <div v-if="stat.showChart && option"  class="showchart" >
+        <div v-if="stat.showChart && option"  class="showchart" :style="chartStyle" >
             <bip-chart :style="chartStyle" :option="option" :chartStyle="chartStyle"></bip-chart>
         </div>
         <div>

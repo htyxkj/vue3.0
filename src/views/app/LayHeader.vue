@@ -215,6 +215,24 @@ export default class LayHeader extends Vue {
     /**进行密码修改 */
     async upPwd(){
         if(this.user){
+            let _this = this;
+            let ref:any = this.$refs['pwdForm']
+            if(ref){
+                ref.validate((valid:any) => {
+                    if (valid) {
+                        _this.upPwd1();
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            }
+        }else{
+            this.loginOut()
+        }
+    }
+    async upPwd1(){
+        if(this.user){
             let cc = await tools.upPwd(this.user,this.pwdForm.newPwd,this.pwdForm.oldPwd);
             if(cc.data.id ==0){
                 this.$notify.success(cc.data.message)
@@ -222,8 +240,6 @@ export default class LayHeader extends Vue {
             }else{
                 this.$notify.error(cc.data.message)
             }
-        }else{
-            this.loginOut()
         }
     }
 }

@@ -395,12 +395,14 @@ export default class LayCelVexTable extends Vue {
                                     let command = me.command.split("&");
                                     let pbuid = command[0].split("=");
                                     let pmenuid = command[1].split("="); 
-                                    this.$router.push({
-                                        path:'/layout',
-                                        name:'layout',
-                                        params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
-                                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                                    })
+                                    setTimeout(() => {
+                                        this.$router.push({
+                                            path:'/layout',
+                                            name:'layout',
+                                            params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
+                                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                                        })    
+                                    }, 600);
                                 }
                             }  
                         }
@@ -451,6 +453,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     table_cell_click(data:any,event:any){ 
+        console.log("单元格单击事件")
         setTimeout(() => {
             this.cds.index = data.rowIndex;
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
@@ -508,6 +511,7 @@ export default class LayCelVexTable extends Vue {
         this.$bus.$off('datachange',this.datachangeBusID)
     }
     datachange(obj_id:string =''){
+        if(this.cds.ccells)
         if(obj_id == this.cds.ccells.obj_id){
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
