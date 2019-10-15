@@ -276,12 +276,18 @@ export default class LayCelVexTable extends Vue {
 
 
     addRecord() {
-        this.cds.createRecord();
-        let cc:any = this.$refs[this.cds.ccells.obj_id];
-        if(cc){ 
-            cc.setCurrentRow(this.cds.currRecord); 
+        if(this.cds.currCanEdit()){
+            this.cds.createRecord();
+            let cc:any = this.$refs[this.cds.ccells.obj_id];
+            if(cc){ 
+                cc.setCurrentRow(this.cds.currRecord); 
+            }
+            this.openInitEdit();
+            this.cds.currRecord.c_state |= 2;
+            if(this.cds.ds_par){
+                this.cds.ds_par.currRecord.c_state |= 2;
+            }
         }
-        this.openInitEdit();
     }
     delRecord(){
         if(this.cds.currCanEdit()){
@@ -295,6 +301,9 @@ export default class LayCelVexTable extends Vue {
                 }
             } 
             this.cds.currRecord.c_state |= 2;
+            if(this.cds.ds_par){
+                this.cds.ds_par.currRecord.c_state |= 2;
+            }
         }
     }
     initWidth() {

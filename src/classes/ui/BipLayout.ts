@@ -10,6 +10,7 @@ export class BipLayout{
     compconfs:Array<BipLayConf>
     ccells:Cells[] = []
     constructor(_laystr:string,_cells?:Cells[]){
+        console.log("BipLayout")
         this.laystr = _laystr
         console.log(_laystr)
         this.compconfs = new Array<BipLayConf>();
@@ -21,6 +22,13 @@ export class BipLayout{
             }
             if(index>0){
                 this.layType = this.laystr.substring(0,index)
+                if(this.layType == 'U'){
+                    let cel = this.ccells[0]
+                    let lay = new BipLayCells(this.laystr,cel)
+                    let cc = new BipLayConf(true,lay,lay.name,lay.bl);
+                    this.compconfs.push(cc)
+                    return;
+                }
                 let str = this.laystr.substring(index+1)
                 str = str.substring(1,str.length-1)
                 //str = '@60JH211#40725[-remark];T:(60JHA211#725//节哀节哀);@60JH211#60725[jyfs-]'
@@ -29,7 +37,7 @@ export class BipLayout{
                     if(cmpstr&&!cmpstr.startsWith('#')){
                         if(cmpstr.indexOf(':')>0){
                             let cp = new BipLayout(cmpstr,_cells);
-                            let cc = new BipLayConf(false,cp,'');
+                            let cc = new BipLayConf(false,cp,'',cp.compconfs[0].span);
                             this.compconfs.push(cc)
                         }else{
                             let objid = BIPUtils.baseUtil.getObjId(cmpstr);
@@ -44,7 +52,7 @@ export class BipLayout{
                 let objid = BIPUtils.baseUtil.getObjId(this.laystr);
                 let cel = this.getCells(objid,true,this.ccells);
                 let lay = new BipLayCells(this.laystr,cel)
-                let cc = new BipLayConf(true,lay,lay.name);
+                let cc = new BipLayConf(true,lay,lay.name,lay.bl);
                 this.compconfs.push(cc)
             }
             this.binit = true

@@ -328,35 +328,12 @@ $--bip-comm-color:#ffffff;//f4f6fb
 }
 
 /** 统计图表样式*/
-.titlebg {
-    text-align: center;
-    line-height: 40px;
-    color: #4A77FA;
-}
-.charttitle-left {
-    text-align: left;
-    padding-left: 10px;
-    font-size: 14px;
-    letter-spacing: 1px;
-    font-weight: 600;
-}
-.charttitle-right {
-    text-align: right;
-    padding-right: 10px;
-    cursor: pointer;
-    font-size: 10px;
-}
-.charttitle-right span {
-    font-size: 10px;
-    padding-left: 5px;
-}
 .charttitle{
     text-align: center;
     background-color: #ffffff;
     border-radius: 6px 6px 0px 0px;
-}
-.returnbak{
-    margin-right:20px;
+    padding: 3px;
+    color: #4A77FA;
 }
 .bip-form-item {
     margin-bottom: 22px !important;

@@ -58,6 +58,9 @@ import BipInsAidNew from '../../classes/BipInsAidNew';
 import CRecord from '../../classes/pub/CRecord';
 let baseTool = BIPUtils.baseUtil
 import CCliEnv from '@/classes/cenv/CCliEnv'
+import { BIPUtil } from '@/utils/Request';
+let tools = BIPUtil.ServApi
+import QueryEntity from '../../classes/search/QueryEntity';
 @Component({
     components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor}
 })
@@ -81,6 +84,7 @@ export default class BipCommEditor extends Vue{
     @Provide() assit:boolean = false
     @Provide() editName:any = ''
     @Provide() bipInsAid:BipInsAidNew|null = null
+    @Provide() qe:QueryEntity = new QueryEntity("","")
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -108,6 +112,11 @@ export default class BipCommEditor extends Vue{
                             str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
                             this.editName = str
                             this.getInsAidInfoBy(str,true)
+                        }else if(str.indexOf('&')>0){
+                            str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
+                            this.editName = str
+                            await this.getInsAidInfoValues(str,false)
+
                         }else{
                             this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
                         }
@@ -217,7 +226,41 @@ export default class BipCommEditor extends Vue{
             this.bipInsAid = vv;
         }
     }
+    async getInsAidInfoValues(editName:string,bcl:boolean = false){
+        let cc:any = this.bipInsAid;
+        let str = editName
+        if(bcl){
+            str = ICL.AID_KEYCL+str;
+        }else{
+            str = ICL.AID_KEY+str
+        }
+        let vv = this.aidInfo.get(str)
+        if(!vv){
+            vv  = window.sessionStorage.getItem(str)
+            if(!vv){
+                let vars = {id:bcl?300:200,aid:editName}
+                await this.fetchInsAid(vars);
+            }else{
+                cc = JSON.parse(vv)
+            }
+        }else{
+            cc = vv;
+        }
+        //List  是辅助的 进行一下数据查询
+        await tools.getBipInsAidInfo(editName,210,this.qe).then((res:any)=>{
+            if(res.data.id==0){
+                console.log(res);
+                cc.values =  res.data.data.data.values 
+                this.bipInsAid = cc;
+            }
+            let vals = {key:str,value:this.bipInsAid}
+            this.setAidInfo(vals)
+        }).catch((err:any)=>{
+            this.$notify.error(err)
+        });
+    }
 
+                            
     @Watch('model')
     modelChange(){
         this.$bus.$emit('datachange','')

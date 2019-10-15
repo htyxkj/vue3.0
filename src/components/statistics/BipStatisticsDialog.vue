@@ -79,6 +79,7 @@ import CDataSet from "@/classes/pub/CDataSet";
 import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import QueryEntity from '@/classes/search/QueryEntity';
+import QueryCont from '@/classes/search/QueryCont';
 import { Cell } from '../../classes/pub/coob/Cell';
 import { Cells } from "@/classes/pub/coob/Cells";
 import { BIPUtil } from "@/utils/Request";
@@ -235,7 +236,14 @@ export default class BipStatisticsDialog extends Vue {
         //cid,sname,spflds,spbds,charttype,showchart
         //序号,名称,数据项,统计项,图表类型,是否显示图表
         let qe:QueryEntity = new QueryEntity('','');
-        qe.cont="~cellid='"+this.env.dsm.ccells.obj_id+"'"
+        // qe.cont="~cellid='"+this.env.dsm.ccells.obj_id+"'"
+        let allCont = [];
+        let oneCont = []; 
+        let qCont = new QueryCont('cellid',this.env.dsm.ccells.obj_id,12);
+        qCont.setContrast(0);
+        oneCont.push(qCont);
+        allCont.push(oneCont);
+        qe.cont = "~"+JSON.stringify(allCont);
         qe.page.currPage = 1;
         qe.page.pageSize = 100;
 

@@ -1,33 +1,32 @@
 <template> 
-<div class="bipchart">
+<div>
     <el-row v-loading="fullscreenLoading" class="bi-chart">
-        <div class="titlebg">
+        <div>
             <el-row>
                 <el-col :span="24" >
-                    <div class="charttitle">
+                    <div class="main-title">
                         <el-row>
                             <el-col :span="20">
-                                <div class="charttitle-left">
-                                    <el-button v-if="showBack" icon="iconfont icon-bip-back" @click="goTable" size="mini" class="returnbak">
+                                <template v-if="showBack">
+                                    <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">
                                         返回
                                     </el-button>
-                                    <i class="iconfont icon-bip-shuju"></i>
-                                    <template v-if="title">
-                                        {{title}}  
-                                    </template>
-                                    <template v-else> 
-                                        统计维度：{{this.getTitle()}}
-                                    </template>
-                                </div>
+                                    &nbsp;&nbsp;
+                                </template>
+                                <i class="iconfont icon-bip-shuju"></i>
+                                <template v-if="title">
+                                    {{title}}
+                                </template>
+                                <template v-else> 
+                                    统计维度：{{this.getTitle()}}
+                                </template>
                             </el-col>
-                            <el-col :span="4">
-                                <div class="charttitle-right">
-                                    <i class="iconfont icon-bip-kucun"></i> 
-                                    <span>MORE</span>
-                                </div>
+                            <el-col :span="4" class="main-title-icon"  >
+                                <i class="iconfont icon-bip-kucun"></i> &nbsp;
+                                <span @click="openMenu">MORE</span>
                             </el-col>
                         </el-row>
-                     </div>
+                    </div>
                 </el-col>
             </el-row>
         </div>
@@ -89,7 +88,7 @@ export default class BipStatisticsDialog extends Vue {
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
     mounted() {
         if(this.height){
-            this.chartStyle = "height :"+(this.height-50)+"px;";
+            this.chartStyle = "height :"+(this.height)+"px;";
         }else{
             this.chartStyle = "height :400px;";
         }
@@ -663,5 +662,27 @@ export default class BipStatisticsDialog extends Vue {
             this.chartStyle = "height :400px;";
         }
     }
+    /**
+     * 打开菜单
+     */
+    openMenu(){
+        this.$emit('openMenu');
+    }
 }
 </script>
+<style lang="scss" scoped>
+.main-title{
+    border-bottom:  1px solid #dedede;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+    padding: 0 10px; 
+    color: #4A77FA;
+    // letter-spacing: 1px;
+    font-weight: 600;
+    background-color: white;
+}
+.main-title-icon {
+    text-align: right;
+} 
+</style>

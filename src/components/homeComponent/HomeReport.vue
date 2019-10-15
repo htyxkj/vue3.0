@@ -6,7 +6,7 @@
             </div>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
-            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight'></home-c-univ-select>
+            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight' @openMenu="openMenu"></home-c-univ-select>
         </template>
     </el-row>
 </template>
@@ -39,7 +39,7 @@ export default class HomeReport extends Vue {
         this.init();
         setTimeout(() => {
             var x:any =document.getElementById(this.sid);
-            this.chartHeight = x.clientHeight-5
+            this.chartHeight = x.clientHeight-62
         }, 200);        
         this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.itemChange)
     }
@@ -87,10 +87,27 @@ export default class HomeReport extends Vue {
     }
     itemChange(){
         var x:any =document.getElementById(this.sid);
-        this.chartHeight = x.clientHeight-5
+        this.chartHeight = x.clientHeight-62
     }
     beforeDestroy(){
         this.$bus.$off('componentsizechange',this.componentsizechangeBusID)
+    }
+    /**
+     * 打开菜单
+     */
+    openMenu(){
+        let menu = baseTool.findMenu(this.menuid); 
+        let command = menu.command;
+        if(command){
+            let p = command.split("&");
+            let pbuid = p[0].split("=")
+            let pmenuid = p[0].split("=")
+            this.$router.push({
+                path:'/layout',
+                name:'layout',
+                query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+            })    
+        }
     }
 }
 </script>

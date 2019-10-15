@@ -34,6 +34,7 @@ export const CommICL = Object.assign({
     B_CMD_FIND:'FIND',//查找
     B_CMD_CLEAR:'CLEAR',//清空
     B_CMD_SAVE:'SAVE',//保存
+    B_CMD_COPY:'COPY',//保存
     B_CMD_FIRST:'FIRST',//第一个
     B_CMD_PRIOR:'PRIOR',//上一个
     B_CMD_NEXT:'NEXT',//下一个

@@ -1,5 +1,5 @@
 <template>
-    <el-col :span="span" :xs="24" :sm="24" :md="span">
+    <el-col :span="span" :xs="24" :sm="24" :md="span" style="padding-bottom:8px">
         <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
             <div class="ueditor" :id="id" ></div>
         </el-form-item>
@@ -15,6 +15,7 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { CommICL } from '@/utils/CommICL';
+import { GlobalVariable } from '@/utils/ICL';
 import E  from 'wangeditor';
 let icl = CommICL
 @Component({})
@@ -30,11 +31,11 @@ export default class BipRichTextEditor extends Vue{
     @Provide() span:number = 6
     @Provide() id :any = ""
     @Provide() upLoadDid:string = ''//附件路径
-    @Provide() uri:string='upd'//附件操作接口
+    @Provide() uri:string=GlobalVariable.API_UPD//附件操作接口
     created(){
         this.id = this.cell.id;
         let snkey = window.sessionStorage.getItem('snkey');
-        this.uri = BaseVariable.BaseUri+'/upd'
+        this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
     }
     mounted(){
         this.model1 = this.model       

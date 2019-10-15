@@ -612,6 +612,7 @@ export default class CDataSet {
    * @param qe 查询数据条件对象
    */
   queryData(qe: QueryEntity) {
+    qe.mcont = this.cont;
     return tools.query(qe);
   }
   queryRPTData(qe: QueryEntity) {

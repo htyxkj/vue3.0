@@ -162,7 +162,7 @@ export default class HomeNews extends Vue {
   background-color: #ffffff;
   border-radius: 6px;
   position: fixed;
-  height: 95% !important;
+  height: calc(100% - 20px)  !important;
   z-index: 1;
   overflow: hidden;
   width: calc(100% - 7px) !important;

@@ -76,6 +76,7 @@ import { Cell } from '@/classes/pub/coob/Cell';
 let tools = BIPUtil.ServApi
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
+import { GlobalVariable } from '@/utils/ICL';
 @Component({})
 export default class BipFileInfo extends Vue {
     @Prop() cds!: CDataSet;
@@ -85,12 +86,12 @@ export default class BipFileInfo extends Vue {
     @Provide() title = "文件上传下载";
     @Provide() fileList: Array<any> = [];
     @Provide() activeName: string = "file-up";
-    @Provide() uri:string='upd'//附件操作接口
+    @Provide() uri:string=GlobalVariable.API_UPD//附件操作接口
     @Provide() upLoadDid:string = ''
     @Provide() fj_root_index = -1
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
-        this.uri = BaseVariable.BaseUri+'/upd'
+        this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
     }
     mounted() {
         if(this.cds&&this.cell){

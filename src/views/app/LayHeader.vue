@@ -82,9 +82,9 @@ export default class LayHeader extends Vue {
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     async mounted() {
         this.rules={
-            oldPwd: [
-                { required: true, message: '请填写旧密码！', trigger: 'blur' }
-            ],
+            // oldPwd: [
+            //     { required: true, message: '请填写旧密码！', trigger: 'blur' }
+            // ],
             newPwd: [
                 { required: true,validator: this.validatePass, trigger: 'blur' }
             ], 
@@ -154,18 +154,23 @@ export default class LayHeader extends Vue {
     }
     responseCallback(frame : any) { 
         var info = JSON.parse(frame.body);
+        console.log(info);
         if (info.type === 1) {
             if (this.taskNum !== info.count) {
                 this.taskNum = info.count;
-                if(this.taskNum>0)
+                if(this.taskNum>0){
                     this.$notify.success("您有" + this.taskNum + "条任务未处理！" );
+                }
+                this.$bus.$emit('MyTaskChange')
             }
         }
         if (info.type === 2) {
             if (this.msgNum !== info.count) {
                 this.msgNum = info.count;
-                if(this.msgNum>0)
+                if(this.msgNum>0){
                     this.$notify.success("您有" + this.msgNum + "条消息未处理！" ); 
+                }
+                this.$bus.$emit('MyMsghange')
             }
         }
         // console.log(frame);

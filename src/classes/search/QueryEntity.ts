@@ -4,6 +4,7 @@ export default class QueryEntity{
     pcell:string
     tcell:string
     cont:string
+    mcont:string
     orderBy:string
     type:number = 0
     page:PageInfo = new PageInfo()
@@ -15,5 +16,6 @@ export default class QueryEntity{
         this.tcell = _tcell
         this.cont = _cont?_cont:''
         this.orderBy = _orderBy?_orderBy:''
+        this.mcont=''
     }
 }

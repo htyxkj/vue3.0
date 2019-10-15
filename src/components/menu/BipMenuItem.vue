@@ -48,7 +48,7 @@
     </div>
 </template>
 <script lang="ts">
-import { Component, Vue,Provide,Prop} from "vue-property-decorator";
+import { Component, Vue,Provide,Prop,Watch} from "vue-property-decorator";
 import { Menu } from '@/classes/Menu';
 import { LoginState } from '../../store/modules/login/types';
 import { State, Action, Getter, Mutation } from 'vuex-class';
@@ -85,6 +85,7 @@ export default class BipMenuItem extends Vue{
         this.setIsOpenMenu(false);
     }
     created(){
+        console.log(BaseVariable.BaseUri)
         this.uri = BaseVariable.BaseUri+'/'
     }
 }

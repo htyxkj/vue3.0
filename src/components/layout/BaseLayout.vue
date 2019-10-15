@@ -13,7 +13,7 @@
         <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-vertical-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'U'">
-        <div>自定义布局</div>
+        <bip-customize-layout  :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-customize-layout>
     </template>
 </div>
 </template>
@@ -26,10 +26,11 @@ import BorderLayout from '@/components/layout/BorderLayout.vue'
 import TabsLayout from '@/components/layout/TabsLayout.vue'
 import BipHorizontalLay from '@/components/layout/BipHorizontalLay.vue'
 import BipVerticalLay from '@/components/layout/BipVerticalLay.vue'
+import BipCustomizeLayout from '@/components/layout/BipCustomizeLayout.vue'
 import BipLayConf from '@/classes/ui/BipLayConf';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
-    components:{BorderLayout,TabsLayout,BipHorizontalLay,BipVerticalLay}
+    components:{BorderLayout,TabsLayout,BipHorizontalLay,BipVerticalLay,BipCustomizeLayout}
 })
 export default class BaseLayout extends Vue{
     @Prop() layout?:BipLayout

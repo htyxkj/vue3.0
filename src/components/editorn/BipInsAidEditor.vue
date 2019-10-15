@@ -142,51 +142,50 @@ export default class BipInsAidEditor extends Vue{
     }
 
     selectOK(val:any,close:boolean = false){
-        console.log(val);
-        let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
-
-        this.cds.setStateOrAnd(ICL.R_EDITED);
-        this.model1 = "";
-        let strval = "";
-        for(var i=0;i<val.length;i++){
-            let oneVal = val[i];
-            let key = oneVal[this.bipInsAid.cells.cels[0].id] 
-            this.model1 += key+";" 
-            this.setAidValue({key:this.bipInsAid.id+"_"+key,value:oneVal});
-            strval+=oneVal[this.bipInsAid.cells.cels[1].id]+";"
+        if(this.cds.currCanEdit()){
+            console.log(val);
+            let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
+            this.cds.setStateOrAnd(ICL.R_EDITED);
+            this.model1 = "";
+            let strval = "";
+            for(var i=0;i<val.length;i++){
+                let oneVal = val[i];
+                let key = oneVal[this.bipInsAid.cells.cels[0].id] 
+                this.model1 += key+";" 
+                this.setAidValue({key:this.bipInsAid.id+"_"+key,value:oneVal});
+                strval+=oneVal[this.bipInsAid.cells.cels[1].id]+";"
+            }
+            if (this.mulcols) {
+                this.othCols.forEach((fld, index) => {
+                    let idx = this.othColsIndex[index];
+                    let layC = this.bipInsAid.cells.cels[idx];
+                    if (layC) {
+                        record.data[fld] = val[0][layC.id]||"";
+                    }
+                });
+            }
+            if(this.model1.length>1)
+            this.model1 = this.model1.substring(0,this.model1.length-1);
+            record.data[this.cell.id] = this.model1
+            if(this.refLink){
+                this.refLink.realV = this.model1
+                this.refLink.showV = strval
+                this.refLink.values = []
+                this.refLink.values = val
+            }
+            this.cds.currRecord = record
+            this.cds.cdata.data[this.row<0?0:this.row]= record
+            // this.cds.setRecordAtIndex(record,this.row<0?0:this.row)
+            // this.$bus.$emit('cell_edit')
+            this.getRefValues()
+            this.cds.checkGS(this.cell);
         }
-
-        if (this.mulcols) {
-            this.othCols.forEach((fld, index) => {
-                let idx = this.othColsIndex[index];
-                let layC = this.bipInsAid.cells.cels[idx];
-                if (layC) {
-                    record.data[fld] = val[0][layC.id]||"";
-                }
-            });
-        }
-        if(this.model1.length>1)
-        this.model1 = this.model1.substring(0,this.model1.length-1);
-        record.data[this.cell.id] = this.model1
-        if(this.refLink){
-            this.refLink.realV = this.model1
-            this.refLink.showV = strval
-            this.refLink.values = []
-            this.refLink.values = val
-        }
-
-        this.cds.currRecord = record
-        this.cds.cdata.data[this.row<0?0:this.row]= record
-        // this.cds.setRecordAtIndex(record,this.row<0?0:this.row)
-        // this.$bus.$emit('cell_edit')
-        this.getRefValues()
         if(close){
             setTimeout(() => {
                 let dia: any = this.$refs.ak;
                 if (dia) dia.close();
             }, 100);
         }
-        this.cds.checkGS(this.cell);
     }
 //#region /**初始化多列参照 */
     initMulColInfo() {

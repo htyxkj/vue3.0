@@ -12,17 +12,21 @@
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
             </el-scrollbar>
-            
         </div>
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
+        <template>
+            <bip-menu-btn-dlg ref="bip_base_dlg"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
+        </template>
     </el-row>
     
 </template>
 <script lang="ts">
+import { State, Action, Getter, Mutation } from "vuex-class";
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { BIPUtil } from "@/utils/Request";
 import { CommICL } from "@/utils/CommICL";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
+import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
 import { URIParams } from "@/classes/URIParams";
 import { BipMenuBtn } from "@/classes/BipMenuBtn";
 import { Cells } from "@/classes/pub/coob/Cells";
@@ -43,7 +47,7 @@ import CData from '../../../classes/pub/CData';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
-    components: { BipMenuBarUi,  BipWork }
+    components: { BipMenuBarUi,  BipWork ,BipMenuBtnDlg}
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
@@ -65,6 +69,11 @@ export default class BaseApplet extends Vue{
     @Provide() pmenuid:string ='';
     @Provide() oprid:number = 13
     @Provide() style:string='';
+
+    @State("aidValues", { namespace: "insaid" }) aidValues: any;
+    @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
+    @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
+    @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     async invokecmd(btn:any) {
         let cmd = btn.cmd
         console.log(cmd);
@@ -179,8 +188,11 @@ export default class BaseApplet extends Vue{
                             let data = res.data.data.info
                             let work:any = this.$refs.work;
                             let smakefld:string='';
-                            if(this.dsm.opera)
-                                smakefld = crd.data[this.dsm.opera.smakefld];
+                            if(this.dsm.opera){
+                                if(this.dsm.opera.smakefld){
+                                    smakefld = crd.data[this.dsm.opera.smakefld];
+                                }
+                            }
                             work.open(data,this.cea,smakefld);
                         }
                     }).catch(err=>{
@@ -195,6 +207,39 @@ export default class BaseApplet extends Vue{
             }else{
                 console.log('没保存')
                 this.$notify.warning("请先保存数据！");
+            }
+        }else if(cmd == 'DLG'){
+            let cc = JSON.stringify(this.dsm.currRecord.data);
+            if(cc.length>2){
+                setTimeout(() => {
+                    let dia: any = this.$refs.bip_base_dlg;
+                    dia.open(btn,this.env); 
+                }, 100);
+            }
+        }else if(cmd == 'COPY'){
+            if ((this.dsm.currRecord.c_state & 2) > 0) {
+                this.$alert(
+                    `当前数据没有保存，请先保存当前行数据`,
+                    `系统提醒`,
+                    { type: "info" }
+                ).catch(() => {
+                    console.log("取消");
+                });
+                return;
+            }
+            var currRecord = this.dsm.currRecord;
+            let u = window.sessionStorage.getItem('user');
+            if(u){
+                this.dsm.currRecord = this.dsm.createRecord();
+                this.dsm.currRecord.c_state=3; 
+                let user = JSON.parse(u)
+                for(var i=0;i<this.dsm.ccells.cels.length;i++){
+                    let cell = this.dsm.ccells.cels[i]
+                    if(!cell.initValue){
+                        this.dsm.currRecord.data[cell.id] = currRecord.data[cell.id]
+                    }
+                }
+                this.dsm.cdata.data.push(this.dsm.currRecord)
             }
         }
     }
@@ -350,7 +395,7 @@ export default class BaseApplet extends Vue{
         if (!bok) {
             return;
         }
-        this.dsm.cont = cont;
+        // this.dsm.cont = cont;
         this.qe.oprid = this.oprid;
         if (!this.qe.pcell || this.qe.pcell === "")
             this.qe = new QueryEntity(
@@ -656,6 +701,46 @@ export default class BaseApplet extends Vue{
             }
         }
     }
+    /**
+     * 获取自定义按钮
+     */
+    async initDlgBtn(){
+        if(this.uriParams){
+            let name = "DLG."+this.uriParams.pbuid;
+            let str = name
+            // let dlg = await pubMethod.getConstant(str);
+            str = icl.AID_KEYCL+str;
+            if(!this.aidValues.get(str)){
+                let vv  = window.sessionStorage.getItem(str)
+                if(!vv){
+                    let vars = {id:300,aid:name}
+                    await this.fetchInsAid(vars);
+                    let vv  = window.sessionStorage.getItem(str)
+                    if(vv){
+                        let vals = {key:str,value:JSON.parse(vv)}
+                        this.setAidValue(vals)
+                    }
+                }else{
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                } 
+            }
+            let dlg = this.aidValues.get(str);
+            if(dlg && dlg.slink){ 
+                let dlgBtn = dlg.slink.split("&")
+                dlgBtn.forEach((item:any) => {
+                    let cc = item.substring(0,item.indexOf(";")); 
+                    let type = cc.substring(0,1);
+                    let bname = cc.substring(2,item.indexOf(","));  
+                    let btn1 = new BipMenuBtn("DLG",bname)
+                    btn1.setDlgSname(name);
+                    btn1.setDlgType(type)
+                    btn1.setDlgCont(item.substring(item.indexOf(";")+1))
+                    this.mbs.menuList.push(btn1)
+                });
+            }
+        }
+    }
     async mounted(){
         // console.log(this.uriParams,'bbb')
         if(this.height>0){
@@ -670,6 +755,7 @@ export default class BaseApplet extends Vue{
             this.dsm.currRecord.c_state = 1
             if(this.uriParams && this.uriParams.pdata && this.uriParams.pdata.length>1){ 
                 this.oprid = 14;
+                this.dsm.cont = this.uriParams.pdata;
                 this.findData(true,this.uriParams.pdata); 
             } 
         }else{
@@ -677,6 +763,7 @@ export default class BaseApplet extends Vue{
             this.pmenuid = this.$route.query.pmenuid+'';
             this.initGetVal();
         } 
+        this.initDlgBtn();
     }
 
     async handleSizeChange(value:number){

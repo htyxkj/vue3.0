@@ -5,8 +5,8 @@
                 <Calendar class="homeCalendar" @choseDay="clickDay" @changeMonth="changeDate"
                     :markDateMore="markDate"></Calendar>
                 <el-row>&nbsp;</el-row>
-                <el-row style="width:100%;" v-for="(item,index) in taskDate" :key="index">
-                    <el-col :span="8">{{item.data.ddate}}</el-col>
+                <el-row style="width:100%;padding: 0px 30px;" v-for="(item,index) in taskDate" :key="index">
+                    <el-col :span="8">·{{item.data.ddate}}</el-col>
                     <el-col :span="16">
                         <span @click="taskClick(item)">
                             {{item.data.sevent}}
@@ -64,9 +64,9 @@ export default class HomeMenu extends Vue {
         let qe:QueryEntity = new QueryEntity('','');
         qe.page.currPage = 1;
         qe.page.pageSize = 50;
-        let dd = await this.getTJDate(date);
-        let ddarr = dd.split("~");
-        let sql = "~ddate >='"+ddarr[0]+"'  and ddate<='"+ddarr[1]+"'";
+        // let dd = await this.getTJDate(date);
+        // let ddarr = dd.split("~");
+        // let sql = "~ddate >='"+ddarr[0]+"'  and ddate<='"+ddarr[1]+"'";
         let cc = await tools.getBipInsAidInfo("MYNOTEBK",210,qe)
         if(cc.data.id == 0) {
             let vl:Array<any> = cc.data.data.data.values;
@@ -181,8 +181,9 @@ export default class HomeMenu extends Vue {
 </script>
 <style  lang="scss" scoped>
 .bip-home-container {
+    background-color: #ffffff !important;
     position: fixed; 
-    height: 95% !important;
+    height: calc(100% - 20px)  !important;
     z-index: 1;
     overflow: hidden;  
     width: calc(100% - 3px) !important;
@@ -203,7 +204,6 @@ export default class HomeMenu extends Vue {
 </style>
 <style lang="scss">
 .homeCalendar .wh_content_all {
-    background-color: #ffffff;
     border-radius: 6px 6px 0px 0px;
     box-shadow: 1px 2px 10px #dde2e4;
 }
@@ -215,55 +215,58 @@ export default class HomeMenu extends Vue {
     }
    
     .wh_content_all {
-        background-color: #ffffff;
-        
+        background-color: #ffffff !important;
+        box-shadow: none !important;
     }
     .wh_jiantou1 {
         width: 8px;
         height: 8px;
-        border-top: 2px solid #4A77FA;
-        border-left: 2px solid #4A77FA;
-        transform: rotate(-45deg);
+        border-top: 2px solid #4A77FA !important;
+        border-left: 2px solid #4A77FA !important;
+        transform: rotate(-45deg) !important;
     }
     .wh_top_changge .wh_content_li {
-        cursor: auto;
-        flex: 2.5;
+        cursor: auto !important;
+        flex: 2.5 !important;
         font-size: 14px;
     }
     .wh_jiantou2 {
-        width: 8px;
-        height: 8px;
-        border-top: 2px solid #4A77FA;
-        border-right: 2px solid #4A77FA;
-        transform: rotate(45deg);
+        width: 8px !important;
+        height: 8px !important;
+        border-top: 2px solid #4A77FA !important;
+        border-right: 2px solid #4A77FA !important;
+        transform: rotate(45deg) !important;
     }
     .wh_top_changge li {
-       color: #4A77FA;
-       font-weight: 500;
-       letter-spacing: 2px;
+       color: #4A77FA !important;
+       font-weight: 500 !important;
+       letter-spacing: 2px !important;
     }
     .wh_content_item {
-        color: #60656A;
+        color: #60656A !important;
     }
     .wh_content_item .wh_isToday {
-        color: #ffffff;
-        background: #4A77FA;
-        border-radius: 100px;
+        color: #ffffff !important;
+        background: #4A77FA !important;
+        border-radius: 100px !important;
     }
     .wh_item_date:hover {
-         color: #ffffff;
-        background: #71c7a5;
-        border-radius: 100px;
+         color: #ffffff !important;
+        background: #71c7a5 !important;
+        border-radius: 100px !important;
         cursor: pointer;
     }
     .wh_item_date:active {
-         color: #ffffff;
+         color: #ffffff !important;
         
     }
     .wh_content_item .wh_chose_day{
-        color: #ffffff;
-        background: green;
-        border-radius: 100px;
+        color: #ffffff !important;
+        background: green !important;
+        border-radius: 100px !important;
     }
 }
 </style>
+<!--
+GitHub 地址：https://github.com/zwhGithub/vue-calendar
+ -->

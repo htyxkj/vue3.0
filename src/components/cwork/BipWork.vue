@@ -106,7 +106,7 @@ export default class BipWork extends Vue{
         if (cea.statefr == "0" || cea.statefr == "1" || cea.statefr == "5") {
             this.canRetrial = false;
             if(this.user)
-            if(smakefld != this.user.userCode){
+            if(smakefld !='' && smakefld != this.user.userCode){
                 this.$notify.error("只有制单人可以提交!");
                 this.centerDialogVisible = false
                 return;
@@ -173,7 +173,9 @@ export default class BipWork extends Vue{
             this.cea.tousr =ckuser;
             this.loading = true
             tools.getCheckInfo(this.cea,34).then(res=>{
-                this.$notify.success('审批成功！')
+                let msg = this.bchked?"提交":"审核";
+                msg += '成功！';
+                this.$notify.success(msg);
                 this.$emit('checkOK',this.value)
                 this.centerDialogVisible = false
                 this.$bus.$emit('cell_edit')
@@ -208,7 +210,7 @@ export default class BipWork extends Vue{
                 id = 40;
             } 
             tools.getCheckInfo(this.cea,id).then(res=>{
-                this.$notify.success('审批成功！')
+                this.$notify.success('退回成功！')
                 this.$emit('checkOK',this.info.upState)
                 this.centerDialogVisible = false
             }).catch(err=>{
@@ -221,7 +223,7 @@ export default class BipWork extends Vue{
             this.cea.statefr = this.info.state;
             var id = 39; 
             tools.getCheckInfo(this.cea,id).then(res=>{
-                this.$notify.success('审批成功！')
+                this.$notify.success('退回成功！')
                 this.$emit('checkOK',this.info.upState)
                 this.centerDialogVisible = false
             }).catch(err=>{
@@ -240,7 +242,7 @@ export default class BipWork extends Vue{
         var id=34;
         this.loading = true;
         tools.getCheckInfo(this.cea,id).then(res=>{
-            this.$notify.success('审批成功！')
+            this.$notify.success('驳回成功！')
             this.$emit('checkOK',this.info.upState)
             this.centerDialogVisible = false
         }).catch(err=>{

@@ -69,6 +69,7 @@ import CDataSet from "@/classes/pub/CDataSet";
 import { Cells } from "@/classes/pub/coob/Cells";
 import homeComponent from "@/components/homeComponent/HomeComponent.vue";
 import VueGridLayout from 'vue-grid-layout'
+import QueryCont from '@/classes/search/QueryCont';
 Vue.use(VueGridLayout)
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
@@ -154,10 +155,30 @@ export default class Home extends Vue {
       qe.page.currPage = this.page.currPage;
       qe.page.pageSize = this.page.pageSize;
       if(this.conditionValue!=null){
+        // if(this.conditionItem != '-1'){
+        //   qe.cont = "~"+this.conditionItem +" like '%"+this.conditionValue+"%'"
+        // }else{
+        //   qe.cont = "~sid like '%"+this.conditionValue+"%' or sname like '%"+this.conditionValue+"%'"
+        // }
+        let allCont = [];
+        let oneCont = []; 
         if(this.conditionItem != '-1'){
-          qe.cont = "~"+this.conditionItem +" like '%"+this.conditionValue+"%'"
+          let qCont = new QueryCont(this.conditionItem,this.conditionValue,12);
+          qCont.setContrast(3);
+          oneCont.push(qCont);
         }else{
-          qe.cont = "~sid like '%"+this.conditionValue+"%' or sname like '%"+this.conditionValue+"%'"
+          let qCont = new QueryCont('sid',this.conditionValue,12);
+          qCont.setContrast(3);
+          oneCont.push(qCont);
+          qCont = new QueryCont('sname',this.conditionValue,12);
+          qCont.setContrast(3);
+          oneCont.push(qCont);
+        }
+        if(oneCont.length !=0){
+          allCont.push(oneCont);
+          qe.cont = "~" + JSON.stringify(allCont);
+        }else{
+          qe.cont = "";
         }
       }
       let cc = await tools.getBipInsAidInfo("COMPU",210,qe)

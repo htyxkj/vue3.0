@@ -15,7 +15,7 @@
                     <template v-if="env && env.dsm && env.dsm.ccells">
                         <el-row>
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false" :showTable="false" :height="height"></bip-statistics-chart>
+                                <bip-statistics-chart :stat="item" :env="env"  :showBack="false" :showTable="false" :height="height" @openMenu="openMenu"></bip-statistics-chart>
                             </el-col>
                         </el-row>
                     </template>
@@ -220,7 +220,6 @@ export default class CUnivSelect extends Vue {
     }
 
     findServerData(queryCont:any){
-        console.log("sdds")
         this.fullscreenLoading = true
         if(this.biType =="SEL"){
             this.dsm.queryData(queryCont).then(res=>{
@@ -381,7 +380,6 @@ export default class CUnivSelect extends Vue {
     }
 
     getCRecordByPk2(value:any=null){
-        console.log(this.dsm)
         if(this.dsm){
             if(value == null && this.dsm.ds_sub.length>0){
                 this.getCRecordByPk(this.dsm.currRecord)
@@ -395,7 +393,6 @@ export default class CUnivSelect extends Vue {
      * @param crd 查询条件
      */
     async getCRecordByPk(crd: CRecord) {
-        console.log(crd)
         if (crd.c_state == undefined || crd.c_state == 0) {
             this.qe.pcell = this.dsm.p_cell
             this.qe.tcell = this.dsm.ccells.obj_id
@@ -403,7 +400,6 @@ export default class CUnivSelect extends Vue {
             this.qe.cont = JSON.stringify(crd.data);
             this.qe.values = [];
             let vv = await this.findDataFromServe(this.qe);
-            console.log(vv)
             if (vv != null) {
                 this.dsm.currRecord = vv.data[0]
                 // this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
@@ -472,12 +468,18 @@ export default class CUnivSelect extends Vue {
         })
         return cd;
     }
+    /***
+     * 打开菜单
+     */
+    openMenu(){
+        this.$emit("openMenu");
+    }
 }
 </script>
 <style  lang="scss" scoped>
 .bip-home-container {
     position: fixed; 
-    height: 95% !important;
+    height: calc(100% - 20px)  !important;
     z-index: 1;
     overflow: hidden;  
     width: calc(100% - 3px) !important;

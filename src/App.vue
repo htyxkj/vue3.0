@@ -1,5 +1,5 @@
 <template >
-  <div id="app">
+  <div id="app" v-if="configT">
     <template v-if="!isLogin"> 
       <login v-if="isLoginPage == 0"></login>
       <wx-applets v-if="isLoginPage == 3" :query="query"></wx-applets>
@@ -79,6 +79,7 @@ export default class App extends Vue {
     @Provide() menu2:string = "menu menu2";
     @Provide() isLoginPage:number = 0;
     @Provide() query:any=null;
+    @Provide() configT:boolean = false;
     @State('login') profile!: LoginState
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
@@ -101,6 +102,7 @@ export default class App extends Vue {
             console.log(err)
             window.location.reload()
         }) 
+        this.configT=true;
     }
     async mounted() {
         await this.$axios.get('./static/config.json').then((res:any) => { 
@@ -239,6 +241,8 @@ export default class App extends Vue {
                     let me:any = baseTool.findMenu(to.query.pmenuid+''); 
                     // console.log(me)
                     let menu:Menu = me;
+                    if(!me)
+                        return;
                     let currTag = this.editableTabs2.filter(
                     tab => 
                         tab.name == menu.menuId

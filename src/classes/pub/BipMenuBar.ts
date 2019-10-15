@@ -35,6 +35,11 @@ export default class BipMenuBar{
                 btn.setIconFontIcon('save');
                 this.menuList.push(btn)
             }
+            if(!this.search){
+                let btn = new BipMenuBtn(CommICL.B_CMD_COPY,"复制")
+                btn.setIconFontIcon('copy');
+                this.menuList.push(btn)
+            }
             if((menuAttr&CommICL.B_IDEL)>0){
                 let btn = new BipMenuBtn(CommICL.B_CMD_DEL,"删除")
                 btn.setIconFontIcon('delete');

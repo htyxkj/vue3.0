@@ -57,6 +57,7 @@ import CDataSet from '../../../classes/pub/CDataSet';
 import { Cell } from '../../../classes/pub/coob/Cell';
 import BipInsAidNew from '../../../classes/BipInsAidNew';
 import QueryEntity from '../../../classes/search/QueryEntity';
+import QueryCont from '../../../classes/search/QueryCont';
 
 import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
@@ -151,21 +152,40 @@ export default class BipPopView extends Vue{
     }
 
     makeCont(){
-        let cont = "";
-        if(this.conditionItem !='-1' && this.conditionValue)
-            cont = "~"+this.conditionItem+" like '%"+this.conditionValue+"%'"
-        if(this.conditionItem =='-1' && this.conditionValue){
-            cont = "~";
-            for(var i=0;i<this.showCols.length;i++){
-                let cell = this.showCols[i]
-                cont += cell.id +" like '%"+this.conditionValue+"%' or " 
+        let cont = ""; 
+        let allCont = [];
+        let oneCont = [];
+        for(var i=0;i<this.showCols.length;i++){
+            let cell = this.showCols[i]
+            if(this.conditionItem !='-1' && this.conditionValue){
+                if(cell.id == this.conditionItem){
+                    let qCont = new QueryCont(this.conditionItem,this.conditionValue,cell.type);
+                    qCont.setContrast(3);
+                    oneCont.push(qCont);
+                }
+            }else if(this.conditionItem =='-1' && this.conditionValue){
+                let qCont = new QueryCont(cell.id,this.conditionValue,cell.type);
+                qCont.setLink(0)
+                qCont.setContrast(3);
+                oneCont.push(qCont);
             }
-            cont = cont.substring(0,cont.length-4);
         }
+        if(oneCont.length !=0){
+            allCont.push(oneCont);
+            cont = "~"+JSON.stringify(allCont)
+        }
+        // if(this.conditionItem =='-1' && this.conditionValue){
+        //     cont = "~";
+        //     for(var i=0;i<this.showCols.length;i++){
+        //         let cell = this.showCols[i]
+        //         cont += cell.id +" like '%"+this.conditionValue+"%' or " 
+        //     }
+        //     cont = cont.substring(0,cont.length-4);
+        // }
         if(cont.length>0){
             this.qe.cont = cont
         }else{
-             this.qe.cont = ''
+            this.qe.cont = ''
         }
     }
 

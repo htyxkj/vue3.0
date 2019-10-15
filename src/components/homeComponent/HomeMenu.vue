@@ -182,7 +182,7 @@ export default class HomeMenu extends Vue {
         background-color: #ffffff;
         // box-shadow: 0 0 5px #8d8d8d;
         position: fixed; 
-        height: 95% !important;
+        height: calc(100% - 20px)  !important;
         z-index: 1;
         overflow: hidden;  
         width: calc(100% - 7px) !important;

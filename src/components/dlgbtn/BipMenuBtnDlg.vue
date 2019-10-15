@@ -86,8 +86,10 @@ export default class BipMenuBtnDlg extends Vue {
             ts.forEach((item:any) => {
                 let tt = item.split("_style:");
                 this.sqlCont .push(tt[0]);
-                let st = tt[1].replace(new RegExp("\\|",'g')," ;");    
-                this.sqlStyle.push(st);
+                if(tt[1]){
+                    let st = tt[1].replace(new RegExp("\\|",'g')," ;");    
+                    this.sqlStyle.push(st);
+                }
             });
             //请确认，是否注销该读者?_style:color:red|font-size:12px,请确认，是否注销该读者?_style:color:red|font-size:12px,;update insuser set  usrattr='9'  where  usrcode=@usrcode;0:注销失败;1:注销成功
             this.sqlDlg0 = true;

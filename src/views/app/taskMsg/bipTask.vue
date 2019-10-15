@@ -64,9 +64,11 @@ export default class bipTask extends Vue {
     @Provide() total:number = 0;
     @Provide() uiCels:Array<any>= [];
     @Provide() taskValue:Array<any>= [];
+    @Provide() taskChangebusId:number = 0;
 
     @Getter('user', { namespace: 'login' }) user?: User;
     async mounted() { 
+      this.taskChangebusId= this.$bus.$on('MyTaskChange',this.fetchTaskData)
       let res = await tools.getCCellsParams('SYRW'); 
       let rtn: any = res.data; 
       if (rtn.id == 0) {
@@ -182,6 +184,9 @@ export default class bipTask extends Vue {
     upReadState(slkid:string,slkbuid:string,tousr:string){
       //(tskim: number, iid: number, state: number, buno: string, buid: string, tousr: string)
       tools.getTaskMsgData(203,null,null,slkid,slkbuid,tousr,null,null,null);
+    }
+    beforeDestroy(){
+        this.$bus.$off('MyTaskChange',this.taskChangebusId)
     }
 }
 </script>

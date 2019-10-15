@@ -3,6 +3,7 @@
  */
 // import { BIPUtil } from '@/utils/Request';
 // let tool = BIPUtil.ServApi
+import QueryCont from './search/QueryCont';
 export default class LinkRef{
     id:string //参照ID
     layCells:Array<any> = [] //参照获取的列
@@ -39,41 +40,54 @@ export default class LinkRef{
 
     makeSearchCont(){
         let cont = ''
+        let contAll = [];
+        let contOne = [];
         if(this.multiple){
             let type = this.layCells[0].type
             let nn = this.realV.split(';')
-            let id = this.layCells[0].id
+            let id = this.layCells[0].id 
             nn.forEach((v1,index)=>{
-                if(type>=-5 && type<=8){
-                    if(index==0){
-                        cont = `~${id}=${v1}`
-                    }else{
-                        cont += ` or ${id}=${v1}`
-                    }
-                }else{
-                    if(index==0){
-                        cont += `~${id}='${v1}'`
-                    }else{
-                        cont += `or ${id}='${v1}'`
-                    }
-                } 
+                let qCont = new QueryCont(id,v1,type);
+                qCont.setContrast(0);
+                contOne.push(qCont);
+                // if(type>=-5 && type<=8){
+                //     if(index==0){
+                //         cont = `~${id}=${v1}`
+                //     }else{
+                //         cont += ` or ${id}=${v1}`
+                //     }
+                // }else{
+                //     if(index==0){
+                //         cont += `~${id}='${v1}'`
+                //     }else{
+                //         cont += `or ${id}='${v1}'`
+                //     }
+                // } 
             })
         }else{
             if(this.id&&this.id.length>0){
                 if(this.layCells){
                     let type = (this.layCells.length>0)?this.layCells[0].type:12
                     if(type && this.layCells){
-                        if(type>=-5 && type<=8){
-                            cont = `~${this.layCells[0].id}=${this.realV}`
-                        }else{
-                            cont = `~${this.layCells[0].id}='${this.realV}'`
-                        }  
+                        // if(type>=-5 && type<=8){
+                        //     cont = `~${this.layCells[0].id}=${this.realV}`
+                        // }else{
+                        //     cont = `~${this.layCells[0].id}='${this.realV}'`
+                        // }  
+                        let qCont = new QueryCont(this.layCells[0].id,this.realV,type);
+                        qCont.setContrast(0);
+                        contOne.push(qCont);
                     }
                 }
 
             }
         }
-        return cont;
+        if(contOne.length ==0){
+            return "";
+        }else{
+            contAll.push(contOne);
+            return "~"+JSON.stringify(contAll);
+        }
     }
 
       makeCLRef(){

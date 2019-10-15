@@ -91,7 +91,7 @@ export default class bipTask extends Vue {
     @Provide() outerVisible:boolean = false;
     @Provide() initDialog:boolean = false;
     @Provide() dialogVl:any = null;
-
+    @Provide() msgChangebusId:number = 0;
     @Getter('user', { namespace: 'login' }) user?: User;
     /**
      * 	APIID_TA_MSG  = "taskmsg";//apiid
@@ -105,6 +105,7 @@ export default class bipTask extends Vue {
      * 
      */
     async mounted() {  
+      this.msgChangebusId= this.$bus.$on('MyMsgChange',this.fetchTaskData)
       this.fetchTaskData();
     }
     async fetchTaskData() {  
@@ -152,6 +153,9 @@ export default class bipTask extends Vue {
     }
     close(){
       this.outerVisible=false;
+    }
+    beforeDestroy(){
+      this.$bus.$off('MyMsgChange',this.msgChangebusId)
     }
 }
 </script>
