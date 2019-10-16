@@ -9,6 +9,7 @@ import { Menu } from "@/classes/Menu";
 import QueryEntity from "@/classes/search/QueryEntity";
 import CDataSet from "@/classes/pub/CDataSet";
 import QueryCont from '@/classes/search/QueryCont';
+import { Cells } from "@/classes/pub/coob/Cells";
 
 import qs from "qs";
 import { BIPUtil } from "@/utils/Request";
@@ -24,9 +25,9 @@ export default class WxApplets extends Vue {
   @Mutation("snkey", { namespace }) setSnkey: any;
   @Mutation("user", { namespace }) setUserInfo: any;
   @Mutation("menulist", { namespace }) setMenusInfo: any;
+  @Getter("user", { namespace }) user?: User;
 
   @Provide() dsm: CDataSet = new CDataSet(null);
-  @Provide() user:User = null;
   async mounted() {
     await this.login()
     await this.getCell();
@@ -70,10 +71,10 @@ export default class WxApplets extends Vue {
   //获取对象数据
   async getCellData(){
     //00USER  == 对象标识
-    //dataStr 条件 {key:value}   {字段:值}
-    let dataStr = "{usrcode:'"+this.user.userCode+"'}";
+    //dataStr 条件 {key:value}   {字段:值}   字段=值
+    let dataStr = "{usrcode:'admin'}";
     let qe:QueryEntity = new QueryEntity("00USER","00USER",dataStr);
-    qe.page.pageSize=this.pageSize
+    qe.page.pageSize=20
     let vv = await tools.query(qe);
     console.log(vv)
   }
@@ -96,7 +97,6 @@ export default class WxApplets extends Vue {
           this.$notify.error(res.data.message);
       }
     }).finally(()=>{
-        this.fullscreenLoading = false
     })
   }
 
