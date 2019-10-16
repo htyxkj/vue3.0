@@ -1,58 +1,49 @@
 <template>
-    <el-row>
-         <div class="bip-home-container">
-             <div class="main-title">
-                <el-row>
-                    <el-col :span="20">
-                        <i class="iconfont icon-bip-menu"></i>
-                        快捷菜单
-                    </el-col>
-                    <el-col :span="4" class="main-title-icon"  >
-                        <i class="el-icon-edit pointer" @click="showMenuList = true"></i>  
-                    </el-col>
-                </el-row>
-             </div>
-             <el-scrollbar wrap-class="scrollbar-wrapper">
-                <el-row :gutter="10">
-                    <template v-if="menuList.length>0" >
-                        <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding:10px 0">
-                            <el-row >
-                                <el-col :span="24" class="imgcol">
-                                    <!-- <img class="img pointer" src="../../assets/48.jpg" @click="menuClick(item.menuId,item.command)"/> -->
-                                    <img class="img pointer" :src="uri+item.menuIcon" @click="menuClick(item.menuId,item.command)"/>
-                                </el-col>
-                                <el-col :span="24" class="imgcol pointer">
-                                    <span @click="menuClick(item.menuId,item.command)" class="menuname">
-                                        {{item.menuName}}
-                                    </span>
-                                </el-col>
-                            </el-row>
-                        </el-col>
-                    </template>
-                    <!-- <el-col style="width:120px;padding-top:5px">
+  <el-row>
+    <div class="bip-home-container">
+      <template>
+        <div class="main-title">
+          <el-row>
+            <el-col :span="20">
+                <i class="iconfont icon-bip-menu"></i>
+                快捷菜单
+            </el-col>
+            <el-col :span="4" class="main-title-icon">
+                <i class="el-icon-edit pointer" @click="showMenuList = true"></i>  
+            </el-col>
+          </el-row>
+        </div>
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+            <el-row :gutter="10">
+                <template v-if="menuList.length>0" >
+                    <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding:10px 0">
                         <el-row >
                             <el-col :span="24" class="imgcol">
-                                <i class=" iconfont icon-bip-xinjian2 insertMenu" @click="showMenuList = true"></i>
-                            </el-col> 
+                                <img class="img pointer" :src="uri+item.menuIcon" @click="menuClick(item.menuId,item.command)"/>
+                            </el-col>
                             <el-col :span="24" class="imgcol pointer">
-                                &nbsp;
+                                <span @click="menuClick(item.menuId,item.command)" class="menuname">
+                                    {{item.menuName}}
+                                </span>
                             </el-col>
                         </el-row>
-                    </el-col>  -->
-                </el-row>
-                <el-dialog title="菜单选择"  class="bipinsaid" :visible.sync="showMenuList" width="40%"  :append-to-body="true" >
-                    <el-transfer :titles="['可选菜单', '已选菜单']" v-model="selection" :props="{key: 'menuId',label: 'menuName'}" 
-                    :data="optionalMenu" filterable style="margin: 20px 0px 5px 26px;" @change="selectionChange">
-                    </el-transfer>
-                    <hr/>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button @click="showMenuList = false" size="small">取 消</el-button>
-                        <el-button type="primary" @click="selectionSelectOK" size="small">确 定</el-button>
-                    </span>
-                </el-dialog>
-            </el-scrollbar>
-         </div>
-    </el-row>
+                    </el-col>
+                </template>
+            </el-row>
+        </el-scrollbar>
+      </template>
+    </div>
+    <el-dialog title="菜单选择"  class="bipinsaid" :visible.sync="showMenuList" width="40%"  :append-to-body="true" >
+        <el-transfer :titles="['可选菜单', '已选菜单']" v-model="selection" :props="{key: 'menuId',label: 'menuName'}" 
+        :data="optionalMenu" filterable style="margin: 20px 0px 5px 26px;" @change="selectionChange">
+        </el-transfer>
+        <hr/>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="showMenuList = false" size="small">取 消</el-button>
+            <el-button type="primary" @click="selectionSelectOK" size="small">确 定</el-button>
+        </span>
+    </el-dialog>
+  </el-row>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
@@ -63,10 +54,10 @@ let baseTool = BIPUtils.baseUtil;
 import {BaseVariable} from "@/utils/BaseICL"
 
 @Component({
-    components:{}
+  components: {}
 })
-export default class HomeMenu extends Vue { 
-    @Prop() cont!:string;
+export default class HomeMenu extends Vue {
+   @Prop() cont!:string;
     @Prop() rech!:string;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Provide() menuList:Array<any> = new Array<any>();
@@ -178,40 +169,49 @@ export default class HomeMenu extends Vue {
         font-size: 14px;
     }
     .bip-home-container {
-        // border:  1px solid #dedede;
+        // border: 1px solid #dedede;
         background-color: #ffffff;
-        // box-shadow: 0 0 5px #8d8d8d;
-        position: fixed; 
+        border-radius: 6px;
+        position: fixed;
         height: calc(100% - 20px)  !important;
         z-index: 1;
-        overflow: hidden;  
+        overflow: hidden;
         width: calc(100% - 7px) !important;
         color: #868D94;
-        border-radius: 6px;
         box-shadow: 1px 2px 10px #dde2e4;
         .el-scrollbar {
             height: 90%;
             margin-bottom: 10px !important;
-            margin-right: 0px !important; 
+            margin-right: 0px !important;
             .el-scrollbar__wrap {
-                overflow-x: hidden !important;
-                padding-right: 5px;
-                height: 100%;
+            overflow-x: hidden !important;
+            padding-right: 5px;
+            height: 100%;
             }
-            .scrollbar-wrapper{
+            .scrollbar-wrapper {
             overflow-x: hidden !important;
             }
         }
     }
-    .main-title{
-        border-bottom:  1px solid #dedede;
+
+    .main-title {
+        border-bottom: 2px solid #efefef;
         height: 40px;
         line-height: 40px;
         font-size: 14px;
-        padding: 0 10px; 
+        padding: 0 10px;
         color: #4A77FA;
         letter-spacing: 1px;
         font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .title {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        letter-spacing: 0.8px;
+        color: #333333;
     }
     .main-title-icon {
         font-size: 20px;

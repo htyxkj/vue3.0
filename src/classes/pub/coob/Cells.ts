@@ -22,5 +22,6 @@ export class Cells {
   condiction!:string //扩充条件和固定条件
   clientUI?:string
   sfix!:string
+  sctrl!:string
   constructor() {}
 }

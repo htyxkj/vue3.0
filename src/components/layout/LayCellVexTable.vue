@@ -110,6 +110,7 @@
             :sort-config="{trigger: 'cell'}"
             :span-method="rowspanMethod"
             show-footer
+            :row-class-name="getRowStyleNew"
             > 
             <!-- @cell-dblclick="openrefs" 双击 -->
             <!-- cds.page.pageSize<cds.page.total -->
@@ -245,6 +246,7 @@ export default class LayCelVexTable extends Vue {
     @Provide() sum_id:any={};//合计列id
     @Provide() celClickTime:number =0;
     @Provide() removeData :Array<CRecord> =[];
+    @Provide() rowClass:any = {};
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -708,6 +710,46 @@ export default class LayCelVexTable extends Vue {
              }
         } 
         this.groupCells = cells;
+    }
+    //为行添加新的样式
+    getRowStyleNew(column:any){
+        let sctrls =this.cds.ccells.sctrl;
+        let row = column.row;
+        if(sctrls){
+            let cc = sctrls.split(";");
+            for(var i=0;i<cc.length;i++){
+                let oneSc = cc[i];
+                if(oneSc.indexOf('`5')!=-1){
+                    //`5tkstate/A:red,B:blue,C:green
+                    let zd = oneSc.substring(2,oneSc.indexOf("/"))
+                    let vl =  sctrls.split("/")[1].split(",");
+                    let rowVl = row.data[zd];
+                    for(var j=0;j<vl.length;j++){
+                        let oneV = vl[j].split(":");
+                        if(rowVl == oneV[0]){
+                            if(this.rowClass['sctrl'+oneV[0]]){
+                                return this.rowClass['sctrl'+oneV[0]];
+                            }
+                            console.log("动态创建CSS")
+                            // 创建我们的样式表
+                            var style = document.createElement('style');
+                            style.innerHTML =
+                                '.sctrl'+oneV[0]+' {' +
+                                    'background-color: '+oneV[1]+' !important;' +
+                                    'color: #FFFFFF !important;' +
+                                '}';
+                            // 获取第一个脚本标记
+                            var ref:any = document.querySelector('script');
+                            // 在第一个脚本标签之前插入新样式
+                            if(ref != null)
+                                ref.parentNode.insertBefore(style, ref);
+                            this.rowClass['sctrl'+oneV[0]]='sctrl'+oneV[0];
+                            return 'sctrl'+oneV[0];
+                        }
+                    }
+                }
+            } 
+        }
     }
 }
 </script>

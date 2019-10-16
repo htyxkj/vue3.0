@@ -1,7 +1,7 @@
 <template>
   <div class="bip-main-container">
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
-      <grid-layout :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
+      <grid-layout class="hoem_component" :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
         :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[5, 5]" :use-css-transforms="true" >
         <template v-if="layout.length>0">
           <grid-item v-for="item in layout" :key="item.i" :x="item.x"
