@@ -74,6 +74,7 @@ export default class BipInsAidEditor extends Vue{
     @Provide() othColsIndex: Array<number> = [];
     @Provide() refLink:BipInsAidNew = new BipInsAidNew("")
     @Provide() linkName:string = ""
+    @Provide() aidMarkKey:string = "";
 
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -87,6 +88,7 @@ export default class BipInsAidEditor extends Vue{
         this.mulcols = (this.cell.attr & 0x100000) > 0;
         this.bfmt = (this.cell.attr & 0x10000) > 0;
         this.bcode = (this.cell.attr & 0x40000) > 0 ;//|| (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
+        this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{
@@ -98,10 +100,10 @@ export default class BipInsAidEditor extends Vue{
             if(str.indexOf('&')>0){
                 str = str.substring(2,str.length-1)
                 this.linkName = str;
-                if(!this.inProcess.get(ICL.AID_KEY+this.linkName)){
+                if(!this.inProcess.get(ICL.AID_KEY+this.aidMarkKey+this.linkName)){
                     await this.getInsAidInfoBy(this.linkName)
                 }else{
-                    let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName)
+                    let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.linkName)
                     if(rr)
                         this.refLink = rr
                 }
@@ -241,7 +243,7 @@ export default class BipInsAidEditor extends Vue{
         
     }
 
-    getRefValues(){
+    async getRefValues(){
         console.log(this.model)
         if(this.refLink&&this.refLink.id.length>0&&this.model1.length>0){
              this.refLink.values = []
@@ -251,13 +253,16 @@ export default class BipInsAidEditor extends Vue{
                 for(var i=0;i<vlarr.length;i++){
                     let val = vlarr[i]
                     let cont = this.refLink.cells.cels[0].id+"='"+val+"' "
-                    let key = ICL.AID_KEY+this.linkName+"_"+val
+                    let key = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+val
                     let vrs = this.aidValues.get(key);
                     if(!vrs){
                         let str = window.sessionStorage.getItem(key)
                         if(!str){
                             let vvs = {id:this.linkName,key:key,cont:cont}
-                            this.fetchInsDataByCont(vvs)
+                            await this.fetchInsDataByCont(vvs)
+                            vrs = this.aidValues.get(key);
+                            if(vrs)
+                                values.push(vrs)
                         }else{
                             vrs = JSON.parse(str);
                             this.setAidValue({key:key,value:vrs})
@@ -273,7 +278,7 @@ export default class BipInsAidEditor extends Vue{
                 this.refLink.values = values
                 this.makeShow()
                 // let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
-                // let key = ICL.AID_KEY+this.linkName+"_"+this.model
+                // let key = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+this.model
                 // let vrs = this.aidValues.get(key);
                 // if(!vrs){
                 //     let str = window.sessionStorage.getItem(key)
@@ -302,6 +307,7 @@ export default class BipInsAidEditor extends Vue{
     }
 
     getFocus(gets: boolean) {
+        console.log(gets)
         if (gets) {
                 if (this.refLink && this.refLink.realV) {
                     this.model1 = this.refLink.realV;
@@ -324,15 +330,15 @@ export default class BipInsAidEditor extends Vue{
     async getInsAidInfoBy(editName:string,bcl:boolean = false){
         let str = editName
         if(bcl){
-            str = ICL.AID_KEYCL+str;
+            str = ICL.AID_KEYCL+this.aidMarkKey+str;
         }else{
-            str = ICL.AID_KEY+str;
+            str = ICL.AID_KEY+this.aidMarkKey+str;
         }
         let vv = this.aidInfo.get(str)
         if(!vv){
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
-                    let vars = {id:bcl?300:200,aid:editName}
+                    let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                     await this.fetchInsAid(vars);
             }else{
                 this.refLink = JSON.parse(vv)
@@ -347,7 +353,7 @@ export default class BipInsAidEditor extends Vue{
     @Watch('aidInfo')
     mapChanges(){
         if(!this.refLink.id){
-            let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName)
+            let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.linkName)
             if(rr){
                 this.refLink = rr
             }
@@ -382,7 +388,7 @@ export default class BipInsAidEditor extends Vue{
                 let vlarr = this.model.split(";")
                 var values:any = [];
                 for(var i=0;i<vlarr.length;i++){
-                    let key = ICL.AID_KEY+this.linkName+"_"+vlarr[i]
+                    let key = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+vlarr[i]
                     let vvs = this.aidValues.get(key);
                     if(vvs){
                         this.refLink.realV = this.model

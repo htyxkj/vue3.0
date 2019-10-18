@@ -6,7 +6,7 @@
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import { State, Action, Getter, Mutation } from "vuex-class";
-// import CDataSet from '../../../classes/pub/CDataSet';
+import CDataSet from '../../../classes/pub/CDataSet';
 import { Cell } from '../../../classes/pub/coob/Cell';
 import {CommICL} from '@/utils/CommICL'
 // import { BIPUtils } from '@/utils/BaseUtil'
@@ -17,6 +17,7 @@ let ICL = CommICL
 @Component({})
 export default class BipAidRef extends Vue{
     @Prop() cell!:Cell
+    @Prop() cds!:CDataSet
     @Prop() bipInsAid!:BipInsAidNew //参照对象
     @Prop() model!:string
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -33,7 +34,9 @@ export default class BipAidRef extends Vue{
 
     @Provide() model1:string = ''
     @Provide() refLink!:BipInsAidNew
+    @Provide() aidMarkKey:string = "";
     mounted(){
+        this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.refLink = Object.assign({},this.bipInsAid)
         this.disabled = (this.cell.attr & this.attr.READ) > 0;
         this.multiple = (this.cell.attr & this.attr.MULTIPLE) > 0;
@@ -54,7 +57,7 @@ export default class BipAidRef extends Vue{
              this.refLink.values = []
             if(this.model&&this.model.length>0){
                 let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
-                let key = ICL.AID_KEY+this.refLink.id+"_"+this.model
+                let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+this.model
                 let vrs = this.aidValues.get(key);
                 if(!vrs){
                     let str = window.sessionStorage.getItem(key)
@@ -106,7 +109,7 @@ export default class BipAidRef extends Vue{
     @Watch('aidValues')
     aidValuesChange(){
         if(this.refLink&&this.refLink.id.length>0&&this.model){
-            let key = ICL.AID_KEY+this.refLink.id+"_"+this.model
+            let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+this.model
             let vvs = this.aidValues.get(key);
             if(vvs){
                 this.refLink.realV = this.model

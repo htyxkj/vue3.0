@@ -110,7 +110,7 @@ export default class BipStatisticsDialog extends Vue {
         let qe: QueryEntity = new QueryEntity("","");
         qe.pcell = this.env.dsm.ccells.obj_id
         qe.tcell = this.env.ds_cont.ccells.obj_id
-        qe.cont = JSON.stringify(this.env.ds_cont.currRecord.data);
+        qe.cont = JSON.stringify(this.env.ds_cont.currRecord.data,this.testReplacer);
         param = tool.getBipStatisticsParams(JSON.stringify(qe),groupfilds,groupdatafilds);
         let chartData = await tools.getFromServer(param); 
 
@@ -122,6 +122,12 @@ export default class BipStatisticsDialog extends Vue {
             this.$notify.warning(chartData.data.message);
         }
         this.fullscreenLoading = false;
+    }
+    testReplacer(key:any,value:any){//key为对象属性名，value为对象属性值，会遍历testObj或testArr来执行该函数
+        if(value== null){
+            value = "";
+        }
+        return value;
     }
     // data:
     // data:
@@ -554,21 +560,24 @@ export default class BipStatisticsDialog extends Vue {
                     rr = ICL.AID_KEY+rr;
                     let vl:any = await this.getAidValues(rr+"_"+code);
                     if(vl){
-                        if(vl instanceof Array)
+                        if(vl instanceof Array){
                             vl = vl[0];
+                        }
                         let ref = this.aidValues.get(rr);
-                        if(vl && ref){
-                            name +=vl[ref.cells.cels[ref.showColsIndex[1]].id]+"-"
-                            this.tableData[j][id] = vl[ref.cells.cels[ref.showColsIndex[1]].id];
-                        }else{
-                            let vars = {id:200,aid:editName}
-                            let ref1 = await this.fetchInsAid(vars); 
-                            if(ref1 && ref1 != undefined){
-                                ref1 = ref1.data.data.data;
-                                name +=vl[ref1.cells.cels[ref1.showColsIndex[1]].id]+"-"
-                                this.tableData[j][id] = vl[ref1.cells.cels[ref1.showColsIndex[1]].id];
+                        if(vl){
+                            if(vl && ref){
+                                name +=vl[ref.cells.cels[ref.showColsIndex[1]].id]+"-"
+                                this.tableData[j][id] = vl[ref.cells.cels[ref.showColsIndex[1]].id];
                             }else{
-                                name += code;
+                                let vars = {id:200,aid:editName}
+                                let ref1 = await this.fetchInsAid(vars); 
+                                if(ref1 && ref1 != undefined){
+                                    ref1 = ref1.data.data.data;
+                                    name +=vl[ref1.cells.cels[ref1.showColsIndex[1]].id]+"-"
+                                    this.tableData[j][id] = vl[ref1.cells.cels[ref1.showColsIndex[1]].id];
+                                }else{
+                                    name += code;
+                                }
                             }
                         }
                     }
@@ -602,15 +611,20 @@ export default class BipStatisticsDialog extends Vue {
         }
         if(!res){
             let karr = key.split("_"); 
-            let ref = this.aidValues.get(karr[0]+"_"+karr[1]);
+            let k0 = karr[0];
+            let kid = key.substring(key.indexOf("_")+1,key.lastIndexOf("_"));
+            let kv = karr[karr.length-1];
+            let ref = this.aidValues.get(karr[0]+"_"+kid);
             if(!ref){
-                let vars = {id:200,aid:karr[1]}
+                let vars = {id:200,aid:kid}
                 ref = await this.fetchInsAid(vars); 
+                if(ref.data.id == -1)
+                    return;
                 ref = ref.data.data.data
             }
             if(ref){
-                let cont = ref.cells.cels[0].id+"='"+karr[2]+"' "
-                let vvs = {id:karr[1],key:key,cont:cont}
+                let cont = ref.cells.cels[0].id+"='"+kv+"' "
+                let vvs = {id:kid,key:key,cont:cont}
                 return await this.fetchInsDataByCont(vvs).then((res: any) => {
                     if (res && res.data.id === 0) { 
                         return res.data.data.data.values;

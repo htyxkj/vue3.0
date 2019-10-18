@@ -4,7 +4,7 @@
             <bip-list-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-list-ref>
         </template>
         <template v-else-if="editorType == 9 && bipInsAid && (bipInsAid.bType == 'CSelectEditor' || bipInsAid.bType == 'CDynaEditor'|| bipInsAid.bType == 'CGDicEditor')">
-            <bip-aid-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" />
+            <bip-aid-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" :cds="cds"/>
         </template>
         <template v-else>
             <bip-grid-show :cell="cell" :model="model" />
@@ -43,10 +43,11 @@ export default class BipGridInfo extends Vue{
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Provide() model:any = ''
     @Provide() linkName:string = ""
+    @Provide() aidMarkKey:string = "";
     @Provide() eventId:number = 0
     @Provide() eventId1:number = 1
     mounted(){
-        
+        this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.cellEdit()
         this.eventId = this.$bus.$on('cell_edit',this.cellEdit)
         this.eventId1 = this.$bus.$on('datachange',this.dataloadchange)
@@ -114,16 +115,16 @@ export default class BipGridInfo extends Vue{
     async getInsAidInfoBy(editName:string,bcl:boolean = false){
         let str = editName
         if(bcl){
-            str = ICL.AID_KEYCL+str;
+            str = ICL.AID_KEYCL+this.aidMarkKey+str;
         }else{
-             str = ICL.AID_KEY+str;
+             str = ICL.AID_KEY+this.aidMarkKey+str;
         }
         if(!this.inProcess.get(str)){
             let vv = this.aidInfo.get(str)
             if(!vv){
                 vv  = window.sessionStorage.getItem(str)
                 if(!vv){
-                    let vars = {id:bcl?300:200,aid:editName}
+                    let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                     await this.fetchInsAid(vars);
                 }else{
                     this.bipInsAid = JSON.parse(vv)
@@ -145,7 +146,7 @@ export default class BipGridInfo extends Vue{
     mapChanges(){
         if(!this.bipInsAid){ 
             if(this.linkName){
-                let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName) ==null?this.aidInfo.get(ICL.AID_KEYCL+this.linkName):this.aidInfo.get(ICL.AID_KEY+this.linkName) 
+                let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.linkName) ==null?this.aidInfo.get(ICL.AID_KEYCL+this.aidMarkKey+this.linkName):this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.linkName) 
                 if(rr)
                     this.bipInsAid = rr
             } 

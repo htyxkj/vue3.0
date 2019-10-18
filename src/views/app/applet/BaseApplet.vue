@@ -368,10 +368,12 @@ export default class BaseApplet extends Vue{
             //         this.qe.cont = this.dsm.cont;
             // }
             this.qe.oprid = this.oprid;
-                if(this.oprid == 13)
-                    this.qe.cont = JSON.stringify(this.dsm.cont);
-                else
-                    this.qe.cont = this.dsm.cont;
+                // if(this.oprid == 13){
+                //     let cont = this.qe.cont==null?"":JSON.stringify(this.dsm.cont);
+                //     this.qe.cont = cont;
+                // } else{
+                //     this.qe.cont = this.dsm.cont;
+                // }
             return null;
         }
         return null;
@@ -773,10 +775,10 @@ export default class BaseApplet extends Vue{
         this.qe.page.pageSize = value
         this.qe.page.currPage = 1
         console.log(this.qe)
-        if(this.oprid == 13)
-        this.qe.cont = JSON.stringify(this.dsm.cont);
-        else
-        this.qe.cont = this.dsm.cont;
+        // if(this.oprid == 13)
+        // this.qe.cont = JSON.stringify(this.dsm.cont);
+        // else
+        // this.qe.cont = this.dsm.cont;
         let vv = await this.findDataFromServe(this.qe);
         console.log(vv,'服务器返回数据')
         if (vv != null) {
@@ -794,10 +796,10 @@ export default class BaseApplet extends Vue{
         this.qe.oprid = this.oprid
         this.qe.type = 0
         this.qe.page.currPage = value
-        if(this.oprid == 13)
-        this.qe.cont = JSON.stringify(this.dsm.cont);
-        else
-        this.qe.cont = this.dsm.cont;
+        // if(this.oprid == 13)
+        // this.qe.cont = JSON.stringify(this.dsm.cont);
+        // else
+        // this.qe.cont = this.dsm.cont;
         let vv = await this.findDataFromServe(this.qe);
         if (vv != null) {
             // this.qe = vv;

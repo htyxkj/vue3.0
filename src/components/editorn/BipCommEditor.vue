@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-if="assit&&bipInsAid!=null"> 
-            <template v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor')">
+            <template v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor')">
                 <bip-date-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-date-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CFlowEditor'">
@@ -83,6 +83,7 @@ export default class BipCommEditor extends Vue{
     @Provide() bsearch:boolean = false
     @Provide() assit:boolean = false
     @Provide() editName:any = ''
+    @Provide() aidMarkKey:string = "";
     @Provide() bipInsAid:BipInsAidNew|null = null
     @Provide() qe:QueryEntity = new QueryEntity("","")
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
@@ -95,9 +96,10 @@ export default class BipCommEditor extends Vue{
             this.eventId = this.$bus.$on('cell_edit',this.getModelValues)
             this.bsearch = (this.cds.ccells.attr&0x80)>0
             this.assit = this.cell.assist
+            this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
             if(this.assit){
                 this.editName = this.cell.editName
-                if(!this.inProcess.get(ICL.AID_KEY+this.editName)){
+                if(!this.inProcess.get(ICL.AID_KEY+this.aidMarkKey+this.editName)){
                     await this.getInsAidInfoBy(this.editName)
                 }
             }else{
@@ -155,13 +157,13 @@ export default class BipCommEditor extends Vue{
         if(!this.bipInsAid){
             if(this.assit){
                 if(this.editName){
-                    let rr = this.aidInfo.get(ICL.AID_KEY+this.editName)
+                    let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.editName)
                     if(rr)
                         this.bipInsAid = rr
                 }
             }else{
                 if(this.editorType == this.I_EDITOR_LIST){
-                    let rr = this.aidInfo.get(ICL.AID_KEYCL+this.editName)
+                    let rr = this.aidInfo.get(ICL.AID_KEYCL+this.aidMarkKey+this.editName)
                     if(rr)
                         this.bipInsAid = rr
                 }
@@ -207,15 +209,15 @@ export default class BipCommEditor extends Vue{
     async getInsAidInfoBy(editName:string,bcl:boolean = false){
         let str = editName
         if(bcl){
-            str = ICL.AID_KEYCL+str;
+            str = ICL.AID_KEYCL+this.aidMarkKey+str;
         }else{
-            str = ICL.AID_KEY+str
+            str = ICL.AID_KEY+this.aidMarkKey+str
         }
         let vv = this.aidInfo.get(str)
         if(!vv){
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
-                let vars = {id:bcl?300:200,aid:editName}
+                let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                 await this.fetchInsAid(vars);
             }else{
                 this.bipInsAid = JSON.parse(vv)
@@ -230,15 +232,15 @@ export default class BipCommEditor extends Vue{
         let cc:any = this.bipInsAid;
         let str = editName
         if(bcl){
-            str = ICL.AID_KEYCL+str;
+            str = ICL.AID_KEYCL+this.aidMarkKey+str;
         }else{
-            str = ICL.AID_KEY+str
+            str = ICL.AID_KEY+this.aidMarkKey+str
         }
         let vv = this.aidInfo.get(str)
         if(!vv){
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
-                let vars = {id:bcl?300:200,aid:editName}
+                let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                 await this.fetchInsAid(vars);
             }else{
                 cc = JSON.parse(vv)

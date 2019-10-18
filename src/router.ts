@@ -45,6 +45,9 @@ export default new Router({
     {
         path: '/myTask',
         name: 'myTask',
+        // meta: {
+        //   keepAlive: false // 需要被缓存
+        // },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.

@@ -161,8 +161,8 @@ export default class LayHeader extends Vue {
                 if(this.taskNum>0){
                     this.$notify.success("您有" + this.taskNum + "条任务未处理！" );
                 }
-                this.$bus.$emit('MyTaskChange')
             }
+            this.$bus.$emit('MyTaskChange')
         }
         if (info.type === 2) {
             if (this.msgNum !== info.count) {
@@ -170,8 +170,8 @@ export default class LayHeader extends Vue {
                 if(this.msgNum>0){
                     this.$notify.success("您有" + this.msgNum + "条消息未处理！" ); 
                 }
-                this.$bus.$emit('MyMsghange')
             }
+            this.$bus.$emit('MyMsghange')
         }
         // console.log(frame);
         // 接收消息

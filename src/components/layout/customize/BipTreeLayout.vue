@@ -1,6 +1,8 @@
 <template>
   <div>
-    <el-tree :node-key="keyID" lazy :load="loadNode" :props="defaultProps" :default-expanded-keys="expandedKeys" ></el-tree>
+    <el-tree :node-key="keyID" lazy :load="loadNode" @node-click="handleNodeClick"
+      :props="defaultProps" :default-expanded-keys="expandedKeys" >
+    </el-tree>
   </div>
 </template>
 
@@ -91,6 +93,11 @@ export default class BipTreeLayout extends Vue{
       }else{
         return null;
       }
+    }
+    handleNodeClick(data:any,data1:any,data2:any) {
+      console.log(data);
+      console.log(data1);
+      console.log(data2);
     }
 }
 </script>

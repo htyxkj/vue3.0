@@ -1,11 +1,12 @@
 <template>
   <div v-if="laycell" class="bip-lay"> 
         <vxe-table
-            ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-            show-header-all-overflow class="vxe-table-element" :data.sync="taskValue"
+            ref="SYRW_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+            show-header-all-overflow class="vxe-table-element" :data.sync="this.cds.cdata.data"
             :optimized="true" height="550px" @cell-dblclick="openrefs">
             <vxe-table-column type="index" width="60"></vxe-table-column>
             <vxe-table-column 
+              min-width="200"
               header-align="center" align="center" v-for="(cel,index) in laycell.uiCels"
               :key="index" :field="cel.id" :title="cel.labelString" show-header-overflow show-overflow >
               <template v-slot="{row,rowIndex}">
@@ -92,6 +93,7 @@ export default class bipTask extends Vue {
       this.fetchTaskData();
     }
     async fetchTaskData() {  
+      console.log("fetchTaskData")
       let userCode = "";
       let dataStr = "";
       if(this.user)
@@ -99,14 +101,22 @@ export default class bipTask extends Vue {
       let qe:QueryEntity = new QueryEntity("SYRW","SYRW",dataStr);
       qe.page.pageSize=this.pageSize
       let vv = await tools.query(qe);
-      console.log(vv)
       if(vv.data.id ==0){ 
         this.taskValue = vv.data.data.data.data; 
         let page = vv.data.data.data.page;
         this.pageSize = page.pageSize;
         this.total = page.total;
         this.currPage = page.currPage;
-        this.cds.setValues(this.taskValue); 
+        let cc:any = this.$refs.SYRW_vvt;
+        this.cds.setValues(this.taskValue,true);
+        if(cc){
+          setTimeout(() => {
+            cc.clearData();
+            cc.reloadData(this.taskValue)
+            cc.refreshData();
+            cc.updateData();  
+          }, 300);
+        }
       }
     }
 

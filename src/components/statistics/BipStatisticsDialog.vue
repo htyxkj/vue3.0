@@ -210,7 +210,8 @@ export default class BipStatisticsDialog extends Vue {
                     if(userAttr <=1){
                         cell.currRecord.data.usrcode = "*";
                     } 
-                    cell.currRecord.data.rech = JSON.stringify(this.programEnv.ds_cont.currRecord.data);
+                    let cc = JSON.stringify(this.programEnv.ds_cont.currRecord.data,this.testReplacer);
+                    cell.currRecord.data.rech = cc;
                     cell.currRecord.data.comtype= "Report";
                     cell.currRecord.data.cont = JSON.stringify(cont);
                     cell.currRecord.data.sname= this.program.name;
@@ -227,6 +228,12 @@ export default class BipStatisticsDialog extends Vue {
         }else{
             this.$notify.error("对象INSPARA不存在！")
         }
+    }
+    testReplacer(key:any,value:any){//key为对象属性名，value为对象属性值，会遍历testObj或testArr来执行该函数
+        if(value== null){
+            value = "";
+        }
+        return value;
     }
     /**
      * 查询统计方案

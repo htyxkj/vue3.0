@@ -60,10 +60,14 @@ const actions: ActionTree<BipInsState, RootState> = {
         let id = val.id;
         let aid = val.aid;
         let k1 = aid
+        let k = "";
+        if(val.ak){
+            k  = val.ak
+        }
         if(id==300){
-            k1 = ICL.AID_KEYCL+aid;
+            k1 = ICL.AID_KEYCL+k+aid;
         }else{
-            k1 = ICL.AID_KEY+aid;
+            k1 = ICL.AID_KEY+k+aid;
         }
         commit('setKeyMap',k1);
         return tools.getBipInsAidInfo(aid, id).then(res=>{

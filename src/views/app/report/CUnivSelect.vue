@@ -23,7 +23,7 @@
                 </template>
                 <template v-else>
                     <template v-if="env && env.dsm && env.dsm.ccells">
-                        <el-row>
+                        <el-row :gutter="10">
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
                                 <bip-statistics-chart :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
                             </el-col>

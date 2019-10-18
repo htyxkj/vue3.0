@@ -58,6 +58,7 @@ export default class BipTreeEditor extends Vue{
     @Provide() showQueryInfo:boolean =false;
     @Provide() refLink:BipInsAidNew = new BipInsAidNew("")
     @Provide() linkName:string = ""    
+    @Provide() aidMarkKey:string = "";
     @Provide() bcode: boolean = false;//文本编码
     @Provide() TreeDataChangeID:any =null;
 
@@ -70,6 +71,7 @@ export default class BipTreeEditor extends Vue{
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
 
     async mounted(){
+        this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.TreeDataChangeID = this.$bus.$on('TreeDataChange',this.dataChange)
 
 
@@ -88,10 +90,10 @@ export default class BipTreeEditor extends Vue{
             if(str.indexOf('&')>0){
                 str = str.substring(2,str.length-1)
                 this.linkName = str;
-                if(!this.inProcess.get(ICL.AID_KEY+this.linkName)){
+                if(!this.inProcess.get(ICL.AID_KEY+this.aidMarkKey+this.linkName)){
                     await this.getInsAidInfoBy(this.linkName)
                 }else{
-                    let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName)
+                    let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.linkName)
                     if(rr){
                         this.refLink = rr
                     }
@@ -179,15 +181,15 @@ export default class BipTreeEditor extends Vue{
     async getInsAidInfoBy(editName:string,bcl:boolean = false){
         let str = editName
         if(bcl){
-            str = ICL.AID_KEYCL+str;
+            str = ICL.AID_KEYCL+this.aidMarkKey+str;
         }else{
-            str = ICL.AID_KEY+str;
+            str = ICL.AID_KEY+this.aidMarkKey+str;
         }
         let vv = this.aidInfo.get(str)
         if(!vv){
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
-                    let vars = {id:bcl?300:200,aid:editName}
+                    let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                     await this.fetchInsAid(vars);
             }else{
                 this.refLink = JSON.parse(vv)
@@ -207,7 +209,7 @@ export default class BipTreeEditor extends Vue{
                 for(var i=0;i<vlarr.length;i++){
                     let val = vlarr[i]
                     let cont = this.refLink.cells.cels[0].id+"='"+val+"' "
-                    let key = ICL.AID_KEY+this.linkName+"_"+val
+                    let key = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+val
                     let vrs = this.aidValues.get(key);
                     if(!vrs){
                         let str = window.sessionStorage.getItem(key)
@@ -267,7 +269,7 @@ export default class BipTreeEditor extends Vue{
                 let vlarr = this.model.split(";")
                 var values:any = [];
                 for(var i=0;i<vlarr.length;i++){
-                    let key = ICL.AID_KEY+this.linkName+"_"+vlarr[i]
+                    let key = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+vlarr[i]
                     let vvs = this.aidValues.get(key);
                     if(vvs){
                         this.refLink.realV = this.model
@@ -283,7 +285,7 @@ export default class BipTreeEditor extends Vue{
     @Watch('aidInfo')
     mapChanges(){
         if(!this.refLink.id){
-            let rr = this.aidInfo.get(ICL.AID_KEY+this.linkName)
+            let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.linkName)
             if(rr){
                 this.refLink = rr
             }

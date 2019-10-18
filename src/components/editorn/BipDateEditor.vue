@@ -139,6 +139,13 @@ export default class BipDateEditor extends Vue{
                 }else if(this.bipInsAid.id == 'H_S_M'){
                     this.dateFormat = 'HH:mm:ss';
                 }
+            }else if(this.bipInsAid.bType == 'CYMEditor'){
+                this.dateType = 'month';
+                if(this.bipInsAid.id == 'Y-M'){                    
+                    this.dateFormat = 'yyyy-MM';
+                }else if(this.bipInsAid.id == 'YM'){
+                    this.dateFormat = 'yyyyMM';
+                }
             }
             this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         // }
