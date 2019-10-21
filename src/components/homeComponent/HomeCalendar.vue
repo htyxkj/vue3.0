@@ -6,10 +6,12 @@
                     :markDateMore="markDate"></Calendar>
                 <el-row>&nbsp;</el-row>
                 <el-row style="width:100%;padding: 0px 30px;" v-for="(item,index) in taskDate" :key="index">
-                    <el-col :span="8">·{{item.data.ddate}}</el-col>
+                    <el-col :span="8">
+                        <div class="newstitletime">{{item.data.ddate}}</div>
+                    </el-col>
                     <el-col :span="16">
                         <span @click="taskClick(item)">
-                            {{item.data.sevent}}
+                            <div class="newstitle">{{item.data.sevent}}</div>
                         </span>
                     </el-col>
                 </el-row>
@@ -200,6 +202,24 @@ export default class HomeMenu extends Vue {
           overflow-x: hidden !important;
         }
     }
+}
+.newstitle {
+  padding: 3px 0;
+  font-size: 13px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.8px;
+  color: #333333; 
+}
+.newstitletime {
+  padding: 3px 0;
+  font-size: 13px;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #868D94;
 }
 </style>
 <style lang="scss">
