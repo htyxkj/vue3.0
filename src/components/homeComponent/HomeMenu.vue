@@ -154,7 +154,7 @@ export default class HomeMenu extends Vue {
     .img{
         width: 50px;
         height: 50px;
-        border-radius: 50%;
+        // border-radius: 50%;//2019年10月20日11:06:29 ch注
     }
     .imgcol{
         text-align: center;
