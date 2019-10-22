@@ -101,6 +101,7 @@ export default class BipNumberEditor extends Vue{
     }
     valueChange(val:number){
         this.model1 = val;
+        this.dataChange(val)
     }
         
     beforeDestroy(){

@@ -593,15 +593,18 @@ export default class BaseApplet extends Vue{
     }
 
     checkNotNull(cds:CDataSet):boolean{
+        console.log("非空校验")
         let bok = true;
         cds.ccells.cels.forEach(item => {
             if (item.unNull&&bok) {
-                var vl = cds.currRecord.data[item.id]+'';
-                if(item.type<5){
-                    if(!vl){
-                        vl = 0+'';
-                    }
-                }
+                let vl = null;
+                if(cds.currRecord.data[item.id]!=null)
+                    vl = cds.currRecord.data[item.id]+'';
+                // if(item.type<5){
+                //     if(!vl){
+                //         vl = 0+'';
+                //     }
+                // }
                 if (!vl) {
                     this.$notify.warning( "【" + item.labelString + "】不能为空!");
                     bok =  false;

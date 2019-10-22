@@ -98,6 +98,8 @@ export default class BipStatisticsDialog extends Vue {
         { id: "line", name: "折线图" },
         { id: "pie", name: "饼状图" },
         { id: "bar", name: "柱状图" },
+        { id: "dimensionBar", name: "二维柱状图" },
+        { id: "dimensionStackingBar", name: "二维柱状图(堆叠)" },
         { id: "lineArea", name: "面积图"},
         { id: "barGraph", name: "条形图"},
         { id: "pieAnnular", name: "环形图"}

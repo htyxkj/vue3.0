@@ -149,6 +149,10 @@ export default class BipStatisticsDialog extends Vue {
             await this.makebarGraph(chartData);
         }else if( this.stat.chartTypeValue == "pieAnnular"){
             await this.makepieAnnular(chartData);
+        }else if(this.stat.chartTypeValue == 'dimensionBar'){
+            await this.makeDimensionBar(chartData,false)
+        }else if(this.stat.chartTypeValue =='dimensionStackingBar'){
+            await this.makeDimensionBar(chartData,true)
         }else {
             await this.makeColumnOpitons(chartData);
         }
@@ -192,9 +196,20 @@ export default class BipStatisticsDialog extends Vue {
                                    "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                 ];
                                 let cc = params.dataIndex;
-                                if(cc >colorList.length)
+                                if(cc >=colorList.length)
                                     cc = cc -colorList.length;
                                 return colorList[cc];
+                            }
+                        }
+                    },
+                    label: {
+                        normal: {
+                            formatter: '{b|{b}({d}%)}',
+                            rich: { 
+                                b: {
+                                    fontSize: 12,
+                                    lineHeight: 33
+                                },
                             }
                         }
                     }
@@ -306,7 +321,7 @@ export default class BipStatisticsDialog extends Vue {
                                         "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                     ];
                                     let cc = params.dataIndex;
-                                    if(cc >colorList.length)
+                                    if(cc >=colorList.length)
                                         cc = cc -colorList.length;
                                     return colorList[cc];
                                 },
@@ -362,9 +377,20 @@ export default class BipStatisticsDialog extends Vue {
                                     "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                 ];
                                 let cc = params.dataIndex;
-                                if(cc >colorList.length)
+                                if(cc >=colorList.length)
                                     cc = cc -colorList.length;
                                 return colorList[cc];
+                            }
+                        }
+                    },
+                    label: {
+                        normal: {
+                            formatter: '{b|{b}({d}%)}',
+                            rich: { 
+                                b: {
+                                    fontSize: 12,
+                                    lineHeight: 33
+                                },
                             }
                         }
                     }
@@ -401,8 +427,6 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    // magicType: {show: true, type: ['line', 'bar']},
-                    // restore: {show: true},
                     saveAsImage: {show: true}
                 },
                 right:"2%"
@@ -476,7 +500,7 @@ export default class BipStatisticsDialog extends Vue {
                                        "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
                                     ];
                                     let cc = params.dataIndex;
-                                    if(cc >colorList.length)
+                                    if(cc >=colorList.length)
                                         cc = cc -colorList.length;
                                     return colorList[cc];
                                 },
@@ -488,7 +512,7 @@ export default class BipStatisticsDialog extends Vue {
                     var colorList = [
                         "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
                     let cc = key1;
-                    if(cc >colorList.length)
+                    if(cc >=colorList.length)
                         cc = cc -colorList.length;
                     color = colorList[cc];
                     if(chartType == 'line')
@@ -507,6 +531,86 @@ export default class BipStatisticsDialog extends Vue {
         option.series = series0;
         this.option = option;
     }
+    //二维柱状图
+    async makeDimensionBar(chartData:any,Stacking:boolean){
+        let option:any = {
+            color:["#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['']
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            series: [
+            ]
+        };
+        let legendD = [];
+        let xAxisD = [];
+        let xD = this.selGroup[0];
+        let lD = this.selGroup[1]
+        let allData = chartData.data.data.tjpages.celData; 
+        for(var i=0;i<allData.length;i++){
+            let data = allData[i]
+            var name = await this.getGroupFldName(data,i);
+            legendD.push(data[lD]);
+            xAxisD.push(data[xD]);
+        }
+        legendD = Array.from(new Set(legendD));
+        xAxisD = Array.from(new Set(xAxisD));
+        option.legend.data = legendD
+        option.xAxis.data = xAxisD
+        for(var k=0;k<legendD.length;k++){
+            let dd:any = {};
+            if(Stacking){
+                dd = {
+                    name: '',
+                    type: 'bar',
+                    stack: '总量',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'insideRight'
+                        }
+                    },
+                    data: []
+                }
+            }else{
+                dd = {
+                    name: '',
+                    type: 'bar',
+                    data: []
+                }
+            }
+            for(var j=0;j<xAxisD.length;j++){
+                for(var i=0;i<this.tableData.length;i++){
+                    let data = this.tableData[i]
+                    if(data[lD] == legendD[k]&&xAxisD[j] == data[xD]){
+                        dd.data.push(data[this.selValue[0]])
+                        dd.name=data[lD]
+                    }
+                }
+            }
+            option.series.push(dd);
+        }
+        this.option = option;
+    }
     //获取参照
     async getGroupFldName(item:any,j:any){ 
         var name = "";
@@ -516,8 +620,14 @@ export default class BipStatisticsDialog extends Vue {
             var cell:any = this.getCellById(id);
             if(cell !=null)
             var rr = cell.refValue;
-            if(!rr)
-                return code;
+            if(!rr){
+                if(i==0){
+                    name = code;
+                }else{
+                    name += "-"+code;
+                }
+                continue;
+            }
             rr = rr.substring(rr.indexOf("{")+1,rr.indexOf("}"));
 
             if(rr !=null && rr){
@@ -543,8 +653,8 @@ export default class BipStatisticsDialog extends Vue {
                     }
                     let cl = this.aidValues.get(rr);
                     if(cl && cl.values.length>0){
-                        let key = cl.cells.cels[0].labelString;
-                        let value = cl.cells.cels[1].labelString;
+                        let key = cl.cells.cels[0].id;
+                        let value = cl.cells.cels[1].id;
                         cl.values.forEach((item:any)=> { 
                             if (item[key] == code) {
                                 name += item[value] + "-";

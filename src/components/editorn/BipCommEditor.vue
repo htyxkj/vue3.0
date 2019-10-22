@@ -246,14 +246,15 @@ export default class BipCommEditor extends Vue{
                 cc = JSON.parse(vv)
             }
         }else{
-            cc = vv;
+            this.bipInsAid = vv;
+            return;
         }
+        vv = this.aidInfo.get(str);
         //List  是辅助的 进行一下数据查询
         await tools.getBipInsAidInfo(editName,210,this.qe).then((res:any)=>{
             if(res.data.id==0){
-                console.log(res);
-                cc.values =  res.data.data.data.values 
-                this.bipInsAid = cc;
+                vv.values = res.data.data.data.values;
+                this.bipInsAid = vv;
             }
             let vals = {key:str,value:this.bipInsAid}
             this.setAidInfo(vals)
