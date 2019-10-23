@@ -37,7 +37,7 @@
             <!-- 报表表格-->
             <vxe-table v-if="tableData && tjcell && showTable"
                 ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-                show-header-all-overflow class="vxe-table-element" :data.sync="tableData" 
+                show-header-all-overflow class="vxe-table-element" :data.sync="tableData" style="padding-bottom: 15px;"
                 :optimized="true" height="350px">
                 <vxe-table-column type="index" width="60"></vxe-table-column>
                 <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
@@ -168,6 +168,13 @@ export default class BipStatisticsDialog extends Vue {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },            
             legend: {
                 type: 'scroll',
                 orient: 'vertical', 
@@ -246,8 +253,6 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    // magicType: {show: true, type: ['line', 'bar']},
-                    // restore: {show: true},
                     saveAsImage: {show: true}
                 },
                 right:"2%"
@@ -349,6 +354,13 @@ export default class BipStatisticsDialog extends Vue {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },            
             legend: {
                 type: 'scroll',
                 orient: 'vertical', 
@@ -539,15 +551,24 @@ export default class BipStatisticsDialog extends Vue {
                 trigger: 'axis',
                 axisPointer: {
                     type: 'shadow'
-                }
+                },
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
             },
             legend: {
-                data: ['']
+                data: [''],
+                top: 5,
             },
             grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
+                left: '1%',
+                right: '1%',
+                bottom: '1%',
+                top:'8%',
                 containLabel: true
             },
             xAxis: {
