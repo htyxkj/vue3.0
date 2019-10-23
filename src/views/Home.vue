@@ -463,7 +463,7 @@ export default class Home extends Vue {
     }
 }
 </script>
-<style lang="scss" >
+<style lang="scss" scoped>
 .bip-main-container {
     position: fixed; 
     height: calc(100% - 104px) !important;
