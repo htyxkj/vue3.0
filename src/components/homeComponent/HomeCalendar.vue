@@ -232,6 +232,7 @@ export default class HomeMenu extends Vue {
     .mark1{
         background-color: #52D48C;
         border-radius: 50%;
+        color:#FFF;
     }
    
     .wh_content_all {
