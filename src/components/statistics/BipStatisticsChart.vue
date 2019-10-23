@@ -197,7 +197,7 @@ export default class BipStatisticsDialog extends Vue {
                                 ];
                                 let cc = params.dataIndex;
                                 if(cc >=colorList.length)
-                                    cc = cc -colorList.length;
+                                    cc = cc %colorList.length;
                                 return colorList[cc];
                             }
                         }
@@ -322,7 +322,7 @@ export default class BipStatisticsDialog extends Vue {
                                     ];
                                     let cc = params.dataIndex;
                                     if(cc >=colorList.length)
-                                        cc = cc -colorList.length;
+                                        cc = cc %colorList.length;
                                     return colorList[cc];
                                 },
                             }
@@ -378,7 +378,7 @@ export default class BipStatisticsDialog extends Vue {
                                 ];
                                 let cc = params.dataIndex;
                                 if(cc >=colorList.length)
-                                    cc = cc -colorList.length;
+                                    cc = cc %colorList.length;
                                 return colorList[cc];
                             }
                         }
@@ -501,7 +501,7 @@ export default class BipStatisticsDialog extends Vue {
                                     ];
                                     let cc = params.dataIndex;
                                     if(cc >=colorList.length)
-                                        cc = cc -colorList.length;
+                                        cc = cc%colorList.length;
                                     return colorList[cc];
                                 },
                             }
@@ -513,7 +513,7 @@ export default class BipStatisticsDialog extends Vue {
                         "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
                     let cc = key1;
                     if(cc >=colorList.length)
-                        cc = cc -colorList.length;
+                        cc = cc %colorList.length;
                     color = colorList[cc];
                     if(chartType == 'line')
                         bb ={ name: colname, data: [] ,type:chartType,color:color,smooth:true};
@@ -694,7 +694,9 @@ export default class BipStatisticsDialog extends Vue {
                 }
             } 
         }
-        if (name.indexOf("-") > 0) name = name.substring(0, name.length - 1);
+        if (name.indexOf("-") > 0 && name.lastIndexOf("-")== name.length-1) {
+            name = name.substring(0, name.length - 1);
+        }
         return name;
     }
     getCellById(id:any) {

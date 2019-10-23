@@ -366,6 +366,7 @@ export default class LayCelVexTable extends Vue {
      * 字段点击进行跳转操作
      */
     async openrefs(data:any,event:any){
+        this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         let row = data.row.data
         let rowIndex = data.rowIndex
         let columnIndex = data.columnIndex

@@ -447,7 +447,7 @@ export default class Home extends Vue {
     initHeight(){
       this.height = document.documentElement.clientHeight
       if(this.height>70){
-          this.height=this.height-104;
+          this.height=this.height-94;
       }
       this.setBipHeight(this.height)
       window.onresize = () => {
@@ -455,7 +455,7 @@ export default class Home extends Vue {
               this.height = document.documentElement.clientHeight
               // console.log(this.height)
               if(this.height>70){
-                  this.height=this.height-104;
+                  this.height=this.height-94;
               }
               this.setBipHeight(this.height)
           })()
@@ -466,7 +466,7 @@ export default class Home extends Vue {
 <style lang="scss" >
 .bip-main-container {
     position: fixed; 
-    height: calc(100% - 135px) !important;
+    height: calc(100% - 104px) !important;
     width: calc(100% - 30px) !important;
     z-index: 1;
     overflow: hidden;

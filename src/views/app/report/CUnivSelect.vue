@@ -25,7 +25,7 @@
                     <template v-if="env && env.dsm && env.dsm.ccells">
                         <el-row :gutter="10">
                             <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
+                                <bip-statistics-chart ref="childChart" :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
                             </el-col>
                         </el-row>
                     </template>
@@ -452,9 +452,18 @@ export default class CUnivSelect extends Vue {
             this.qe.page.currPage = 1;
             this.qe.page.index = 0;
             if(this.params.method =='BL'){
+                console.log("BL")
                 if(JSON.stringify(this.params.jsontj).length >2){
                     this.dsm_cont.currRecord.data = this.params.jsontj;
                     this.find();
+                    let cc:any = this.$refs['childChart'];
+                    if(cc){
+                        if(cc instanceof  Array)
+                        {
+                            cc = cc[0]
+                        }
+                        cc.searchData();
+                    }
                 } 
             }
         }
