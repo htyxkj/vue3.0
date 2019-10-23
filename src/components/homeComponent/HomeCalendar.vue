@@ -230,7 +230,7 @@ export default class HomeMenu extends Vue {
 .homeCalendar {
 
     .mark1{
-        background-color: red;
+        background-color: #52D48C;
         border-radius: 50%;
     }
    
@@ -266,8 +266,8 @@ export default class HomeMenu extends Vue {
         color: #60656A !important;
     }
     .wh_content_item .wh_isToday {
-        color: #ffffff !important;
-        background: #4A77FA !important;
+        background:#FFF;
+        border: 1px solid #0E96FE;
         border-radius: 100px !important;
     }
     .wh_item_date:hover {
@@ -282,7 +282,7 @@ export default class HomeMenu extends Vue {
     }
     .wh_content_item .wh_chose_day{
         color: #ffffff !important;
-        background: green !important;
+        background: #0E96FE !important;
         border-radius: 100px !important;
     }
 }
