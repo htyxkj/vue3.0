@@ -267,9 +267,11 @@ export default class HomeMenu extends Vue {
         color: #60656A !important;
     }
     .wh_content_item .wh_isToday {
-        background:#FFF;
         border: 1px solid #0E96FE;
         border-radius: 100px !important;
+    }
+    .wh_content_item .wh_isToday[data-v-2ebcbc83] {
+        background:#FFF;
     }
     .wh_item_date:hover {
          color: #ffffff !important;
