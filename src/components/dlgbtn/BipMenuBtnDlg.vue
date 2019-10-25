@@ -63,6 +63,7 @@ export default class BipMenuBtnDlg extends Vue {
     @Provide() sqlStyle:Array<any> = [];//sql样式
     @Provide() sqlCont:Array<any> = [];//sql提示内容
     @Provide() Title:string = "";//sql弹框标题
+    @Provide() bok:boolean = false;//对象弹框是否显示
 
     @Provide() laycell:any;
     @Provide() uiCels:any = [];
@@ -223,7 +224,6 @@ export default class BipMenuBtnDlg extends Vue {
                 data[0].data[cel.id] = newData.data[cel.id]
             }
         }
-
         this.cellCds.currRecord = data[0];
         this.cellCds.cdata.data = data;
       }
@@ -234,16 +234,21 @@ export default class BipMenuBtnDlg extends Vue {
     async cellOk(isok:boolean){
         if(isok){
             await this.saveData(); 
-            this.$emit("Recheck")
+            let dsm = this.cellCds
+            if(this.bok){
+                this.openCell = false;
+                this.$emit("Recheck")
+            } 
+        }else{
+            this.openCell = false;
         }
-        this.openCell = false;
     }
-
     async saveData() {
         let dsm = this.cellCds
         let bok = this.checkNotNull(dsm); 
-        if(!bok)
-            return ;         
+        if(!bok){
+            return ; 
+        }        
         let res = await dsm.saveData();
         if (res.status == 200) {
             let data = res.data;
@@ -255,23 +260,25 @@ export default class BipMenuBtnDlg extends Vue {
         }    
     }
     checkNotNull(cds:CDataSet):boolean{
-        let bok = true;
+        this.bok = true;
         cds.ccells.cels.forEach(item => {
-            if (item.unNull&&bok) {
-                var vl = cds.currRecord.data[item.id]+'';
-                if(item.type<5){
-                    if(!vl){
-                        vl = 0+'';
-                    }
-                }
+            if (item.unNull&&this.bok) {
+                let vl = null;
+                if(cds.currRecord.data[item.id]!=null)
+                    vl = cds.currRecord.data[item.id]+'';
+                // if(item.type<5){
+                //     if(!vl){
+                //         vl = 0+'';
+                //     }
+                // }
                 if (!vl) {
                     this.$notify.warning( "【" + item.labelString + "】不能为空!");
-                    bok =  false;
+                    this.bok =  false;
                     return false;
                 }
             }
         }); 
-        return bok;
+        return this.bok;
     }
 
 
