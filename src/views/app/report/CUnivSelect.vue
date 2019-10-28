@@ -220,6 +220,8 @@ export default class CUnivSelect extends Vue {
                 dia.open();
             }, 100);
         }else if(cmd == 'DLG'){
+            if(!this.dsm.currRecord || !this.dsm.currRecord.data)
+                return;
             let cc = JSON.stringify(this.dsm.currRecord.data);
             if(cc.length>2){
                 setTimeout(() => {
@@ -230,6 +232,9 @@ export default class CUnivSelect extends Vue {
         }else if(cmd === 'DOWNLOADFILE'){
             this.fullscreenLoading=true;
             this.getExcel();
+        }else if(cmd === 'ROWCOLUMN'){
+            if(this.uriParams)
+            this.$bus.$emit('ReportTableShape',this.uriParams.pbuid)
         }
         console.log(this.dsm_cont.currRecord)
     }

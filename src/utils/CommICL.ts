@@ -48,6 +48,7 @@ export const CommICL = Object.assign({
     B_CMD_LIST:'LIST',//连接
     B_CMD_ISTAT:'ISTAT',//统计
     B_CMD_IFILE:'DOWNLOADFILE',//文件
+    B_CMD_ROWCOLUMN:'ROWCOLUMN',
     //#region 输入框常量
     I_EDITOR_COMM:0,//普通输入框
     I_EDITOR_LIST:1,//下拉框

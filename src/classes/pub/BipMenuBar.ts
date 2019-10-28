@@ -66,6 +66,10 @@ export default class BipMenuBar{
             let btn = new BipMenuBtn(CommICL.B_CMD_CLEAR,"清空")
             btn.setIconFontIcon('zk');
             this.menuList.push(btn)
+            
+            btn = new BipMenuBtn(CommICL.B_CMD_ROWCOLUMN,"列/行")
+            btn.setIconFontIcon('tongji');
+            this.menuList.push(btn)
         }
         let btn = new BipMenuBtn(CommICL.B_CMD_FIND,"查找")
         btn.setIconFontIcon('search');

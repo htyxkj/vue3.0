@@ -7,15 +7,14 @@
             </span>
             <el-table ref="assTable" height="260" :data="data" size="mini" border stripe
                 style="width: 100%" highlight-current-row  row-class-name="bip-assist-row" cell-class-name="bip-assist-cell"
-                @row-click="rowClick" @row-dblclick="rowDbClick"
-                >
+                @row-click="rowClick" @row-dblclick="rowDbClick">
                 <el-table-column type="index" width="40"></el-table-column>
                 <template v-for="(item,index) in dsm.ccells.cels" >
                     <el-table-column v-if="(item.attr & 0x200) >0" :key="index" :prop="item['id']" 
                     :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
-                    <template slot-scope="scope">
-                        <span style="margin-left: 10px">{{ scope.row.data[item.id]}}</span>
-                    </template>
+                        <template slot-scope="scope">
+                            <bip-grid-info :cds="dsm" :cell="item" :row="scope.$index" :bgrid="true" ></bip-grid-info>
+                        </template>
                     </el-table-column>
                 </template>
             </el-table>
@@ -42,6 +41,7 @@
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
+import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BIPUtil } from "@/utils/Request"; 
@@ -60,7 +60,7 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 @Component({
-    components: { }
+    components: {BipGridInfo }
 })
 export default class AppletListDlg extends Vue { 
 

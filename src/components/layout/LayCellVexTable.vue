@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar v-if="isTable" :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <!-- 单据录入表格-->
         <vxe-table
             :ref="this.cds.ccells.obj_id"
@@ -89,82 +89,150 @@
             </vxe-table-column> -->
         </vxe-table>
         <!-- 报表展示表格-->
-        <vxe-table
-            :ref="this.cds.ccells.obj_id"
-            v-else
-            border
-            resizable
-            size="small"
-            highlight-hover-row
-            show-all-overflow="tooltip"
-            show-header-all-overflow
-            highlight-current-row
-            class="vxe-table-element"
-            :data.sync="cds.cdata.data"
-            :optimized="true"
-            :height="height"
-            @cell-dblclick="openrefs"
-            @cell-click="table_cell_click"
-            @sort-change="sortChange"
-            remote-sort
-            :sort-config="{trigger: 'cell'}"
-            :span-method="rowspanMethod"
-            show-footer
-            :row-class-name="getRowStyleNew"
-            > 
-            <!-- @cell-dblclick="openrefs" 双击 -->
-            <!-- cds.page.pageSize<cds.page.total -->
-            <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
-            <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
-            <vxe-table-column type="index" width="60" fixed="left"></vxe-table-column>
-            <template v-for="(item,index) in groupCells">
-                <template v-if="item.type == ''">
-                    <vxe-table-column :key="index" header-align="center" align="center" :field="item.cel.id"
-                        :width="widths[item.cel.widthIndex]" :title="item.cel.labelString" show-header-overflow 
-                        show-overflow :sortable ="(item.cel.attr&0x400000)>0" :fixed="isFixed(item.cel.widthIndex)" >
-                        <template v-slot="{row,rowIndex}"> 
-                            <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                        </template>
-                    </vxe-table-column> 
-                </template>
-                <template v-else-if="item.type == 'g'">
-                    <vxe-table-column :key="index" :title="item.name" header-align="center">
-                        <vxe-table-column 
-                            v-for="(cel,indexg) in item.cel" :key="indexg"
-                            header-align="center" align="center" :field="cel.id"
-                            :width="widths[cel.widthIndex]" :title="cel.labelString" show-header-overflow
-                            show-overflow :sortable ="(cel.attr&0x400000)>0" :fixed="isFixed(index)" >
+        <template v-else>
+            <vxe-table
+                :ref="this.cds.ccells.obj_id"
+                v-if="isTable"
+                border
+                resizable
+                size="small"
+                highlight-hover-row
+                show-all-overflow="tooltip"
+                show-header-all-overflow
+                highlight-current-row
+                class="vxe-table-element"
+                :data.sync="cds.cdata.data"
+                :optimized="true"
+                :height="height"
+                @cell-dblclick="openrefs"
+                @cell-click="table_cell_click"
+                @sort-change="sortChange"
+                remote-sort
+                :sort-config="{trigger: 'cell'}"
+                :span-method="rowspanMethod"
+                show-footer
+                :row-class-name="getRowStyleNew"
+                > 
+                <!-- @cell-dblclick="openrefs" 双击 -->
+                <!-- cds.page.pageSize<cds.page.total -->
+                <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
+                <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
+                <vxe-table-column type="index" width="60" fixed="left"></vxe-table-column>
+                <template v-for="(item,index) in groupCells">
+                    <template v-if="item.type == ''">
+                        <vxe-table-column :key="index" header-align="center" align="center" :field="item.cel.id"
+                            :width="widths[item.cel.widthIndex]" :title="item.cel.labelString" show-header-overflow 
+                            show-overflow :sortable ="(item.cel.attr&0x400000)>0" :fixed="isFixed(item.cel.widthIndex)" >
                             <template v-slot="{row,rowIndex}"> 
-                                <bip-grid-info :cds="cds" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
+                        </vxe-table-column> 
+                    </template>
+                    <template v-else-if="item.type == 'g'"><!-- 表头分组 -->
+                        <vxe-table-column :key="index" :title="item.name" header-align="center">
+                            <vxe-table-column 
+                                v-for="(cel,indexg) in item.cel" :key="indexg"
+                                header-align="center" align="center" :field="cel.id"
+                                :width="widths[cel.widthIndex]" :title="cel.labelString" show-header-overflow
+                                show-overflow :sortable ="(cel.attr&0x400000)>0" :fixed="isFixed(index)" >
+                                <template v-slot="{row,rowIndex}"> 
+                                    <bip-grid-info :cds="cds" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                </template>
+                            </vxe-table-column>
                         </vxe-table-column>
-                    </vxe-table-column>
+                    </template>
                 </template>
-            </template>
 
-            <!-- <vxe-table-column
-                header-align="center"
-                align="center"
-                v-for="(cel,index) in laycell.uiCels"
-                :key="index"
-                :field="cel.id"
-                :width="widths[index]"
-                :title="cel.labelString"
-                show-header-overflow
-                show-overflow
-                :sortable ="(cel.attr&0x400000)>0"
-                :fixed="isFixed(index)"
-            >
-                <template v-slot="{row,rowIndex}"> 
-                    <bip-grid-info
-                        :cds="cds"
-                        :cell="cel"
-                        :row="rowIndex"
-                        :bgrid="true"
-                    ></bip-grid-info>
-                </template>
-            </vxe-table-column> -->
-        </vxe-table>
+                <!-- <vxe-table-column
+                    header-align="center"
+                    align="center"
+                    v-for="(cel,index) in laycell.uiCels"
+                    :key="index"
+                    :field="cel.id"
+                    :width="widths[index]"
+                    :title="cel.labelString"
+                    show-header-overflow
+                    show-overflow
+                    :sortable ="(cel.attr&0x400000)>0"
+                    :fixed="isFixed(index)"
+                >
+                    <template v-slot="{row,rowIndex}"> 
+                        <bip-grid-info
+                            :cds="cds"
+                            :cell="cel"
+                            :row="rowIndex"
+                            :bgrid="true"
+                        ></bip-grid-info>
+                    </template>
+                </vxe-table-column> -->
+            </vxe-table>
+            <template v-else>
+                <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex">
+                    <Accordion class="Accordion" :Accordionindex="0" :isSlotSecond="0">
+                        <template slot="title">
+                            <el-row>
+                                <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
+                                    <el-row>
+                                        <el-col :span="8">
+                                            {{item.labelString}}
+                                        </el-col>
+                                        <el-col :span="16">
+                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                            </el-row>
+                        </template>
+                        <div class="baseInformation" slot="First">
+                            <el-row>
+                                <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
+                                    <el-row>
+                                        <el-col :span="8">
+                                            {{item.labelString}}
+                                        </el-col>
+                                        <el-col :span="16">
+                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </Accordion>
+                </div>
+                <!-- <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex">
+                    <Accordion class="rightFixed0" :Accordionindex="0" :isSlotSecond="0">
+                        <template slot="title">
+                            <el-row>
+                                <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
+                                    <el-row>
+                                        <el-col :span="8">
+                                            {{item.labelString}}
+                                        </el-col>
+                                        <el-col :span="16">
+                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                            </el-row>
+                        </template>
+                        <div class="baseInformation" slot="First">
+                            <el-row>
+                                <el-col v-for="(item,index) in this.laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
+                                    <el-row>
+                                        <el-col :span="8">
+                                            {{item.labelString}}
+                                        </el-col>
+                                        <el-col :span="16">
+                                            <bip-grid-info :cds="cds" :cell="item" :row="index" :bgrid="true" ></bip-grid-info>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </Accordion>
+                </div> -->
+            </template>
+        </template>
         <template v-if="beBill">
             <el-row >
                 <el-pagination  
@@ -198,7 +266,7 @@
                 ></el-pagination>
                 </el-row>
         </template>
-       
+
         
 
     </div>
@@ -215,6 +283,7 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 import {CommICL} from '@/utils/CommICL'
+import Accordion from '@/components/appletList/Accordion.vue'
 let ICL = CommICL
 
 import { BIPUtil } from "@/utils/Request"; 
@@ -226,7 +295,7 @@ import { BIPUtils } from "@/utils/BaseUtil";
 import { connect } from 'echarts';
 let baseTool = BIPUtils.baseUtil;
 @Component({
-    components: {  BipGridInfo }
+    components: {  BipGridInfo,Accordion }
 })
 export default class LayCelVexTable extends Vue {
     @Prop() laycell!: BipLayCells;
@@ -236,6 +305,7 @@ export default class LayCelVexTable extends Vue {
     @Prop() env!:CCliEnv;
     @Prop() config?:any
 
+    @Provide() activeNames:any = ['1'];
     @Provide() height:string = "300px";
     @Provide() info: string = "infos";
     @Provide() clearable: boolean = true;
@@ -247,12 +317,14 @@ export default class LayCelVexTable extends Vue {
     @Provide() celClickTime:number =0;
     @Provide() removeData :Array<CRecord> =[];
     @Provide() rowClass:any = {};
+    @Provide() isTable:boolean = true;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     
     @Provide() datachangeBusID:number=0;
+    @Provide() tableShapeBusID:number=0;
     @Provide() groupCells:any = [];
 
     created() {
@@ -517,10 +589,13 @@ export default class LayCelVexTable extends Vue {
         return this.aidValues.get(str);
     }
     mounted(){ 
-        this.datachangeBusID= this.$bus.$on('datachange',this.datachange)
+        this.datachangeBusID = this.$bus.$on('datachange',this.datachange)
+        this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
     }
     beforeDestroy(){
         this.$bus.$off('datachange',this.datachangeBusID)
+        this.$bus.$off('ReportTableShape',this.tableShapeBusID)
+        
     }
     datachange(obj_id:string =''){
         if(this.cds.ccells)
@@ -752,6 +827,16 @@ export default class LayCelVexTable extends Vue {
             } 
         }
     }
+
+    /**
+     * 报表是Card布局还是Table布局
+     */
+    ReportTableShape(pbuid:string){
+        if(pbuid)
+        if(pbuid == this.pbuid){
+            this.isTable = !this.isTable;
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -766,5 +851,8 @@ export default class LayCelVexTable extends Vue {
     color: #fff;
     font-size: 14px;
 }
-
+.Accordion{
+    margin-bottom: 20px;
+    background-color: red;
+}
 </style>
