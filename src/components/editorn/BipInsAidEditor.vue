@@ -144,8 +144,8 @@ export default class BipInsAidEditor extends Vue{
     }
 
     selectOK(val:any,close:boolean = false){
+        console.log("selectOK")
         if(this.cds.currCanEdit()){
-            console.log(val);
             let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
             this.cds.setStateOrAnd(ICL.R_EDITED);
             this.model1 = "";
@@ -244,7 +244,6 @@ export default class BipInsAidEditor extends Vue{
     }
 
     async getRefValues(){
-        console.log(this.model)
         if(this.refLink&&this.refLink.id.length>0&&this.model1.length>0){
              this.refLink.values = []
             if(this.model&&this.model.length>0){
@@ -307,7 +306,6 @@ export default class BipInsAidEditor extends Vue{
     }
 
     getFocus(gets: boolean) {
-        console.log(gets)
         if (gets) {
                 if (this.refLink && this.refLink.realV) {
                     this.model1 = this.refLink.realV;

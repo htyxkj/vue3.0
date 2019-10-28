@@ -16,6 +16,7 @@
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
         <template>
             <bip-menu-btn-dlg ref="bip_base_dlg"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
+            <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
         </template>
     </el-row>
     
@@ -27,6 +28,7 @@ import { BIPUtil } from "@/utils/Request";
 import { CommICL } from "@/utils/CommICL";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
+import AppletListDlg from '@/components/appletList/AppletListDlg.vue'
 import { URIParams } from "@/classes/URIParams";
 import { BipMenuBtn } from "@/classes/BipMenuBtn";
 import { Cells } from "@/classes/pub/coob/Cells";
@@ -47,7 +49,7 @@ import CData from '../../../classes/pub/CData';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
-    components: { BipMenuBarUi,  BipWork ,BipMenuBtnDlg}
+    components: { BipMenuBarUi,  BipWork ,BipMenuBtnDlg,AppletListDlg}
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
@@ -110,7 +112,8 @@ export default class BaseApplet extends Vue{
                 dia.open();
             }, 100);
         } else if (cmd === "LIST") {
-
+            let dia: any = this.$refs.bip_applet_list_dlg;
+            dia.open(this.dsm,this.qe);
         } else if (cmd === "NEXT") {
             await this.getNextOrPrior(true);
         } else if (cmd === "PRIOR") {
@@ -292,6 +295,9 @@ export default class BaseApplet extends Vue{
         page.currPage = index==0?1: Math.floor(index / size) + 1;
         page.index = index==0?0:index % size;
         return page;
+    }
+    selectRow(rowID:number){
+        this.JumpToIndexCRecord(rowID);
     }
     /**
      * @description 数据导航条，上一条，下一条

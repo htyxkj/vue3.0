@@ -92,7 +92,6 @@ export default class BipNumberEditor extends Vue{
     }
     @Watch("model")
     cdataSetRecordChange(){
-        console.log("modelChange")
         if( this.model !== this.model1){
             this.model1 = parseFloat(this.model)
             if(isNaN(this.model1))

@@ -50,6 +50,7 @@ import CData from '../../classes/pub/CData';
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtils } from "@/utils/BaseUtil";
+ import CRecord from '../../classes/pub/CRecord';
 let baseTool = BIPUtils.baseUtil;
 @Component({
     components: { }
@@ -213,19 +214,27 @@ export default class BipMenuBtnDlg extends Vue {
       let vv = await tools.query(qe);
       if(vv.data.id ==0){ 
         let data = vv.data.data.data.data;
+        let data0:any=new CRecord(0);
+        let data1:any = this.cellCds.createOne();
         //处理二次初值
-        let newData = this.cellCds.createOne()
+        let newData = this.cellCds.createOne();
         console.log(newData);
         let cels = this.cellCds.ccells.cels;
         for(var i =0 ;i<cels.length;i++){
             let cel = cels[i]; 
             let cc = baseTool.bitOperation(cel.attr,0x100000000);
             if(cc >0){
-                data[0].data[cel.id] = newData.data[cel.id]
+                data0.data[cel.id] = newData.data[cel.id]
             }
         }
-        this.cellCds.currRecord = data[0];
-        this.cellCds.cdata.data = data;
+        for (var obj in data[0].data) {
+           data1.data[obj] = data[0].data[obj];
+        }
+        for (var obj in data0.data) {
+           data1.data[obj] = data0.data[obj];
+        }
+        this.cellCds.currRecord = data1;
+        this.cellCds.cdata.data = [data1];
       }
     }
     /**

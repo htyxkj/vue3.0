@@ -180,6 +180,7 @@ export default class BipCommEditor extends Vue{
      * 获取当前cell绑定的值
      */
     getModelValues(){
+        console.log("getModelValues")
         let crd:CRecord = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
         if(crd&&crd.data){
             this.model = crd.data[this.cell.id]
