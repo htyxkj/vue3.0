@@ -168,69 +168,41 @@
             </vxe-table>
             <template v-else>
                 <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex">
-                    <Accordion class="Accordion" :Accordionindex="0" :isSlotSecond="0">
+                    <Accordion class="Accordion" :Accordionindex="1" :isSlotSecond="0">
                         <template slot="title">
-                            <el-row>
+                            <el-row style="width:100%">
                                 <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
-                                    <el-row>
-                                        <el-col :span="8">
-                                            {{item.labelString}}
-                                        </el-col>
-                                        <el-col :span="16">
-                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                        </el-col>
-                                    </el-row>
+                                    <div v-if="(item.attr & 0x200) >0" class="piece">
+                                        <el-row >
+                                            <el-col :span="8">
+                                                {{item.labelString}}
+                                            </el-col>
+                                            <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
+                                                <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                            </el-col>
+                                        </el-row>
+                                    </div>
                                 </el-col>
                             </el-row>
                         </template>
-                        <div class="baseInformation" slot="First">
-                            <el-row>
+                        <div slot="First">
+                            <el-row style="width:100%">
                                 <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
-                                    <el-row>
-                                        <el-col :span="8">
-                                            {{item.labelString}}
-                                        </el-col>
-                                        <el-col :span="16">
-                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                        </el-col>
-                                    </el-row>
+                                    <div v-if="(item.attr & 0x200) <=0" class="piece">
+                                        <el-row>
+                                            <el-col :span="8">
+                                                {{item.labelString}}
+                                            </el-col>
+                                            <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
+                                                <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                            </el-col>
+                                        </el-row>
+                                    </div>
                                 </el-col>
                             </el-row>
                         </div>
                     </Accordion>
                 </div>
-                <!-- <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex">
-                    <Accordion class="rightFixed0" :Accordionindex="0" :isSlotSecond="0">
-                        <template slot="title">
-                            <el-row>
-                                <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
-                                    <el-row>
-                                        <el-col :span="8">
-                                            {{item.labelString}}
-                                        </el-col>
-                                        <el-col :span="16">
-                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                        </el-col>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                        </template>
-                        <div class="baseInformation" slot="First">
-                            <el-row>
-                                <el-col v-for="(item,index) in this.laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
-                                    <el-row>
-                                        <el-col :span="8">
-                                            {{item.labelString}}
-                                        </el-col>
-                                        <el-col :span="16">
-                                            <bip-grid-info :cds="cds" :cell="item" :row="index" :bgrid="true" ></bip-grid-info>
-                                        </el-col>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </Accordion>
-                </div> -->
             </template>
         </template>
         <template v-if="beBill">
@@ -283,7 +255,7 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 import {CommICL} from '@/utils/CommICL'
-import Accordion from '@/components/appletList/Accordion.vue'
+import Accordion from '@/components/Accordion/Accordion.vue'
 let ICL = CommICL
 
 import { BIPUtil } from "@/utils/Request"; 
@@ -853,6 +825,10 @@ export default class LayCelVexTable extends Vue {
 }
 .Accordion{
     margin-bottom: 20px;
-    background-color: red;
+    background-color: #fff000;
+}
+.piece{
+    padding: 5px 10px;
+    width:95%;
 }
 </style>

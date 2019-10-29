@@ -216,9 +216,10 @@ export default class BipMenuBtnDlg extends Vue {
         let data = vv.data.data.data.data;
         let data0:any=new CRecord(0);
         let data1:any = this.cellCds.createOne();
+        if(data)
+            data1.c_state = 2;
         //处理二次初值
         let newData = this.cellCds.createOne();
-        console.log(newData);
         let cels = this.cellCds.ccells.cels;
         for(var i =0 ;i<cels.length;i++){
             let cel = cels[i]; 

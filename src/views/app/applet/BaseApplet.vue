@@ -171,8 +171,6 @@ export default class BaseApplet extends Vue{
         }else if(cmd === "CHECK"){
             // tools.test();
         }else if(cmd=== "SUBMIT"){
-            
-            console.log(this.dsm.opera)
             if(this.dsm.opera){
                 if(this.dsm.isPosted()){
                     //可以提交
