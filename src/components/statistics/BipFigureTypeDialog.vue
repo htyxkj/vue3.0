@@ -1,29 +1,103 @@
 <template v-if="showFType">
-    <el-dialog title="图表选择" class="bip-search" width="60%" :visible.sync="showFType" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
-        <el-tabs tab-position="left" style="height: 200px;">
+    <el-dialog title="图表选择" class="bip-search" width="50%" :visible.sync="showFType" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+        <el-tabs tab-position="left" style="height: 350px;">
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-date"></i> 折线图</span>
-                折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
+                <el-row :gutter="20" type="flex" justify="center">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">折线图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">平滑折线图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">堆叠折线图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">折线面积图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">平滑折线面积图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">堆叠面积折线图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                </el-row>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-date"></i> 柱状图</span>
-                柱状图、条形图、堆叠柱状图、堆叠条形图
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">柱状图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">堆叠柱状图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">条形图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">堆叠条形图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                </el-row>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-date"></i> 饼状图</span>
-                饼状图、环形图、玫瑰图
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">饼状图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">环形图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">玫瑰图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col>
+                </el-row>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-date"></i> 散点图</span>
-                散点图
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">散点图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col> 
+                </el-row>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-date"></i> 雷达图</span>
-                雷达图
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">雷达图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col> 
+                </el-row>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-date"></i> 漏斗图</span>
-                漏斗图
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div class="grid-content bg-purple">漏斗图</div>
+                        <img class="chart-img" src="@/assets/chart/line.png">
+                    </el-col> 
+                </el-row>
             </el-tab-pane>
         </el-tabs>
         <hr/>
@@ -65,5 +139,8 @@ export default class BipFigureTypeDialog extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-
+.chart-img{
+    width: 140px;
+    height: 140px;
+}
 </style>

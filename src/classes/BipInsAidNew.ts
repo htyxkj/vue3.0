@@ -16,6 +16,7 @@ export default class BipInsAidNew{
     sref:string=''
     total:number = 0
     groupFld:string=''
+    groupFld1:string=''
     bType:string=''
     mutiple:boolean = false
     cl:boolean = false
