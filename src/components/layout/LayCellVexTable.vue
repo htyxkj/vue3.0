@@ -167,7 +167,7 @@
                 </vxe-table-column> -->
             </vxe-table>
             <template v-else>
-                <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex">
+                <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex" class="accdiv">
                     <Accordion class="Accordion" :Accordionindex="1" :isSlotSecond="0">
                         <template slot="title">
                             <el-row style="width:100%">
@@ -178,7 +178,14 @@
                                                 {{item.labelString}}
                                             </el-col>
                                             <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
-                                                <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                    <!-- <template slot="content">
+                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                    </template>
+                                                    <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info> -->
+                                                    <el-popover placement="top" width="160" trigger="hover" >
+                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                        <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                    </el-popover>
                                             </el-col>
                                         </el-row>
                                     </div>
@@ -194,7 +201,10 @@
                                                 {{item.labelString}}
                                             </el-col>
                                             <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
-                                                <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                <el-popover placement="top" width="160" trigger="hover" >
+                                                    <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                    <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                </el-popover>
                                             </el-col>
                                         </el-row>
                                     </div>
@@ -255,7 +265,7 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 import {CommICL} from '@/utils/CommICL'
-import Accordion from '@/components/Accordion/Accordion.vue'
+import Accordion from '@/components/accordion/Accordion.vue'
 let ICL = CommICL
 
 import { BIPUtil } from "@/utils/Request"; 
@@ -824,8 +834,11 @@ export default class LayCelVexTable extends Vue {
     font-size: 14px;
 }
 .Accordion{
-    margin-bottom: 20px;
-    background-color: #fff000;
+    background-color: #fff;
+}
+.accdiv{
+    padding: 6px;
+    background-color: #eaeaea;
 }
 .piece{
     padding: 5px 10px;

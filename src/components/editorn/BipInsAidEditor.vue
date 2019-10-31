@@ -131,7 +131,15 @@ export default class BipInsAidEditor extends Vue{
     iconClick() {
         if(this.bipInsAid){
             if (!((this.cell.attr & 0x40) > 0)) {
-                // this.dia = true;
+                if(this.bipInsAid.bType =="CGroupEditor"){
+                    let groupFld = this.bipInsAid.groupFld;
+                    if(!this.cds.currRecord.data[groupFld]){
+                        let cel:any = this.cds.getCell(groupFld)
+                        if(cel)
+                            this.$notify.warning('请先填写：'+cel.labelString)
+                        return;
+                    }
+                }
                 setTimeout(() => {
                     let dia: any = this.$refs.ak;
                     if (dia) dia.open();

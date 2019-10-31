@@ -7,32 +7,28 @@
             <el-row style="padding:10px 25px 0px 25px">
                 <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
                     <el-form-item class="bip-form-item" label="已保存方案">
-                        <el-select v-model="programModel" collapse-tags class="bip-form-input" placeholder="请选择">
+                        <el-select v-model="programModel" collapse-tags style="margin-left: 20px;" placeholder="请选择">
                             <el-option key="-1" label=" 　" :value="-1"> </el-option>
                             <el-option v-for="(item,index) in ProgramList" :key="index" :label="item.sname" :value="index"> </el-option>
                         </el-select>
                     </el-form-item> 
-                    <el-form-item class="bip-form-item" label="图表类型" :required="true">
-                        <el-select v-model="chartTypeValue" collapse-tags class="bip-form-input" placeholder="请选择">
-                            <el-option v-for="item in chartType" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                        </el-select>
-                        <!-- <el-input placeholder="请输入内容" v-model="chartTypeValue" class="input-with-select bip-form-input">
-                            <el-button slot="append" icon="el-icon-search" @click="showFigureType"></el-button>
-                        </el-input> -->
-                    </el-form-item>
                     <el-form-item class="bip-form-item" label="统计项选择" :required="true">
-                        <el-select v-model="selGroup" clearable  multiple collapse-tags class="bip-form-input" placeholder="请选择">
+                        <el-select v-model="selGroup" clearable  multiple collapse-tags style="margin-left: 20px;" placeholder="请选择">
                             <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
                             ></el-option>
                         </el-select>
                     </el-form-item> 
                     <el-form-item class="bip-form-item" label="数据项选择" :required="true">
-                        <el-select v-model="selValue" clearable  multiple collapse-tags class="bip-form-input" placeholder="请选择">
+                        <el-select v-model="selValue" clearable  multiple collapse-tags style="margin-left: 20px;" placeholder="请选择">
                             <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
                             ></el-option>
                         </el-select>
                     </el-form-item> 
-
+                    <el-form-item class="bip-form-item" label="图表类型" :required="true">
+                        <el-select v-model="chartTypeValue" collapse-tags style="margin-left: 20px;" placeholder="请选择">
+                            <el-option v-for="item in chartType" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item class="bip-form-item" label="显示图表" :required="true">
                         <el-radio v-model="showChart"  :label='true' style="margin-left: 20px;" >显示</el-radio>
                         <el-radio v-model="showChart"  :label='false' >不显示</el-radio>
@@ -45,9 +41,7 @@
                 <el-button @click="showProgram" size="mini" type="warning">保存方案</el-button>
                 <el-button @click="searchOK" type="primary" size="mini">确  定</el-button>    
             </span>
-            <template>
-                <bip-figure-type-dialog ref="figureTypeDialog"></bip-figure-type-dialog>
-            </template>
+
 
 
             <el-dialog title="保存方案" class="bip-search" width="45%" :visible.sync="saveProgram" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
@@ -81,7 +75,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import  BipFigureTypeDialog  from "./BipFigureTypeDialog.vue";
 import CDataSet from "@/classes/pub/CDataSet";
 import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
@@ -93,9 +86,7 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
-@Component({
-    components:{BipFigureTypeDialog}
-})
+@Component({})
 export default class BipStatisticsDialog extends Vue {
     @Prop() env!:CCliEnv;
     @Provide() dialogVisible: boolean = false;
@@ -152,14 +143,8 @@ export default class BipStatisticsDialog extends Vue {
         this.$emit("makeOK",this.selGroup,this.selValue,this.chartTypeValue,this.showChart);
         this.close();
     }
-    /**
-     * 显示统计图全部类型
-     */
-    showFigureType(){
-        let figureTypeDialog:any = this.$refs["figureTypeDialog"];
-        if(figureTypeDialog)
-            figureTypeDialog.open();
-    }
+
+
     /**
      * 显示保存查询方案页面
      */
@@ -333,9 +318,5 @@ export default class BipStatisticsDialog extends Vue {
 <style lang="scss" scoped>
 .bip-form-item {
   margin-bottom: 22px !important;
-}
-.bip-form-input {
-    margin-left: 20px;
-    width: 70%
 }
 </style>
