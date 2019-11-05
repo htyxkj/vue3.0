@@ -15,10 +15,13 @@ export default class BipChart extends Vue {
         this.myChart = echarts.init(this.$refs.chart as HTMLCanvasElement); 
         this.myChart.setOption(this.option);  
         this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.sizeChange)
-       
+        let _this = this;
         this.myChart.on('click',(params:any)=>{
-            console.log(params);
+            _this.itemClick(params)
         })
+    }
+    itemClick(params:any){
+        this.$emit("itemClick",params)
     }
     @Watch("option")
     optionChange(){

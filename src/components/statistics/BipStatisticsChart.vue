@@ -31,7 +31,7 @@
             </el-row>
         </div>
         <div v-if="stat.showChart && option"  class="showchart" :style="chartStyle" >
-            <bip-chart :style="chartStyle" :option="option" :chartStyle="chartStyle"></bip-chart>
+            <bip-chart :style="chartStyle" :option="option" :chartStyle="chartStyle" @itemClick="itemClick"></bip-chart>
         </div>
         <div>
             <!-- 报表表格-->
@@ -72,6 +72,7 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() showBack!:boolean
     @Prop() showTable!:boolean
     @Prop() height!:number;
+    @Provide() pbuid:any="";
     @Provide() selValue:Array<any> =[];
     @Provide() selGroup:Array<any> =[];
     @Provide() option:any = null;
@@ -79,6 +80,9 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() fullscreenLoading:boolean = false;
     @Provide() tableData:any =null;
     @Provide() title:any = null;
+
+    @Provide() dlConfig:any = null;
+    @Provide() comparedData:any={};
     @Provide() chartStyle:string = "height :400px;";
     @Provide() color:any = ["#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -87,6 +91,8 @@ export default class BipStatisticsDialog extends Vue {
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
     mounted() {
+        this.comparedData={};
+        this.pbuid = this.env.uriParams.pbuid;
         if(this.height){
             this.chartStyle = "height :"+(this.height)+"px;";
         }else{
@@ -148,6 +154,10 @@ export default class BipStatisticsDialog extends Vue {
         let type = this.stat.chartTypeValue.split("-");
         if(type.length ==1){
             type.push[0]
+        }
+        let cc = await this.initDL(type[0]);
+        if(cc){
+            this.dlConfig = cc;
         }
         if(type[0] == 'line'){//折线类
             await this.meakeLine(chartData,type[1]);
@@ -1163,12 +1173,103 @@ export default class BipStatisticsDialog extends Vue {
         }
         this.option = option;
     }
+
+    /**
+    * BL_菜单参数_图表类型 
+    * 定义图表下钻功能
+    * id：图表类型
+    */
+    async initDL(id:string){
+        let name = "DL_"+this.pbuid+"_"+id;
+        let str = name
+        // let dlg = await pubMethod.getConstant(str);
+        str = ICL.AID_KEYCL+str;
+        if(!this.aidValues.get(str)){
+            let vv  = window.sessionStorage.getItem(str)
+            if(!vv){
+                let vars = {id:300,aid:name}
+                await this.fetchInsAid(vars);
+                let vv  = window.sessionStorage.getItem(str)
+                if(vv){
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                }
+            }else{
+                let vals = {key:str,value:JSON.parse(vv)}
+                this.setAidValue(vals)
+            } 
+        }
+        return this.aidValues.get(str);
+    }
+
+    /**
+     * 图表下钻点击事件
+     */
+    itemClick(params:any){
+        if(this.dlConfig){
+            let link = this.dlConfig.slink.split(";");
+            for(var i = 0;i<link.length;i++){
+                let oneLink = link[i];
+                let key = this.selGroup[0]
+                if(this.selGroup.length ==2)
+                    key+=","+ this.selGroup[1]
+                key+=","+this.selValue[0]
+                if(oneLink.startsWith(key)){
+                    let x12 = oneLink.substring(0,oneLink.indexOf("&")).split(",")
+                    x12.splice(x12.length-1,1);
+                    
+                    oneLink = oneLink.substring(oneLink.indexOf("&")+1,oneLink.length)
+                    oneLink = oneLink.split("&");
+                    let menuid = oneLink[0]
+                    let me = tool.findMenu(menuid);
+                    if (!me) {
+                        this.$notify.error( "没有" + menuid + "菜单权限!" );
+                        return false;
+                    }else{
+                        let jsontj:any={};
+                        for(var i=1;i<oneLink.length;i++){
+                            let oneTJ = oneLink[i].split("=")
+                            let key = oneTJ[0];
+                            let vl = oneTJ[1]
+                            if(vl.indexOf("*") !=-1 ){
+                                let cds = this.env.getDataSet(vl.split("*")[0]);
+                                vl = cds.currRecord.data[vl.split("*")[1]]
+                            }else{
+                                if(x12.indexOf(vl)){
+                                    vl = this.comparedData[vl];    
+                                }else{
+                                    vl = this.env.dsm.currRecord.data[vl]
+                                }
+                            }
+                            jsontj[key] = vl;
+                        }
+
+                        let command = me.command.split("&");
+                        let pbuid = command[0].split("=");
+                        let pmenuid = command[1].split("="); 
+                        this.$router.push({
+                            path:'/layout',
+                            name:'layout',
+                            params:{method:"BL",pmenuid:pmenuid[1],jsontj:jsontj },
+                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                        })
+                    }
+                    break;
+                }
+            }
+        }
+        console.log(params)
+        console.log(this.dlConfig)
+    }
+
+
     //获取参照
     async getGroupFldName(item:any,j:any){ 
         var name = "";
+        let code = "";
         for(let i=0;i<this.selGroup.length;i++){
             var id = this.selGroup[i];
-            var code = item[id];
+            code = item[id];
             var cell:any = this.getCellById(id);
             if(cell !=null)
             var rr = cell.refValue;
@@ -1249,6 +1350,7 @@ export default class BipStatisticsDialog extends Vue {
         if (name.indexOf("-") > 0 && name.lastIndexOf("-")== name.length-1) {
             name = name.substring(0, name.length - 1);
         }
+        this.comparedData[code] = name;
         return name;
     }
     getCellById(id:any) {

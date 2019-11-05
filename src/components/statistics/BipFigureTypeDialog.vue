@@ -119,17 +119,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import CDataSet from "@/classes/pub/CDataSet";
-import SearchEntity from "@/classes/SearchEntity";
-import CCliEnv from "@/classes/cenv/CCliEnv";
-import QueryEntity from '@/classes/search/QueryEntity';
-import QueryCont from '@/classes/search/QueryCont';
-import { Cell } from '../../classes/pub/coob/Cell';
-import { Cells } from "@/classes/pub/coob/Cells";
-import { BIPUtil } from "@/utils/Request";
-let tools = BIPUtil.ServApi
-import {CommICL} from '@/utils/CommICL'
-let ICL = CommICL
 @Component({})
 export default class BipFigureTypeDialog extends Vue {
     @Provide() showFType:boolean = false;

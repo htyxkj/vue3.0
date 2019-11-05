@@ -192,6 +192,9 @@ export default class BipCommEditor extends Vue{
         }
         if(this.model ==''){
             let script = this.cell.script;
+            /**
+             * 处理对象传值
+             */
             if((this.cell.attr & 0x1000)<=0){
                 if(script && script.indexOf("*")!=-1 && !script.startsWith("=:")){
                     let cc = script.split("*");
