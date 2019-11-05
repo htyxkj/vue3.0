@@ -80,7 +80,7 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() tableData:any =null;
     @Provide() title:any = null;
     @Provide() chartStyle:string = "height :400px;";
-
+    @Provide() color:any = ["#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -117,6 +117,7 @@ export default class BipStatisticsDialog extends Vue {
         if(chartData.data.id == 0){
             this.tableData = chartData.data.data.tjpages.celData
             this.tjcell = chartData.data.data.tjlayCels
+            console.log(chartData)
             await this.initChartData(chartData);
         }else{ 
             this.$notify.warning(chartData.data.message);
@@ -129,34 +130,564 @@ export default class BipStatisticsDialog extends Vue {
         }
         return value;
     }
-    // data:
-    // data:
-    // tjlayCels: {pkid: 0, obj_id: "60HTA111TJ", x_co: -1, editble: true, cels: Array(4), …}
-    // tjpages: {celData: Array(0), queryCriteria: "ht.sid>='0' and [%Dht.hpdate=2019-06-21]", totalItem: 0, totalPage: 0, orderBy: "", …}
-    // __proto__: Object
-    // id: 0
-    // message: "操作成功！"
-    // __proto__: Object
+    //图表类型
+    //折线图：折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
+    //       line-0  line-1     line-2     line-3        line-4     line-5
+    //柱状图：柱状图、条形图、堆叠柱状图、堆叠条形图
+    //       bar-0   bra-1  bar-2      bar-3
+    //饼状图：饼状图、环形图、玫瑰图
+    //       pie-0   pie-1  pie-2
+    //散点图：散点图
+    //
+    //雷达图：雷达图
+    //
+    //漏斗图：漏斗图
+    //
 
-    // chartTypeValue: "line"
-    // selGroup: (2) ["ht.cdic", "ht.sorg", __ob__: Observer]
-    // selValue: (2) ["hta.qty", "hta.usd", __ob__: Observer]
-    // showChart: true
     async initChartData(chartData:any){
-        if(this.stat.chartTypeValue == "pie"){
-            await this.makePieOpitons(chartData);
-        }else if ( this.stat.chartTypeValue =="barGraph"){
-            await this.makebarGraph(chartData);
-        }else if( this.stat.chartTypeValue == "pieAnnular"){
-            await this.makepieAnnular(chartData);
-        }else if(this.stat.chartTypeValue == 'dimensionBar'){
-            await this.makeDimensionBar(chartData,false)
-        }else if(this.stat.chartTypeValue =='dimensionStackingBar'){
-            await this.makeDimensionBar(chartData,true)
-        }else {
-            await this.makeColumnOpitons(chartData);
+        let type = this.stat.chartTypeValue.split("-");
+        if(type.length ==1){
+            type.push[0]
         }
+        if(type[0] == 'line'){//折线类
+            await this.meakeLine(chartData,type[1]);
+        }else if(type[0] == 'bar'){//柱状类
+            await this.makeBar(chartData,type[1]);
+        }else if(type[0] == 'pie'){//饼状类
+            await this.makePie(chartData,type[1]);
+        }else if(type[0] == 'funnel'){//漏斗图
+            await this.makeFunnel(chartData,type[1]);
+        }
+
+        // if(this.stat.chartTypeValue == "pie"){
+        //     // await this.makePieOpitons(chartData);
+        //     await this.meakeLine(chartData,this.stat.chartTypeValue);
+        // }else if ( this.stat.chartTypeValue =="barGraph"){
+        //     await this.makebarGraph(chartData);
+        // }else if( this.stat.chartTypeValue == "pieAnnular"){
+        //     await this.makepieAnnular(chartData);
+        // }else if(this.stat.chartTypeValue == 'dimensionBar'){
+        //     await this.makeDimensionBar(chartData,false)
+        // }else if(this.stat.chartTypeValue =='dimensionStackingBar'){
+        //     await this.makeDimensionBar(chartData,true)
+        // }else {
+        //     // await this.makeColumnOpitons(chartData);
+        // }
     }
+
+    /**
+     * 折线图  ==》折线图、折线面积图、平滑折线图、平滑折线面积图、
+     * 数据，图表类型
+     */
+    async meakeLine(chartData:any,type:any){
+        if(type >=4 ){
+            await this.makeStackLine(chartData,type)
+            return ;
+        }
+        let chartD = chartData.data.data.tjpages.celData; 
+        //条形图是  xAxis属性 与 yAxis 属性互换
+        let option = {
+            color:this.color,
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,//是否留有边界X轴 距 0.0 是否有距离
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [0, 0, 0, 0, 0, 0, 0],
+                type: 'line',//图形类型     bar柱状图  line 折线图
+                areaStyle: null,//折线图是有效：是否是面积 {} 为面积样式默认   null  不显示面积
+                smooth: true,//折线图时 是否平滑显示
+            }]
+        };
+        var categories:any = [];
+        var series0:any = []; 
+        for(let i=0;i<chartD.length;i++){
+            var item = chartD[i];
+            var name = await this.getGroupFldName(item,i);
+            categories.push(name);
+            
+            this.selValue.forEach((fld, key1) => {
+                let colname = this.getFldName(fld);
+                var _idx = series0.findIndex(function(im:any) {
+                    return im.name == colname;
+                });
+                if (_idx >= 0) {
+                    var bb = series0[_idx];
+                    bb.data[i] = item[fld];
+                    series0[_idx] = bb;
+                } else {
+                    var bb:any ={}
+                    bb = { name: colname, data: [] ,type:'line',itemStyle: {},smooth:false,areaStyle:null};
+                    //折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
+                    if(type == 0 || type == 2){
+                    if(type ==2)
+                        bb.smooth=true;
+                    }
+                    if(type == 1 || type == 3){
+                        option.xAxis.boundaryGap=false
+                        bb.areaStyle={};
+                        if(type ==3)
+                            bb.smooth=true;
+                    }
+                    bb.data[i] = item[fld];
+                    series0.push(bb);
+                }
+            });
+        }
+        option.xAxis.data = categories;
+        option.series = series0;
+        this.option = option;
+    }
+    /**
+     * 折线图  ==》堆叠折线图、堆叠面积折线图
+     * 数据，图表类型
+     */
+    async makeStackLine(chartData:any,type:any){
+        let option:any = {
+            color:this.color,
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },
+            legend: {
+                data: [''],
+                top: 5,
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,//是否留有边界X轴 距 0.0 是否有距离
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: []
+        };
+        let legendD = [];
+        let xAxisD = [];
+        let xD = this.selGroup[0];
+        let lD = this.selGroup[1]
+        let allData = chartData.data.data.tjpages.celData; 
+        for(var i=0;i<allData.length;i++){
+            let data = allData[i]
+            var name = await this.getGroupFldName(data,i);
+            legendD.push(data[lD]);
+            xAxisD.push(data[xD]);
+        }
+        legendD = Array.from(new Set(legendD));
+        xAxisD = Array.from(new Set(xAxisD));
+        option.legend.data = legendD
+        option.xAxis.data = xAxisD
+        for(var k=0;k<legendD.length;k++){
+            let dd:any  = {
+                name: '',
+                type: 'line',
+                data: [],
+                areaStyle: null,//折线图是有效：是否是面积 {} 为面积样式默认   null  不显示面积
+                smooth: true,//折线图时 是否平滑显示
+            }
+            if(type ==5){
+                dd.areaStyle={};
+                option.xAxis.boundaryGap=false;//是否留有边界X轴 距 0.0 是否有距离
+            }
+            
+            for(var j=0;j<xAxisD.length;j++){
+                let ispush = false;
+                for(var i=0;i<this.tableData.length;i++){
+                    let data = this.tableData[i]
+                    if(data[lD] == legendD[k]&&xAxisD[j] == data[xD]){
+                        dd.data.push(data[this.selValue[0]])
+                        dd.name=data[lD]
+                        ispush = true;
+                    }
+                }
+                if(!ispush){
+                    dd.data.push(0);
+                }
+            }
+            option.series.push(dd);
+        }
+        this.option = option;
+    }
+
+    /**
+     * 柱状图  ==》柱状图、条形图、
+     * 数据，图表类型
+     */
+    async makeBar(chartData:any,type:any){
+        if(type>=2){
+            await this.makeStackBar(chartData,type)
+            return;
+        }
+        let chartD = chartData.data.data.tjpages.celData; 
+        //条形图是  xAxis属性 与 yAxis 属性互换
+        let option:any = {
+            color:this.color,
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,//是否留有边界X轴 距 0.0 是否有距离
+                data: []
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar',//图形类型     bar柱状图  line 折线图
+                areaStyle: null,//折线图是有效：是否是面积 {} 为面积样式默认   null  不显示面积
+                smooth: true,//折线图时 是否平滑显示
+            }]
+        };
+        var categories:any = [];
+        var series0:any = []; 
+        for(let i=0;i<chartD.length;i++){
+            var item = chartD[i];
+            var name = await this.getGroupFldName(item,i);
+            categories.push(name);
+            this.selValue.forEach((fld, key1) => {
+                let colname = this.getFldName(fld);
+                var _idx = series0.findIndex(function(im:any) {
+                    return im.name == colname;
+                });
+                if (_idx >= 0) {
+                    var bb = series0[_idx];
+                    bb.data[i] = item[fld];
+                    series0[_idx] = bb;
+                } else {
+                    var bb:any ={}
+                    bb = { name: colname, data: [] ,type:'bar',itemStyle: {},smooth:false,areaStyle:null};
+                    bb.data[i] = item[fld];
+                    series0.push(bb);
+                }
+            });
+        }
+        option.xAxis.data = categories;
+        option.series = series0;
+        if(type == 1){
+            let x1 = option.xAxis;
+            option.xAxis = option.yAxis;
+            option.yAxis = x1;
+        }
+        this.option = option;
+    }
+    /**
+     * 柱状图  ==》堆叠柱状图、堆叠面积柱状图
+     * 数据，图表类型
+     */
+    async makeStackBar(chartData:any,type:any){
+        let option:any = {
+            color:this.color,
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },
+            legend: {
+                data: [''],
+                top: 5,
+            },
+            grid: {
+                left: '1%',
+                right: '1%',
+                bottom: '1%',
+                top:'8%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['']
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            series: [
+            ]
+        };
+        let legendD = [];
+        let xAxisD = [];
+        let xD = this.selGroup[0];
+        let lD = this.selGroup[1]
+        let allData = chartData.data.data.tjpages.celData; 
+        for(var i=0;i<allData.length;i++){
+            let data = allData[i]
+            var name = await this.getGroupFldName(data,i);
+            legendD.push(data[lD]);
+            xAxisD.push(data[xD]);
+        }
+        legendD = Array.from(new Set(legendD));
+        xAxisD = Array.from(new Set(xAxisD));
+        option.legend.data = legendD
+        option.xAxis.data = xAxisD
+        for(var k=0;k<legendD.length;k++){
+            let dd:any = {};
+            // if(Stacking){
+            //     dd = {
+            //         name: '',
+            //         type: 'bar',
+            //         stack: '总量',
+            //         label: {
+            //             normal: {
+            //                 show: true,
+            //                 position: 'insideRight'
+            //             }
+            //         },
+            //         data: []
+            //     }
+            // }else{
+                dd = {
+                    name: '',
+                    type: 'bar',
+                    data: []
+                }
+            // }
+            for(var j=0;j<xAxisD.length;j++){
+                let ispush = false;
+                for(var i=0;i<this.tableData.length;i++){
+                    let data = this.tableData[i]
+                    if(data[lD] == legendD[k]&&xAxisD[j] == data[xD]){
+                        dd.data.push(data[this.selValue[0]])
+                        dd.name=data[lD]
+                        ispush = true;
+                    }
+                }
+                if(!ispush){
+                    dd.data.push(0);
+                }
+            }
+            option.series.push(dd);
+        }
+        if(type == 3){
+            let x1 = option.xAxis;
+            option.xAxis = option.yAxis;
+            option.yAxis = x1;
+        }
+        this.option = option;
+    }
+
+    /**
+     * 饼状图  ==》饼状图、环形图、玫瑰图
+     * 数据，图表类型
+     */
+    async makePie(chartData:any,type:any){
+        let chartD = chartData.data.data.tjpages.celData; 
+        var id = this.selValue[0];
+        var cell:any = this.getCellById(id);
+        let labelString = cell.labelString 
+        let pie:any = {
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                },
+                right:"2%"
+            },            
+            legend: {
+                type: 'scroll',
+                orient: 'vertical', 
+                right: 10,
+                top: 20,
+                bottom: 20,
+            },
+            series : [
+                {
+                    name: '值',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['40%', '50%'],
+                    data: [],//统计结果值 seriesData: [{name: "赵杜", value: 13525},{name: "董奚孔萧常·伍陶", value: 23335}{name: "殷闵", value: 57860}]
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        },
+                        normal: {
+                            //定义一个list，然后根据所以取得不同的值，这样就实现了，
+                            color: function(params:any) {
+                                var colorList = [
+                                    "#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"
+                                ];
+                                let cc = params.dataIndex;
+                                if(cc >=colorList.length)
+                                    cc = cc %colorList.length;
+                                return colorList[cc];
+                            }
+                        }
+                    },
+                    label: {
+                        normal: {
+                            formatter: '{b|{b}({d}%)}',
+                            rich: { 
+                                b: {
+                                    fontSize: 12,
+                                    lineHeight: 33
+                                },
+                            }
+                        }
+                    }
+                }
+            ]
+        };
+        if(labelString){
+            pie.series[0].name = labelString;
+        }
+        var data:any = [];
+        for(let i=0;i<chartD.length;i++){
+            var item = chartD[i];
+            var name = await this.getGroupFldName(item,i);
+            let d1 = { name: name, value: item[this.selValue[0]] }
+            data.push(d1);
+        }
+        pie.series[0].data = data;
+        if(type == 1){
+            pie.series[0].radius= ['50%', '70%'];
+        }
+        if(type == 2){
+            pie.series[0].roseType='radius';
+        }
+        this.option = pie;
+    }
+
+    /**
+     * 漏斗图  ==》漏斗图
+     * 数据，图表类型
+     */
+    async makeFunnel(chartData:any,type:any){
+        console.log(chartData)
+        let chartD = chartData.data.data.tjpages.celData; 
+        let option:any = {
+            color:this.color,
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c}"
+            },
+            toolbox: {
+                feature: {
+                    dataView: {readOnly: false},
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            legend: {
+                data: []
+            },
+            calculable: true,
+            series: [
+                {
+                    name:"值",
+                    type:'funnel',
+                    left: '10%',
+                    top: 60,
+                    bottom: 60,
+                    width: '80%',
+                    min: 0,
+                    max: 100,
+                    minSize: '0%',
+                    maxSize: '100%',
+                    sort: 'descending',
+                    gap: 2,
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    },
+                    labelLine: {
+                        length: 10,
+                        lineStyle: {
+                            width: 1,
+                            type: 'solid'
+                        }
+                    },
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    },
+                    emphasis: {
+                        label: {
+                            fontSize: 20
+                        }
+                    },
+                    data: [
+                        
+                    ]
+                }
+            ]
+        };
+        var categories:any = [];
+        for(let i=0;i<chartD.length;i++){
+            var item = chartD[i];
+            var name = await this.getGroupFldName(item,i);
+            categories.push(name);
+            let dd:any =  {value: 0, name: ''};
+            dd.name = name;
+            dd.value = item[this.selValue[0]];
+            option.series[0].data.push(dd);
+            option.series[0].name = this.getFldName(this.selValue[0]);
+        }
+        option.legend.data = categories;
+        this.option = option;
+    }
+
     // 环形图
     async makepieAnnular(chartData:any){
         let chartD = chartData.data.data.tjpages.celData; 

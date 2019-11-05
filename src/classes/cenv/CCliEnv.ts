@@ -28,6 +28,9 @@ export default class CCliEnv{
             for(let i = 0; i<this.dsm.ds_sub.length;i++){
                 let cds0:CDataSet = this.dsm.ds_sub[i];
                 cds = this.getCDataSet(cds0,obid)
+                if(cds!=null){
+                    return cds
+                }
             }
         }
         if(cds==null){

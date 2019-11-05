@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding-right:10px;background-color: #e8e8e8;hegiht:100%">
     <el-tree :node-key="keyID" lazy :load="loadNode" @node-click="handleNodeClick"
       :props="defaultProps" :default-expanded-keys="expandedKeys" >
     </el-tree>

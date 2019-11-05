@@ -66,10 +66,6 @@ export default class BipMenuBar{
             let btn = new BipMenuBtn(CommICL.B_CMD_CLEAR,"清空")
             btn.setIconFontIcon('zk');
             this.menuList.push(btn)
-            
-            btn = new BipMenuBtn(CommICL.B_CMD_ROWCOLUMN,"列/行")
-            btn.setIconFontIcon('tongji');
-            this.menuList.push(btn)
         }
         let btn = new BipMenuBtn(CommICL.B_CMD_FIND,"查找")
         btn.setIconFontIcon('search');
@@ -83,6 +79,11 @@ export default class BipMenuBar{
         if(((menuAttr&CommICL.B_IFILE)>0)&&this.search){
             let btn = new BipMenuBtn(CommICL.B_CMD_IFILE,"导出文件")
             btn.setIconFontIcon('xiazai1');
+            this.menuList.push(btn)
+        }
+        if(this.search){
+            btn = new BipMenuBtn(CommICL.B_CMD_ROWCOLUMN,"列/行")
+            btn.setIconFontIcon('tongji');
             this.menuList.push(btn)
         }
         if(!this.search){

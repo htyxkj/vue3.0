@@ -13,21 +13,24 @@
                         </el-select>
                     </el-form-item> 
                     <el-form-item class="bip-form-item" label="图表类型" :required="true">
-                        <el-select v-model="chartTypeValue" collapse-tags class="bip-form-input" placeholder="请选择">
-                            <el-option v-for="item in chartType" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                        </el-select>
-                        <!-- <el-input placeholder="请输入内容" v-model="chartTypeValue" class="input-with-select bip-form-input">
+                        <el-input placeholder="请输入内容" v-model="chartT[chartTypeValue]" class="input-with-select bip-form-input">
                             <el-button slot="append" icon="el-icon-search" @click="showFigureType"></el-button>
-                        </el-input> -->
+                        </el-input>
                     </el-form-item>
                     <el-form-item class="bip-form-item" label="统计项选择" :required="true">
-                        <el-select v-model="selGroup" clearable  multiple collapse-tags class="bip-form-input" placeholder="请选择">
+                        <el-select v-model="selX1" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                            <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item> 
+                    <el-form-item v-if="showSelX2" class="bip-form-item" label="统计项选择" :required="true">
+                        <el-select v-model="selX2" clearable collapse-tags class="bip-form-input" placeholder="请选择">
                             <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
                             ></el-option>
                         </el-select>
                     </el-form-item> 
                     <el-form-item class="bip-form-item" label="数据项选择" :required="true">
-                        <el-select v-model="selValue" clearable  multiple collapse-tags class="bip-form-input" placeholder="请选择">
+                        <el-select v-model="selValue" clearable collapse-tags class="bip-form-input" placeholder="请选择">
                             <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
                             ></el-option>
                         </el-select>
@@ -46,7 +49,7 @@
                 <el-button @click="searchOK" type="primary" size="mini">确  定</el-button>    
             </span>
             <template>
-                <bip-figure-type-dialog ref="figureTypeDialog"></bip-figure-type-dialog>
+                <bip-figure-type-dialog ref="figureTypeDialog" @setChartType="setChartType"></bip-figure-type-dialog>
             </template>
 
 
@@ -100,31 +103,27 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() env!:CCliEnv;
     @Provide() dialogVisible: boolean = false;
     @Provide() saveProgram: boolean = false;
+    @Provide() selX1:any = null;
+    @Provide() selX2:any = null;
     @Provide() selGroup:any =[];
-    @Provide() selValue:any = [];
+    @Provide() selValue:any = null;
     @Provide() chartTypeValue:any=0;
-    @Provide() chartType:any =  [
-        { id: "line", name: "折线图" },
-        { id: "pie", name: "饼状图" },
-        { id: "bar", name: "柱状图" },
-        { id: "dimensionBar", name: "二维柱状图" },
-        { id: "dimensionStackingBar", name: "二维柱状图(堆叠)" },
-        { id: "lineArea", name: "面积图"},
-        { id: "barGraph", name: "条形图"},
-        { id: "pieAnnular", name: "环形图"}
-    ];
     @Provide() showChart:boolean = true;
     @Provide() groupCells:Array<Cell>=[]
     @Provide() valuesCells:Array<Cell>=[]
     @Provide() program:any={name:"",state:"save",isdesktop:false};
     @Provide() programEnv:any=null;
-    
-    // @Provide() cellsTJ:Array<Cell> = new Array<Cell>()
-    // @Provide() cdsTJ:CDataSet = new CDataSet('');
+    @Provide() showSelX2:boolean=false;//是否是堆叠系列
     @Provide() ProgramList :Array<any> = new Array<any>()
     @Provide() programModel:any = -1;
+    @Provide() chartT:any = {
+        'line-0':'折线图', 'line-1':'折线面积图', 'line-2':'平滑折线图', 'line-3':'平滑面积折线图', 'line-4':'堆叠折线图',
+        'line-5':'堆叠面积折线图', 'line-6':'平滑堆叠折线图', 'line-7':'平滑堆叠面积折线图',
+        'bar-0':'柱状图','bar-1':'条形图','bar-2':'堆叠柱状图','bar-3':'堆叠条形图',
+        'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图',
+    };
     mounted() {
-        this.chartTypeValue = "line"; 
+        this.chartTypeValue = "line-0"; 
         this.groupCells = this.env.dsm.ccells.cels.filter(item=>{
             return (item.type !== 2 && item.type !== 3 && item.type !== 4 && item.type !== 5 && item.type !== 6 && item.type !== 8) &&item.isShow
         })
@@ -141,15 +140,19 @@ export default class BipStatisticsDialog extends Vue {
         this.dialogVisible = false;
     }
     searchOK(){
-        if(this.selGroup.length <=0){
+        this.selGroup = [this.selX1]
+        if(this.selX2)
+            this.selGroup.push(this.selX2)
+        if(this.selGroup == null){
             this.$notify.warning('请勾选"统计项选择"');
             return;
         }
-        if(this.selValue.length <=0){
+        if(this.selValue == null){
             this.$notify.warning('请勾选"数据项选择"');
             return;
         }
-        this.$emit("makeOK",this.selGroup,this.selValue,this.chartTypeValue,this.showChart);
+
+        this.$emit("makeOK",this.selGroup,[this.selValue],this.chartTypeValue,this.showChart);
         this.close();
     }
     /**
@@ -161,14 +164,28 @@ export default class BipStatisticsDialog extends Vue {
             figureTypeDialog.open();
     }
     /**
+     */
+    setChartType(chartType:any){
+        this.chartTypeValue = chartType;
+        if(chartType=="line-4" || chartType == "line-5" || chartType == "line-6" || chartType == "line-7" || chartType == "bar-2" || chartType == "bar-3"){
+            this.showSelX2 = true;
+        }else{
+            this.selX2 = null;
+            this.showSelX2 = false;
+        }
+    }
+    /**
      * 显示保存查询方案页面
      */
     showProgram(){
-        if(this.selGroup.length <=0){
+        this.selGroup = [this.selX1]
+        if(this.selX2)
+            this.selGroup.push(this.selX2)
+        if(this.selGroup == null){
             this.$notify.warning('请勾选"统计项选择"');
             return;
         }
-        if(this.selValue.length <=0){
+        if(this.selValue ==null){
             this.$notify.warning('请勾选"数据项选择"');
             return;
         }
@@ -188,11 +205,7 @@ export default class BipStatisticsDialog extends Vue {
                 this.$notify.warning('请输入方案名称');
                 return;
             }
-            let selValue = "";
-            for(var i =0; i<this.selValue.length;i++){
-                selValue+= (this.selValue[i]+",")
-            }
-            selValue = selValue.substring(0,selValue.length-1)
+            let selValue = this.selValue;
             let selGroup="";
             for(var i =0; i<this.selGroup.length;i++){
                 selGroup+= (this.selGroup[i]+",")
@@ -284,32 +297,40 @@ export default class BipStatisticsDialog extends Vue {
             let cc = this.ProgramList[this.programModel]
             if(cc){
                 if(cc.spflds)
-                    this.selValue = cc.spflds.split(",")
+                    this.selValue = cc.spflds
                 else
-                    this.selValue = [];
+                    this.selValue = null;
                 if(cc.spbds)
                     this.selGroup = cc.spbds.split(",")
-                else
-                    this.selGroup = []
-                if(cc.charttype)
-                    this.chartTypeValue = cc.charttype
-                else
-                    this.chartTypeValue = "line" 
+                this.selX1 = this.selGroup[0];
+                if(cc.charttype){
+                    this.chartTypeValue = cc.charttype;
+                    if(cc.charttype=="line-4" || cc.charttype == "line-5" || cc.charttype == "line-6" || cc.charttype == "line-7" || cc.charttype == "bar-2" || cc.charttype == "bar-3"){
+                        this.showSelX2 = true;
+                        this.selX2 = this.selGroup[1];
+                    }else{
+                        this.selX2 = null;
+                        this.showSelX2 = false;
+                    }
+                }
                 this.showChart = cc.showchart==0?false:true;
             }else{
-                this.selValue = []
+                this.selValue = ""
                 this.selGroup = []
-                this.chartTypeValue = "line"
+                this.selX2 = null;
+                this.selX1 = null;
+                this.showSelX2 = false;
                 this.showChart = true;
             }
-            // this.program.name= cc.sname;
-            // this.program.cid = cc.cid; 
         }else{ 
             this.program.name = '' ;
             this.program.isdesktop = false;
-            this.selValue = []
+            this.selValue = ""
             this.selGroup = []
-            this.chartTypeValue = "line"
+            this.selX2 = null;
+            this.selX1 = null;
+            this.showSelX2 = false;
+            this.chartTypeValue = "line-0"
             this.showChart = true;
         }
     } 

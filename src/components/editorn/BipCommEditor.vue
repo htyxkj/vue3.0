@@ -193,7 +193,7 @@ export default class BipCommEditor extends Vue{
         if(this.model ==''){
             let script = this.cell.script;
             if((this.cell.attr & 0x1000)<=0){
-                if(script && script.indexOf("*")!=-1){
+                if(script && script.indexOf("*")!=-1 && !script.startsWith("=:")){
                     let cc = script.split("*");
                     let cds1  = this.cdsCount.getCdsByObjID(cc[0]);
                     if(cds1 && cds1.currRecord && cds1.currRecord.data)

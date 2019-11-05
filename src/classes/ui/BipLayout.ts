@@ -30,7 +30,9 @@ export class BipLayout{
                     return;
                 }
                 let str = this.laystr.substring(index+1)
-                str = str.substring(1,str.length-1)
+
+                let index1 = str.lastIndexOf(")");
+                str = str.substring(1,index1)
                 //str = '@60JH211#40725[-remark];T:(60JHA211#725//节哀节哀);@60JH211#60725[jyfs-]'
                 let comps:Array<string> = this.doLayout(str);
                 comps.forEach(cmpstr => {
