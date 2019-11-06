@@ -2,111 +2,188 @@
     <el-dialog title="图表选择" class="bip-search" width="50%" :visible.sync="showFType" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
         <el-tabs tab-position="left" style="height: 380px;">
             <el-tab-pane>
-                <span slot="label"><i class="el-icon-date"></i> 折线图</span>
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>折线图</span>
                 <el-row>
                     <el-col>
                         <el-switch v-model="smooth" active-text="平滑显示" inactive-text=""></el-switch>
                     </el-col>
                 </el-row>
                 <!-- 折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图 -->
-                <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">折线图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="line-0"></el-radio>
+                <el-row type="flex"  justify="space-around">
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('line-0')">
+                            <div class="grid-content bg-purple "> 折 线 图</div>
+                            <img class="chart-img" src="@/assets/chart/line1.png">
+                            <div class="chart-radio" v-if="chartCheck == 'line-0'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="line-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
                     </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">折线面积图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="line-1"></el-radio>
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('line-1')">
+                            <div class="grid-content bg-purple ">折线面积图</div>
+                            <img class="chart-img" src="@/assets/chart/line-1.png">
+                            <div class="chart-radio" v-if="chartCheck == 'line-1'">
+                                 <i class="el-icon-circle-check chart-radio-input"></i>
+                                 <!-- <el-radio v-model="chartCheck" label="line-1"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
                     </el-col>
+                  
                 </el-row>
-                <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">堆叠折线图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="line-4"></el-radio>
+                <el-row type="flex"  justify="space-around" class="row-magin" >
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('line-4')">
+                            <div class="grid-content bg-purple ">堆叠折线图</div>
+                            <img class="chart-img" src="@/assets/chart/line-4.png">
+                            <div class="chart-radio" v-if="chartCheck == 'line-4'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                 <!-- <el-radio v-model="chartCheck" label="line-4"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
                     </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">堆叠面积折线图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="line-5"></el-radio>
-                    </el-col>
-                </el-row>
-            </el-tab-pane>
-            <el-tab-pane>
-                <span slot="label"><i class="el-icon-date"></i> 柱状图</span>
-                <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">柱状图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="bar-0"></el-radio>
-                    </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">堆叠柱状图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="bar-2"></el-radio>
-                    </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">条形图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="bar-1"></el-radio>
-                    </el-col>
-                </el-row>
-                <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">堆叠条形图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="bar-3"></el-radio>
+                    <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('line-5')">
+                            <div class="grid-content bg-purple ">堆叠面积折线图</div>
+                            <img class="chart-img" src="@/assets/chart/line-5.png">
+                            <div class="chart-radio" v-if="chartCheck == 'line-5'">
+                                 <i class="el-icon-circle-check chart-radio-input"></i>
+                                 <!-- <el-radio v-model="chartCheck" label="line-5"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
                     </el-col>
                 </el-row>
             </el-tab-pane>
             <el-tab-pane>
-                <span slot="label"><i class="el-icon-date"></i> 饼状图</span>
-                <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">饼状图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="pie-0"></el-radio>
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>柱状图</span>
+                <el-row  type="flex"  justify="space-around">
+                    <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('bar-0')">
+                            <div class="grid-content bg-purple ">柱状图</div>
+                            <img class="chart-img" src="@/assets/chart/bar1.png">
+                            <div class="chart-radio" v-if="chartCheck == 'bar-0'">
+                                 <i class="el-icon-circle-check chart-radio-input"></i>
+                                 <!-- <el-radio v-model="chartCheck" label="bar-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
                     </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">环形图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="pie-1"></el-radio>
+                    <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('bar-2')">
+                            <div class="grid-content bg-purple">堆叠柱状图</div>
+                            <img class="chart-img" src="@/assets/chart/bar2.png">
+                            <div class="chart-radio" v-if="chartCheck == 'bar-2'">
+                                 <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="bar-2"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
                     </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">玫瑰图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="pie-2"></el-radio>
+                   
+                </el-row>
+                <el-row type="flex"  justify="space-around" class="row-magin">
+                     <el-col :span="11">
+                         <div class="chart"  @click="bindEcharts('bar-1')">
+                            <div class="grid-content bg-purple">条形图</div>
+                            <img class="chart-img" src="@/assets/chart/bar-1.png">
+                            <div class="chart-radio" v-if="chartCheck == 'bar-1'">
+                                 <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="bar-1" class="chart-radio-input"></el-radio> -->
+                            </div>
+                         </div>
+                    </el-col>
+                    <el-col :span="11">
+                        <div class="chart"  @click="bindEcharts('bar-3')">
+                            <div class="grid-content bg-purple">堆叠条形图</div>
+                            <img class="chart-img" src="@/assets/chart/bar-3.png">
+                            <div class="chart-radio" v-if="chartCheck == 'bar-3'" >
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="bar-3" class="chart-radio-input"></el-radio> -->
+                            </div>
+                        </div>
                     </el-col>
                 </el-row>
             </el-tab-pane>
             <el-tab-pane>
-                <span slot="label"><i class="el-icon-date"></i> 散点图</span>
-                <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">散点图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                    </el-col> 
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>饼状图</span>
+                <el-row type="flex"  justify="space-around">
+                    <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('pie-0')">
+                            <div class="grid-content bg-purple">饼状图</div>
+                            <img class="chart-img" src="@/assets/chart/pie-0.png">
+                            <div class="chart-radio" v-if="chartCheck == 'pie-0'">
+                                 <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="pie-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('pie-1')">
+                            <div class="grid-content bg-purple"> 环 形 图</div>
+                            <img class="chart-img" src="@/assets/chart/pie-1.png">
+                            <div class="chart-radio"  v-if="chartCheck == 'pie-1'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="pie-1"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
+                   
+                </el-row>
+                <el-row type="flex"  justify="space-around" class="row-magin">
+                      <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('pie-2')">
+                            <div class="grid-content bg-purple"> 玫 瑰 图</div>
+                            <img class="chart-img" src="@/assets/chart/pie-2.png">
+                            <div class="chart-radio" v-if="chartCheck == 'pie-2'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="pie-2"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
                 </el-row>
             </el-tab-pane>
             <el-tab-pane>
-                <span slot="label"><i class="el-icon-date"></i> 雷达图</span>
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>散点图</span>
                 <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">雷达图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                    </el-col> 
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('scatter-0')">
+                            <div class="grid-content bg-purple">散点图</div>
+                            <img class="chart-img" src="@/assets/chart/scatter-0.png">
+                            <div class="chart-radio" v-if="chartCheck == 'scatter-0'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="scatter-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
                 </el-row>
             </el-tab-pane>
             <el-tab-pane>
-                <span slot="label"><i class="el-icon-date"></i> 漏斗图</span>
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>雷达图</span>
                 <el-row :gutter="20">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">漏斗图</div>
-                        <img class="chart-img" src="@/assets/chart/line.png">
-                        <el-radio v-model="chartCheck" label="funnel-0"></el-radio>
-                    </el-col> 
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('radar-0')">
+                            <div class="grid-content bg-purple">雷达图</div>
+                            <img class="chart-img" src="@/assets/chart/radar-0.png">
+                            <div class="chart-radio"  v-if="chartCheck == 'radar-0'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="radar-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
+                </el-row>
+            </el-tab-pane>
+            <el-tab-pane>
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>漏斗图</span>
+                <el-row :gutter="20">
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('funnel-0')">
+                            <div class="grid-content bg-purple">漏斗图</div>
+                            <img class="chart-img" src="@/assets/chart/funnel-0.png">
+                            <div class="chart-radio"  v-if="chartCheck == 'funnel-0'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
+                                <!-- <el-radio v-model="chartCheck" label="funnel-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
                 </el-row>
             </el-tab-pane>
         </el-tabs>
@@ -119,11 +196,12 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { type } from 'os';
 @Component({})
 export default class BipFigureTypeDialog extends Vue {
     @Provide() showFType:boolean = false;
     @Provide() smooth:boolean = false;
-    @Provide() chartCheck:string='line-0';
+    @Provide() chartCheck:String='line-0';
     mounted() {
 
     }
@@ -152,11 +230,46 @@ export default class BipFigureTypeDialog extends Vue {
         this.showFType = !this.showFType;
 
     }
+    bindEcharts(types:String){
+        this.chartCheck =types;
+        console.log(this.chartCheck)
+    }
 }
 </script>
 <style lang="scss" scoped>
+.echarts-label {
+    letter-spacing: 3px;
+}
+.row-magin {
+    margin-top: 10px;
+}
+.chart {
+    cursor: pointer;
+    height: 170px;
+    width: 100%;
+    border: 1px solid #e3e3e3;
+}
+.grid-content {
+    line-height: 25px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #e3e3e3;
+}
+.chart-radio {
+    width: 100%;
+    text-align: right;
+    position: relative;
+}
+.chart-radio-input {
+    position: absolute;
+    right: 0px;
+    top: -20px;
+    font-size: 20px;
+}
 .chart-img{
-    width: 140px;
+    width: 100%;
     height: 140px;
 }
 </style>

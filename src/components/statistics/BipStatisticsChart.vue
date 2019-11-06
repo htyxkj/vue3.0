@@ -207,6 +207,13 @@ export default class BipStatisticsDialog extends Vue {
                     }
                 }
             },
+            grid: {
+                left: '2%',
+                right: '2%',
+                bottom: '1%',
+                top:'8%',
+                containLabel: true
+            },
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
@@ -283,6 +290,13 @@ export default class BipStatisticsDialog extends Vue {
                         color: '#999'
                     }
                 }
+            },
+            grid: {
+                left: '2%',
+                right: '2%',
+                bottom: '1%',
+                top:'8%',
+                containLabel: true
             },
             toolbox: {
                 feature: {
@@ -374,6 +388,13 @@ export default class BipStatisticsDialog extends Vue {
                     }
                 }
             },
+            grid: {
+                left: '2%',
+                right: '2%',
+                bottom: '1%',
+                top:'8%',
+                containLabel: true
+            },
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
@@ -450,11 +471,13 @@ export default class BipStatisticsDialog extends Vue {
             },
             legend: {
                 data: [''],
-                top: 5,
+                top: 8,
+                left:80,
+                right:250
             },
             grid: {
-                left: '1%',
-                right: '1%',
+                left: '2%',
+                right: '2%',
                 bottom: '1%',
                 top:'8%',
                 containLabel: true
@@ -807,8 +830,8 @@ export default class BipStatisticsDialog extends Vue {
                 }
             },
             grid: {
-                left: '1%',
-                right: '1%',
+                left: '2%',
+                right: '2%',
                 bottom: '1%',
                 top:'8%',
                 containLabel: true
@@ -994,8 +1017,8 @@ export default class BipStatisticsDialog extends Vue {
                 }
             },
             grid: {
-                left: '1%',
-                right: '1%',
+                left: '2%',
+                right: '2%',
                 bottom: '1%',
                 top:'8%',
                 containLabel: true
@@ -1106,8 +1129,8 @@ export default class BipStatisticsDialog extends Vue {
                 top: 5,
             },
             grid: {
-                left: '1%',
-                right: '1%',
+                left: '2%',
+                right: '2%',
                 bottom: '1%',
                 top:'8%',
                 containLabel: true
@@ -1235,10 +1258,8 @@ export default class BipStatisticsDialog extends Vue {
                                 let cds = this.env.getDataSet(vl.split("*")[0]);
                                 vl = cds.currRecord.data[vl.split("*")[1]]
                             }else{
-                                if(x12[0] == vl){
-                                    vl = this.comparedData[params.name];
-                                }else if(x12[1] && x12[1] == vl){
-                                    vl = this.comparedData[params.seriesName];    
+                                if(x12.indexOf(vl)){
+                                    vl = this.comparedData[vl];    
                                 }else{
                                     vl = this.env.dsm.currRecord.data[vl]
                                 }
@@ -1260,8 +1281,6 @@ export default class BipStatisticsDialog extends Vue {
                 }
             }
         }
-        console.log(params)
-        console.log(this.dlConfig)
     }
 
 
@@ -1352,7 +1371,7 @@ export default class BipStatisticsDialog extends Vue {
         if (name.indexOf("-") > 0 && name.lastIndexOf("-")== name.length-1) {
             name = name.substring(0, name.length - 1);
         }
-        this.comparedData[name] = code;
+        this.comparedData[code] = name;
         return name;
     }
     getCellById(id:any) {
