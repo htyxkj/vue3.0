@@ -256,16 +256,12 @@ export default class BipStatisticsDialog extends Vue {
                     var bb:any ={}
                     bb = { name: colname, data: [] ,type:'line',itemStyle: {},smooth:false,areaStyle:null};
                     //折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
-                    if(type == 0 || type == 2){
-                    if(type ==2)
-                        bb.smooth=true;
-                    }
                     if(type == 1 || type == 3){
                         option.xAxis.boundaryGap=false
                         bb.areaStyle={};
-                        if(type ==3)
-                            bb.smooth=true;
                     }
+                    if(type ==3 || type ==2)
+                        bb.smooth=true;
                     bb.data[i] = item[fld];
                     series0.push(bb);
                 }
@@ -340,12 +336,14 @@ export default class BipStatisticsDialog extends Vue {
                 type: 'line',
                 data: [],
                 areaStyle: null,//折线图是有效：是否是面积 {} 为面积样式默认   null  不显示面积
-                smooth: true,//折线图时 是否平滑显示
+                smooth: false,//折线图时 是否平滑显示
             }
-            if(type ==5){
+            if(type == 7 || type == 5){
+                option.xAxis.boundaryGap=false
                 dd.areaStyle={};
-                option.xAxis.boundaryGap=false;//是否留有边界X轴 距 0.0 是否有距离
             }
+            if(type ==7 || type ==6)
+                dd.smooth=true;
             
             for(var j=0;j<xAxisD.length;j++){
                 let ispush = false;
