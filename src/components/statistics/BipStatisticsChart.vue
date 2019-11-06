@@ -1198,7 +1198,7 @@ export default class BipStatisticsDialog extends Vue {
     }
 
     /**
-    * BL_菜单参数_图表类型 
+    * DL_菜单参数_图表类型 
     * 定义图表下钻功能
     * id：图表类型
     */
@@ -1258,8 +1258,10 @@ export default class BipStatisticsDialog extends Vue {
                                 let cds = this.env.getDataSet(vl.split("*")[0]);
                                 vl = cds.currRecord.data[vl.split("*")[1]]
                             }else{
-                                if(x12.indexOf(vl)){
-                                    vl = this.comparedData[vl];    
+                                if(x12[0] == vl){
+                                    vl = this.comparedData[params.name];
+                                }else if(x12[1] && x12[1] == vl){
+                                    vl = this.comparedData[params.seriesName]; 
                                 }else{
                                     vl = this.env.dsm.currRecord.data[vl]
                                 }
@@ -1371,7 +1373,7 @@ export default class BipStatisticsDialog extends Vue {
         if (name.indexOf("-") > 0 && name.lastIndexOf("-")== name.length-1) {
             name = name.substring(0, name.length - 1);
         }
-        this.comparedData[code] = name;
+        this.comparedData[name] = code;
         return name;
     }
     getCellById(id:any) {
