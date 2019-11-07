@@ -403,7 +403,11 @@ export default class BipStatisticsDialog extends Vue {
             xAxis: {
                 type: 'category',
                 boundaryGap: true,//是否留有边界X轴 距 0.0 是否有距离
-                data: []
+                data: [],
+                axisLabel: {  
+                    interval:0,  
+                    rotate:20 ,                   
+                }
             },
             yAxis: {
                 type: 'value'
@@ -452,6 +456,11 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async makeStackBar(chartData:any,type:any){
+        let Stacking = false;
+        if(type ==4 || type ==5){
+            Stacking = true;
+        }
+        console.log(type)
         let option:any = {
             color:this.color,
             tooltip: {
@@ -482,7 +491,11 @@ export default class BipStatisticsDialog extends Vue {
             },
             xAxis: {
                 type: 'category',
-                data: ['']
+                data: [''],
+                axisLabel: {  
+                    interval:0,  
+                    rotate:20 ,                   
+                }
             },
             yAxis: {
                 type: 'value',
@@ -508,26 +521,26 @@ export default class BipStatisticsDialog extends Vue {
         option.xAxis.data = xAxisD
         for(var k=0;k<legendD.length;k++){
             let dd:any = {};
-            // if(Stacking){
-            //     dd = {
-            //         name: '',
-            //         type: 'bar',
-            //         stack: '总量',
-            //         label: {
-            //             normal: {
-            //                 show: true,
-            //                 position: 'insideRight'
-            //             }
-            //         },
-            //         data: []
-            //     }
-            // }else{
+            if(Stacking){
+                dd = {
+                    name: '',
+                    type: 'bar',
+                    stack: '总量',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'insideRight'
+                        }
+                    },
+                    data: []
+                }
+            }else{
                 dd = {
                     name: '',
                     type: 'bar',
                     data: []
                 }
-            // }
+            }
             for(var j=0;j<xAxisD.length;j++){
                 let ispush = false;
                 for(var i=0;i<this.tableData.length;i++){
