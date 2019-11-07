@@ -119,7 +119,7 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() chartT:any = {
         'line-0':'折线图', 'line-1':'折线面积图', 'line-2':'平滑折线图', 'line-3':'平滑面积折线图', 'line-4':'堆叠折线图',
         'line-5':'堆叠面积折线图', 'line-6':'平滑堆叠折线图', 'line-7':'平滑堆叠面积折线图',
-        'bar-0':'柱状图','bar-1':'条形图','bar-2':'堆叠柱状图','bar-3':'堆叠条形图',
+        'bar-0':'柱状图','bar-1':'条形图','bar-2':'堆叠柱状图','bar-3':'堆叠条形图','bar-4':'堆叠柱状图','bar-5':'堆叠条形图',
         'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图',
     };
     mounted() {
@@ -167,7 +167,7 @@ export default class BipStatisticsDialog extends Vue {
      */
     setChartType(chartType:any){
         this.chartTypeValue = chartType;
-        if(chartType=="line-4" || chartType == "line-5" || chartType == "line-6" || chartType == "line-7" || chartType == "bar-2" || chartType == "bar-3"){
+        if(chartType=="line-4" || chartType == "line-5" || chartType == "line-6" || chartType == "line-7" || chartType == "bar-2" || chartType == "bar-3"|| chartType == "bar-4"|| chartType == "bar-5"){
             this.showSelX2 = true;
         }else{
             this.selX2 = null;
@@ -305,7 +305,7 @@ export default class BipStatisticsDialog extends Vue {
                 this.selX1 = this.selGroup[0];
                 if(cc.charttype){
                     this.chartTypeValue = cc.charttype;
-                    if(cc.charttype=="line-4" || cc.charttype == "line-5" || cc.charttype == "line-6" || cc.charttype == "line-7" || cc.charttype == "bar-2" || cc.charttype == "bar-3"){
+                    if(cc.charttype=="line-4" || cc.charttype == "line-5" || cc.charttype == "line-6" || cc.charttype == "line-7" || cc.charttype == "bar-2" || cc.charttype == "bar-3" || cc.charttype == "bar-4" || cc.charttype == "bar-5"){
                         this.showSelX2 = true;
                         this.selX2 = this.selGroup[1];
                     }else{

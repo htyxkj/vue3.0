@@ -557,7 +557,7 @@ export default class BipStatisticsDialog extends Vue {
             }
             option.series.push(dd);
         }
-        if(type == 3){
+        if(type == 3 || type == 5){
             let x1 = option.xAxis;
             option.xAxis = option.yAxis;
             option.yAxis = x1;
