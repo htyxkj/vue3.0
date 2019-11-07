@@ -75,6 +75,7 @@ export default class AppletListDlg extends Vue {
     open(dsm:CDataSet,qe:QueryEntity){
         this.dsm = dsm;
         this.data = dsm.cdata.data;
+        console.log(this.data)
         this.qe = qe;
         console.log(this.dsm)
         this.visibles=true;
@@ -102,7 +103,9 @@ export default class AppletListDlg extends Vue {
         let res = await this.dsm.queryData(qes);
         let data = res.data;
         if (data.id == 0) {
+            this.data = []
             this.data = data.data.data.data;
+            this.dsm.cdata.data = this.data;
         } else {
             this.data = [];
         }

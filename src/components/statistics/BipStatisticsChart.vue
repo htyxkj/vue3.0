@@ -80,7 +80,7 @@ export default class BipStatisticsDialog extends Vue {
     @Provide() fullscreenLoading:boolean = false;
     @Provide() tableData:any =null;
     @Provide() title:any = null;
-
+    @Provide() restoreICON:string = "";
     @Provide() dlConfig:any = null;
     @Provide() comparedData:any={};
     @Provide() chartStyle:string = "height :400px;";
@@ -91,6 +91,7 @@ export default class BipStatisticsDialog extends Vue {
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
     mounted() {
+        this.restoreICON ="path://M12.29,33.05C17,43,31.9,43.59,38.22,34.36c1.54-2.25,2.05-5.2,3.1-7.8a30.13,30.13,0,0,1,1.42-2.69c.37,1.06,1.19,2.18,1,3.17-1,7.67-5.14,13.15-12.52,15.52s-14.12.57-19.55-5.21c-.71-.76-1.31-1.61-2.28-2.8-.3,1.93-.44,3.54-.84,5.09-.17.65-.87,1.17-1.34,1.75-.39-.62-1.15-1.26-1.12-1.86A58.51,58.51,0,0,1,7,31.71,2.73,2.73,0,0,1,9,30a65.67,65.67,0,0,1,8.16.77c.53.08.95.88,1.41,1.35-.53.38-1,1-1.59,1.07A44.82,44.82,0,0,1,12.29,33.05ZM42.75,20.2c-3.62-.35-6.75-.59-9.85-1-.56-.07-1-.82-1.53-1.25.6-.42,1.17-1.13,1.8-1.18a33.52,33.52,0,0,1,4.41.2c-2.14-5.65-9.84-9.08-16.49-7.56S9.66,16.25,8.64,23.28c-.15,1-1,1.89-1.57,2.82-.32-1.11-1-2.28-.88-3.32C7.3,15.13,11.46,9.69,18.87,7.38s13.92-.51,19.29,5.16c.43.46.82,1,1.22,1.45l1.2,1.5a49,49,0,0,1,.82-5.32c.16-.61,1-1.05,1.5-1.56.34.57,1,1.18,1,1.72C43.6,13.46,43.17,16.58,42.75,20.2Z";
         this.comparedData={};
         this.pbuid = this.env.uriParams.pbuid;
         if(this.height){
@@ -190,6 +191,7 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async meakeLine(chartData:any,type:any){
+        let _this = this;
         if(type >=4 ){
             await this.makeStackLine(chartData,type)
             return ;
@@ -217,7 +219,15 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    saveAsImage: {show: true}
+                    saveAsImage: {show: true},
+                    myTool : {
+                        show : true,
+                        title : '刷新',
+                        icon : this.restoreICON,
+                        onclick : function (){
+                            _this.searchData();
+                        }
+                    }
                 },
                 right:"2%"
             },
@@ -276,6 +286,7 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async makeStackLine(chartData:any,type:any){
+        let _this = this;
         let option:any = {
             color:this.color,
             tooltip: {
@@ -297,7 +308,15 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    saveAsImage: {show: true}
+                    saveAsImage: {show: true},
+                    myTool : {
+                        show : true,
+                        title : '刷新',
+                        icon : this.restoreICON,
+                        onclick : function (){
+                            _this.searchData();
+                        }
+                    }
                 },
                 right:"2%"
             },
@@ -369,6 +388,7 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async makeBar(chartData:any,type:any){
+        let _this = this;
         if(type>=2){
             await this.makeStackBar(chartData,type)
             return;
@@ -396,7 +416,15 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    saveAsImage: {show: true}
+                    saveAsImage: {show: true},
+                    myTool : {
+                        show : true,
+                        title : '刷新',
+                        icon : this.restoreICON,
+                        onclick : function (){
+                            _this.searchData();
+                        }
+                    }
                 },
                 right:"2%"
             },
@@ -456,6 +484,7 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async makeStackBar(chartData:any,type:any){
+        let _this = this;
         let Stacking = false;
         if(type ==4 || type ==5){
             Stacking = true;
@@ -472,7 +501,15 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    saveAsImage: {show: true}
+                    saveAsImage: {show: true},
+                    myTool : {
+                        show : true,
+                        title : '刷新',
+                        icon : this.restoreICON,
+                        onclick : function (){
+                            _this.searchData();
+                        }
+                    }
                 },
                 right:"2%"
             },
@@ -570,6 +607,7 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async makePie(chartData:any,type:any){
+        let _this = this;
         let chartD = chartData.data.data.tjpages.celData; 
         var id = this.selValue[0];
         var cell:any = this.getCellById(id);
@@ -582,7 +620,15 @@ export default class BipStatisticsDialog extends Vue {
             toolbox: {
                 feature: {
                     dataView: {show: true, readOnly: false},
-                    saveAsImage: {show: true}
+                    saveAsImage: {show: true},
+                    myTool : {
+                        show : true,
+                        title : '刷新',
+                        icon : this.restoreICON,
+                        onclick : function (){
+                            _this.searchData();
+                        }
+                    }
                 },
                 right:"2%"
             },            
@@ -658,7 +704,7 @@ export default class BipStatisticsDialog extends Vue {
      * 数据，图表类型
      */
     async makeFunnel(chartData:any,type:any){
-        console.log(chartData)
+        let _this = this;
         let chartD = chartData.data.data.tjpages.celData; 
         let option:any = {
             color:this.color,
@@ -668,10 +714,18 @@ export default class BipStatisticsDialog extends Vue {
             },
             toolbox: {
                 feature: {
-                    dataView: {readOnly: false},
-                    restore: {},
-                    saveAsImage: {}
-                }
+                    dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true},
+                    myTool : {
+                        show : true,
+                        title : '刷新',
+                        icon : this.restoreICON,
+                        onclick : function (){
+                            _this.searchData();
+                        }
+                    }
+                },
+                right:"2%"
             },
             legend: {
                 data: []
