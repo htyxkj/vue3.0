@@ -2,12 +2,10 @@
     <div>
         <div class="Accordion">
         <!-- Accordion Title -->
-            <div class="AccordionTitle" @click="Shrink">
+            <div class="AccordionTitle">
                 <slot name="title"></slot>
             </div>
-            <!-- <div class="ClickArea" @click="Shrink">
-                <div class="AccordionTitleR LEFTTEXT" v-text="RightContent"></div>
-            </div> -->
+
         </div>
         <!-- Accordion Body -->
         <div class="AccordionBody" style="height:0px;" ref="AccordionBody">
@@ -15,7 +13,14 @@
           <!-- 这里我才用slot的方法把手风琴内的内容插件里，以方便控制，达到灵活的效果 -->
           <div class="ContentA" >
               <slot name="First"></slot>
-              <p class="isshrink" v-show="isShrink"></p>
+          </div>
+        </div>
+        <div @click="Shrink" style="text-align: center;">
+          <div v-show="!isShrink">
+            <img src="@/assets/accordion/down.png"/>
+          </div>
+          <div v-show="isShrink">
+            <img src="@/assets/accordion/up.png"/>
           </div>
         </div>
     </div>
@@ -47,12 +52,12 @@ export default class Accordion extends Vue {
     @Prop() AccordionData:any
     @Prop() Accordionindex:any
     @Prop() isSlotSecond:any
-    @Provide() RightContent:string="收缩";
     @Provide() isshow:any = 0;
     @Provide() isShrink:boolean = false; 
+
     mounted() {
-      console.log("ACC")
       this.isshow = this.Accordionindex;
+      console.log(this.isshow)
     } 
     Shrink() {
       let AllHiden:any = this.$refs.AccordionBody;
@@ -63,12 +68,10 @@ export default class Accordion extends Vue {
             if (this.isshow == 0) {
             AllHiden.style.height = "0px";
             this.isshow = 1;
-            this.RightContent = "展开";
             this.isShrink = false;
             } else {
             AllHiden.style.height = eleMoreHeight + "px";
             this.isshow = 0;
-            this.RightContent = "收缩";
             this.isShrink = true;
             }
         }, 1);

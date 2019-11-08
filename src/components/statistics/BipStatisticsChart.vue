@@ -91,7 +91,7 @@ export default class BipStatisticsDialog extends Vue {
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
     mounted() {
-        this.restoreICON ="path://M12.29,33.05C17,43,31.9,43.59,38.22,34.36c1.54-2.25,2.05-5.2,3.1-7.8a30.13,30.13,0,0,1,1.42-2.69c.37,1.06,1.19,2.18,1,3.17-1,7.67-5.14,13.15-12.52,15.52s-14.12.57-19.55-5.21c-.71-.76-1.31-1.61-2.28-2.8-.3,1.93-.44,3.54-.84,5.09-.17.65-.87,1.17-1.34,1.75-.39-.62-1.15-1.26-1.12-1.86A58.51,58.51,0,0,1,7,31.71,2.73,2.73,0,0,1,9,30a65.67,65.67,0,0,1,8.16.77c.53.08.95.88,1.41,1.35-.53.38-1,1-1.59,1.07A44.82,44.82,0,0,1,12.29,33.05ZM42.75,20.2c-3.62-.35-6.75-.59-9.85-1-.56-.07-1-.82-1.53-1.25.6-.42,1.17-1.13,1.8-1.18a33.52,33.52,0,0,1,4.41.2c-2.14-5.65-9.84-9.08-16.49-7.56S9.66,16.25,8.64,23.28c-.15,1-1,1.89-1.57,2.82-.32-1.11-1-2.28-.88-3.32C7.3,15.13,11.46,9.69,18.87,7.38s13.92-.51,19.29,5.16c.43.46.82,1,1.22,1.45l1.2,1.5a49,49,0,0,1,.82-5.32c.16-.61,1-1.05,1.5-1.56.34.57,1,1.18,1,1.72C43.6,13.46,43.17,16.58,42.75,20.2Z";
+        this.restoreICON ="path://M49.07,31.35l-3.36-5.82a.31.31,0,0,0-.21-.16.33.33,0,0,0-.4.09L40.78,30.6a.35.35,0,0,0,0,.49.36.36,0,0,0,.49,0L45,26.64A20,20,0,0,1,8.67,37.57a.35.35,0,0,0-.49-.08A.34.34,0,0,0,8.1,38,20.73,20.73,0,0,0,45.7,26.89l2.77,4.8a.35.35,0,0,0,.48.13A.34.34,0,0,0,49.07,31.35ZM.67,19.36,4,25.18a.34.34,0,0,0,.21.16.34.34,0,0,0,.41-.09L9,20.11a.34.34,0,0,0,0-.49.36.36,0,0,0-.49,0l-3.7,4.41A20,20,0,0,1,41.08,13.14a.34.34,0,0,0,.56-.4A20.73,20.73,0,0,0,4,23.82L1.27,19a.34.34,0,0,0-.47-.13A.34.34,0,0,0,.67,19.36Z";
         this.comparedData={};
         this.pbuid = this.env.uriParams.pbuid;
         if(this.height){
@@ -1356,12 +1356,14 @@ export default class BipStatisticsDialog extends Vue {
         var name = "";
         let code = "";
         for(let i=0;i<this.selGroup.length;i++){
+            let keyName ="";
             var id = this.selGroup[i];
             code = item[id];
             var cell:any = this.getCellById(id);
             if(cell !=null)
             var rr = cell.refValue;
             if(!rr){
+                keyName = code
                 if(i==0){
                     name = code;
                 }else{
@@ -1370,7 +1372,6 @@ export default class BipStatisticsDialog extends Vue {
                 continue;
             }
             rr = rr.substring(rr.indexOf("{")+1,rr.indexOf("}"));
-
             if(rr !=null && rr){
                 let editName = rr;
                 if(rr.indexOf("$")>=0){                   
@@ -1399,10 +1400,12 @@ export default class BipStatisticsDialog extends Vue {
                         cl.values.forEach((item:any)=> { 
                             if (item[key] == code) {
                                 name += item[value] + "-";
+                                keyName = item[value]
                                 this.tableData[j][id] = item[value];
                             }
                         });
                     }else{
+                        keyName = code;
                         name += code + "-";
                     }
                 }else if(rr.indexOf("&")>=0){ 
@@ -1418,6 +1421,7 @@ export default class BipStatisticsDialog extends Vue {
                         if(vl){
                             if(vl && ref){
                                 name +=vl[ref.cells.cels[ref.showColsIndex[1]].id]+"-"
+                                keyName =vl[ref.cells.cels[ref.showColsIndex[1]].id]
                                 this.tableData[j][id] = vl[ref.cells.cels[ref.showColsIndex[1]].id];
                             }else{
                                 let vars = {id:200,aid:editName}
@@ -1425,20 +1429,22 @@ export default class BipStatisticsDialog extends Vue {
                                 if(ref1 && ref1 != undefined){
                                     ref1 = ref1.data.data.data;
                                     name +=vl[ref1.cells.cels[ref1.showColsIndex[1]].id]+"-"
+                                    keyName=vl[ref1.cells.cels[ref1.showColsIndex[1]].id]
                                     this.tableData[j][id] = vl[ref1.cells.cels[ref1.showColsIndex[1]].id];
                                 }else{
+                                    keyName=code
                                     name += code;
                                 }
                             }
                         }
                     }
                 }
-            } 
+            }
+            this.comparedData[keyName] = code;
         }
         if (name.indexOf("-") > 0 && name.lastIndexOf("-")== name.length-1) {
             name = name.substring(0, name.length - 1);
         }
-        this.comparedData[name] = code;
         return name;
     }
     getCellById(id:any) {
