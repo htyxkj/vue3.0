@@ -178,14 +178,12 @@
                                                 {{item.labelString}}
                                             </el-col>
                                             <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
-                                                    <!-- <template slot="content">
-                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                                    </template>
-                                                    <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info> -->
+                                                <div @dblclick="cardClick(rowIndex,index,dataIt)">
                                                     <el-popover placement="top" width="160" trigger="hover" >
                                                         <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                         <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                     </el-popover>
+                                                </div>
                                             </el-col>
                                         </el-row>
                                     </div>
@@ -201,10 +199,12 @@
                                                 {{item.labelString}}
                                             </el-col>
                                             <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
-                                                <el-popover placement="top" width="160" trigger="hover" >
-                                                    <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                                    <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                                </el-popover>
+                                                <div @dblclick="cardClick(rowIndex,index,dataIt)">
+                                                    <el-popover placement="top" width="160" trigger="hover" >
+                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                        <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                    </el-popover>
+                                                </div>
                                             </el-col>
                                         </el-row>
                                     </div>
@@ -415,6 +415,10 @@ export default class LayCelVexTable extends Vue {
     sortChange(column:any){
         let orderby = column.prop+" "+column.order;
         this.$emit("sortChange", orderby);
+    }
+    async cardClick(rowIndex:any,index:any,data:any){
+        let data1 = {rowIndex:rowIndex,columnIndex:index+1,row:{data:data.data}};
+        await this.openrefs(data1,null)
     }
     /** 
      * 字段点击进行跳转操作

@@ -49,8 +49,11 @@ export default class BipMenuBar{
                 let btn = new BipMenuBtn(CommICL.B_CMD_SUBMIT,"提交")
                 btn.setIconFontIcon('tijiao');
                 this.menuList.push(btn)
-                btn = new BipMenuBtn(CommICL.B_CMD_CHECK,"审核")
-                btn.setIconFontIcon('sh');
+                // btn = new BipMenuBtn(CommICL.B_CMD_CHECK,"审核")
+                // btn.setIconFontIcon('sh');
+                // this.menuList.push(btn)
+                btn = new BipMenuBtn(CommICL.B_CMD_CHECK_PROCESS,"流程查看")
+                btn.setIconFontIcon('wenjian6');
                 this.menuList.push(btn)
             }
             if((menuAttr&CommICL.B_IFIND)>0){

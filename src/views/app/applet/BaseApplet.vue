@@ -14,6 +14,7 @@
             </el-scrollbar>
         </div>
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
+       <bip-work-process ref="work_process"></bip-work-process>
         <template>
             <bip-menu-btn-dlg ref="bip_base_dlg"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
             <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
@@ -37,19 +38,19 @@ import CDataSet from "@/classes/pub/CDataSet";
 import BipMenuBar from "@/classes/pub/BipMenuBar";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CeaPars from "@/classes/cenv/CeaPars";
-import Operation from "@/classes/operation/Operation";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import DataCache from "@/classes/DataCache";
 import PageInfo from "@/classes/search/PageInfo";
 import BipWork from '@/components/cwork/BipWork.vue';
+import BipWorkProcess from '@/components/cwork/BipWorkProcess.vue';
 import { stringify } from 'querystring';
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
-    components: { BipMenuBarUi,  BipWork ,BipMenuBtnDlg,AppletListDlg}
+    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg}
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
@@ -208,6 +209,22 @@ export default class BaseApplet extends Vue{
             }else{
                 console.log('没保存')
                 this.$notify.warning("请先保存数据！");
+            }
+        }else if(cmd === 'CHECKPROCESS'){
+            let crd:any = this.dsm.currRecord.data;
+            if(this.dsm.opera){
+                var state = crd[this.dsm.opera.statefld];
+                var params = {
+                    sid: crd[this.dsm.opera.pkfld],
+                    sbuid: crd[this.dsm.opera.buidfld],
+                    statefr: state,
+                    stateto: state,
+                    tousr: ""
+                };
+                var ceaParams = new CeaPars(params);
+                let wp:any = this.$refs['work_process'];
+                if(wp)
+                    wp.open(ceaParams);
             }
         }else if(cmd == 'DLG'){
             let cc = JSON.stringify(this.dsm.currRecord.data);
