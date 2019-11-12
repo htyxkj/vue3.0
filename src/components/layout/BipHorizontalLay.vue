@@ -2,21 +2,21 @@
 <el-row v-if="laycfg" :gutter="10">
     <el-col :span="lspan" v-if="laycfg.length>1" >
         <template v-if="!cfgL.bcells">
-            <base-layout :layout="cfgL.comp" :env="env" :config="config"></base-layout>
+            <base-layout :layout="cfgL.comp" :env="env" :config="config"  @invokecmd="invokecmd"></base-layout>
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></lay-cell>
+                <lay-cell :laycell="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"  @invokecmd="invokecmd"></lay-cell>
             </el-row>
         </template>
     </el-col>
     <el-col :span="rspan" v-if="laycfg.length>1">
         <template v-if="!cfgR.bcells">
-            <base-layout :layout="cfgR.comp" :env="env" :config="config"></base-layout>
+            <base-layout :layout="cfgR.comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout>
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></lay-cell>
+                <lay-cell :laycell="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
             </el-row>
         </template>
     </el-col>
@@ -66,6 +66,9 @@ export default class BipHorizontalLay extends Vue{
     }
     sortChange(orderby:string){
         this.$emit("sortChange", orderby);
+    }
+    invokecmd(btn:any){
+        this.$emit("invokecmd",btn)
     }
     @Watch('laycfg')
     layCfgChange(){

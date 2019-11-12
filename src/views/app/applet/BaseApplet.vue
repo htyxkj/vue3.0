@@ -852,22 +852,28 @@ export default class BaseApplet extends Vue{
                 data[this.params.pkfld] = this.params.value
                 this.findData(true,data);
             }else if(this.params.method =='dlg'){
+                console.log(this.params)
                 if(JSON.stringify(this.params.jsontj).length >2)
                 var cData  = await this.findData(true,this.params.jsontj);
-                if(cData && cData.page){
-                    if(cData.page.total ==0){ 
-                        this.dsm.currRecord = new CRecord();
-                        let data = this.dsm.createRecord();
+                if(!cData || (cData && cData.page && cData.page.total ==0)){
+                    this.dsm.currRecord = new CRecord();
+                    this.dsm.createRecord();
+                    let cell:any = this.dsm.getCdsByObjID(this.params.cellid);
+                    if(cell){
                         let cont = this.params.jsoncont;
-                    　　for(var key in cont){ 
-                            data.data[key] = cont[key]
-                    　　} 
-                        let pk = this.dsm.ccells.pkindex
-                        for(var i=0;i<pk.length;i++){
-                            let cel = this.dsm.ccells.cels[pk[i]];
-                            if((cel.attr & 0x80 )>0){
-                                this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
-                            }
+                        for(var i=0;i<cont.length;i++){
+                            let dvl = cont[i];
+                            let data:any=cell.createRecord();
+                        　　for(var key in dvl){ 
+                                data.data[key] = dvl[key]
+                        　　}
+                        }
+                    }
+                    let pk = this.dsm.ccells.pkindex
+                    for(var i=0;i<pk.length;i++){
+                        let cel = this.dsm.ccells.cels[pk[i]];
+                        if((cel.attr & 0x80 )>0){
+                            this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
                         }
                     }
                 }
@@ -877,6 +883,7 @@ export default class BaseApplet extends Vue{
             }
         }
     }
+
     @Watch('params')
     paramsWatch(){ 
         if(this.pmenuid == this.$route.query.pmenuid){ 

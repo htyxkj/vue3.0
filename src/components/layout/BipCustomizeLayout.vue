@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-if="layType == 'TREE'">
-            <bip-tree-layout :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-tree-layout>
+            <bip-tree-layout :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"  @invokecmd="invokecmd"></bip-tree-layout>
         </template>
         <template v-else>
             自定义布局
@@ -62,6 +62,9 @@ export default class BipCustomizeLayout extends Vue{
     }
     sortChange(orderby:string){
         this.$emit("sortChange", orderby);
+    }
+    invokecmd(btn:any){
+        this.$emit("invokecmd",btn)
     }
 }
 </script>

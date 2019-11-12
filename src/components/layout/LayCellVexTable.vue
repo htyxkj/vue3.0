@@ -112,11 +112,14 @@
                 :span-method="rowspanMethod"
                 show-footer
                 :row-class-name="getRowStyleNew"
+                @select-change="checkChange"
+                :checkbox-config="{checkField: 'checked', trigger: 'row', reserve:'true'}"
                 > 
                 <!-- @cell-dblclick="openrefs" 双击 -->
                 <!-- cds.page.pageSize<cds.page.total -->
                 <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
                 <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
+                <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
                 <vxe-table-column type="index" width="60" fixed="left"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
                     <template v-if="item.type == ''">
@@ -201,7 +204,7 @@
                                             <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
                                                 <div @dblclick="cardClick(rowIndex,index,dataIt)">
                                                     <el-popover placement="top" width="160" trigger="hover" >
-                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" style="text-align: start;"></bip-grid-info>
                                                         <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                     </el-popover>
                                                 </div>
@@ -210,6 +213,15 @@
                                     </div>
                                 </el-col>
                             </el-row>
+                            <div style="text-align: end;padding-right:5px;">
+                                <div v-for="(item,index) in cardMenuList" :key="index">
+                                    <div v-if="item.cmd == 'DLG'">
+                                        <el-button :size="item.size" @click.native="invokecmd(item,rowIndex)" :disabled="!item.enable">
+                                            {{item.name}}
+                                        </el-button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </Accordion>
                 </div>
@@ -300,6 +312,7 @@ export default class LayCelVexTable extends Vue {
     @Provide() removeData :Array<CRecord> =[];
     @Provide() rowClass:any = {};
     @Provide() isTable:boolean = true;
+    @Provide() cardMenuList:any = []; 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -530,6 +543,18 @@ export default class LayCelVexTable extends Vue {
             this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
             this.$bus.$emit("row_click",value);    
         }, 250);
+    }
+    invokecmd(btn:any,rowIndex:any){
+        this.cds.index = rowIndex;
+        this.cds.currRecord = this.cds.getRecordAtIndex(rowIndex);
+        let value = {row:this.cds.currRecord ,rowIndex:rowIndex,dsm:this.cds};
+        this.$bus.$emit("row_click",value);    
+        this.$emit("invokecmd",btn)
+    }
+    checkChange(data:any){
+        this.cds.currRecordArr = data.selection ;
+        console.log(this.cds.currRecordArr)
+        console.log(this.cds.currRecord)
     }
     /**current 发送变化  键盘事件 暂未用到 */
     current_change(data:any,event:any){ 
@@ -817,10 +842,15 @@ export default class LayCelVexTable extends Vue {
     /**
      * 报表是Card布局还是Table布局
      */
-    ReportTableShape(pbuid:string){
-        if(pbuid)
-        if(pbuid == this.pbuid){
-            this.isTable = !this.isTable;
+    ReportTableShape(data:Array<any>){
+        if(data){
+            let pbuid = data[0]
+            if(pbuid)
+            if(pbuid == this.pbuid){
+                this.isTable = !this.isTable;
+            }
+            this.cardMenuList = data[1].menuList
+            console.log(this.cardMenuList);
         }
     }
 }

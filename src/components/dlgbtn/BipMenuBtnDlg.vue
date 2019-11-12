@@ -77,6 +77,7 @@ export default class BipMenuBtnDlg extends Vue {
      * DLG入口
      */
     open(btn:any,env:CCliEnv){
+        console.log(btn)
         this.btn = btn; 
         this.env = env;
         this.Title = btn.name;
@@ -104,30 +105,39 @@ export default class BipMenuBtnDlg extends Vue {
             let vl = this.env.dsm.currRecord.data[key]
             this.getCell(cellId,key,vl)
         }else if(btn.dlgType == 'C'){ //打开菜单
-        console.log("打开菜单")
+            console.log("打开菜单")
+            //D:人员补签,cdlgxx1;KQ0713;KQ0715=KQ0713A,sopr=sopr
             let cont = btn.dlgCont.split(";");
-            //H105;H103=H103P,bookclass.bid=bid,btype=btype,booklist.bcid=bcid;1=2
             let cont0 = cont[0]; //打开的菜单
             let cont1 = cont[1]; //数据值
-            let cont2 = cont[2]; //条件值
+            let cont2 = "";
+            if(cont.length>=3){
+                cont2 = cont[2]; //条件值
+            }
             let cell = cont1.substring(0,cont1.indexOf(",")).split("=")
             cont1 = cont1.substring(cont1.indexOf(",")+1)
             let data = this.finCellData(this.env.dsm,cell[0])
             let cont1arr = cont1.split(",")
-            let jsoncont:any = {};//传递的内容
-            for(var i=0;i<cont1arr.length;i++){
-                let zd = cont1arr[i].split("=")
-                jsoncont[zd[1]] = data[zd[0]]
+            let jsoncont:any = [];//传递的内容
+            for(var j=0;j<data.length;j++){
+                let d1:any={}
+                for(var i=0;i<cont1arr.length;i++){
+                    let zd = cont1arr[i].split("=")
+                    d1[zd[1]] = data[j][zd[0]]
+                }
+                jsoncont.push(d1);
             }
-            let cont2arr = cont2.split(",")
-            let jsontj:any = {};//传递的内容
-            for(var i=0;i<cont2arr.length;i++){
-                let zd = cont2arr[i].split("=")
-                let vl = data[zd[1]];
-                if(!vl)
-                    vl = "'"+zd[1]+"'"
-                jsontj[zd[0]] = vl
-            }  
+            let jsontj:any = {};//传递的条件
+            if(cont2 != ""){
+                let cont2arr = cont2.split(",")
+                for(var i=0;i<cont2arr.length;i++){
+                    let zd = cont2arr[i].split("=")
+                    let vl = data[0][zd[1]];
+                    if(!vl)
+                        vl = "'"+zd[1]+"'"
+                    jsontj[zd[0]] = vl
+                }  
+            }
             //打开的菜单
             let me = baseTool.findMenu(cont0);  
             if (!me) {
@@ -137,7 +147,6 @@ export default class BipMenuBtnDlg extends Vue {
                 let command = me.command.split("&");
                 let pbuid = command[0].split("=");
                 let pmenuid = command[1].split("="); 
-                
                 this.$router.push({
                     path:'/layout',
                     name:'layout',
@@ -145,8 +154,49 @@ export default class BipMenuBtnDlg extends Vue {
                     query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
                 })
             }
+            /** 旧版规则 **/
+            // let cont = btn.dlgCont.split(";");
+            // //H105;H103=H103P,bookclass.bid=bid,btype=btype,booklist.bcid=bcid;1=2
+            // let cont0 = cont[0]; //打开的菜单
+            // let cont1 = cont[1]; //数据值
+            // let cont2 = cont[2]; //条件值
+            // let cell = cont1.substring(0,cont1.indexOf(",")).split("=")
+            // cont1 = cont1.substring(cont1.indexOf(",")+1)
+            // let data = this.finCellData(this.env.dsm,cell[0])
+            // let cont1arr = cont1.split(",")
+            // let jsoncont:any = {};//传递的内容
+            // for(var i=0;i<cont1arr.length;i++){
+            //     let zd = cont1arr[i].split("=")
+            //     jsoncont[zd[1]] = data[zd[0]]
+            // }
+            // let cont2arr = cont2.split(",")
+            // let jsontj:any = {};//传递的内容
+            // for(var i=0;i<cont2arr.length;i++){
+            //     let zd = cont2arr[i].split("=")
+            //     let vl = data[zd[1]];
+            //     if(!vl)
+            //         vl = "'"+zd[1]+"'"
+            //     jsontj[zd[0]] = vl
+            // }  
+            // //打开的菜单
+            // let me = baseTool.findMenu(cont0);  
+            // if (!me) {
+            //     this.$notify.error( "没有" + cont0 + "菜单权限!" );
+            //     return false;
+            // }else{
+            //     let command = me.command.split("&");
+            //     let pbuid = command[0].split("=");
+            //     let pmenuid = command[1].split("="); 
+                
+            //     this.$router.push({
+            //         path:'/layout',
+            //         name:'layout',
+            //         params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
+            //         query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+            //     })
+            // }
         }else if(btn.dlgType == 'D'){
-
+            
         }
     }
     /**
@@ -297,7 +347,14 @@ export default class BipMenuBtnDlg extends Vue {
      */
     finCellData(dsm:CDataSet,obj_id:string):any{
         if(dsm.ccells.obj_id == obj_id){
-            return dsm.currRecord.data;
+            if(dsm.currRecordArr.length>0){
+                let data =[];
+                for(var i=0;i<dsm.currRecordArr.length;i++){
+                    data.push(dsm.currRecordArr[i].data);
+                }
+                return data;
+            }
+            return [dsm.currRecord.data];
         }
         for(var i =0;i< dsm.ds_sub.length ;i++){
             return this.finCellData(dsm.ds_sub[i],obj_id)

@@ -27,6 +27,7 @@ export default class CDataSet {
   initOK: boolean = false;
   canEdit: boolean = false;
   currRecord: CRecord = new CRecord();
+  currRecordArr:Array<CRecord>=[];
   scriptProc: BipScriptProc;
   opera: Operation | null = null;
   page: PageInfo;

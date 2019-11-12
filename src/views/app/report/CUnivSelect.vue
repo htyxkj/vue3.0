@@ -11,7 +11,7 @@
                                     <bip-search-cont :env="env" ></bip-search-cont>
                                 </div>
                                 <el-form @submit.native.prevent label-position="right" label-width="120px">
-                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                                 </el-form>
                             </el-scrollbar>
                         </div>
@@ -233,8 +233,13 @@ export default class CUnivSelect extends Vue {
             this.fullscreenLoading=true;
             this.getExcel();
         }else if(cmd === 'ROWCOLUMN'){
-            if(this.uriParams)
-            this.$bus.$emit('ReportTableShape',this.uriParams.pbuid)
+            if(this.uriParams){
+                this.$bus.$emit('ReportTableShape',[this.uriParams.pbuid,this.mbs])
+            }
+            let mb:any = this.$refs['mb'];
+            if(mb){
+                mb.ReportTableShape();
+            }
         }
         console.log(this.dsm_cont.currRecord)
     }

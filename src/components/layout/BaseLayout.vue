@@ -1,19 +1,19 @@
 <template>
 <div>
     <template v-if="layout&&layout.layType === 'B'">
-        <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></border-layout>
+        <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></border-layout>
     </template>
     <template v-else-if="layout&&layout.layType === 'T'">
-        <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></tabs-layout>
+        <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></tabs-layout>
     </template>
     <template v-else-if="layout&&layout.layType === 'H'">
-        <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-horizontal-lay>
+        <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></bip-horizontal-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'V'">
-        <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-vertical-lay>
+        <bip-vertical-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></bip-vertical-lay>
     </template>
     <template v-else-if="layout&&layout.layType === 'U'">
-        <bip-customize-layout  :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"></bip-customize-layout>
+        <bip-customize-layout  :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></bip-customize-layout>
     </template>
 </div>
 </template>
@@ -59,6 +59,9 @@ export default class BaseLayout extends Vue{
     }
     sortChange(orderby:string){
         this.$emit("sortChange", orderby);
+    }
+    invokecmd(btn:any){
+        this.$emit('invokecmd',btn)
     }
 }
 </script>

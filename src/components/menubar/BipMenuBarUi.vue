@@ -2,7 +2,7 @@
     <el-row class="menubar">
         <el-button-group v-if="mbs">
             <template  v-for="(btn,index) in mbs.menuList">
-                <el-button :key="index" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                <el-button :key="index" v-if="btn.dlgType == '' || showDlg":size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                     <template v-if="btn.hasIcon">
                         <template v-if="btn.icon&&btn.bIconleft">
                             <i :class="btn.icon"></i>{{btn.name}}
@@ -34,25 +34,20 @@ export default class BipMenuBarUI extends Vue{
     @Prop() mbs!:BipMenuBar;
     @Prop() cds!:CDataSet
     @Provide() bInsert:boolean = true;
-    @Provide() tableShapeBusID:number =0;
     @Provide() showDlg:boolean = true;
     invokecmd(btn:any){
         console.log(btn)
         this.$emit('invokecmd',btn);
     }
     mounted(){ 
-        this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
+        
     }
     beforeDestroy(){
-        this.$bus.$off('ReportTableShape',this.tableShapeBusID)
+        
     }
     ReportTableShape(){
-        this.showDlg = false;
+        this.showDlg = !this.showDlg;
     }
-    // get showDlgBtn(btn:any){
-
-    //     return true;
-    // }
 }
 </script>
 

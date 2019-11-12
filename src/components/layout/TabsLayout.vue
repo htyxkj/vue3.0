@@ -4,12 +4,12 @@
             <!-- {{cfg.name}} -->
             <template v-if="!cfg.bcells">
                 <!-- {{111}} -->
-                <base-layout :layout="cfg.comp" :env="env" :config="config"></base-layout >
+                <base-layout :layout="cfg.comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
             </template>
             <template v-else>
                 <!-- {{222}} -->
                 <el-row>
-                    <lay-cell :laycell="cfg.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config"></lay-cell>
+                    <lay-cell :laycell="cfg.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config" @invokecmd="invokecmd"></lay-cell>
                 </el-row>
             </template>
         </el-tab-pane>
@@ -43,6 +43,9 @@ export default class TabsLayout extends Vue{
 
     handleCurrentChange(value:number){
         this.$emit('handleCurrentChange',value)
+    }
+    invokecmd(btn:any){
+        this.$emit("invokecmd",btn)
     }
 }
 </script>
