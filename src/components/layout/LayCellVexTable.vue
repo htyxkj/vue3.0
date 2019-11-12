@@ -113,6 +113,7 @@
                 show-footer
                 :row-class-name="getRowStyleNew"
                 @select-change="checkChange"
+                @select-all="checkChange"
                 :checkbox-config="{checkField: 'checked', trigger: 'row', reserve:'true'}"
                 > 
                 <!-- @cell-dblclick="openrefs" 双击 -->
@@ -552,9 +553,7 @@ export default class LayCelVexTable extends Vue {
         this.$emit("invokecmd",btn)
     }
     checkChange(data:any){
-        this.cds.currRecordArr = data.selection ;
-        console.log(this.cds.currRecordArr)
-        console.log(this.cds.currRecord)
+        this.cds.currRecordArr = data.selection;
     }
     /**current 发送变化  键盘事件 暂未用到 */
     current_change(data:any,event:any){ 
@@ -618,6 +617,7 @@ export default class LayCelVexTable extends Vue {
                         cc.refreshData();
                         cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
+                        cc.toggleRowSelection(this.cds.currRecord);
                     }, 200);
                 }
             }
