@@ -857,9 +857,10 @@ export default class BaseApplet extends Vue{
                 var cData  = await this.findData(true,this.params.jsontj);
                 if(!cData || (cData && cData.page && cData.page.total ==0)){
                     this.dsm.currRecord = new CRecord();
-                    this.dsm.createRecord();
+                    this.dsm.createRecord();                   
                     let cell:any = this.dsm.getCdsByObjID(this.params.cellid);
                     if(cell){
+                        cell.clear();
                         let cont = this.params.jsoncont;
                         for(var i=0;i<cont.length;i++){
                             let dvl = cont[i];
@@ -869,6 +870,7 @@ export default class BaseApplet extends Vue{
                         　　}
                         }
                     }
+                    this.$bus.$emit("datachange",cell.obj_id)
                     let pk = this.dsm.ccells.pkindex
                     for(var i=0;i<pk.length;i++){
                         let cel = this.dsm.ccells.cels[pk[i]];

@@ -100,7 +100,7 @@
                 show-all-overflow="tooltip"
                 show-header-all-overflow
                 highlight-current-row
-                class="vxe-table-element"
+                class="vxe-table-element checkbox-table"
                 :data.sync="cds.cdata.data"
                 :optimized="true"
                 :height="height"
@@ -114,7 +114,7 @@
                 :row-class-name="getRowStyleNew"
                 @select-change="checkChange"
                 @select-all="checkChange"
-                :checkbox-config="{checkField: 'checked', trigger: 'row', reserve:'true'}"
+                :checkbox-config="{checkField: 'checked',reserve:'true'}"
                 > 
                 <!-- @cell-dblclick="openrefs" 双击 -->
                 <!-- cds.page.pageSize<cds.page.total -->
@@ -554,6 +554,12 @@ export default class LayCelVexTable extends Vue {
     }
     checkChange(data:any){
         this.cds.currRecordArr = data.selection;
+        let cc:any = this.$refs[this.cds.ccells.obj_id];
+        if(cc){
+            setTimeout(() => {
+                cc.setCurrentRow(this.cds.cdata.data[data.rowIndex]);
+            }, 200);
+        }
     }
     /**current 发送变化  键盘事件 暂未用到 */
     current_change(data:any,event:any){ 
@@ -834,8 +840,16 @@ export default class LayCelVexTable extends Vue {
                             return 'sctrl'+oneV[0];
                         }
                     }
+                }else{
+                    return {
+                        'row-checked': column.row.checked
+                    }
                 }
             } 
+        }else{
+            return {
+                'row-checked': column.row.checked
+            }
         }
     }
 

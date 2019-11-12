@@ -347,14 +347,19 @@ export default class BipMenuBtnDlg extends Vue {
      */
     finCellData(dsm:CDataSet,obj_id:string):any{
         if(dsm.ccells.obj_id == obj_id){
-            if(dsm.currRecordArr.length>0){
-                let data =[];
-                for(var i=0;i<dsm.currRecordArr.length;i++){
-                    data.push(dsm.currRecordArr[i].data);
+            if((dsm.ccells.attr & 0x40)>0){
+                if(dsm.currRecordArr.length>0){
+                    let data =[];
+                    for(var i=0;i<dsm.currRecordArr.length;i++){
+                        data.push(dsm.currRecordArr[i].data);
+                    }
+                    return data;
+                }else{
+                    return [];
                 }
-                return data;
+            }else{            
+                return [dsm.currRecord.data];
             }
-            return [dsm.currRecord.data];
         }
         for(var i =0;i< dsm.ds_sub.length ;i++){
             return this.finCellData(dsm.ds_sub[i],obj_id)
