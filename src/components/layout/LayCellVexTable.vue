@@ -624,6 +624,7 @@ export default class LayCelVexTable extends Vue {
                         cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
                         cc.toggleRowSelection(this.cds.currRecord);
+                        this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
                     }, 200);
                 }
             }

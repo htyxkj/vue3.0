@@ -29,6 +29,11 @@
                             {{item.dateto}}
                             </span>
                         </div>
+                        <div class="div5">
+                            <span style="font-size:11px">
+                            {{item.dscto}}
+                            </span>
+                        </div>
                         <div class="div4">
                             <img class="image3" v-if="item.cid <0 && item.cid != -20000" src="@/assets/check/process/process_bh1.png">
                             <img class="image3" v-else-if="item.cid == -20000" src="@/assets/check/process/process_ds1.png">
@@ -84,3 +89,56 @@ export default class BipWorkProcess extends Vue{
     }
 }
 </script>
+<style lang="scss" scoped> 
+  .image2 {
+    margin-left: -13px;
+    margin-top: 34px;
+    width: 26px;
+    height: 26px;
+    border-radius: 200px;
+  }
+  .div1 {
+    background-color: #eeeeee;
+    width: 100%;
+    height: 100%; 
+  }
+  .div2-1 {
+    background-color: #F0EFF4;
+    border-left: 3px solid #E6E5EA;
+    // margin-left: 20px;
+    // padding-bottom: 13px;
+  }
+  .div3 {
+    background-color: #FFFFFF;
+    height: 65px;
+    // width: 85%;
+    margin: auto;
+    margin-top: -43px;
+    color: #999;
+    font-size: 11px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    padding-left: 14px;
+  }
+  .div4 {
+    margin-top: -5px;
+    float: right;
+    height: 100%;
+    margin-right: 3px;
+    // max-width: 80px;
+  }
+  .div5{
+    margin-top: 34px;
+    float:left; 
+    height:100%;
+    margin-left: 6px;
+    position: relative;
+  }
+  .image3 {
+    width: 50px;
+    height: 34px;
+    position: absolute;
+    right: 30%;
+    margin-top: 14px;
+  }
+</style>
