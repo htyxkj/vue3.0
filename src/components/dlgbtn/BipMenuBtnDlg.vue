@@ -68,7 +68,8 @@ export default class BipMenuBtnDlg extends Vue {
 
     @Provide() laycell:any;
     @Provide() uiCels:any = [];
-    @Provide() openCell:boolean = false;
+    @Provide() openCell:boolean = false;//是否打开对象
+    @Provide() cellKey:string = '';//B 打开对象的主键 字段
     @Provide() cellCds:CDataSet = new CDataSet('');
     mounted() {
 
@@ -102,6 +103,13 @@ export default class BipMenuBtnDlg extends Vue {
             this.uiCels  = []; 
             let cellId = btn.dlgCont.split(";")[0];
             let key = btn.dlgCont.split(";")[1];
+            this.cellKey = key;
+            if((this.env.dsm.ccells.attr & 0x40)>0){
+                if(this.env.dsm.currRecordArr.length ==0){
+                    this.$message.warning("请勾选数据！")
+                    return;
+                }
+            }
             let vl = this.env.dsm.currRecord.data[key]
             this.getCell(cellId,key,vl)
         }else if(btn.dlgType == 'C'){ //打开菜单
@@ -117,6 +125,10 @@ export default class BipMenuBtnDlg extends Vue {
             let cell = cont1.substring(0,cont1.indexOf(",")).split("=")
             cont1 = cont1.substring(cont1.indexOf(",")+1)
             let data = this.finCellData(this.env.dsm,cell[0])
+            if(data.length ==0){
+                this.$message.warning("请勾选数据！")
+                return;
+            }
             let cont1arr = cont1.split(",")
             let jsoncont:any = [];//传递的内容
             for(var j=0;j<data.length;j++){
@@ -308,9 +320,14 @@ export default class BipMenuBtnDlg extends Vue {
         let bok = this.checkNotNull(dsm); 
         if(!bok){
             return ; 
-        }        
+        }
         let res = await dsm.saveData();
         if (res.status == 200) {
+            for(var i=0;i<this.env.dsm.currRecordArr.length;i++){
+                let curr = this.env.dsm.currRecordArr[i];
+                dsm.currRecord.data[this.cellKey] = curr.data[this.cellKey];
+                res =  await dsm.saveData();
+            }
             let data = res.data;
             if (data.id == 0) { 
                 this.$message.success("操作成功！");
