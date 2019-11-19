@@ -49,6 +49,7 @@ import {
   Progress,
   Transfer,
   Tree,
+  ColorPicker,
 
 } from "element-ui";
 
@@ -98,6 +99,7 @@ Vue.use(Popover)
 Vue.use(Progress)
 Vue.use(Transfer)
 Vue.use(Tree)
+Vue.use(ColorPicker)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

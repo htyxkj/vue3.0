@@ -5,6 +5,33 @@
                 <Calendar class="homeCalendar" @choseDay="clickDay" @changeMonth="changeDate"
                     :markDateMore="markDate"></Calendar>
                 <el-row>&nbsp;</el-row>
+                <el-row v-if="canAddHoliday" type="flex" justify="end" style="width:100%;text-align:end;padding-right:25px;">
+                    <el-col>
+                        <span @click="showAddHDialog()">
+                            添加
+                        </span>
+                    </el-col>
+                </el-row>
+                <!-- 节日 -->
+                <el-row style="width:100%;padding: 6px 30px;" v-for="(item,index) in holidayDate" :key="index">
+                    <el-col :span="8">
+                        <div class="newstitletime">{{item.data.ddate}}</div>
+                    </el-col>
+                    <el-col :span="16">
+                        <el-popover :key="index" placement="top-start" width="200" trigger="hover">
+                            <p style="text-align: center;">{{item.data.sevent}}</p>
+                            <div style="text-align: right; margin: 0;margin-right:5px;">
+                                <el-button size="mini" type="text" @click="upHoliday(item)">编辑</el-button>
+                                <el-button type="text" size="mini" @click="delHoliday(item)">删除</el-button>
+                            </div>
+                            <span slot="reference">
+                                <div class="newstitle">{{item.data.sevent}}</div>
+                            </span>
+                        </el-popover>
+                    </el-col>
+                </el-row>
+
+                <el-row>&nbsp;</el-row>
                 <el-row style="width:100%;padding: 0px 30px;" v-for="(item,index) in taskDate" :key="index">
                     <el-col :span="8">
                         <div class="newstitletime">{{item.data.ddate}}</div>
@@ -15,6 +42,28 @@
                         </span>
                     </el-col>
                 </el-row>
+            </el-row>
+            <!-- 节日 -->
+            <el-row>
+                <el-dialog title="节日操作" :close-on-click-modal="false" :visible.sync="holidayDialog" width="30%" :append-to-body="true">
+                    <div>
+                        <el-date-picker v-model="hDate" type="date" placeholder="节日日期" style="width:100%"> </el-date-picker>
+                    </div>
+                    <br/>
+                    <div>
+                        <el-input v-model="holidayname" placeholder="节日名称"></el-input> 
+                    </div>
+                    <br/>
+                    <el-input placeholder="显示颜色" v-model="holidaycolor">
+                        <template slot="append">
+                            <el-color-picker v-model="holidaycolor" size="small"></el-color-picker>
+                        </template>
+                    </el-input>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="holidayDialog = false">取 消</el-button>
+                        <el-button type="primary" @click="addHoliday()">保 存</el-button>
+                    </span>
+                </el-dialog>
             </el-row>
         </el-scrollbar>
     </div>
@@ -28,6 +77,7 @@ import Calendar from 'vue-calendar-component';
 import CDataSet from "@/classes/pub/CDataSet"; 
 import { Cells } from "@/classes/pub/coob/Cells";
 import QueryEntity from '@/classes/search/QueryEntity';
+import QueryCont from '@/classes/search/QueryCont';
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
 import { BIPUtils } from "@/utils/BaseUtil";
@@ -45,12 +95,41 @@ export default class HomeMenu extends Vue {
     @Provide() cds:CDataSet = new CDataSet('');
     @Provide() markDate:Array<any> = new Array<any>();
     @Provide() taskDate:Array<any> = new Array<any>();
-    mounted() {   
+    @Provide() holidayDate:Array<any> = new Array<any>();
+    @Provide() dayClass:any = {};
+    @Provide() holidayCell:CDataSet = new CDataSet('');//节日对象
+    @Provide() holidayDialog:boolean = false;//是否显示节日弹框
+    @Provide() hDate:any = null;//节日日期
+    @Provide() holidayname:string = ""//节日名称
+    @Provide() holidaycolor:string = ""//节日颜色
+    @Provide() canAddHoliday:boolean = false;//是否可以新建节日
+    @Provide() showItemHoliday:boolean  = false;//是否显示修改卡片
+    @Provide() addOrUpHoliday:boolean = true;//是 新增节日，还是修改节日
+    async mounted() {   
+        let menu = baseTool.findMenu("KQ0302");
+        if(menu !=  null){
+            this.canAddHoliday = true;
+        }
+        let res = await tools.getCCellsParams('00WORKCALENDAR'); 
+        let rtn = res.data;
+        if (rtn.id == 0) {
+            let kn: Array<Cells> = rtn.data.layCels;
+            this.holidayCell = new CDataSet(kn[0]);
+        }
         this.markDate =[];
         this.init();
     }
     async init(){
+        let res = await tools.getServerTime();
+        let date1 =null;
+        if(res.data.id ==0){
+            date1 = new Date(res.data.data.data.time);
+        }else{
+            date1 = new Date();
+        }
+        this.setSaturdaySundayColor(date1.getFullYear(),date1.getMonth()+1);
         this.getTaskNum();
+        this.getAllHoliday();
         let vl = await tools.getServerTime();
         let date =null;
         if(vl.data.id ==0){
@@ -66,14 +145,38 @@ export default class HomeMenu extends Vue {
         let qe:QueryEntity = new QueryEntity('','');
         qe.page.currPage = 1;
         qe.page.pageSize = 50;
-        // let dd = await this.getTJDate(date);
-        // let ddarr = dd.split("~");
-        // let sql = "~ddate >='"+ddarr[0]+"'  and ddate<='"+ddarr[1]+"'";
+        let dd = await this.getTJDate(date);
+        let ddarr = dd.split("~");
+        let oneCont = [];  
+        let qCont = new QueryCont('ddate',ddarr[1],93);
+        qCont.setContrast(2);
+        oneCont.push(qCont);
+        qCont = new QueryCont('ddate',ddarr[0],93);
+        qCont.setContrast(1);
+        oneCont.push(qCont);
+        qe.cont = "~["+JSON.stringify(oneCont)+"]";
         let cc = await tools.getBipInsAidInfo("MYNOTEBK",210,qe)
         if(cc.data.id == 0) {
             let vl:Array<any> = cc.data.data.data.values;
             vl.forEach((item:any) => {
-                let mk ={date:item.ddate,className:"mark1"}
+                let className = "mark1";
+                if(className == ""){
+                    // 创建我们的样式表
+                    var style = document.createElement('style');
+                    style.innerHTML =
+                        '.sctrl'+item.ddate+' {' +
+                            'background-color: '+item.background+' !important;' +
+                            'border-radius: 50%;' +
+                            'color:#FFF;' +
+                        '}';
+                    className = 'sctrl'+item.ddate;
+                    // 获取第一个脚本标记
+                    var ref:any = document.querySelector('script');
+                    // 在第一个脚本标签之前插入新样式
+                    if(ref != null)
+                        ref.parentNode.insertBefore(style, ref);
+                }
+                let mk ={date:item.ddate,className:className}
                 this.markDate.push(mk);
             });
         }
@@ -92,6 +195,60 @@ export default class HomeMenu extends Vue {
             this.taskDate = vv.data.data.data.data;
         }else{
             console.log(data+"数据查询错误！")
+        }
+    }
+    /**
+     * 获取近期 的节假日数据
+     */
+    async getAllHoliday(date:string = ''){
+        let qe:QueryEntity = new QueryEntity('00WORKCALENDAR','00WORKCALENDAR');
+        qe.page.currPage = 1;
+        qe.page.pageSize = 50;
+        let dd = await this.getTJDate(date);
+        let ddarr = dd.split("~");
+        let cc = ddarr[0] + "~" +ddarr[1];
+        qe.cont = '{"ddate" : "'+cc+'"}'
+        let vv = await tools.query(qe);
+        console.log(vv);
+        if(vv.data.id == 0){
+            let data = vv.data.data.data.data;
+            for(var i=0;i<data.length;i++){
+                let className = "";
+                if(className == ""){
+                    // 创建我们的样式表
+                    var style = document.createElement('style');
+                    style.innerHTML =
+                        '.sctrl'+data[i].data.ddate+' {' +
+                            'background-color: '+data[i].data.background+' !important;' +
+                            'border-radius: 50%;' +
+                            'color:#FFF;' +
+                        '}';
+                    className = 'sctrl'+data[i].data.ddate;
+                    // 获取第一个脚本标记
+                    var ref:any = document.querySelector('script');
+                    // 在第一个脚本标签之前插入新样式
+                    if(ref != null)
+                        ref.parentNode.insertBefore(style, ref);
+                }
+                let mk ={date:data[i].data.ddate,className:className}
+                this.markDate.push(mk);
+            }
+        }
+
+
+    }
+    /**
+     * 获取一个日期的 详细节日信息
+     */
+    async getHoliday(date:string){
+        let qe:QueryEntity = new QueryEntity('00WORKCALENDAR','00WORKCALENDAR');
+        qe.page.currPage = 1;
+        qe.page.pageSize = 50;
+        qe.cont = '{"ddate" : "'+date+'"}'
+        let vv = await tools.query(qe);
+        console.log(vv);
+        if(vv.data.id == 0){
+            this.holidayDate = vv.data.data.data.data;
         }
     }
 
@@ -140,12 +297,17 @@ export default class HomeMenu extends Vue {
     }
 
     clickDay(data:any) {
-      this.getTask(data);
+        this.hDate = data;
+        this.getTask(data);
+        this.getHoliday(data);
     }
     changeDate(data:any) {
         //   console.log(data); //左右点击切换月份
         this.taskDate = [];
+        let dd = data.split("/")
+        this.setSaturdaySundayColor(dd[0],dd[1]);
         this.getTaskNum(data)
+        this.getAllHoliday(data)
     }
 
     async taskClick(item:any){
@@ -178,6 +340,118 @@ export default class HomeMenu extends Vue {
                 this.$notify.error("没有业务：" + slkbuid ); 
             }
         }
+    }
+
+    /**
+     * 获取某个月份的 周六日 日期
+     */
+    setSaturdaySundayColor(y:any,m:any){
+        console.log(y,m)
+        var tempTime = new Date(y,m,0);
+        var time = new Date();
+        // var saturday = new Array();
+        // var sunday = new Array();
+        for(var i=1;i<=tempTime.getDate();i++){
+            time.setFullYear(y,m-1,i);
+            var day = time.getDay();
+            if(day == 6){
+                let mk ={date:y+"-"+m+"-"+i,className:'saturday'}
+                this.markDate.push(mk);
+                // saturday.push(i);
+            }else if(day == 0){
+                let mk ={date:y+"-"+m+"-"+i,className:'sunday'}
+                this.markDate.push(mk);
+                // sunday.push(i);
+            }
+        }
+        
+    }
+
+    showAddHDialog(){
+        this.holidayDialog = true;
+        this.holidayCell.createRecord();
+        this.addOrUpHoliday = true;
+        this.holidayname = "";
+        this.holidaycolor = "";
+    }
+
+    /**
+     * 添加节假日
+     */
+    addHoliday(){
+        this.hDate = new Date(this.hDate);// moment(this.hDate).format("YYYY-MM-DD")
+        this.holidayCell.currRecord.data.ddate =this.hDate.getFullYear()+ "-"+(this.hDate.getMonth()+1)+"-"+this.hDate.getDate();
+        /**
+         * 做必填判断
+         */
+        if(!this.holidayname){
+            return;
+        }
+        this.holidayCell.currRecord.data.sevent = this.holidayname
+        this.holidayCell.currRecord.data.background = this.holidaycolor;
+        this.holidayCell.saveData().then(res=>{//进行保存
+            if(res.data.id ==0){
+                this.$notify.success("保存成功！")
+                let className = "";
+                if(className == ""){
+                    // 创建我们的样式表
+                    var style = document.createElement('style');
+                    style.innerHTML =
+                        '.sctrl'+this.holidayCell.currRecord.data.ddate+' {' +
+                            'background-color: '+this.holidayCell.currRecord.data.background+' !important;' +
+                            'border-radius: 50%;' +
+                            'color:#FFF;' +
+                        '}';
+                    className = 'sctrl'+this.holidayCell.currRecord.data.ddate;
+                    // 获取第一个脚本标记
+                    var ref:any = document.querySelector('script');
+                    // 在第一个脚本标签之前插入新样式
+                    if(ref != null)
+                        ref.parentNode.insertBefore(style, ref);
+                }
+                let mk ={date:this.holidayCell.currRecord.data.ddate,className:className}
+                this.markDate.push(mk);
+            }else{
+                this.$notify.error(res.data.message);
+            }
+        }).finally(()=>{
+            this.holidayDialog = false;
+        })
+    }
+    /**
+     * 修改节假日
+     */
+    upHoliday(item:any){
+        this.holidayDialog = true;
+        this.hDate = item.data.ddate;
+        this.holidayname = item.data.sevent;
+        this.holidaycolor = item.data.background;
+        this.holidayCell.currRecord = item;
+        this.holidayCell.currRecord.c_state =2;
+
+    }
+    /**
+     * 删除节假日
+     */
+    delHoliday(item:any){
+        this.$confirm('此操作将删除该节日, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() => {
+            item.c_state = 4;
+            this.holidayCell.currRecord = item;
+            this.holidayCell.saveData().then(res=>{//进行保存
+                if(res.data.id ==0){                    
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }
+            });
+        }).catch(() => {
+            
+        });
     }
 }
 </script>
@@ -228,6 +502,17 @@ export default class HomeMenu extends Vue {
     box-shadow: 1px 2px 10px #dde2e4;
 }
 .homeCalendar {
+
+    .saturday{
+        background-color: blue;
+        border-radius: 50%;
+        color:#FFF;
+    }
+    .sunday{
+        background-color: red;
+        border-radius: 50%;
+        color:#FFF;
+    } 
 
     .mark1{
         background-color: #52D48C;
