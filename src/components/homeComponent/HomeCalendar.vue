@@ -132,6 +132,7 @@ export default class HomeCalendar extends Vue {
         }else{
             date1 = new Date();
         }
+        this.hDate = date1;
         this.setSaturdaySundayColor(date1.getFullYear(),date1.getMonth()+1);
         this.getTaskNum();
         this.getAllHoliday();
