@@ -7,32 +7,32 @@
                 <el-row>&nbsp;</el-row>
                 <el-row v-if="canAddHoliday" type="flex" justify="end" style="width:100%;text-align:end;padding-right:25px;">
                     <el-col>
-                        <span @click="showAddHDialog()">
+                        <span @click="showAddHDialog()" style="cursor:pointer;">
                             添加
                         </span>
                     </el-col>
                 </el-row>
                 <!-- 节日 -->
                 <el-row style="width:100%;padding: 6px 30px;" v-for="(item,index) in holidayDate" :key="index">
-                    <el-col :span="8">
-                        <div class="newstitletime">{{item.data.ddate}}</div>
-                    </el-col>
-                    <el-col :span="16">
-                        <el-popover :key="index" placement="top-start" width="200" trigger="hover">
-                            <p style="text-align: center;">{{item.data.sevent}}</p>
-                            <div style="text-align: right; margin: 0;margin-right:5px;">
-                                <el-button size="mini" type="text" @click="upHoliday(item)">编辑</el-button>
-                                <el-button type="text" size="mini" @click="delHoliday(item)">删除</el-button>
-                            </div>
-                            <span slot="reference">
+                    <el-popover :key="index" placement="top-start" width="200" trigger="hover">
+                        <p style="text-align: center;">{{item.data.sevent}}</p>
+                        <div style="text-align: right; margin: 0;margin-right:5px;">
+                            <el-button size="mini" type="text" @click="upHoliday(item)">编辑</el-button>
+                            <el-button type="text" size="mini" @click="delHoliday(item)">删除</el-button>
+                        </div> 
+                        <el-row slot="reference" style="cursor:pointer;">
+                            <el-col :span="8">
+                                <div class="newstitletime">{{item.data.ddate}}</div>
+                            </el-col>
+                            <el-col :span="16">
                                 <div class="newstitle">{{item.data.sevent}}</div>
-                            </span>
-                        </el-popover>
-                    </el-col>
+                            </el-col>
+                        </el-row>
+                    </el-popover>
                 </el-row>
 
                 <el-row>&nbsp;</el-row>
-                <el-row style="width:100%;padding: 0px 30px;" v-for="(item,index) in taskDate" :key="index">
+                <el-row style="width:100%;padding: 0px 30px;" v-for="(item,index) in taskData" :key="index">
                     <el-col :span="8">
                         <div class="newstitletime">{{item.data.ddate}}</div>
                     </el-col>
@@ -88,13 +88,14 @@ import moment from 'moment';
         Calendar
     }
 })
-export default class HomeMenu extends Vue { 
+export default class HomeCalendar extends Vue { 
     @Prop() cont!:string;
     @Prop() rech!:string;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Provide() cds:CDataSet = new CDataSet('');
-    @Provide() markDate:Array<any> = new Array<any>();
-    @Provide() taskDate:Array<any> = new Array<any>();
+    @Provide() markDate:Array<any> = new Array<any>();//全部样式
+    @Provide() taskData:Array<any> = new Array<any>();
+    @Provide() taskClass:Array<any> = new Array<any>();//任务样式
     @Provide() holidayDate:Array<any> = new Array<any>();
     @Provide() dayClass:any = {};
     @Provide() holidayCell:CDataSet = new CDataSet('');//节日对象
@@ -105,6 +106,8 @@ export default class HomeMenu extends Vue {
     @Provide() canAddHoliday:boolean = false;//是否可以新建节日
     @Provide() showItemHoliday:boolean  = false;//是否显示修改卡片
     @Provide() addOrUpHoliday:boolean = true;//是 新增节日，还是修改节日
+    @Provide() hdayClass:Array<any> = new Array<any>();//节假日class集合
+    @Provide() weekendClass:Array<any> = new Array<any>();//周六日class集合
     async mounted() {   
         let menu = baseTool.findMenu("KQ0302");
         if(menu !=  null){
@@ -117,6 +120,8 @@ export default class HomeMenu extends Vue {
             this.holidayCell = new CDataSet(kn[0]);
         }
         this.markDate =[];
+        this.taskClass = [];
+        this.hdayClass = [];
         this.init();
     }
     async init(){
@@ -158,6 +163,7 @@ export default class HomeMenu extends Vue {
         let cc = await tools.getBipInsAidInfo("MYNOTEBK",210,qe)
         if(cc.data.id == 0) {
             let vl:Array<any> = cc.data.data.data.values;
+            this.taskData = [];
             vl.forEach((item:any) => {
                 let className = "mark1";
                 if(className == ""){
@@ -177,8 +183,10 @@ export default class HomeMenu extends Vue {
                         ref.parentNode.insertBefore(style, ref);
                 }
                 let mk ={date:item.ddate,className:className}
-                this.markDate.push(mk);
+                this.taskClass.push(mk);
             });
+            this.markDate = this.weekendClass;
+            this.markDate = this.markDate.concat(this.taskData.concat(this.hdayClass))
         }
     }
     /** 获取一个日期的任务信息 */
@@ -192,7 +200,7 @@ export default class HomeMenu extends Vue {
         qe.page.pageSize=1000
         let vv = await tools.query(qe);
         if(vv.data.id == 0){
-            this.taskDate = vv.data.data.data.data;
+            this.taskData = vv.data.data.data.data;
         }else{
             console.log(data+"数据查询错误！")
         }
@@ -209,9 +217,9 @@ export default class HomeMenu extends Vue {
         let cc = ddarr[0] + "~" +ddarr[1];
         qe.cont = '{"ddate" : "'+cc+'"}'
         let vv = await tools.query(qe);
-        console.log(vv);
         if(vv.data.id == 0){
             let data = vv.data.data.data.data;
+            this.hdayClass = [];
             for(var i=0;i<data.length;i++){
                 let className = "";
                 if(className == ""){
@@ -231,11 +239,11 @@ export default class HomeMenu extends Vue {
                         ref.parentNode.insertBefore(style, ref);
                 }
                 let mk ={date:data[i].data.ddate,className:className}
-                this.markDate.push(mk);
+                this.hdayClass.push(mk);
             }
+            this.markDate = this.weekendClass;
+            this.markDate = this.markDate.concat(this.taskData.concat(this.hdayClass))
         }
-
-
     }
     /**
      * 获取一个日期的 详细节日信息
@@ -303,7 +311,7 @@ export default class HomeMenu extends Vue {
     }
     changeDate(data:any) {
         //   console.log(data); //左右点击切换月份
-        this.taskDate = [];
+        this.taskData = [];
         let dd = data.split("/")
         this.setSaturdaySundayColor(dd[0],dd[1]);
         this.getTaskNum(data)
@@ -346,25 +354,19 @@ export default class HomeMenu extends Vue {
      * 获取某个月份的 周六日 日期
      */
     setSaturdaySundayColor(y:any,m:any){
-        console.log(y,m)
         var tempTime = new Date(y,m,0);
         var time = new Date();
-        // var saturday = new Array();
-        // var sunday = new Array();
         for(var i=1;i<=tempTime.getDate();i++){
             time.setFullYear(y,m-1,i);
             var day = time.getDay();
             if(day == 6){
                 let mk ={date:y+"-"+m+"-"+i,className:'saturday'}
-                this.markDate.push(mk);
-                // saturday.push(i);
+                this.weekendClass.push(mk);
             }else if(day == 0){
                 let mk ={date:y+"-"+m+"-"+i,className:'sunday'}
-                this.markDate.push(mk);
-                // sunday.push(i);
+                this.weekendClass.push(mk);
             }
         }
-        
     }
 
     showAddHDialog(){
@@ -372,7 +374,7 @@ export default class HomeMenu extends Vue {
         this.holidayCell.createRecord();
         this.addOrUpHoliday = true;
         this.holidayname = "";
-        this.holidaycolor = "";
+        this.holidaycolor = this.holidayCell.currRecord.data.background
     }
 
     /**
@@ -381,16 +383,14 @@ export default class HomeMenu extends Vue {
     addHoliday(){
         this.hDate = new Date(this.hDate);// moment(this.hDate).format("YYYY-MM-DD")
         this.holidayCell.currRecord.data.ddate =this.hDate.getFullYear()+ "-"+(this.hDate.getMonth()+1)+"-"+this.hDate.getDate();
-        /**
-         * 做必填判断
-         */
-        if(!this.holidayname){
-            return;
-        }
         this.holidayCell.currRecord.data.sevent = this.holidayname
         this.holidayCell.currRecord.data.background = this.holidaycolor;
+        let bok = this.checkNotNull(this.holidayCell); 
+        if(!bok)
+            return ;
         this.holidayCell.saveData().then(res=>{//进行保存
             if(res.data.id ==0){
+                this.getHoliday(this.holidayCell.currRecord.data.ddate);
                 this.$notify.success("保存成功！")
                 let className = "";
                 if(className == ""){
@@ -410,7 +410,7 @@ export default class HomeMenu extends Vue {
                         ref.parentNode.insertBefore(style, ref);
                 }
                 let mk ={date:this.holidayCell.currRecord.data.ddate,className:className}
-                this.markDate.push(mk);
+                this.getAllHoliday(this.holidayCell.currRecord.data.ddate); 
             }else{
                 this.$notify.error(res.data.message);
             }
@@ -442,7 +442,9 @@ export default class HomeMenu extends Vue {
             item.c_state = 4;
             this.holidayCell.currRecord = item;
             this.holidayCell.saveData().then(res=>{//进行保存
-                if(res.data.id ==0){                    
+                if(res.data.id ==0){  
+                    this.getHoliday(item.data.ddate);
+                    this.getAllHoliday(item.data.ddate);
                     this.$message({
                         type: 'success',
                         message: '删除成功!'
@@ -452,6 +454,22 @@ export default class HomeMenu extends Vue {
         }).catch(() => {
             
         });
+    }
+    checkNotNull(cds:CDataSet):boolean{ 
+        let bok = true;
+        cds.ccells.cels.forEach(item => {
+            if (item.unNull&&bok) {
+                let vl = null;
+                if(cds.currRecord.data[item.id]!=null)
+                    vl = cds.currRecord.data[item.id]+''; 
+                if (!vl) {
+                    this.$notify.warning( "【" + item.labelString + "】不能为空!");
+                    bok =  false;
+                    return false;
+                }
+            }
+        }); 
+        return bok;
     }
 }
 </script>

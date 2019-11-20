@@ -52,7 +52,7 @@ import CData from '../../classes/pub/CData';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
 })
-export default class CUnivSelect extends Vue {
+export default class HomeCUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
     @Prop() height!:number;
