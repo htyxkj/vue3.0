@@ -14,6 +14,7 @@ import { CCalcUI } from "./interface/CCalcUI";
 import CRecord from "./CRecord";
 let tools = BIPUtil.ServApi;
 import { CommICL } from "@/utils/CommICL";
+import CeaPars from '../cenv/CeaPars';
 let ICL = CommICL;
 export default class CDataSet {
   ccells: Cells;
@@ -31,6 +32,7 @@ export default class CDataSet {
   scriptProc: BipScriptProc;
   opera: Operation | null = null;
   page: PageInfo;
+  ceaPars!:CeaPars;//审批流信息
 
   //制单相关的下标
   i_smake: number = -1; //制单人下标
@@ -167,9 +169,19 @@ export default class CDataSet {
     }
     return false;
   }
-
+  /**
+   * 查询单据是否可修改
+   * @param _i 数据下标
+   */
   currCanEdit(_i: number = -1) {
     console.log("currCanEdit")
+    //判断是否是临时改
+    if(this.ceaPars){
+      if(this.ccells.attr)
+      if((this.ccells.attr & 0x4000) > 0 && this.ceaPars.statefr !== "6"){
+        return true;
+      }
+    }
     if (this.ds_par != null) {
       return this.ds_par.currCanEdit();
     }

@@ -38,6 +38,8 @@ import { URIParams } from "@/classes/URIParams";
 import { User } from '@/classes/User';
 import { Menu } from "@/classes/Menu";
 import { Cells } from "@/classes/pub/coob/Cells";
+import {CommICL} from '@/utils/CommICL'
+let ICL = CommICL
 
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
@@ -66,6 +68,10 @@ export default class bipTask extends Vue {
     @Provide() uiCels:Array<any>= [];
     @Provide() taskValue:Array<any>= [];
     @Provide() taskChangebusId:number = 0;
+    @State("aidValues", { namespace: "insaid" }) aidValues: any;
+    @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
+    @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
+    @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
 
     @Getter('user', { namespace: 'login' }) user?: User;
     async mounted() { 
@@ -150,7 +156,8 @@ export default class bipTask extends Vue {
                     let slkbuid = ''
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
-                    let data = null;//获取常量定义的 BL_菜单号_字段ID 进行菜单打开
+                    /** 获取BUUI定义 */
+                    let data = await this.initBUUI(row.buid,row.rlid);
                     if(data == null){
                         if (slkid && slkbuid) { 
                             //获取业务定义
@@ -181,7 +188,28 @@ export default class bipTask extends Vue {
                             }  
                         }
                     }else{
-
+                      let slink = data.slink;
+                      console.log(data);
+                      let menuID = slink.split("&")[0];
+                      let key = slink.split("&")[1];
+                      key = key.substring(key.indexof("{"),key.indexof("}"))
+                      console.log(key)
+                      let me = baseTool.findMenu(menuID);  
+                      if (!me) {
+                          this.$notify.error( "没有" + menuID + "菜单权限!" );
+                          return false;
+                      }else{
+                        this.upReadState(slkid,slkbuid,row.tousr);
+                        let command = me.command.split("&");
+                        let pbuid = command[0].split("=");
+                        let pmenuid = command[1].split("="); 
+                        this.$router.push({
+                            path:'/layout',
+                            name:'layout',
+                            params:{method:"pkfld",pkfld:"sid",value:slkid},
+                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                        })
+                      }
                     }
                 }else{
                     console.log('主键点击')
@@ -197,6 +225,30 @@ export default class bipTask extends Vue {
     }
     beforeDestroy(){
         this.$bus.$off('MyTaskChange',this.taskChangebusId)
+    }
+    /**
+     * BUUI_业务号_审批流节点 定义
+     */
+    async initBUUI(buid:string,rlid:string){
+        let name = "BUUI_"+buid+"_"+rlid;
+        let str = name
+        str = ICL.AID_KEYCL+str;
+        if(!this.aidValues.get(str)){
+            let vv  = window.sessionStorage.getItem(str)
+            if(!vv){
+                let vars = {id:300,aid:name}
+                await this.fetchInsAid(vars);
+                let vv  = window.sessionStorage.getItem(str)
+                if(vv){
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                }
+            }else{
+                let vals = {key:str,value:JSON.parse(vv)}
+                this.setAidValue(vals)
+            } 
+        }
+        return this.aidValues.get(str);
     }
 }
 </script>

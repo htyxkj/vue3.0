@@ -191,6 +191,15 @@ export namespace BIPUtil {
         let param = tool.getDlgRunSqlParams(value,btn);
         return this.getFromServer(param)
     }
+    /**
+     * 弹出框执行SQL语句 常量里面定义的 DLG.
+     * @param value 当前选中行内容
+     * @param btn BipMenuBtn 对象
+     */
+    getDlgRunClass(env:string,btn:string){
+        let param = tool.getDlgRunClassParams(env,btn);
+        return this.getFromServer(param)
+    }
 
     /**
      * @description 获取任务 或 消息

@@ -77,7 +77,7 @@ export default class BipMenuBtnDlg extends Vue {
     /**
      * DLG入口
      */
-    open(btn:any,env:CCliEnv){
+    async open(btn:any,env:CCliEnv){
         console.log(btn)
         this.btn = btn; 
         this.env = env;
@@ -208,7 +208,16 @@ export default class BipMenuBtnDlg extends Vue {
             //     })
             // }
         }else if(btn.dlgType == 'D'){
-            
+            let b = JSON.stringify(this.btn);
+            let v = JSON.stringify(this.env);
+            this.$message.success("操作执行中。。。。。")
+            tools.getDlgRunClass(v,b).then(res =>{
+                if(res.data.id == 0 ){
+                    this.$notify.success(res.data.message)
+                }else{
+                    this.$notify.error(res.data.message)
+                }
+            })
         }
     }
     /**

@@ -195,6 +195,7 @@ export default class BaseApplet extends Vue{
                                     smakefld = crd.data[this.dsm.opera.smakefld];
                                 }
                             }
+                            this.dsm.ceaPars = this.cea
                             work.open(data,this.cea,smakefld);
                         }
                     }).catch(err=>{
@@ -351,6 +352,18 @@ export default class BaseApplet extends Vue{
             }
         }
         this.setListMenuName();
+        //设置当前记录审批流程信息
+        if(crd != null && this.dsm.opera){
+            let params = {
+                sid: crd.data[this.dsm.opera.pkfld],
+                sbuid: crd.data[this.dsm.opera.buidfld],
+                statefr: crd.data[this.dsm.opera.statefld],
+                stateto: crd.data[this.dsm.opera.statefld],
+                spuserId: ""
+            }  
+            this.cea = new CeaPars(params);
+            this.dsm.ceaPars = this.cea;
+        }
         this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
     }
 //#endregion

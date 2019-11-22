@@ -254,9 +254,9 @@ export namespace BIPUtils {
         });
     }
     /**
-     * @description 获取辅助/常量元素对象
-     * @param aId 辅助后者常量ID
-     * @param id 200 辅助,300常量
+     * @description dlg执行SQL
+     * @param value 当前选中行
+     * @param btn 当前点击按钮
      */
     getDlgRunSqlParams(value: string,btn:string) {
       return Object.assign({
@@ -264,6 +264,20 @@ export namespace BIPUtils {
         dbid: BaseVariable.COMM_FLD_VALUE_DBID,
         usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
         value: value,
+        btn:btn, 
+      });
+    }
+    /**
+     * @description dlg执行 java
+     * @param env 数据集
+     * @param btn 当前点击按钮
+     */
+    getDlgRunClassParams(env: string,btn:string) {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_DLGCLASSRUN,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        env: env,
         btn:btn, 
       });
     }

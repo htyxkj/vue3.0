@@ -20,6 +20,7 @@ export const GlobalVariable = Object.assign({},{
     APIID_FINDSTATDATA:"findstatdata",
     APIID_BIPINSAID:"bipinsaid",
     APIID_DLGSQLRUN : "dlgsqlrun" ,
+    APIID_DLGCLASSRUN : "dlgclassrun" ,
     APIID_TIME:"systime",
     APIID_EXPDATA:"expdata",
     APIID_TA_MSG:"taskmsg",

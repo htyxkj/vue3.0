@@ -109,6 +109,16 @@ export default class BipFileInfo extends Vue {
     }
 
     open() {
+        this.fileList = [];
+        if(!this.upLoadDid)
+            this.upLoadDid = this.cds.currRecord.data["fj_root"];
+        let fileName = this.cds.currRecord.data[this.cell.id];
+        let nameArr = fileName.split(";");
+        for(var i=0;i<nameArr.length;i++){
+            let name = nameArr[i];
+            let f1 = {name:name,url:this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101",status:'success'}
+            this.fileList.push(f1)
+        }
         this.outerVisible = true;
     }
 
@@ -261,7 +271,9 @@ export default class BipFileInfo extends Vue {
     close(){
         this.outerVisible = false;
     }
-
+    /**
+     * 下载文件
+     */
     handleDown(index:number,file:any) {
         let name = file.name;
         let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');

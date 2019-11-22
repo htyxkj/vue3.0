@@ -288,6 +288,7 @@ import { Menu } from "@/classes/Menu";
 import CRecord from '../../classes/pub/CRecord';
 import { BIPUtils } from "@/utils/BaseUtil";
 import { connect } from 'echarts';
+import { on } from 'cluster';
 let baseTool = BIPUtils.baseUtil;
 @Component({
     components: {  BipGridInfo,Accordion }
@@ -345,8 +346,16 @@ export default class LayCelVexTable extends Vue {
     }
 
 
-    addRecord() {
+    async addRecord() {
         if(this.cds.currCanEdit()){
+            //判断是否是第一次新建
+            if(this.cds.cdata.data.length ==0){
+                //第一次新建 判断一下sctrl 是否是需要中常量中取数
+                let cc:boolean = await this.init9DData();// 返回false 继续执行之后的程序  返回true 跳出添加方法
+                if(cc){
+                    return ;
+                }
+            }
             this.cds.createRecord();
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){ 
@@ -358,6 +367,48 @@ export default class LayCelVexTable extends Vue {
                 this.cds.ds_par.currRecord.c_state |= 2;
             }
         }
+    }
+    /**
+     * 处理对象上  控制字段中的 `9D = 常量
+     */
+    async init9DData(){
+        let bool = false;
+        let sctrls = this.cds.ccells.sctrl;
+        if(sctrls){
+            let cc = sctrls.split(";");
+            for(var i=0;i<cc.length;i++){
+                let oneSc = cc[i];
+                if(oneSc.indexOf('`9D')!=-1){
+                    bool = true;
+                    oneSc = oneSc.split('=')[1];
+                    let data = await this.initCL(oneSc);
+                    console.log(data)
+                    if(data){
+                        let value = data.values;
+                        let slink = data.slink;
+                        slink = slink.substring(slink.indexOf("{")+1,slink.indexOf("}"))
+                        let kvArr = slink.split(",");
+                        for(var i=0;i<value.length;i++){
+                            let vl = value[i];
+                            this.cds.createRecord();
+                            for(var j =0;j<kvArr.length;j++){
+                                let kv = kvArr[j].split("=");
+                                this.cds.currRecord.data[kv[0]] = vl[data.cells.cels[kv[1]].id]
+                            }
+                            let cc:any = this.$refs[this.cds.ccells.obj_id];
+                            if(cc){ 
+                                cc.setCurrentRow(this.cds.currRecord); 
+                            }
+                        }
+                        this.cds.currRecord.c_state |= 2;
+                        if(this.cds.ds_par){
+                            this.cds.ds_par.currRecord.c_state |= 2;
+                        }
+                    }
+                }
+            }
+        }
+        return bool;
     }
     delRecord(){
         if(this.cds.currCanEdit()){
@@ -460,7 +511,8 @@ export default class LayCelVexTable extends Vue {
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
                     let data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
-                    data = await this.initBL(cell.id);
+                    let name = "BL_"+this.pbuid+"_"+cell.id;
+                    data = await this.initCL(name);
                     if(data == null){
                         if (slkid && slkbuid) { 
                             //获取业务定义
@@ -582,8 +634,8 @@ export default class LayCelVexTable extends Vue {
     /**
      * BL_菜单参数_字段ID 定义
      */
-    async initBL(id:string){
-        let name = "BL_"+this.pbuid+"_"+id;
+    async initCL(name:string){
+        // let name = "BL_"+this.pbuid+"_"+id;
         let str = name
         // let dlg = await pubMethod.getConstant(str);
         str = ICL.AID_KEYCL+str;
@@ -738,7 +790,9 @@ export default class LayCelVexTable extends Vue {
             }
         }
     } 
-
+    /**
+     * 初始化行调用的辅助
+     */
     openInitEdit(){
         for(var i=0;i<this.laycell.uiCels.length;i++){
             let cel = this.laycell.uiCels[i];
