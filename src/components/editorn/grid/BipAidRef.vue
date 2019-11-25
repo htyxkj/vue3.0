@@ -56,41 +56,92 @@ export default class BipAidRef extends Vue{
         if(this.refLink&&this.refLink.id.length>0&&this.model&&this.model.length>0){
              this.refLink.values = []
             if(this.model&&this.model.length>0){
-                let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
-                let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+this.model
-                let vrs = this.aidValues.get(key);
-                if(!vrs){
-                    let str = window.sessionStorage.getItem(key)
-                    if(!str){
-                        let vvs = {id:this.refLink.id,key:key,cont:cont}
-                        this.fetchInsDataByCont(vvs)
+                if(this.model&&this.model.length>0){
+                let vlarr = this.model.split(";")
+                var values:any = [];
+                for(var i=0;i<vlarr.length;i++){
+                    let cont = this.refLink.cells.cels[0].id+"='"+vlarr[i]+"' "
+                    let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+vlarr[i]
+                    let vrs = this.aidValues.get(key);
+                    if(!vrs){
+                        let str = window.sessionStorage.getItem(key)
+                        if(!str){
+                            let vvs = {id:this.refLink.id,key:key,cont:cont}
+                            this.fetchInsDataByCont(vvs)
+                        }else{
+                            vrs = JSON.parse(str);
+                            this.setAidValue({key:key,value:vrs})
+                            values.push(vrs);
+                        }
                     }else{
-                        vrs = JSON.parse(str);
-                        this.setAidValue({key:key,value:vrs})
-                        this.refLink.values = []
-                        this.refLink.values[0] = vrs
-                        this.makeShow()
+                        values.push(vrs);
                     }
-                }else{
-                    this.refLink.values = []
-                    this.refLink.values[0] = vrs
-                    this.makeShow()
-                }
 
-            }else{
-                this.refLink.realV = this.model
-                this.refLink.showV = this.refLink.realV
+                }
+                this.refLink.values = []
+                this.refLink.values = values
                 this.makeShow()
+            }
+
+            //     let cont = this.refLink.cells.cels[0].id+"='"+this.model+"' "
+            //     let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+this.model
+            //     let vrs = this.aidValues.get(key);
+            //     if(!vrs){
+            //         let str = window.sessionStorage.getItem(key)
+            //         if(!str){
+            //             let vvs = {id:this.refLink.id,key:key,cont:cont}
+            //             this.fetchInsDataByCont(vvs)
+            //         }else{
+            //             vrs = JSON.parse(str);
+            //             this.setAidValue({key:key,value:vrs})
+            //             this.refLink.values = []
+            //             this.refLink.values[0] = vrs
+            //             this.makeShow()
+            //         }
+            //     }else{
+            //         this.refLink.values = []
+            //         this.refLink.values[0] = vrs
+            //         this.makeShow()
+            //     }
+
+            // }else{
+            //     this.refLink.realV = this.model
+            //     this.refLink.showV = this.refLink.realV
+            //     this.makeShow()
+            // }
             }
         }
     }
 
  makeShow() {
+        // if(!this.bcode){
+        //     if(this.refLink.values&&this.refLink.values.length>0){
+        //         let vv = this.refLink.values[0];
+        //         if(vv){
+        //             this.refLink.showV = vv[this.refLink.cells.cels[1].id]||this.refLink.realV
+        //         }else{
+        //             this.refLink.showV = this.refLink.realV
+        //         }
+        //     }else{
+        //         this.refLink.realV = this.model1
+        //         this.refLink.showV = this.refLink.realV
+        //     }
+        // }else{
+        //     this.refLink.realV = this.model
+        //     this.refLink.showV = this.refLink.realV
+            
+        // }
+        // this.model1 = this.refLink.showV     
         if(!this.bcode){
             if(this.refLink.values&&this.refLink.values.length>0){
-                let vv = this.refLink.values[0];
-                if(vv){
-                    this.refLink.showV = vv[this.refLink.cells.cels[1].id]||this.refLink.realV
+                if(this.refLink.values){
+                    this.refLink.showV = ''
+                    for(var i=0;i<this.refLink.values.length;i++){
+                        let vv = this.refLink.values[i];
+                        this.refLink.showV += vv[this.refLink.cells.cels[1].id]+";"||this.refLink.realV+";"
+                    }
+                    if(this.refLink.showV.length>1)
+                    this.refLink.showV = this.refLink.showV.substring(0,this.refLink.showV.length-1)
                 }else{
                     this.refLink.showV = this.refLink.realV
                 }
@@ -101,7 +152,6 @@ export default class BipAidRef extends Vue{
         }else{
             this.refLink.realV = this.model
             this.refLink.showV = this.refLink.realV
-            
         }
         this.model1 = this.refLink.showV     
     }

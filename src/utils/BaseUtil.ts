@@ -514,12 +514,12 @@ export namespace BIPUtils {
     */
     calcTwoValue(o0: any, o1: any, ysf: string) {
       if (ysf == "+" || ysf == "|") {
-        if (o0 == null) return o1;
+        if (o0 == null || o0 == NaN) return o1;
         if (o1 == null) return o0;
         if (
           ysf == "+" &&
           !(o0 instanceof Date) &&
-          (!(o0 instanceof Number) || !(o1 instanceof Number))
+          (!(typeof o0 === "number") || !(typeof o1 === "number"))
         )
           return o0 + "" + o1;
       }
