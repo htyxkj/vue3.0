@@ -375,6 +375,7 @@ export default class HomeCalendar extends Vue {
 
     showAddHDialog(){
         this.holidayDialog = true;
+        this.holidayCell.clear();
         this.holidayCell.createRecord();
         this.addOrUpHoliday = true;
         this.hDate = new Date(this.hDate);
@@ -385,8 +386,6 @@ export default class HomeCalendar extends Vue {
      * 添加节假日
      */
     addHoliday(){
-        this.hDate = new Date(this.hDate);// moment(this.hDate).format("YYYY-MM-DD")
-        this.holidayCell.currRecord.data.ddate =this.hDate.getFullYear()+ "-"+(this.hDate.getMonth()+1)+"-"+this.hDate.getDate();
         let bok = this.checkNotNull(this.holidayCell); 
         if(!bok)
             return ;
@@ -424,9 +423,12 @@ export default class HomeCalendar extends Vue {
      * 修改节假日
      */
     upHoliday(item:any){
+        this.holidayCell.clear();
         this.holidayDialog = true;
         this.hDate = item.data.ddate;
-        this.holidayCell.currRecord = item;
+        this.holidayCell.currRecord.data = item.data;
+        this.holidayCell.cdata.data.push(this.holidayCell.currRecord)
+        this.holidayCell.index=0;
         this.holidayCell.currRecord.c_state =2;
 
     }
