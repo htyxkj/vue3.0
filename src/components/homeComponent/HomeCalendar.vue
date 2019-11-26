@@ -47,13 +47,11 @@
             <el-row>
                 <el-dialog title="节日操作" :close-on-click-modal="false" :visible.sync="holidayDialog" width="30%" :append-to-body="true">
                     <el-form @submit.native.prevent label-position="right" label-width="100px">
-                        <div  v-for="(cel,index) in holidayCell.ccells.cels" :key="index" >
+                        <div  v-for="(cel,index) in holidayCell.ccells.cels" :key="'A'+index" >
                             <bip-comm-editor v-if="(cel.attr&0x400) <= 0 && cel.id !='background'" :cell="cel" :bgrid="false" :cds="holidayCell" :row="holidayCell.index" />
-                        </div>
-                        <div  v-for="(cel,index) in holidayCell.ccells.cels" :key="index" >
-                            <div>
+                            <div v-if ="(cel.attr&0x400) <= 0 && cel.id =='background'">
                                 <el-col :xs="24" :sm="24"  >
-                                    <template v-if ="(cel.attr&0x400) <= 0 && cel.id =='background'">
+                                    <template >
                                         <el-form-item :label="cel.labelString" class="bip-input-item" :required="cel.isReq">
                                             <el-input v-model="holidayCell.currRecord.data[cel.id]" size="small">
                                                 <template slot="append">
@@ -64,7 +62,7 @@
                                     </template>
                                 </el-col>
                             </div>
-                        </div>
+                        </div> 
                     </el-form>
                     <span slot="footer" class="dialog-footer">
                         <el-button @click="holidayDialog = false">取 消</el-button>
