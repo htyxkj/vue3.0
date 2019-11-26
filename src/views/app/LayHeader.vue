@@ -165,13 +165,17 @@ export default class LayHeader extends Vue {
             this.$bus.$emit('MyTaskChange')
         }
         if (info.type === 2) {
-            if (this.msgNum !== info.count) {
-                this.msgNum = info.count;
-                if(this.msgNum>0){
-                    this.$notify.success("您有" + this.msgNum + "条消息未处理！" ); 
+            if(typeof info.count === "number"){
+                if (this.msgNum !== info.count) {
+                    this.msgNum = info.count;
+                    if(this.msgNum>0){
+                        this.$notify.success("您有" + this.msgNum + "条消息未处理！" ); 
+                    }
                 }
+                this.$bus.$emit('MyMsghange')
+            }else{
+                this.$notify.success(info.count); 
             }
-            this.$bus.$emit('MyMsghange')
         }
         // console.log(frame);
         // 接收消息

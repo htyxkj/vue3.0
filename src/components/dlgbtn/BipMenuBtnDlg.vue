@@ -211,11 +211,15 @@ export default class BipMenuBtnDlg extends Vue {
             let b = JSON.stringify(this.btn);
             let v = JSON.stringify(this.env);
             this.$message.success("操作执行中。。。。。")
-            tools.getDlgRunClass(v,b).then(res =>{
-                if(res.data.id == 0 ){
-                    this.$notify.success(res.data.message)
-                }else{
-                    this.$notify.error(res.data.message)
+            await tools.getDlgRunClass(v,b).then(res =>{
+                if(res){
+                    if(res.data.id == 0 ){
+                        this.$notify.success(res.data.message)
+                    }else if(res.data.id == -2){
+                        console.log(res);
+                    }else {
+                        this.$notify.error(res.data.message)
+                    }
                 }
             })
         }
