@@ -46,19 +46,26 @@
             <!-- 节日 -->
             <el-row>
                 <el-dialog title="节日操作" :close-on-click-modal="false" :visible.sync="holidayDialog" width="30%" :append-to-body="true">
-                    <div>
-                        <el-date-picker v-model="hDate" type="date" placeholder="节日日期" style="width:100%"> </el-date-picker>
-                    </div>
-                    <br/>
-                    <div>
-                        <el-input v-model="holidayname" placeholder="节日名称"></el-input> 
-                    </div>
-                    <br/>
-                    <el-input placeholder="显示颜色" v-model="holidaycolor">
-                        <template slot="append">
-                            <el-color-picker v-model="holidaycolor" size="small"></el-color-picker>
-                        </template>
-                    </el-input>
+                    <el-form @submit.native.prevent label-position="right" label-width="100px">
+                        <div  v-for="(cel,index) in holidayCell.ccells.cels" :key="index" >
+                            <bip-comm-editor v-if="(cel.attr&0x400) <= 0 && cel.id !='background'" :cell="cel" :bgrid="false" :cds="holidayCell" :row="holidayCell.index" />
+                        </div>
+                        <div  v-for="(cel,index) in holidayCell.ccells.cels" :key="index" >
+                            <div>
+                                <el-col :xs="24" :sm="24"  >
+                                    <template v-if ="(cel.attr&0x400) <= 0 && cel.id =='background'">
+                                        <el-form-item :label="cel.labelString" class="bip-input-item" :required="cel.isReq">
+                                            <el-input v-model="holidayCell.currRecord.data[cel.id]" size="small">
+                                                <template slot="append">
+                                                    <el-color-picker v-model="holidayCell.currRecord.data[cel.id]" size="mini"></el-color-picker>
+                                                </template>
+                                            </el-input>
+                                        </el-form-item>
+                                    </template>
+                                </el-col>
+                            </div>
+                        </div>
+                    </el-form>
                     <span slot="footer" class="dialog-footer">
                         <el-button @click="holidayDialog = false">取 消</el-button>
                         <el-button type="primary" @click="addHoliday()">保 存</el-button>
@@ -101,8 +108,6 @@ export default class HomeCalendar extends Vue {
     @Provide() holidayCell:CDataSet = new CDataSet('');//节日对象
     @Provide() holidayDialog:boolean = false;//是否显示节日弹框
     @Provide() hDate:any = null;//节日日期
-    @Provide() holidayname:string = ""//节日名称
-    @Provide() holidaycolor:string = ""//节日颜色
     @Provide() canAddHoliday:boolean = false;//是否可以新建节日
     @Provide() showItemHoliday:boolean  = false;//是否显示修改卡片
     @Provide() addOrUpHoliday:boolean = true;//是 新增节日，还是修改节日
@@ -374,8 +379,8 @@ export default class HomeCalendar extends Vue {
         this.holidayDialog = true;
         this.holidayCell.createRecord();
         this.addOrUpHoliday = true;
-        this.holidayname = "";
-        this.holidaycolor = this.holidayCell.currRecord.data.background
+        this.hDate = new Date(this.hDate);
+        this.holidayCell.currRecord.data.ddate =this.hDate.getFullYear()+ "-"+(this.hDate.getMonth()+1)+"-"+this.hDate.getDate();
     }
 
     /**
@@ -384,8 +389,6 @@ export default class HomeCalendar extends Vue {
     addHoliday(){
         this.hDate = new Date(this.hDate);// moment(this.hDate).format("YYYY-MM-DD")
         this.holidayCell.currRecord.data.ddate =this.hDate.getFullYear()+ "-"+(this.hDate.getMonth()+1)+"-"+this.hDate.getDate();
-        this.holidayCell.currRecord.data.sevent = this.holidayname
-        this.holidayCell.currRecord.data.background = this.holidaycolor;
         let bok = this.checkNotNull(this.holidayCell); 
         if(!bok)
             return ;
@@ -425,8 +428,6 @@ export default class HomeCalendar extends Vue {
     upHoliday(item:any){
         this.holidayDialog = true;
         this.hDate = item.data.ddate;
-        this.holidayname = item.data.sevent;
-        this.holidaycolor = item.data.background;
         this.holidayCell.currRecord = item;
         this.holidayCell.currRecord.c_state =2;
 
