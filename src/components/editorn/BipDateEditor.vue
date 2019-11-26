@@ -209,6 +209,9 @@ export default class BipDateEditor extends Vue{
                     }
                 }
                 this.cds.currRecord.c_state |= 2;
+                if(this.cds.ds_par){
+                    this.cds.ds_par.currRecord.c_state |= 2;
+                }
             }else{
                 this.model1 = this.model
             }

@@ -140,6 +140,9 @@ export default class BipTreeEditor extends Vue{
                 crd.c_state |= 2;
                 this.cds.currRecord = Object.assign({},crd) 
                 this.cds.checkGS(this.cell); 
+                if(this.cds.ds_par){
+                    this.cds.ds_par.currRecord.c_state |= 2;
+                }
             }else{
                 this.model1 = this.model
             }
