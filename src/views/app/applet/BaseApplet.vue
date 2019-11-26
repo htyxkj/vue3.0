@@ -462,6 +462,18 @@ export default class BaseApplet extends Vue{
             this.$notify.info("没有查询到数据");
             this.$bus.$emit('dataloadchange')
         }
+        let crd = this.dsm.currRecord;
+        if(crd != null && this.dsm.opera){
+            let params = {
+                sid: crd.data[this.dsm.opera.pkfld],
+                sbuid: crd.data[this.dsm.opera.buidfld],
+                statefr: crd.data[this.dsm.opera.statefld],
+                stateto: crd.data[this.dsm.opera.statefld],
+                spuserId: ""
+            }  
+            this.cea = new CeaPars(params);
+            this.dsm.ceaPars = this.cea;
+        }
         return vv;
     }
 
