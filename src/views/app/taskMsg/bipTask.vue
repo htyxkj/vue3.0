@@ -192,7 +192,7 @@ export default class bipTask extends Vue {
                       console.log(data);
                       let menuID = slink.split("&")[0];
                       let key = slink.split("&")[1];
-                      key = key.substring(key.indexof("{"),key.indexof("}"))
+                      key = key.substring(key.indexOf("{")+1,key.indexOf("}"))
                       console.log(key)
                       let me = baseTool.findMenu(menuID);  
                       if (!me) {
@@ -206,7 +206,7 @@ export default class bipTask extends Vue {
                         this.$router.push({
                             path:'/layout',
                             name:'layout',
-                            params:{method:"pkfld",pkfld:"sid",value:slkid},
+                            params:{method:"pkfld",pkfld:key,value:slkid},
                             query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
                         })
                       }

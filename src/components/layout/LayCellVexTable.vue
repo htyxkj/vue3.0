@@ -391,6 +391,12 @@ export default class LayCelVexTable extends Vue {
                         for(var i=0;i<value.length;i++){
                             let vl = value[i];
                             this.cds.createRecord();
+                            for(var key in this.cds.currRecord.data){
+                                let cel:any = this.cds.getCell(key)
+                                if(cel.initValue){
+                                    this.cds.currRecord.data[key] = '';
+                                }
+                            }
                             for(var j =0;j<kvArr.length;j++){
                                 let kv = kvArr[j].split("=");
                                 this.cds.currRecord.data[kv[0]] = vl[data.cells.cels[kv[1]].id]
