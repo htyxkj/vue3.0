@@ -50,6 +50,7 @@ import {
   Transfer,
   Tree,
   ColorPicker,
+  Drawer,
 
 } from "element-ui";
 
@@ -100,6 +101,7 @@ Vue.use(Progress)
 Vue.use(Transfer)
 Vue.use(Tree)
 Vue.use(ColorPicker)
+Vue.use(Drawer)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

@@ -483,15 +483,12 @@ export default class BaseApplet extends Vue{
      */
     dataLoaded(vv: QueryEntity,cd:CData) {
         if ((vv.oprid == 13) || (vv.oprid == 14)) {
-                let page = cd.page;
+            let page = cd.page;
+            if(page.total >0){
                 this.dsm.setCData(cd);
                 this.dsm.index = page.index;
                 this.setSubData()
-                // let dc = new DataCache(page.currPage, cd);
-                // console.log(dc, "缓存数据");
-                // this.dataCache.push(dc);
-                
-
+            }
         } else if (vv.oprid == 15) {
             let rec: any = vv.values[0]; //后台返回的数据当前行
             let page = this.qe.page;
@@ -807,7 +804,7 @@ export default class BaseApplet extends Vue{
             if(this.uriParams && this.uriParams.pdata && this.uriParams.pdata.length>1){ 
                 this.oprid = 14;
                 this.dsm.cont = this.uriParams.pdata;
-                this.findData(true,this.uriParams.pdata); 
+                await this.findData(true,this.uriParams.pdata); 
             } 
         }else{
 

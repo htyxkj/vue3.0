@@ -6,88 +6,107 @@
             </template>
         </el-row>
 
-        <vxe-toolbar v-if="isTable" :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
-        <!-- 单据录入表格-->
-        <vxe-table
-            :ref="this.cds.ccells.obj_id"
-            v-if="beBill"
-            border
-            size="small"
-            highlight-hover-row
-            show-all-overflow="tooltip"
-            show-header-all-overflow
-            highlight-current-row
-            class="vxe-table-element"
-            :data.sync="cds.cdata.data"
-            :optimized="true"
-            :edit-config="{key:'id',trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
-            resizable
-            @edit-actived="rowActive"
-            @edit-closed="editClose"
-            height="300px"
-            :selectRow="cds.currRecord"
-            @select-all="selectAllEvent"
-            @cell-click="table_cell_click"
-            @select-change="selectChangeEvent"
-            >
-            <vxe-table-column v-if="cds.ds_par" type="selection" width="40"></vxe-table-column>
-            <template v-for="(item,index) in groupCells">
-                <template v-if="item.type == ''">
-                    <vxe-table-column :key="index" header-align="center" align="center"
-                        :field="item.cel.id" :width="widths[item.cel.widthIndex]" :title="item.cel.labelString"
-                        show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.cel.attr&0x40)>0">
-                        <template v-slot:edit="{row,rowIndex}">
-                            <bip-comm-editor  :cell="item.cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
-                        </template>
-                        <template v-slot="{row,rowIndex}">
-                            <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                        </template>
-                    </vxe-table-column>
-                </template>
-                <template v-else-if="item.type == 'g'">
-                    <vxe-table-column :key="index" :title="item.name" header-align="center">
-                        <vxe-table-column 
-                            v-for="(cel,indexg) in item.cel" :key="indexg"
-                            header-align="center" align="center" 
-                            :field="cel.id" :width="widths[cel.widthIndex]" :title="cel.labelString"
-                            show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(cel.attr&0x40)>0">
+        <template v-if="isTable">
+            <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+            <!-- 单据录入表格-->
+            <vxe-table
+                :ref="this.cds.ccells.obj_id"
+                v-if="beBill"
+                border
+                size="small"
+                highlight-hover-row
+                show-all-overflow="tooltip"
+                show-header-all-overflow
+                highlight-current-row
+                class="vxe-table-element"
+                :data.sync="cds.cdata.data"
+                :optimized="true"
+                :edit-config="{key:'id',trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
+                resizable
+                @edit-actived="rowActive"
+                @edit-closed="editClose"
+                height="300px"
+                :selectRow="cds.currRecord"
+                @select-all="selectAllEvent"
+                @cell-click="table_cell_click"
+                @select-change="selectChangeEvent"
+                >
+                <vxe-table-column v-if="cds.ds_par" type="selection" width="40"></vxe-table-column>
+                <template v-for="(item,index) in groupCells">
+                    <template v-if="item.type == ''">
+                        <vxe-table-column :key="index" header-align="center" align="center"
+                            :field="item.cel.id" :width="widths[item.cel.widthIndex]" :title="item.cel.labelString"
+                            show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.cel.attr&0x40)>0">
                             <template v-slot:edit="{row,rowIndex}">
-                                <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                                <bip-comm-editor  :cell="item.cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                             </template>
                             <template v-slot="{row,rowIndex}">
-                                <bip-grid-info :cds="cds" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
-                        </vxe-table-column> 
+                        </vxe-table-column>
+                    </template>
+                    <template v-else-if="item.type == 'g'">
+                        <vxe-table-column :key="index" :title="item.name" header-align="center">
+                            <vxe-table-column 
+                                v-for="(cel,indexg) in item.cel" :key="indexg"
+                                header-align="center" align="center" 
+                                :field="cel.id" :width="widths[cel.widthIndex]" :title="cel.labelString"
+                                show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(cel.attr&0x40)>0">
+                                <template v-slot:edit="{row,rowIndex}">
+                                    <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                                </template>
+                                <template v-slot="{row,rowIndex}">
+                                    <bip-grid-info :cds="cds" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                </template>
+                            </vxe-table-column> 
+                        </vxe-table-column>
+                    </template>
+                </template>
+                <template v-slot:empty>
+                    <el-button type="danger" icon="el-icon-plus" circle style="font-size: 28px;"  @click="addRecord"></el-button>
+                </template>
+                <!-- 
+                    <vxe-table-column
+                        header-align="center"
+                        align="center"
+                        v-for="(cel,index) in laycell.uiCels"
+                        :key="index"
+                        :field="cel.id"
+                        :width="widths[index]"
+                        :title="cel.labelString"
+                        show-header-overflow
+                        :edit-render="{name: 'default'}"
+                        show-overflow
+                        :disabled="(cel.attr&0x40)>0"
+                    >
+                        <template v-slot:edit="{row,rowIndex}">
+                            <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                        </template>
+                        <template v-slot="{row,rowIndex}">
+                            <bip-grid-info
+                                :cds="cds"
+                                :cell="cel"
+                                :row="rowIndex"
+                                :bgrid="true"
+                            ></bip-grid-info>
+                        </template>
                     </vxe-table-column>
-                </template>
-            </template>
-            <!-- 
-            <vxe-table-column
-                header-align="center"
-                align="center"
-                v-for="(cel,index) in laycell.uiCels"
-                :key="index"
-                :field="cel.id"
-                :width="widths[index]"
-                :title="cel.labelString"
-                show-header-overflow
-                :edit-render="{name: 'default'}"
-                show-overflow
-                :disabled="(cel.attr&0x40)>0"
-            >
-                <template v-slot:edit="{row,rowIndex}">
-                    <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
-                </template>
-                <template v-slot="{row,rowIndex}">
-                    <bip-grid-info
-                        :cds="cds"
-                        :cell="cel"
-                        :row="rowIndex"
-                        :bgrid="true"
-                    ></bip-grid-info>
-                </template>
-            </vxe-table-column> -->
-        </vxe-table>
+                -->
+            </vxe-table>
+            <el-drawer append-to-body :visible.sync="addDrawer" direction="btt" size="50%" :withHeader="false" :wrapperClosable="false">
+                <div class="myDrawer">
+                    <el-scrollbar style="height:100%">
+                        <base-layout :layout="lay" :env="env"></base-layout>
+                    </el-scrollbar>
+                </div>
+                <div style="height:15%">
+                    <el-row type="flex" justify="center">
+                        <el-button @click="closeDrawer(false)">  取  消  </el-button>
+                        <el-button @click="closeDrawer(true)" type="primary">  确  定  </el-button> 
+                    </el-row>
+                </div>
+            </el-drawer>
+        </template>
         <!-- 报表展示表格-->
         <template v-else>
             <vxe-table
@@ -243,6 +262,7 @@
                     <el-button-group size="small" v-if="cds.ds_par">  
                         <el-button icon="el-icon-edit" @click="addRecord"></el-button>
                         <el-button icon="el-icon-delete" @click="delRecord"></el-button>
+                        <!-- <el-button icon="el-icon-delete" @click="openDrawer"></el-button> -->
                     </el-button-group>
                 </el-col>
                 </el-pagination>
@@ -278,8 +298,9 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 import {CommICL} from '@/utils/CommICL'
-import Accordion from '@/components/accordion/Accordion.vue'
 let ICL = CommICL
+import Accordion from '@/components/accordion/Accordion.vue'
+import { BipLayout } from "@/classes/ui/BipLayout";
 
 import { BIPUtil } from "@/utils/Request"; 
 let tools = BIPUtil.ServApi
@@ -315,6 +336,10 @@ export default class LayCelVexTable extends Vue {
     @Provide() rowClass:any = {};
     @Provide() isTable:boolean = true;
     @Provide() cardMenuList:any = []; 
+    @Provide() addDrawer:boolean = false;//子表抽屉样式添加
+    @Provide() lay: BipLayout = new BipLayout("");
+    @Provide() drawerCurrRecord:CRecord = new CRecord();//子表抽屉样式时  当前选中行  用来处理 抽屉中 取消 操作
+
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -928,6 +953,24 @@ export default class LayCelVexTable extends Vue {
             console.log(this.cardMenuList);
         }
     }
+
+    openDrawer(){
+        this.lay.layType="B";
+        this.lay.laystr="B:(@"+this.cds.ccells.obj_id+")";
+        this.lay.ccells = [this.cds.ccells];
+        this.lay = new BipLayout(this.lay.laystr,this.lay.ccells)
+        this.addDrawer = !this.addDrawer;
+        this.drawerCurrRecord = JSON.parse(JSON.stringify(Object.assign({},this.cds.currRecord)));
+    }
+    closeDrawer(isOk:boolean){
+        this.addDrawer = !this.addDrawer;
+        if(isOk == false){
+            console.log("取消")
+            this.cds.currRecord = this.drawerCurrRecord;
+            this.cds.cdata.data[this.cds.index] = this.cds.currRecord
+            this.datachange(this.cds.ccells.obj_id)
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -952,5 +995,20 @@ export default class LayCelVexTable extends Vue {
 .piece{
     padding: 5px 10px;
     width:95%;
+}
+.myDrawer{
+    
+    overflow: hidden;
+    height:85%;
+    overflow: hidden;
+    .el-scrollbar {
+        height: calc(100% + 40px) !important; 
+        padding-bottom: 20px;
+        .el-scrollbar__wrap {
+            overflow-x: hidden !important;
+            padding-right: 5px;
+            height: 100%;
+        }
+    }
 }
 </style>

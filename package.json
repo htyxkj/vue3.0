@@ -10,7 +10,7 @@
     "@types/echarts": "^4.1.9",
     "@types/stompjs": "^2.3.4",
     "echarts": "^4.2.1",
-    "element-ui": "^2.9.1",
+    "element-ui": "^2.13.0",
     "moment": "^2.24.0",
     "qs": "^6.7.0",
     "stompjs": "^2.3.3",
