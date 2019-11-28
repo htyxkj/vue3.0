@@ -208,8 +208,13 @@ export default class BipMenuBtnDlg extends Vue {
             //     })
             // }
         }else if(btn.dlgType == 'D'){
+
             let b = JSON.stringify(this.btn);
             let v = JSON.stringify(this.env);
+            let bok = this.checkNotNull(this.env.dsm);
+            if(!bok){
+                return ; 
+            }
             this.$message.success("操作执行中。。。。。")
             await tools.getDlgRunClass(v,b).then(res =>{
                 if(res){
@@ -349,6 +354,7 @@ export default class BipMenuBtnDlg extends Vue {
             }
         }    
     }
+    /** 检查主表非空 */
     checkNotNull(cds:CDataSet):boolean{
         this.bok = true;
         cds.ccells.cels.forEach(item => {
@@ -367,8 +373,50 @@ export default class BipMenuBtnDlg extends Vue {
                     return false;
                 }
             }
-        }); 
+        });
+        if(this.bok){
+            if (cds.ds_sub.length>0) {
+                return this.checkChildNotNull(cds);
+        }
+      }
         return this.bok;
+    }
+    /**检查子表非空 */
+    checkChildNotNull(cds:CDataSet):boolean{
+        let isok = true;
+        cds.ds_sub.forEach(cd0=>{
+            if(isok){
+                if(cd0.cdata.data.length===0 && !cd0.ccells.unNull){
+                    this.$notify.warning( "【" + cd0.ccells.desc + "】不能为空!");
+                    isok =  false;
+                    return false;
+                }else{
+                    for(let i=0;i<cd0.cdata.data.length;i++){
+                        let crd = cd0.getRecordAtIndex(i);
+                        cd0.ccells.cels.forEach(item=>{
+                            if(isok&&item.unNull){
+                                var vl = crd.data[item.id];
+                                if(item.type<5){
+                                    if(!vl){
+                                        vl = 0;
+                                    }
+                                }
+                                if (!vl) {
+                                    this.$notify.warning( "子表第"+(i+1)+"行"+item.id+"【" + item.labelString + "】不能为空!");
+                                    isok =  false;
+                                    return false
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+            if(cd0.ds_sub.length>0){
+                isok = this.checkChildNotNull(cd0);
+            }
+
+        })
+        return isok;
     }
 
 

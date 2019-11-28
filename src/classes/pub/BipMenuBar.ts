@@ -29,15 +29,15 @@ export default class BipMenuBar{
                 btn.setIconFontIcon('EDIT');
                 this.menuList.push(btn)
                 this.bcheck = true
+                if(!this.search){
+                    let btn = new BipMenuBtn(CommICL.B_CMD_COPY,"复制")
+                    btn.setIconFontIcon('copy');
+                    this.menuList.push(btn)
+                }
             }
             if((menuAttr&CommICL.B_ISAVE)>0){
                 let btn = new BipMenuBtn(CommICL.B_CMD_SAVE,"保存")
                 btn.setIconFontIcon('save');
-                this.menuList.push(btn)
-            }
-            if(!this.search){
-                let btn = new BipMenuBtn(CommICL.B_CMD_COPY,"复制")
-                btn.setIconFontIcon('copy');
                 this.menuList.push(btn)
             }
             if((menuAttr&CommICL.B_IDEL)>0){

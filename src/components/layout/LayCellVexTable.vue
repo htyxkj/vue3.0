@@ -6,8 +6,8 @@
             </template>
         </el-row>
 
-        <template v-if="isTable">
-            <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
                 :ref="this.cds.ccells.obj_id"
@@ -378,6 +378,8 @@ export default class LayCelVexTable extends Vue {
                 //第一次新建 判断一下sctrl 是否是需要中常量中取数
                 let cc:boolean = await this.init9DData();// 返回false 继续执行之后的程序  返回true 跳出添加方法
                 if(cc){
+                    if(!this.isTable)
+                        this.openDrawer();
                     return ;
                 }
             }
@@ -391,6 +393,8 @@ export default class LayCelVexTable extends Vue {
             if(this.cds.ds_par){
                 this.cds.ds_par.currRecord.c_state |= 2;
             }
+            if(!this.isTable)
+                this.openDrawer();
         }
     }
     /**
@@ -688,6 +692,10 @@ export default class LayCelVexTable extends Vue {
         return this.aidValues.get(str);
     }
     mounted(){ 
+        let pbds = this.env.uriParams.pbds;
+        if(pbds.layout && pbds.layout == 'card'){
+            this.isTable = false;
+        }
         this.datachangeBusID = this.$bus.$on('datachange',this.datachange)
         this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
     }
