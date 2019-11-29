@@ -530,6 +530,9 @@ export default class LayCelVexTable extends Vue {
         let columnIndex = data.columnIndex
         if(columnIndex > 0){
             let cell = this.laycell.uiCels[columnIndex-1]
+            if((this.laycell.cells.attr & 0x40)>0){
+                cell = this.laycell.uiCels[columnIndex-2]
+            }
             if( (cell.attr & 1) >0 || (cell.attr & (0x80000)) >0 ) { // 0主键   0x80000关联
                 let slkid = row[cell.id];
                 if ((cell.attr & 0x80000) > 0) {//关联
