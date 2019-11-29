@@ -964,7 +964,7 @@ export default class LayCelVexTable extends Vue {
             console.log(this.cardMenuList);
         }
     }
-
+    //子表添加转抽屉样式
     openDrawer(){
         this.lay.layType="B";
         this.lay.laystr="B:(@"+this.cds.ccells.obj_id+")";

@@ -158,21 +158,42 @@ export default class BipAidRef extends Vue{
 
     @Watch('aidValues')
     aidValuesChange(){
+        console.log("aidValues")
         if(this.refLink&&this.refLink.id.length>0&&this.model){
-            let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+this.model
-            let vvs = this.aidValues.get(key);
-            if(vvs){
-                this.refLink.realV = this.model
-                this.refLink.values = []
-                this.refLink.values[0] = vvs
-                this.makeShow()
-            }else{
-                this.model1 = this.model
-                this.refLink.realV = this.model
-                this.refLink.values = []
-                this.makeShow()
+            let vlarr = this.model.split(";");
+            let values = [];
+            for(var i=0;i<vlarr.length;i++){
+                let cont = this.refLink.cells.cels[0].id+"='"+vlarr[i]+"' "
+                let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+vlarr[i]
+                let vrs = this.aidValues.get(key);
+                if(!vrs){
+                    let vvs:any ={};
+                    vvs[this.refLink.cells.cels[0].id] = vlarr[i]
+                    vvs[this.refLink.cells.cels[1].id] = vlarr[i]
+                }else{
+                    values.push(vrs);
+                }
+
             }
+            this.refLink.values = []
+            this.refLink.values = values;
+            this.makeShow()
         }
+        // if(this.refLink&&this.refLink.id.length>0&&this.model){
+        //     let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+this.model
+        //     let vvs = this.aidValues.get(key);
+        //     if(vvs){
+        //         this.refLink.realV = this.model
+        //         this.refLink.values = []
+        //         this.refLink.values[0] = vvs
+        //         this.makeShow()
+        //     }else{
+        //         this.model1 = this.model
+        //         this.refLink.realV = this.model
+        //         this.refLink.values = []
+        //         this.makeShow()
+        //     }
+        // }
     }
 
     @Watch('model')

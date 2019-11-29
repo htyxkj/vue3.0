@@ -394,6 +394,7 @@ export default class CDataSet {
                   }
                 }
                 this.currRecord = currRecord;
+                this.currRecord.c_state |=2;
               }
             }
           }

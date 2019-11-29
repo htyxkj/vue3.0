@@ -339,6 +339,20 @@ export default class BaseApplet extends Vue{
         console.log('跳转'+_idx,crd)
         if(crd){
             this.dsm.currRecord  =crd
+            // if(this.dsm.ds_sub.length>0){
+            //     if(crd.subs.length>0){
+            //         for(var j=0;j<crd.subs.length;j++){
+            //             let cur = crd.subs[j];
+            //             for(var i=0;i<this.dsm.ds_sub.length;i++){
+            //                 if(this.dsm.ds_sub[i].ccells.obj_id == crd.subs[j].obj_id){
+            //                     this.dsm.ds_sub[i].setCData( crd.subs[j]); 
+            //                     this.setSubData()
+            //                     this.$bus.$emit("datachange",this.dsm.ds_sub[i].ccells.obj_id)
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
         }else{
             let vv = await this.findDataFromServe(this.qe);
             if (vv && vv.data.length > 0) {
