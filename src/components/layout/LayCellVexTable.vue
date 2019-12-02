@@ -708,6 +708,7 @@ export default class LayCelVexTable extends Vue {
         
     }
     datachange(obj_id:string =''){
+        console.log(obj_id)
         if(this.cds.ccells)
         if(obj_id == this.cds.ccells.obj_id){
             let cc:any = this.$refs[this.cds.ccells.obj_id];

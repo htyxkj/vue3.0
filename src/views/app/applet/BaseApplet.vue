@@ -149,10 +149,19 @@ export default class BaseApplet extends Vue{
                         this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
                             if(res.data.id ==0){
                                 this.dsm.cdata.data.splice(this.dsm.page.index,1); 
-                                if(this.dsm.page.index >= this.dsm.cdata.data.length){
-                                    this.findData(true,this.dsm.cont)
-                                }else{
-                                    this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                if( this.dsm.cdata.data.length ==0){
+                                    this.dsm.createRecord();
+                                    if(this.dsm.ds_sub){
+                                        for(var i=0;i<this.dsm.ds_sub.length ;i++){
+                                            this.dsm.ds_sub[i].clear();
+                                        }
+                                    }
+                                } else {
+                                    if(this.dsm.page.index >= this.dsm.cdata.data.length){
+                                        this.findData(true,this.dsm.cont)
+                                    }else{
+                                        this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                    }
                                 }
                                 this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
                                 this.dsm.page.total--;
@@ -339,20 +348,9 @@ export default class BaseApplet extends Vue{
         console.log('跳转'+_idx,crd)
         if(crd){
             this.dsm.currRecord  =crd
-            // if(this.dsm.ds_sub.length>0){
-            //     if(crd.subs.length>0){
-            //         for(var j=0;j<crd.subs.length;j++){
-            //             let cur = crd.subs[j];
-            //             for(var i=0;i<this.dsm.ds_sub.length;i++){
-            //                 if(this.dsm.ds_sub[i].ccells.obj_id == crd.subs[j].obj_id){
-            //                     this.dsm.ds_sub[i].setCData( crd.subs[j]); 
-            //                     this.setSubData()
-            //                     this.$bus.$emit("datachange",this.dsm.ds_sub[i].ccells.obj_id)
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
+            if(this.dsm.ds_sub.length>0 && this.dsm.currRecord.subs){
+                this.getChildData();
+            }
         }else{
             let vv = await this.findDataFromServe(this.qe);
             if (vv && vv.data.length > 0) {
@@ -426,7 +424,34 @@ export default class BaseApplet extends Vue{
         }
         return null;
     }
-
+    /**
+     * 获取当前主表对应的子表信息
+     */
+    async getChildData(){
+        let crd = this.dsm.currRecord
+        if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
+            let pkindex = this.dsm.ccells.pkindex;
+            let crdc = "";
+            for(var i=0;i<pkindex.length;i++){
+                let cel = this.dsm.ccells.cels[pkindex[i]];
+                if(i == pkindex.length -1)
+                    crdc += cel.id + " = '"+crd.data[cel.id]+"' "
+                else
+                    crdc += cel.id + " = '"+crd.data[cel.id]+"' and  "
+            } 
+            let qq =JSON.parse(JSON.stringify(Object.assign({},this.qe)));
+            qq.cont = crdc
+            qq.oprid = 14;
+            qq.tcell = this.dsm.ccells.obj_id;
+            qq.pcell = this.dsm.ds_sub[0].ccells.obj_id;
+            qq.page.pageSize=10;
+            qq.page.currPage=1;
+            let vv:CData = await this.findDataFromServe(qq);
+            this.dsm.currRecord.subs = [vv];
+            this.setSubData();
+            this.$bus.$emit("datachange", qq.pcell);
+        }
+    }
     
     async searchfindData(bok: boolean, cont: any) {
         this.oprid = 13;
