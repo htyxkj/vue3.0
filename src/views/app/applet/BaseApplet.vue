@@ -361,6 +361,7 @@ export default class BaseApplet extends Vue{
                 this.dsm.setValues(vv.data, true);
                 crd = vv.data[vv.page.index];
                 this.dsm.currRecord = crd
+                this.getChildData();
             }
         }
         this.setListMenuName();
@@ -430,26 +431,28 @@ export default class BaseApplet extends Vue{
     async getChildData(){
         let crd = this.dsm.currRecord
         if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
-            let pkindex = this.dsm.ccells.pkindex;
-            let crdc = "";
-            for(var i=0;i<pkindex.length;i++){
-                let cel = this.dsm.ccells.cels[pkindex[i]];
-                if(i == pkindex.length -1)
-                    crdc += cel.id + " = '"+crd.data[cel.id]+"' "
-                else
-                    crdc += cel.id + " = '"+crd.data[cel.id]+"' and  "
-            } 
-            let qq =JSON.parse(JSON.stringify(Object.assign({},this.qe)));
-            qq.cont = crdc
-            qq.oprid = 14;
-            qq.tcell = this.dsm.ccells.obj_id;
-            qq.pcell = this.dsm.ds_sub[0].ccells.obj_id;
-            qq.page.pageSize=10;
-            qq.page.currPage=1;
-            let vv:CData = await this.findDataFromServe(qq);
-            this.dsm.currRecord.subs = [vv];
-            this.setSubData();
-            this.$bus.$emit("datachange", qq.pcell);
+            for(var j=0;j<this.dsm.ds_sub.length;j++){
+                let pkindex = this.dsm.ccells.pkindex;
+                let crdc = "";
+                for(var i=0;i<pkindex.length;i++){
+                    let cel = this.dsm.ccells.cels[pkindex[i]];
+                    if(i == pkindex.length -1)
+                        crdc += cel.id + " = '"+crd.data[cel.id]+"' "
+                    else
+                        crdc += cel.id + " = '"+crd.data[cel.id]+"' and  "
+                } 
+                let qq =JSON.parse(JSON.stringify(Object.assign({},this.qe)));
+                qq.cont = crdc
+                qq.oprid = 14;
+                qq.tcell = this.dsm.ccells.obj_id;
+                qq.pcell = this.dsm.ds_sub[j].ccells.obj_id;
+                qq.page.pageSize=10;
+                qq.page.currPage=1;
+                let vv:CData = await this.findDataFromServe(qq);
+                this.dsm.currRecord.subs = [vv];
+                this.setSubData();
+                this.$bus.$emit("datachange", qq.pcell);
+            }
         }
     }
     
@@ -497,6 +500,11 @@ export default class BaseApplet extends Vue{
             this.$bus.$emit('dataloadchange')
             
             this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+            if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
+                for(var i=0;i<this.dsm.ds_sub.length;i++){
+                    this.$bus.$emit("datachange",this.dsm.ds_sub[i].ccells.obj_id)
+                }
+            }
         }else{
             this.$notify.info("没有查询到数据");
             this.$bus.$emit('dataloadchange')
