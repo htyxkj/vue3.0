@@ -260,6 +260,46 @@ $--bip-comm-color:#ffffff;//f4f6fb
    
 }
 
+/**DLG弹出框*/
+.dlgbtn {
+    .el-dialog__header{
+        background-color: $--color-primary !important;
+        .el-icon-close{
+            color: #ffffff;
+        }
+        .el-dialog__title{
+            color: #ffffff;
+            font-size: 16px;
+        }
+    }
+    .search {
+        margin: 3px 0;
+    }
+    .el-dialog__body{
+        padding:30px 30px;
+        
+    }
+    .el-dialog__footer{
+        padding-top: 0;
+        padding-bottom: 10px;
+    }
+    hr{
+        color:#ccc;
+        margin-top:0;
+        margin-bottom:10px
+    }
+    .el-table__body tr.current-row > td {
+        background-color: #13a8a1 !important;
+    }
+    
+    el-button--primary {
+        color: #fff;
+        background-color: #20a0ff;
+        border-color: #20a0ff;
+    }
+   
+}
+
 /**文件样式*/
 .bip-file {
     .el-dialog__header{

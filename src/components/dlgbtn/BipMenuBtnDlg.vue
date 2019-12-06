@@ -1,15 +1,17 @@
 <template>
     <el-row>  
-        <el-dialog :title="Title" :visible.sync="sqlDlg0" width="40%" append-to-body>
-            <el-dialog :title="Title" :visible.sync="sqlDlg1" width="30%" append-to-body>
+        <el-dialog class="dlgbtn" :title="Title" :visible.sync="sqlDlg0" width="40%" append-to-body>
+            <el-dialog class="dlgbtn" :title="Title" :visible.sync="sqlDlg1" width="30%" append-to-body>
                 <span :style="sqlStyle[1]">{{sqlCont[1]}}</span>
                 <span slot="footer" class="dialog-footer">
+                 <hr>
                     <el-button @click="sqlOk(false,1)">取 消</el-button>
                     <el-button type="primary" @click="sqlOk(true,1)">确 定</el-button>
                 </span>
             </el-dialog>
             <span :style="sqlStyle[0]">{{sqlCont[0]}}</span>
-            <span slot="footer" class="dialog-footer">
+            <span  slot="footer" class="dialog-footer">
+            <hr>
                 <el-button @click="sqlOk(false,0)">取 消</el-button>
                 <el-button type="primary" @click="sqlOk(true,0)">确 定</el-button>
             </span>  

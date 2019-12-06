@@ -3,7 +3,7 @@
     <el-aside width="280px" style="float:left; position: absolute;" >
       <el-row>
         <el-col :span="24" class="menu-title" >
-          <div>飞机施药综合服务平台</div>
+          <div>人力资源系统</div>
         </el-col>
       </el-row>
       <el-row>
