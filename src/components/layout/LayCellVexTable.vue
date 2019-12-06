@@ -16,7 +16,7 @@
                 size="small"
                 highlight-hover-row
                 show-all-overflow="tooltip"
-                show-header-all-overflow
+                show-header-overflow
                 highlight-current-row
                 class="vxe-table-element"
                 :data.sync="cds.cdata.data"
@@ -109,6 +109,7 @@
         </template>
         <!-- 报表展示表格-->
         <template v-else>
+            
             <vxe-table
                 :ref="this.cds.ccells.obj_id"
                 v-if="isTable"
@@ -117,7 +118,7 @@
                 size="small"
                 highlight-hover-row
                 show-all-overflow="tooltip"
-                show-header-all-overflow
+                show-header-overflow
                 highlight-current-row
                 class="vxe-table-element checkbox-table"
                 :data.sync="cds.cdata.data"
@@ -130,11 +131,16 @@
                 :sort-config="{trigger: 'cell'}"
                 :span-method="rowspanMethod"
                 show-footer
+
+                row-id="id"
+
                 :row-class-name="getRowStyleNew"
                 @select-change="checkChange"
                 @select-all="checkChange"
                 :checkbox-config="{checkField: 'checked',reserve:'true'}"
                 > 
+                <!-- :pager-config="tablePage"
+                @page-change="handlePageChange" 分页信息 -->
                 <!-- @cell-dblclick="openrefs" 双击 -->
                 <!-- cds.page.pageSize<cds.page.total -->
                 <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
@@ -349,7 +355,13 @@ export default class LayCelVexTable extends Vue {
     @Provide() tableShapeBusID:number=0;
     @Provide() groupCells:any = [];
 
+    @Provide() multiple:boolean = false;//是否是多选
+    @Provide() checkSelected:any = [];//当前页选中行集合
+    @Provide() multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
     created() {
+        if((this.laycell.cells.attr & 0x40)>0){
+            this.multiple = true;
+        }
         //组成多表头
         this.initGroup();
         if(this.config){
@@ -456,6 +468,15 @@ export default class LayCelVexTable extends Vue {
                     this.cds.setState(2);
                 }
             } 
+            let cc:any = this.$refs[this.cds.ccells.obj_id];
+            if(cc){
+                if(this.cds.currRecord){
+                    setTimeout(() => {
+                        cc.refreshData();
+                        cc.clearCurrentRow()
+                    }, 200);
+                }
+            }
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){
                 this.cds.ds_par.currRecord.c_state |= 2;
@@ -497,6 +518,9 @@ export default class LayCelVexTable extends Vue {
     }
 
     handleSizeChange(value: number) {
+        if(this.multiple){
+            this.changePageCoreRecordData();
+        }
         if((this.cds.currRecord.c_state&1)>0){
             return ;
         }
@@ -505,6 +529,9 @@ export default class LayCelVexTable extends Vue {
     }
 
     handleCurrentChange(value: number) {
+        if(this.multiple){
+            this.changePageCoreRecordData();
+        }
          if((this.cds.currRecord.c_state&1)>0){
             return ;
         }
@@ -643,13 +670,15 @@ export default class LayCelVexTable extends Vue {
         this.$emit("invokecmd",btn)
     }
     checkChange(data:any){
-        this.cds.currRecordArr = data.selection;
+        this.checkSelected =  data.selection;
         let cc:any = this.$refs[this.cds.ccells.obj_id];
         if(cc){
             setTimeout(() => {
                 cc.setCurrentRow(this.cds.cdata.data[data.rowIndex]);
             }, 200);
         }
+        this.changePageCoreRecordData();
+        this.cds.currRecordArr = this.multipleSelectionAll;
     }
     /**current 发送变化  键盘事件 暂未用到 */
     current_change(data:any,event:any){ 
@@ -718,8 +747,8 @@ export default class LayCelVexTable extends Vue {
                         cc.refreshData();
                         cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
-                        cc.toggleRowSelection(this.cds.currRecord);
-                        this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
+                        // cc.toggleRowSelection(this.cds.currRecord);
+                        // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
                     }, 200);
                 }
             }
@@ -983,6 +1012,82 @@ export default class LayCelVexTable extends Vue {
             this.datachange(this.cds.ccells.obj_id)
         }
     }
+
+    // 设置选中的方法
+    @Watch("cds",{deep:true})
+    cdsChageSetSelectRow(){
+        if(this.multiple){
+            this.checkSelected = this.multipleSelectionAll;
+            this.setSelectRow();    
+        }
+    }
+
+    setSelectRow() {
+        if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
+            return;
+        }
+        
+        let selectAllIds:any = [];
+        let that = this;
+        this.multipleSelectionAll.forEach(row => {
+            selectAllIds.push(JSON.stringify(row.data));
+        }); 
+        let reft:any = this.$refs[this.cds.ccells.obj_id];
+        if(reft){
+            reft.clearSelection();
+            let currD=[]
+            for (var i = 0; i < this.cds.cdata.data.length; i++) {
+                if (selectAllIds.indexOf(JSON.stringify(this.cds.cdata.data[i].data)) >= 0) {
+                    currD.push(this.cds.cdata.data[i]);
+                }
+            }
+            reft.setSelection(currD, true)
+        }
+        this.cds.currRecordArr = this.multipleSelectionAll;
+    }
+    // 记忆选择核心方法
+    changePageCoreRecordData() {
+        
+      let that = this;
+      // 如果总记忆中还没有选择的数据，那么就直接取当前页选中的数据，不需要后面一系列计算
+      if (this.multipleSelectionAll.length <= 0) {
+        this.multipleSelectionAll = this.checkSelected;
+        return;
+      }
+      // 总选择里面的key集合
+      let selectAllIds:any = [];
+      this.multipleSelectionAll.forEach(row => {
+        selectAllIds.push(JSON.stringify(row.data));
+      });
+      let selectIds:any = [];
+      // 获取当前页选中的id
+      this.checkSelected.forEach((row:any) => {
+        selectIds.push(JSON.stringify(row.data));
+        // 如果总选择里面不包含当前页选中的数据，那么就加入到总选择集合里
+        if (selectAllIds.indexOf(JSON.stringify(row.data)) < 0) {
+          that.multipleSelectionAll.push(row);
+        }
+      });
+      let noSelectIds:any = [];
+      // 得到当前页没有选中的id
+      this.cds.cdata.data.forEach(row => {
+        if (selectIds.indexOf(JSON.stringify(row.data)) < 0) {
+          noSelectIds.push(JSON.stringify(row.data));
+        }
+      });
+      noSelectIds.forEach((id:any) => {
+        if (selectAllIds.indexOf(id) >= 0) {
+          for (let i = 0; i < that.multipleSelectionAll.length; i++) {
+            if (JSON.stringify(that.multipleSelectionAll[i].data) == id) {
+              // 如果总选择中有未被选中的，那么就删除这条
+              that.multipleSelectionAll.splice(i, 1);
+              break;
+            }
+          }
+        }
+      });
+    }
+
 }
 </script>
 <style lang="scss" scoped>
