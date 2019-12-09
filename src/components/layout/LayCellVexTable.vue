@@ -466,6 +466,14 @@ export default class LayCelVexTable extends Vue {
                 if(data.c_state ==4){
                     this.cds.cdata.data.splice(i,1); 
                     this.cds.setState(2);
+                }else{
+                    for(var j =0;j<this.removeData.length;j++){
+                        let rem = this.removeData[j];
+                        if(rem.id == data.id){
+                            this.cds.cdata.data.splice(i,1); 
+                            this.cds.setState(2);
+                        }
+                    }
                 }
             } 
             let cc:any = this.$refs[this.cds.ccells.obj_id];
