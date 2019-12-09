@@ -162,7 +162,7 @@ export default class CDataSet {
         let cell = this.ccells.cels[this.i_state];
         let statestr = crd.data[cell.id];
         let state: number = parseInt(statestr);
-        return state == 0;
+        return state == 0 || state ==1;
       } else {
         return true;
       }

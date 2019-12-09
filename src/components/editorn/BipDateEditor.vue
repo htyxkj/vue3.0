@@ -22,6 +22,7 @@
                             :type="dateType"
                             :format="dateFormat"
                             :value-format="dateFormat"
+                            :picker-options="optionaIint"
                             placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                         </el-date-picker>
                     </template>
@@ -40,6 +41,7 @@
                     :type="dateType"
                     :format="dateFormat"
                     :value-format="dateFormat"
+                    :picker-options="optionaIint"
                     placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                 </el-date-picker>
             </template>
@@ -64,6 +66,7 @@
                             v-model="model1"
                             :format="dateFormat"
                             :value-format="dateFormat"
+                            :picker-options="optionaIint"
                             placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                         </el-time-picker>
                     </template>                    
@@ -81,6 +84,7 @@
                     v-model="model1"
                     :format="dateFormat"
                     :value-format="dateFormat"
+                    :picker-options="optionaIint"
                     placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                 </el-time-picker>
             </template>
@@ -112,6 +116,7 @@ export default class BipDateEditor extends Vue{
     @Provide() condition:boolean = false;
     @Provide() span:number = 6
     @Provide() pickerOptions:any = null;
+    @Provide() optionaIint:any = null;
     @Provide() dateTime:boolean = true;
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
@@ -176,6 +181,67 @@ export default class BipDateEditor extends Vue{
             }
           }]
         }
+        this.optionaIint={
+            disabledDate: (time:any) => {
+                return this.optionalInterval(time)
+            }
+        }
+
+    }
+    //判断时间是否在可选范围内
+    optionalInterval(time:Date){
+        if(this.cell.chkRule){
+            let startTime;
+            let endTime;
+            let dArr = this.cell.chkRule.split("~");
+            startTime = dArr[0]
+            endTime = dArr[1];
+            
+            if(startTime && startTime!="" && endTime && endTime!=""){
+                let cans;
+                let cane;
+                startTime = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("]"));
+                startTime = this.cds.currRecord.data[startTime];
+                let sd = new Date(startTime);
+                if(sd.getTime()<time.getTime()){
+                    cans = false;
+                }else{
+                    cans = true;
+                }
+
+                endTime = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("]"));
+                endTime = this.cds.currRecord.data[endTime];
+                let ed = new Date(endTime);
+                if(ed.getTime()>time.getTime()){
+                    cane = false;
+                }else{
+                    cane = true;
+                }
+                return cans || cane
+            }
+
+            if(startTime && startTime!=""){
+                startTime = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("]"));
+                startTime = this.cds.currRecord.data[startTime];
+                let sd = new Date(startTime);
+                if(sd.getTime()<time.getTime()){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+            if(endTime && endTime!=""){
+                endTime = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("]"));
+                endTime = this.cds.currRecord.data[endTime];
+                let ed = new Date(endTime);
+                if(ed.getTime()>time.getTime()){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     dataChange(value:string|number|Array<any>){

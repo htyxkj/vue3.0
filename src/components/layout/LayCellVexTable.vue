@@ -458,24 +458,30 @@ export default class LayCelVexTable extends Vue {
         return bool;
     }
     delRecord(){
-        if(this.cds.currCanEdit()){
+        if(this.cds.currCanEdit() && this.removeData.length>0){
             this.cds.cdata.rmdata = this.removeData;
             // console.log(this.cds)
             for(var i=this.cds.cdata.data.length-1;i>=0;i --){
                 let data = this.cds.cdata.data[i];
-                // if(data.c_state ==4){
-                //     this.cds.cdata.data.splice(i,1); 
-                //     this.cds.setState(2);
-                // }else{
-                    for(var j =0;j<this.removeData.length;j++){
-                        let rem = this.removeData[j];
-                        if(rem.id == data.id){
-                            this.cds.cdata.data.splice(i,1); 
-                            this.cds.setState(2);
-                        }
+                for(var j =0;j<this.removeData.length;j++){
+                    let rem = this.removeData[j];
+                    if(rem.id == data.id){
+                        this.cds.cdata.data.splice(i,1); 
+                        this.cds.setState(2);
                     }
-                // }
-            } 
+                }
+            }
+            let xinc = -1;
+            if (this.cds.ccells.pkindex) xinc = this.cds.ccells.pkindex[0];
+            if (xinc >= 0) {
+                let cel = this.cds.ccells.cels[xinc];
+                let s0 = cel.psAutoInc;
+                if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
+                    for(var i=0;i<this.cds.cdata.data.length;i++){
+                        this.cds.cdata.data[i].data[cel.id] = i + 1
+                    }
+                }
+            }
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 if(this.cds.currRecord){
