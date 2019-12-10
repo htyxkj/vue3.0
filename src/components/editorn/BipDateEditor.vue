@@ -100,6 +100,7 @@ let baseTool = BIPUtils.baseUtil;
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import BipInsAidNew from '../../classes/BipInsAidNew';
+import { symlinkSync } from 'fs';
 @Component({})
 export default class BipDateEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -200,19 +201,44 @@ export default class BipDateEditor extends Vue{
             if(startTime && startTime!="" && endTime && endTime!=""){
                 let cans;
                 let cane;
-                startTime = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("]"));
-                startTime = this.cds.currRecord.data[startTime];
+                let dateAdd="";
+                if(startTime.indexOf("|") ==-1){
+                    startTime = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("]"));                    
+                }else{
+                    let stt = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("|"));
+                    dateAdd = startTime.substring(startTime.indexOf("|")+1,startTime.lastIndexOf("]"));
+                    startTime = stt;
+                }
+                startTime = this.cds.currRecord.data[startTime];    
+                startTime = startTime.replace(new RegExp("\\-",'g'),"/");           
+                if(dateAdd !=""){
+                    let add = dateAdd.split(";");
+                    add.unshift(startTime);
+                    startTime = baseTool.dateAdd(add);
+                }
                 let sd = new Date(startTime);
-                if(sd.getTime()<time.getTime()){
+                if(sd.getTime()<=time.getTime()){
                     cans = false;
                 }else{
                     cans = true;
                 }
-
-                endTime = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("]"));
+                dateAdd = "";
+                if(endTime.indexOf("|") == -1){
+                    endTime = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("]"));
+                }else{
+                    let stt = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("|"));
+                    dateAdd = endTime.substring(endTime.indexOf("|")+1,endTime.lastIndexOf("]"));
+                    endTime = stt;
+                }
                 endTime = this.cds.currRecord.data[endTime];
+                endTime = endTime.replace(new RegExp("\\-",'g'),"/"); 
+                if(dateAdd !=""){
+                    let add = dateAdd.split(";");
+                    add.unshift(endTime);
+                    endTime = baseTool.dateAdd(add);
+                }
                 let ed = new Date(endTime);
-                if(ed.getTime()>time.getTime()){
+                if(ed.getTime()>=time.getTime()){
                     cane = false;
                 }else{
                     cane = true;
@@ -221,20 +247,46 @@ export default class BipDateEditor extends Vue{
             }
 
             if(startTime && startTime!=""){
-                startTime = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("]"));
+                let dateAdd="";
+                if(startTime.indexOf("|") ==-1){
+                    startTime = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("]"));                    
+                }else{
+                    let stt = startTime.substring(startTime.indexOf("[")+1,startTime.lastIndexOf("|"));
+                    dateAdd = startTime.substring(startTime.indexOf("|")+1,startTime.lastIndexOf("]"));
+                    startTime = stt;
+                }
                 startTime = this.cds.currRecord.data[startTime];
-                let sd = new Date(startTime);
-                if(sd.getTime()<time.getTime()){
+                startTime = startTime.replace(new RegExp("\\-",'g'),"/"); 
+                if(dateAdd !=""){
+                    let add = dateAdd.split(";");
+                    add.unshift(startTime);
+                    startTime = baseTool.dateAdd(add);
+                }
+                let sd = new Date(startTime);     
+                if(sd.getTime()<=time.getTime()){
                     return false;
                 }else{
                     return true;
                 }
             }
             if(endTime && endTime!=""){
-                endTime = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("]"));
+                let dateAdd ="";
+                if(endTime.indexOf("|") == -1){
+                    endTime = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("]"));
+                }else{
+                    let stt = endTime.substring(endTime.indexOf("[")+1,endTime.lastIndexOf("|"));
+                    dateAdd = endTime.substring(endTime.indexOf("|")+1,endTime.lastIndexOf("]"));
+                    endTime = stt;
+                }
                 endTime = this.cds.currRecord.data[endTime];
+                endTime = endTime.replace(new RegExp("\\-",'g'),"/"); 
+                if(dateAdd !=""){
+                    let add = dateAdd.split(";");
+                    add.unshift(endTime);
+                    endTime = baseTool.dateAdd(add);
+                } 
                 let ed = new Date(endTime);
-                if(ed.getTime()>time.getTime()){
+                if(ed.getTime()>=time.getTime()){
                     return false;
                 }else{
                     return true;
