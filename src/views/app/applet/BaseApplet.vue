@@ -72,6 +72,8 @@ export default class BaseApplet extends Vue{
     @Provide() pmenuid:string ='';
     @Provide() oprid:number = 13
     @Provide() style:string='';
+    @Provide() switchBusID:number=0;
+    @Provide() switchHide:any={};
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -688,6 +690,7 @@ export default class BaseApplet extends Vue{
         cds.ccells.cels.forEach(item => {
             if (item.unNull&&bok) {
                 let vl = null;
+                let hide = this.switchHide[cds.ccells.obj_id];
                 if(cds.currRecord.data[item.id]!=null)
                     vl = cds.currRecord.data[item.id]+'';
                 // if(item.type<5){
@@ -695,7 +698,7 @@ export default class BaseApplet extends Vue{
                 //         vl = 0+'';
                 //     }
                 // }
-                if (!vl) {
+                if (!vl && hide.indexOf(item.id) == -1) {
                     this.$notify.warning( "【" + item.labelString + "】不能为空!");
                     bok =  false;
                     return false;
@@ -836,6 +839,9 @@ export default class BaseApplet extends Vue{
             }
         }
     }
+    created(){
+        this.switchBusID = this.$bus.$on('switchChange',this.switchChange)
+    }
     async mounted(){
         // console.log(this.uriParams,'bbb')
         if(this.height>0){
@@ -860,7 +866,40 @@ export default class BaseApplet extends Vue{
         } 
         this.initDlgBtn();
     }
-
+    beforeDestroy(){
+        this.$bus.$off('switchChange',this.switchBusID)
+    }
+    //页面上的Switch值发生变化 0对象编码 1 需要显示的字段  2 需要隐藏的字段
+    switchChange(value:any){
+        if(this.uriParams && this.cells){
+            let uiCell=[];
+            let show = value[1].split(",");
+            let hide = value[2].split(",");
+            this.switchHide[value[0]]=hide;
+            for(var i=0;i<this.cells.length;i++){
+                let cell = this.cells[i]
+                if(cell.obj_id == value[0]){
+                    for(var j=0;j<cell.cels.length;j++){
+                        let cel = cell.cels[j];
+                        if((cel.attr&0x400) == 0 && hide.indexOf(cel.id)==-1){
+                            uiCell.push(cel);
+                        }else{
+                            if(show.indexOf(cel.id)>-1){
+                                uiCell.push(cel);
+                            }
+                        }
+                    } 
+                }
+            }
+            for(var i=0;i<this.lay.compconfs.length;i++){
+                let comp:any = this.lay.compconfs[i];
+                if(comp.comp.obj_id == value[0]){
+                    comp.comp.uiCels = [];
+                    comp.comp.uiCels = uiCell;
+                }
+            }
+        }
+    }
     async handleSizeChange(value:number){
         // console.log('handleSizeChange',value)
         this.qe.oprid = this.oprid

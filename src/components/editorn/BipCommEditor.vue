@@ -24,6 +24,9 @@
             <template v-if="editorType==I_EDITOR_NUM">
                 <bip-number-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-number-editor>
             </template>
+            <template v-else-if="editorType==I_EDITOR_SWITCH">
+                <bip-switch-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-switch-editor>
+            </template>
             <template v-else-if="editorType==I_EDITOR_LIST">
                 <bip-list-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-list-editor>
             </template>
@@ -51,6 +54,7 @@ import BipUpDownEditor from './BipUpDownEditor.vue'
 import BipQueryEditor from './BipQueryEditor.vue'
 import BipRichTextEditor from './BipRichTextEditor.vue'
 import BipTreeEditor from './BipTreeEditor.vue'
+import BipSwitchEditor from './BipSwitchEditor.vue'
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { BIPUtils } from '@/utils/BaseUtil'
@@ -62,7 +66,7 @@ import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 import QueryEntity from '../../classes/search/QueryEntity';
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -72,7 +76,8 @@ export default class BipCommEditor extends Vue{
     @Prop() cdsCount!:CDataSet
     @Provide() editorType:number = 0
     @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
-    @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT
+    @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
+    @Provide() I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
     // @Provide() I_EDITOR_DATE = ICL.I_EDITOR_DATE
     // @Provide() I_EDITOR_UPDOWN = ICL.I_EDITOR_UPDOWN
     // @Provide() I_EDITOR_SELECT = ICL.I_EDITOR_SELECT
@@ -92,56 +97,7 @@ export default class BipCommEditor extends Vue{
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Provide() eventId:number = 0
     async mounted(){
-            this.model = this.getModelValues();
-            this.eventId = this.$bus.$on('cell_edit',this.getModelValues)
-            this.bsearch = (this.cds.ccells.attr&0x80)>0
-            this.assit = this.cell.assist
-            this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
-            if(this.assit){
-                this.editName = this.cell.editName
-                if(!this.inProcess.get(ICL.AID_KEY+this.aidMarkKey+this.editName)){
-                    await this.getInsAidInfoBy(this.editName)
-                }
-            }else{
-                //没有辅助，但是编辑器类型是下拉列表，需要处理参照信息
-                let type = this.cell.type;
-                console.log(this.cell.type)
-                if(this.cell.editType === 1){
-                    this.editorType = this.I_EDITOR_LIST
-                    let str = this.cell.refValue
-                    if(str){
-                        if(str.indexOf('$')>0){
-                            str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
-                            this.editName = str
-                            this.getInsAidInfoBy(str,true)
-                        }else if(str.indexOf('&')>0){
-                            str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
-                            this.editName = str
-                            await this.getInsAidInfoValues(str,false)
-
-                        }else{
-                            this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
-                        }
-                    }
-                }else if(this.cell.editType == 10){
-                    this.editorType = this.I_EDITOR_RTEXT
-                }else if(type>=2&&type<12){
-                    let str = this.cell.refValue
-                    if(str){
-                        if(str.indexOf('$')>0){
-                            str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
-                            this.editName = str
-                            await this.getInsAidInfoBy(str,true)
-                        }else{
-                            str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
-                            this.editName = str
-                            await this.getInsAidInfoBy(str,false)
-                        }
-                         this.editorType = this.I_EDITOR_LIST
-                    }else
-                        this.editorType = this.I_EDITOR_NUM
-                }
-            }
+        await this.init();
     }
 
     beforeDestroy(){
@@ -170,6 +126,64 @@ export default class BipCommEditor extends Vue{
             }
         }
 
+    }
+    async init(){
+        this.model = this.getModelValues();
+        this.eventId = this.$bus.$on('cell_edit',this.getModelValues)
+        this.bsearch = (this.cds.ccells.attr&0x80)>0
+        this.assit = this.cell.assist
+        this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
+        if(this.assit){
+            this.editName = this.cell.editName
+            if(!this.inProcess.get(ICL.AID_KEY+this.aidMarkKey+this.editName)){
+                await this.getInsAidInfoBy(this.editName)
+            }
+        }else{
+            //没有辅助，但是编辑器类型是下拉列表，需要处理参照信息
+            let type = this.cell.type;
+            console.log(this.cell.editType)
+            if(this.cell.editType === 1){
+                this.editorType = this.I_EDITOR_LIST
+                let str = this.cell.refValue
+                if(str){
+                    if(str.indexOf('$')>0){
+                        str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
+                        this.editName = str
+                        this.getInsAidInfoBy(str,true)
+                    }else if(str.indexOf('&')>0){
+                        str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
+                        this.editName = str
+                        await this.getInsAidInfoValues(str,false)
+
+                    }else{
+                        this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
+                    }
+                }
+            }else if(this.cell.editType == 14){
+                this.editorType = ICL.I_EDITOR_SWITCH;
+            }else if(this.cell.editType == 10){
+                this.editorType = this.I_EDITOR_RTEXT
+            }else if(type>=2&&type<12){
+                let str = this.cell.refValue
+                if(str){
+                    if(str.indexOf('$')>0){
+                        str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
+                        this.editName = str
+                        await this.getInsAidInfoBy(str,true)
+                    }else{
+                        str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
+                        this.editName = str
+                        await this.getInsAidInfoBy(str,false)
+                    }
+                        this.editorType = this.I_EDITOR_LIST
+                }else
+                    this.editorType = this.I_EDITOR_NUM
+            }
+        }
+    }
+    @Watch("cell")
+    async cellChange(){
+        await this.init();
     }
 
     get value(){

@@ -61,6 +61,7 @@ export const CommICL = Object.assign({
     I_EDITOR_COPY:9,//拷贝定义
     I_EDITOR_TREE:10,//树
     I_EDITOR_RTEXT:11,//富文本编辑器
+    I_EDITOR_SWITCH:14,//switch开关
 //#endregion
     //#region 数据记录状态值
     R_EDITCTRL:0x1F,//-编辑控制属性和。
