@@ -95,15 +95,15 @@ export default class BipSwitchEditor extends Vue{
                 c1 = c1.split(":")[1];
                 if(this.model1){
                     if(c0.split(":")[0] =="0"){
-                        cc = [this.cds.ccells.obj_id,c0,c1]
+                        cc = [this.cds.ccells.obj_id,b.key,c0,c1]
                     }else{
-                        cc = [this.cds.ccells.obj_id,c1,c0]
+                        cc = [this.cds.ccells.obj_id,b.key,c1,c0]
                     }
                 }else{
                     if(c0.split(":")[0] =="0"){
-                        cc = [this.cds.ccells.obj_id,c1,c0]
+                        cc = [this.cds.ccells.obj_id,b.key,c1,c0]
                     }else{
-                        cc = [this.cds.ccells.obj_id,c0,c1]
+                        cc = [this.cds.ccells.obj_id,b.key,c0,c1]
                     }
                 }
                 this.$bus.$emit('switchChange',cc,) 

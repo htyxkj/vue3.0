@@ -74,6 +74,7 @@ export default class BaseApplet extends Vue{
     @Provide() style:string='';
     @Provide() switchBusID:number=0;
     @Provide() switchHide:any={};
+    @Provide() switchShow:any={};
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -690,7 +691,12 @@ export default class BaseApplet extends Vue{
         cds.ccells.cels.forEach(item => {
             if (item.unNull&&bok) {
                 let vl = null;
-                let hide = this.switchHide[cds.ccells.obj_id];
+                let hide:any = [];
+                for(var key in this.switchHide){
+                    if(key.indexOf(cds.ccells.obj_id+"_")!=-1){
+                        hide = hide.concat(this.switchHide[key])
+                    }
+                }
                 if(cds.currRecord.data[item.id]!=null)
                     vl = cds.currRecord.data[item.id]+'';
                 // if(item.type<5){
@@ -873,9 +879,19 @@ export default class BaseApplet extends Vue{
     switchChange(value:any){
         if(this.uriParams && this.cells){
             let uiCell=[];
-            let show = value[1].split(",");
-            let hide = value[2].split(",");
-            this.switchHide[value[0]]=hide;
+            let show = value[2].split(",");
+            let hide = value[3].split(",");
+            this.switchHide[value[0]+"_"+value[1]]=hide;
+            this.switchShow[value[0]+"_"+value[1]]=show;
+
+            for(var key in this.switchShow){
+                show = show.concat(this.switchShow[key])
+            }
+            for(var key in this.switchHide){
+                hide = hide.concat(this.switchHide[key])
+            }
+
+
             for(var i=0;i<this.cells.length;i++){
                 let cell = this.cells[i]
                 if(cell.obj_id == value[0]){
