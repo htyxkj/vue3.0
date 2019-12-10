@@ -183,6 +183,7 @@ export default class BipCommEditor extends Vue{
     }
     @Watch("cell")
     async cellChange(){
+        this.bipInsAid = null;
         await this.init();
     }
 
