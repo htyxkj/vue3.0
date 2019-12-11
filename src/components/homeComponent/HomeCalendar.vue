@@ -3,7 +3,6 @@
         <el-scrollbar>
             <el-row style="width:100%">
                 <Calendar @next="changeMonth" @prev="changeMonth"
-
                     lunar @select="clickDay" ref="calendar" completion monFirst
                     @selectMonth="selectMonth" :almanacs="almanacs"
                     :tileContent="tileContent" responsive 
@@ -265,10 +264,10 @@ export default class HomeCalendar extends Vue {
                 }
                 let mk = {date: dd, className: 'holiday', content: '休'}
                 if(d1.eventtype == 2){
-                    mk.content="调";
+                    mk.content="休";
                     mk.className= 'holiday';
                 }else if(d1.eventtype == 1){
-                    mk.content="假";
+                    mk.content="休";
                     mk.className= 'holiday';
                 }else if(d1.eventtype == 0){
                     mk.content="班";
