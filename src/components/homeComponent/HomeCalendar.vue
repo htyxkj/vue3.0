@@ -18,7 +18,7 @@
             <el-row style="width:100%;padding: 6px 30px;" v-for="(item,index) in holidayDate" :key="index">
                 <el-popover :key="index" placement="top-start" width="200" trigger="hover">
                     <p style="text-align: center;">{{item.data.holiday}}</p>
-                    <div style="text-align: right; margin: 0;margin-right:5px;">
+                    <div style="text-align: right; margin: 0;margin-right:5px;"  v-if="canAddHoliday">
                         <el-button size="mini" type="text" @click="upHoliday(item)">编辑</el-button>
                         <el-button type="text" size="mini" @click="delHoliday(item)">删除</el-button>
                     </div> 
@@ -122,7 +122,7 @@ export default class HomeCalendar extends Vue {
     @Provide() almanacs:any={};
 
     async created(){
-        let menu = baseTool.findMenu("KQ0302");
+        let menu = baseTool.findMenu("KQ0303");
         if(menu !=  null){
             this.canAddHoliday = true;
         }
