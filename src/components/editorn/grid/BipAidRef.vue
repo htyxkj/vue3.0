@@ -158,7 +158,7 @@ export default class BipAidRef extends Vue{
 
     @Watch('aidValues')
     aidValuesChange(){
-        console.log("aidValues")
+        // console.log("aidValues")
         if(this.refLink&&this.refLink.id.length>0&&this.model){
             let vlarr = this.model.split(";");
             let values = [];

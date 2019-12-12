@@ -5,34 +5,33 @@
                 <Calendar @next="changeMonth" @prev="changeMonth"
                     lunar @select="clickDay" ref="calendar" completion monFirst
                     @selectMonth="selectMonth" :almanacs="almanacs"
-                    :tileContent="tileContent" responsive 
-                /> 
-            <el-row v-if="canAddHoliday" type="flex" justify="end" style="width:100%;text-align:end;padding-right:25px;">
-                <el-col>
-                    <span @click="showAddHDialog()" style="cursor:pointer;">
-                        添加
-                    </span>
-                </el-col>
-            </el-row>
-            <!-- 节日 -->
-            <el-row style="width:100%;padding: 6px 30px;" v-for="(item,index) in holidayDate" :key="index">
-                <el-popover :key="index" placement="top-start" width="200" trigger="hover">
-                    <p style="text-align: center;">{{item.data.holiday}}</p>
-                    <div style="text-align: right; margin: 0;margin-right:5px;"  v-if="canAddHoliday">
-                        <el-button size="mini" type="text" @click="upHoliday(item)">编辑</el-button>
-                        <el-button type="text" size="mini" @click="delHoliday(item)">删除</el-button>
-                    </div> 
-                    <el-row slot="reference" style="cursor:pointer;">
-                        <el-col :span="8">
-                            <div class="newstitletime">{{item.data.hpdate}}</div>
-                        </el-col>
-                        <el-col :span="16">
-                            <div class="newstitle">{{item.data.holiday}}</div>
-                        </el-col>
-                    </el-row>
-                </el-popover>
-            </el-row>
-            <el-row>&nbsp;</el-row>
+                    :tileContent="tileContent" responsive /> 
+                <el-row v-if="canAddHoliday" type="flex" justify="end" style="width:100%;text-align:end;padding-right:25px;">
+                    <el-col>
+                        <span @click="showAddHDialog()" style="cursor:pointer;">
+                            添加
+                        </span>
+                    </el-col>
+                </el-row>
+                <!-- 节日 -->
+                <el-row style="width:100%;padding: 6px 30px;" v-for="(item,index) in holidayDate" :key="index">
+                    <el-popover :key="index" placement="top-start" width="200" trigger="hover">
+                        <p style="text-align: center;">{{item.data.holiday}}</p>
+                        <div style="text-align: right; margin: 0;margin-right:5px;"  v-if="canAddHoliday">
+                            <el-button size="mini" type="text" @click="upHoliday(item)">编辑</el-button>
+                            <el-button type="text" size="mini" @click="delHoliday(item)">删除</el-button>
+                        </div> 
+                        <el-row slot="reference" style="cursor:pointer;">
+                            <el-col :span="8">
+                                <div class="newstitletime">{{item.data.hpdate}}</div>
+                            </el-col>
+                            <el-col :span="16">
+                                <div class="newstitle">{{item.data.holiday}}</div>
+                            </el-col>
+                        </el-row>
+                    </el-popover>
+                </el-row>
+                <el-row>&nbsp;</el-row>
                 <el-row style="width:100%;padding: 0px 30px;" v-for="(item,index) in taskData" :key="index">
                     <el-col :span="8">
                         <div class="newstitletime">{{item.data.ddate}}</div>
@@ -507,7 +506,7 @@ export default class HomeCalendar extends Vue {
     height: calc(100% - 20px)  !important;
     z-index: 1;
     overflow: hidden;  
-    width: calc(100% - 3px) !important;
+    // width: calc(100% - 3px) !important;
     .el-scrollbar {
         height: 100%;
         margin-bottom: 10px !important;
@@ -518,7 +517,7 @@ export default class HomeCalendar extends Vue {
             height: 100%;
         }
         .scrollbar-wrapper{
-          overflow-x: hidden !important;
+            overflow-x: hidden !important;
         }
     }
 }
