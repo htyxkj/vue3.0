@@ -501,6 +501,45 @@ export default class HomeCalendar extends Vue {
 }
 </script>
 <style  lang="scss" scoped> 
+.bip-home-container {
+    background-color: #ffffff !important;
+    position: fixed; 
+    height: calc(100% - 20px)  !important;
+    z-index: 1;
+    overflow: hidden;  
+    width: calc(100% - 3px) !important;
+    .el-scrollbar {
+        height: 100%;
+        margin-bottom: 10px !important;
+        margin-right: 0px !important; 
+        .el-scrollbar__wrap {
+            overflow-x: hidden !important;
+            padding-right: 5px;
+            height: 100%;
+        }
+        .scrollbar-wrapper{
+          overflow-x: hidden !important;
+        }
+    }
+}
+.newstitle {
+  padding: 3px 0;
+  font-size: 13px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.8px;
+  color: #333333; 
+}
+.newstitletime {
+  padding: 3px 0;
+  font-size: 13px;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #868D94;
+}
 </style>
 <style lang="scss">
 .holiday{
