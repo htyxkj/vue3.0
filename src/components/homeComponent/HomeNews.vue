@@ -80,7 +80,7 @@
       width="50%"
       :append-to-body="true"
     >
-      <p v-html="content">{{content}}</p>
+      <p style="min-height:500px" v-html="content">{{content}}</p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showContentDialog = false">取 消</el-button>
       </span>
