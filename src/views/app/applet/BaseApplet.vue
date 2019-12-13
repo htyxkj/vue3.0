@@ -994,7 +994,7 @@ export default class BaseApplet extends Vue{
                         　　}
                         }
                     }
-                    this.$bus.$emit("datachange",cell.obj_id)
+                    this.$bus.$emit("datachange",cell.ccells.obj_id)
                     let pk = this.dsm.ccells.pkindex
                     for(var i=0;i<pk.length;i++){
                         let cel = this.dsm.ccells.cels[pk[i]];

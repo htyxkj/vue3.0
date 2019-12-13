@@ -141,9 +141,9 @@ export default class AttendanceMonthly extends Vue {
   assemblyTableColumn(){
     let date = '2019-11'
     this.tableColumn = [
-      { type: 'index', width: 50 },
-      { field: 'sorg', title: '部门' ,width: 60},
-      { field: 'name', title: '姓名' ,width: 60},
+      { type: 'index', width: 50, fixed:"left"},
+      { field: 'sorg', title: '部门' ,width: 60 ,fixed:"left"},
+      { field: 'name', title: '姓名' ,width: 60 ,fixed:"left"},
     ]
     date = date.replace(/-/g,"/"); 
     var tempTime = new Date(2019,11,0);

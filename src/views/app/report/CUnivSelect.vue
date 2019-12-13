@@ -352,7 +352,7 @@ export default class CUnivSelect extends Vue {
         }else{
             this.$notify.error(data)
         }
-        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+        this.$bus.$emit("findBtnClick",this.dsm.ccells.obj_id)
     }
     beforeDestroy(){
         this.$bus.$off('handleSizeChange',this.handleSizeChangeBusID)

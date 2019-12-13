@@ -353,6 +353,7 @@ export default class LayCelVexTable extends Vue {
     
     @Provide() datachangeBusID:number=0;
     @Provide() tableShapeBusID:number=0;
+    @Provide() findBtnBusID:number=0;
     @Provide() groupCells:any = [];
 
     @Provide() multiple:boolean = false;//是否是多选
@@ -744,11 +745,18 @@ export default class LayCelVexTable extends Vue {
         }
         this.datachangeBusID = this.$bus.$on('datachange',this.datachange)
         this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
+        this.findBtnBusID = this.$bus.$on('findBtnClick',this.findBtnClick);
     }
     beforeDestroy(){
         this.$bus.$off('datachange',this.datachangeBusID)
         this.$bus.$off('ReportTableShape',this.tableShapeBusID)
-        
+        this.$bus.$off('findBtnClick',this.findBtnBusID)
+    }
+    findBtnClick(obj_id:string =''){
+        this.multipleSelectionAll=[];
+        this.checkSelected=[];
+        this.cds.currRecordArr=[];
+        this.datachange(obj_id);
     }
     datachange(obj_id:string =''){
         console.log(obj_id)
