@@ -44,6 +44,7 @@ export default class AttendanceMonthly extends Vue {
     this.sopr = this.tjCell.currRecord.data.sopr;
     this.sorg = this.tjCell.currRecord.data.sorg;
     this.yymm = this.tjCell.currRecord.data.yymm;
+    this.assemblyTableColumn();//组成表头
     const loading = this.$loading({
       lock: true,
       text: '加载中',
@@ -139,14 +140,17 @@ export default class AttendanceMonthly extends Vue {
   }
   //组成表头
   assemblyTableColumn(){
-    let date = '2019-11'
+    if(this.yymm == null){
+      this.yymm = (new Date().getFullYear()*100+new Date().getMonth()+1)+'';
+    }
+    let year = this.yymm.substring(0,4)
+    let month = this.yymm.substring(4,this.yymm.length)
     this.tableColumn = [
       { type: 'index', width: 50, fixed:"left"},
       { field: 'sorg', title: '部门' ,width: 60 ,fixed:"left"},
       { field: 'name', title: '姓名' ,width: 60 ,fixed:"left"},
     ]
-    date = date.replace(/-/g,"/"); 
-    var tempTime = new Date(2019,11,0);
+    var tempTime = new Date(year,month,0);
     var time = new Date();
     for(var i=1;i<=tempTime.getDate();i++){
       time.setFullYear(tempTime.getFullYear(),tempTime.getMonth(),i);
@@ -169,7 +173,7 @@ export default class AttendanceMonthly extends Vue {
     let tableColumn1:any = [
       { field: 'shjoin', title: '应出勤数' ,width: 80},
       { field: 'acjoin', title: '实际出勤' ,width: 80},
-      { field: 'asjoin', title: '周六加班' ,width: 80},
+      { field: 'sajoin', title: '周六加班' ,width: 80},
       { field: 'sujoin', title: '周天加班' ,width: 80},
       { field: 'hoday', title: '法定节假日',width: 100},
       { field: 'horest', title: '调休假' ,width: 80},
@@ -196,6 +200,7 @@ export default class AttendanceMonthly extends Vue {
   assemblyTableData(){
     this.tableData=[];
     let sopr = "";
+    let name = "";
     let data:any={};
     for(var i=0;i<this.kq_state.length;i++){
       let v1 = this.kq_state[i];
@@ -204,13 +209,15 @@ export default class AttendanceMonthly extends Vue {
       hpdate = new Date(hpdate);
       data['day'+hpdate.getDate()] = v1.kq_ybstate;
       let sopr1 = v1.sopr;
+      let name1 = v1.name;
       if(sopr !="" && sopr !=sopr1){
-        data["name"] = v1.name;
-        data= Object.assign(data,this.kq_ybstate[v1.sopr]);
+        data["name"] = name;
+        data= Object.assign(data,this.kq_ybstate[sopr]);
         this.tableData.push(data);
         data={};
       }
       sopr = sopr1;
+      name = name1;
       if(i == this.kq_state.length-1){
         data["name"] = v1.name;
         data= Object.assign(data,this.kq_ybstate[v1.sopr]);
