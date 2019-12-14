@@ -2,7 +2,6 @@
     <div id="bMapDiv" style="width:100%;height:100%"></div>
 </template>
 <script lang="ts">
-import baiMapJS from './js/b.js'
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 @Component({
@@ -20,11 +19,9 @@ export default class MyTianMap extends Vue {
         this.createdMap();
     }
     createdMap(){
-        baiMapJS.init().then((BMap:any) => {  
-            console.log("初始化百度地图！")
-            this.bMap = new BMap.Map('bMapDiv');
-            this.bMap.centerAndZoom(new BMap.Point(116.40769, 39.89945), this.bZoom);
-        })
+        console.log("初始化百度地图！")
+        // this.bMap = new BMap.Map('bMapDiv');
+        // this.bMap.centerAndZoom(new BMap.Point(116.40769, 39.89945), this.bZoom);
     }
     mapChnage(){
 

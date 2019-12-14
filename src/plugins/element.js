@@ -51,6 +51,9 @@ import {
   Tree,
   ColorPicker,
   Drawer,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 
 } from "element-ui";
 
@@ -102,6 +105,9 @@ Vue.use(Transfer)
 Vue.use(Tree)
 Vue.use(ColorPicker)
 Vue.use(Drawer)
+Vue.use(Dropdown)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

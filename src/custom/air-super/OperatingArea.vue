@@ -1,5 +1,5 @@
 <template>
-    <el-tabs v-model="selMap" type="card" @tab-click="mapChnage" style="min-height: -webkit-fill-available">
+    <el-tabs v-model="selMap" type="card" @tab-click="mapChnage">
         <el-tab-pane :style="style" label="天地图" name="tianMap">
             <t-map style="width:100%;height:100%"></t-map>
         </el-tab-pane>
