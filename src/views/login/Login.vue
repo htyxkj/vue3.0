@@ -12,7 +12,10 @@
             <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
           </el-form-item>
         </el-form>
-
+        <div class="rt">
+          <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
+          <!-- <span @click="clear" style="cursor: pointer;color: #f19149;font-size: 0.75rem;margin-left: 5px;">忘记密码？</span> -->
+        </div>
         <el-row>
           <el-col :span="24"  style="margin-top:10px">
             <el-button
@@ -50,7 +53,7 @@ export default class Login extends Vue {
   @Mutation("snkey", { namespace }) setSnkey: any;
   @Mutation("user", { namespace }) setUserInfo: any;
   @Mutation("menulist", { namespace }) setMenusInfo: any;
-  
+  @Provide() checked:boolean =false;
   mounted() {
     if (!this.user) {
       this.user = new User("", "", "");
@@ -58,6 +61,7 @@ export default class Login extends Vue {
     // this.user.userCode = "";
     // this.user.password = "";
     let ii: string[] = ["1", "2"];
+    this.getlocalStorage()
   }
 
   login() {
@@ -91,6 +95,15 @@ export default class Login extends Vue {
 
           this.$router.push({ path: "/", name: "home" });
           this.$notify.success("登录成功");
+          // 判断记住账户是否为true,是将新账户存储至localStroge，否则清除localStroge中的账户
+          if(this.checked){
+            if(this.user){
+               this.setlocalStorage(this.user.userCode);
+            }       
+          }else {
+              this.clear()
+          } 
+          
         } else {
           this.$notify.error(data.message);
         }
@@ -109,6 +122,24 @@ export default class Login extends Vue {
       return false;
     }
     return this.user.userCode === "";
+  }
+  // 将账户信息存储值localStroge
+  setlocalStorage(c_name:String) {
+      localStorage.siteName = c_name
+  }
+  // 获取localStroge中的账户信息
+  getlocalStorage() {
+    var c_usrname = localStorage.getItem('siteName');
+    if(this.user){
+      if(c_usrname){
+        this.user.userCode = c_usrname
+        this.checked = true;
+      }
+    }
+  }
+  // 清除localStroge中的账户信息
+  clear(){
+    localStorage.removeItem('siteName');
   }
 }
 </script>
@@ -169,6 +200,9 @@ export default class Login extends Vue {
 }
 address {
   color: #FAFBFC;
+}
+.rt {
+  text-align: right;
 }
 </style>
 

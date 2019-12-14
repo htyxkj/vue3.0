@@ -190,8 +190,8 @@ export default class AttendanceMonthly extends Vue {
       { field: 'qj_gs', title: '工伤' ,width: 50},
       { field: 'qj_sjj', title: '丧假' ,width: 50},
       { field: 'qj_tx', title: '调休' ,width: 50},
-      { field: 'qj_tqj', title: '探亲假' ,width: 70},
-      { field: 'qj_phj', title: '陪护假' ,width: 70},
+      // { field: 'qj_tqj', title: '探亲假' ,width: 70},
+      // { field: 'qj_phj', title: '陪护假' ,width: 70},
       // { field: 'name', title: '备注' ,width: 50},
     ]
     this.tableColumn = this.tableColumn.concat(tableColumn1)
