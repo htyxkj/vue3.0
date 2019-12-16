@@ -81,7 +81,6 @@ export default class BipTreeLayout extends Vue{
       let qe:QueryEntity = new QueryEntity(obj_id,obj_id,cont);
       qe.oprid = 14
       qe.page.pageSize=1000
-      console.log(this.cds.cont)
       let vv = await this.cds.queryData(qe);
       if(vv.data.id ==0){
         let value = vv.data.data.data.data;
