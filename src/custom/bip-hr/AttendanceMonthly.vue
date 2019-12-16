@@ -1,11 +1,13 @@
 <template>
   <div>
     <el-button type="primary" icon="el-icon-search" size="mini" @click.native="select">查找</el-button>
-    <el-form @submit.native.prevent label-position="right" label-width="100px">
-      <div v-for="(cel,index) in tjCell.ccells.cels" :key="'A'+index" >
-          <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="tjCell" :row="0" />
-      </div> 
-    </el-form>
+    <el-row class="bip-lay" >
+      <el-form @submit.native.prevent label-position="right" label-width="100px">
+        <div v-for="(cel,index) in tjCell.ccells.cels" :key="'A'+index" >
+            <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="tjCell" :row="0" />
+        </div> 
+      </el-form>
+    </el-row>
     <vxe-grid border stripe resizable height="550" :columns="tableColumn" :data="tableData"></vxe-grid>
   </div>
 </template>
@@ -207,7 +209,6 @@ export default class AttendanceMonthly extends Vue {
       let hpdate = v1.hpdate;
       hpdate = hpdate.replace(/-/g,"/"); 
       hpdate = new Date(hpdate);
-      data['day'+hpdate.getDate()] = v1.kq_ybstate;
       let sopr1 = v1.sopr;
       let name1 = v1.name;
       if(sopr !="" && sopr !=sopr1){
@@ -216,6 +217,7 @@ export default class AttendanceMonthly extends Vue {
         this.tableData.push(data);
         data={};
       }
+      data['day'+hpdate.getDate()] = v1.kq_ybstate;
       sopr = sopr1;
       name = name1;
       if(i == this.kq_state.length-1){

@@ -447,14 +447,21 @@ export default class BaseApplet extends Vue{
                 let qq =JSON.parse(JSON.stringify(Object.assign({},this.qe)));
                 qq.cont = crdc
                 qq.oprid = 14;
+                qq.mcont ="";
                 qq.tcell = this.dsm.ccells.obj_id;
                 qq.pcell = this.dsm.ds_sub[j].ccells.obj_id;
                 qq.page.pageSize=10;
                 qq.page.currPage=1;
-                let vv:CData = await this.findDataFromServe(qq);
-                this.dsm.currRecord.subs = [vv];
-                this.setSubData();
-                this.$bus.$emit("datachange", qq.pcell);
+                // let vv:CData = await this.findDataFromServe(qq);
+                let res = await this.dsm.ds_sub[j].queryData(qq);
+                if(res.data.id == 0){
+                    let data = res.data;
+                    let vv:CData = data.data.data;
+                    let cd :CData = this.initCData(vv)
+                    this.dsm.currRecord.subs = [cd];
+                    this.setSubData();
+                    this.$bus.$emit("datachange", qq.pcell);
+                }
             }
         }
     }
@@ -507,6 +514,7 @@ export default class BaseApplet extends Vue{
                 for(var i=0;i<this.dsm.ds_sub.length;i++){
                     this.$bus.$emit("datachange",this.dsm.ds_sub[i].ccells.obj_id)
                 }
+                this.getChildData();
             }
         }else{
             this.$notify.info("没有查询到数据");
