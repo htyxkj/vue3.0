@@ -14,6 +14,10 @@
                     <el-badge :value="msgNum" class="header_badge_item">
                         <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
                     </el-badge> 
+                    <el-badge    class="header_badge_item">
+                        <i :class="icon "  @click="isQP"></i>    
+                    </el-badge> 
+                    
                     <el-popover  width="160" placement="bottom-end" >
                         <el-row style="margin: 0px;">
                             <el-col :span="24">
@@ -80,6 +84,8 @@ export default class LayHeader extends Vue {
     @State('login') profile!: LoginState 
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
+    @Provide() qp:boolean = false;
+    @Provide() icon:String = "el-icon-upload2 pointer"
     async mounted() {
         this.rules={
             // oldPwd: [
@@ -203,6 +209,48 @@ export default class LayHeader extends Vue {
         this.$router.push({
             path:'/myMsg',  
         })
+    }
+    isQP(){
+        if(this.qp==true){
+        this.exitFullScreen();
+        this.icon ="el-icon-upload2  pointer"
+        this.qp=false;
+      }else{
+        this.fullScreen();
+        this.qp=true;
+         this.icon ="el-icon-download  pointer"
+      }
+    }
+    //全屏
+    fullScreen() {
+        let el:any;
+         el = document.documentElement;
+        var rfs = el.requestFullscreen || el.webkitRequestFullscreen || 
+            el.mozRequestFullScreen  || el.msRequestFullScreen ;
+        if(typeof rfs != "undefined" && rfs) {
+            rfs.call(el);
+        } else if(typeof window.ActiveXObject != "undefined") {
+            //for IE，这里其实就是模拟了按下键盘的F11，使浏览器全屏
+            var wscript = new ActiveXObject("WScript.Shell");
+            if(wscript != null) {
+                wscript.SendKeys("{F11}");
+            }
+      }
+    }
+     //退出全屏
+    exitFullScreen() {
+        let el :any;
+        el = document;
+        var cfs = el.exitFullscreen || el.webkitCancelFullScreen || 
+          el.mozCancelFullScreen || el.exitFullScreen;
+        if(typeof cfs != "undefined" && cfs) {
+            cfs.call(el);
+        } else if(typeof window.ActiveXObject != "undefined") {
+            var wscript = new ActiveXObject("WScript.Shell");
+            if(wscript != null) {
+                wscript.SendKeys("{F11}");
+            }
+        }
     }
     @Watch('taskNum')
     uptaskNum(){
