@@ -22,7 +22,7 @@
                       slot="append"
                       size="mini"
                       icon="el-icon-search"
-                      @click.native="addresSel"
+                      @click="addresSel(null)"
                     ></el-button>
                   </el-input>
                 </el-col>
@@ -532,8 +532,11 @@ export default class OperatingArea extends Vue {
       //创建搜索对象
       this.localsearch = new T.LocalSearch(this.tMap, config);
     }
-    if (address) this.localsearch.search(address);
-    else this.localsearch.search(this.addressInput);
+    if (address) {
+        this.localsearch.search(address);
+    } else {
+        this.localsearch.search(this.addressInput);
+    }
   }
   //搜索返回结果
   localSearchResult(result: any) {
