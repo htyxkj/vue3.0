@@ -229,11 +229,15 @@ export default class LayHeader extends Vue {
             el.mozRequestFullScreen  || el.msRequestFullScreen ;
         if(typeof rfs != "undefined" && rfs) {
             rfs.call(el);
-        } else if(typeof window.ActiveXObject != "undefined") {
-            //for IE，这里其实就是模拟了按下键盘的F11，使浏览器全屏
-            var wscript = new ActiveXObject("WScript.Shell");
-            if(wscript != null) {
-                wscript.SendKeys("{F11}");
+        } else {
+            try{
+                //for IE，这里其实就是模拟了按下键盘的F11，使浏览器全屏
+                var wscript = new ActiveXObject("WScript.Shell");
+                if(wscript != null) {
+                    wscript.SendKeys("{F11}");
+                }
+            }catch(e){
+
             }
       }
     }
@@ -245,10 +249,13 @@ export default class LayHeader extends Vue {
           el.mozCancelFullScreen || el.exitFullScreen;
         if(typeof cfs != "undefined" && cfs) {
             cfs.call(el);
-        } else if(typeof window.ActiveXObject != "undefined") {
-            var wscript = new ActiveXObject("WScript.Shell");
-            if(wscript != null) {
-                wscript.SendKeys("{F11}");
+        } else {
+            try{
+                var wscript = new ActiveXObject("WScript.Shell");
+                if(wscript != null) {
+                    wscript.SendKeys("{F11}");
+                }
+            }catch(e){
             }
         }
     }

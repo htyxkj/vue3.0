@@ -22,14 +22,14 @@
                       slot="append"
                       size="mini"
                       icon="el-icon-search"
-                      @click="addresSel(null)"
+                      @click.native="addresSel(addressInput)"
                     ></el-button>
                   </el-input>
                 </el-col>
                 <el-col :span="12">
                     <div class="tools">
                         <span class="tools-li">
-                            <el-dropdown trigger="click" @command="toolClick" size="mini" split-button>
+                            <el-dropdown trigger="click" @command="toolClick" size="mini" split-button >
                                 <span class="el-dropdown-link">工具</span>
                                 <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item command="0">测量</el-dropdown-item>
@@ -91,48 +91,67 @@
                   <el-row
                     v-for="(item,index) in operaData"
                     :key="index"
-                    style="padding-bottom: 5px;border-bottom: 1px solid #f1f1f1;margin-bottom: 5px;"
-                  >
-                    <el-col :span="4" style="height:40px;line-height:40px;text-align: center;">
+                    style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;" >
+                    <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
                       <el-checkbox
                         class="myOperatingAreaCheck"
                         :label="item.data.kid"
                         :key="item.data.kid"
                       ></el-checkbox>
                     </el-col>
-                    <el-col :span="20" style="height:40px;">
+                    <el-col :span="20" style="height:60px;">
                       <el-row>
-                        <el-col :span="24" style="height:20px;font-size: 1rem">{{item.data.name}}</el-col>
+                        <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
                         <el-col
                           :span="24"
-                          style="height:20px;color: rgba(0,0,0,.54);font-size: .14rem;"
+                          style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;"
                         >{{item.data.address}}</el-col>
                       </el-row>
-                    </el-col>
-                    <el-col :span="4">
-                      <span style="font-size:.8rem">&nbsp;</span>
-                    </el-col>
-                    <el-col :span="20" style="font-size:.8rem">
-                      <el-button
-                        type="text"
-                        @click="editOpera(item.data.kid)"
-                        style="padding:1px;"
-                      >编辑</el-button>
-                      <el-button
-                        type="text"
-                        @click="delOpera(item.data.kid)"
-                        style="padding:1px;"
-                      >删除</el-button>
+                      <el-row>
+                         <el-col :span="24" > 
+                          <el-row style="textAlign:center;">
+                            <el-col :span="8">
+                              
+                              <el-button
+                                  type="primary"
+                                  @click="editOpera(item.data.kid)"
+                                  style="padding:2px; font-size:0.12rem;">
+                                  编辑
+                                </el-button>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-button
+                                  type="info"
+                                  @click="copyOpera(item.data.kid)"
+                                  style="padding:2px; font-size:0.12rem;">
+                                  复制
+                                </el-button>
+                            </el-col>
+                            <el-col :span="8">
+                              <el-button
+                                type="danger"
+                                @click="delOpera(item.data.kid)"
+                                style="padding:1px; font-size:0.12rem;">
+                                删除
+                              </el-button>   
+                            </el-col>
+                          </el-row>                   
+                        </el-col>
+                      </el-row>
                     </el-col>
                   </el-row>
                 </el-checkbox-group>
-                <el-pagination
-                  small
-                  layout="prev, pager, next"
-                  @current-change="pageChange"
-                  :page-size="operaCellPage.pageSize"
-                  :total="operaCellPage.total"
-                ></el-pagination>
+                <div class="line"></div>
+                <div class="oper-pagination">
+                   <el-pagination
+                      small
+                      layout="prev, pager, next"
+                      @current-change="pageChange"
+                      :page-size="operaCellPage.pageSize"
+                      :total="operaCellPage.total">
+                    </el-pagination>
+                </div>
+               
               </div>
             </el-aside>
           </el-container>
@@ -142,7 +161,7 @@
         <b-map style="width:100%;height:100%"></b-map>
       </el-tab-pane>
     </el-tabs>
-    <el-dialog title="查找作业区" :visible.sync="showOperaDia" width="50%">
+    <el-dialog title="查找作业区" :visible.sync="showOperaDia" width="50%"  class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in operaTjCell.ccells.cels" :key="'A'+index">
@@ -161,7 +180,7 @@
         <el-button type="primary" @click="getOpera" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="新增作业区" :visible.sync="showSaveOperaDia" width="50%">
+    <el-dialog title="新增作业区" :visible.sync="showSaveOperaDia" width="50%" class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in operaSaveCell.ccells.cels" :key="'A'+index">
@@ -399,6 +418,11 @@ export default class OperatingArea extends Vue {
     let points = target.getLngLats()[0];
     let cover = this.mapOpera[kid];
     if (kid) {
+      let iscopy:boolean = false;
+      if(kid.indexOf("copy-") !=-1){//是复制的图层
+        kid = kid.split("-")[1];
+        iscopy = true;
+      }
       let d1 = this.operaJSON[kid];
       //创建标注工具对象 用来计算面积
       let polygonTool = new T.PolygonTool(this.tMap);
@@ -412,11 +436,14 @@ export default class OperatingArea extends Vue {
       this.operaSaveCell.clear();
       this.operaSaveCell.createRecord();
       let area = polygonTool.getArea(points);
-      if (d1) {
+      if (d1 && iscopy == false) {
         //存在进行修改
         this.operaSaveCell.currRecord.data = d1;
         this.operaSaveCell.currRecord.c_state = 2;
       } else {
+        if(iscopy){
+          this.operaSaveCell.currRecord.data = d1;
+        }
         //新增
         this.operaSaveCell.currRecord.c_state = 1;
       }
@@ -424,6 +451,31 @@ export default class OperatingArea extends Vue {
       this.operaSaveCell.currRecord.data.boundary1 = boundary1;
       this.showSaveOperaDia = true;
     }
+  }
+  /**
+   * 复制作业区  作业区唯一码
+   * @param kid 作业区唯一码
+   */
+  copyOpera(kid: any){
+    if(this.checkOperaList.indexOf(kid) ==-1){
+      this.checkOperaList.push(kid);
+    }
+    let d1 = this.operaJSON[kid];
+    kid = "copy-"+kid;
+    let cc:any = this.makeOpera(d1);
+    let polygon = cc[0];
+    let points = cc[1];
+    //向地图上添加面
+    this.tMap.addOverLay(polygon);
+    let t1 = this.tMap.getViewport(points);
+    this.tMap.panTo(t1.center, t1.zoom);
+    this.mapOpera[kid] = polygon;
+    let label = this.makeOperaLableTXT(d1, t1);
+    this.tMap.addOverLay(label);
+    this.mapOperaTxt[kid] = label;
+    polygon.enableEdit();
+    polygon.kid = kid;
+    polygon.addEventListener("dblclick", this.coverDBClick);
   }
   /**
    * 编辑作业区  作业区唯一码
@@ -438,7 +490,7 @@ export default class OperatingArea extends Vue {
       cover.kid = kid;
     } else {
       let d1 = this.operaJSON[kid];
-      let cc = this.makeOpera(d1);
+      let cc:any = this.makeOpera(d1);
       let polygon = cc[0];
       let points = cc[1];
       //向地图上添加面
@@ -509,10 +561,18 @@ export default class OperatingArea extends Vue {
     if (res.data && res.data.id == 0) {
       await this.getOpera();
       let kid = res.data.data.kid;
+      // this.operaSaveCell.currRecord.data.kid = kid;
+      // this.operaJSON[kid] = this.operaSaveCell.currRecord.data;
+      // this.operaData.unshift(this.operaSaveCell.currRecord)
       if (kid) {
-        if (this.mapOpera[this.editKid])
+        if (this.mapOpera[this.editKid]){
           this.tMap.removeOverLay(this.mapOpera[this.editKid]);
-        delete this.mapOpera[this.editKid];
+          delete this.mapOpera[this.editKid];
+        }
+        if(this.mapOperaTxt[this.editKid]){
+          this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
+          delete this.mapOperaTxt[this.editKid];
+        }
         this.checkOperaList.push(kid);
         this.checkBoxChange(this.checkOperaList);
       }
@@ -523,7 +583,7 @@ export default class OperatingArea extends Vue {
     }
   }
   //定位地址
-  addresSel(address: string) {
+  async addresSel(address: string) {
     if (!this.localsearch) {
       var config = {
         pageCapacity: 10, //每页显示的数量
@@ -532,46 +592,77 @@ export default class OperatingArea extends Vue {
       //创建搜索对象
       this.localsearch = new T.LocalSearch(this.tMap, config);
     }
-    if (address) {
-        this.localsearch.search(address);
-    } else {
-        this.localsearch.search(this.addressInput);
+    let oneCont =[];
+    let allCont = [];
+    let cont = "";
+    let qCont = new QueryCont('a.name', address, 12);
+    qCont.setContrast(3);
+    oneCont.push(qCont);
+    if (oneCont.length != 0) {
+      allCont.push(oneCont);
+      cont = "~" + JSON.stringify(allCont);
     }
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 400;
+    qe.cont = cont;
+    let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
+    if(vv.data.id == 0){
+      let values = vv.data.data.data.values;
+      if(values.length>0){
+        let orgcode = "";
+        for(var i=0;i<values.length;i++){
+          orgcode +=values[i].orgcode+";"
+        }
+        orgcode = orgcode.substring(0,orgcode.length-1);
+        this.operaTjCell.currRecord.data.sorg = orgcode;
+        this.getOpera()
+      }else{
+        this.operaData=[];
+      }
+    }
+    this.clearCover();
+    this.localsearch.search(address);
   }
   //搜索返回结果
   localSearchResult(result: any) {
-    this.area(result.getArea());
+    //根据返回类型解析搜索结果
+    switch (parseInt(result.getResultType())) {
+      case 3:
+        //解析行政区划边界
+        this.area(result.getArea());
+        break;
+    }
   }
   area(obj: any) {
     if (obj) {
-      if (obj.points) {
+      if(obj.points){
         //坐标数组，设置最佳比例尺时会用到
-        var pointsArr = [];
-        var points = obj.points;
-        for (var i = 0; i < points.length; i++) {
-          var regionLngLats = [];
-          var regionArr = points[i].region.split(",");
-          for (var m = 0; m < regionArr.length; m++) {
-            var lnglatArr = regionArr[m].split(" ");
-            var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-            regionLngLats.push(lnglat);
-            pointsArr.push(lnglat);
-          }
-          if (this.selCityLine) this.tMap.removeOverLay(this.selCityLine);
-          //创建线对象
-          this.selCityLine = new T.Polyline(regionLngLats, {
-            color: "blue",
-            weight: 3,
-            opacity: 1,
-            lineStyle: "dashed"
-          });
-          //向地图上添加线
-          this.tMap.addOverLay(this.selCityLine);
-        }
-        //显示最佳比例尺
-        this.tMap.setViewport(pointsArr);
+            var pointsArr = [];
+            var points = obj.points;
+            for (var i = 0; i < points.length; i++) {
+                var regionLngLats = [];
+                var regionArr = points[i].region.split(",");
+                for (var m = 0; m < regionArr.length; m++) {
+                    var lnglatArr = regionArr[m].split(" ");
+                    var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+                    regionLngLats.push(lnglat);
+                    pointsArr.push(lnglat);
+                }
+                //创建线对象
+                var line = new T.Polyline(regionLngLats, {
+                    color: "blue",
+                    weight: 3,
+                    opacity: 1,
+                    lineStyle: "dashed"
+                });
+                //向地图上添加线
+                this.tMap.addOverLay(line);
+            }
+            //显示最佳比例尺
+            this.tMap.setViewport(pointsArr);
       }
-      if (obj.lonlat) {
+      if(obj.lonlat){
         var regionArr = obj.lonlat.split(",");
         this.tMap.panTo(new T.LngLat(regionArr[0], regionArr[1]));
       }
@@ -654,7 +745,39 @@ export default class OperatingArea extends Vue {
   /**
    * 节点点击事件
    */
-  handleNodeClick(data: any, data1: any, data2: any) {
+  async handleNodeClick(data: any, data1: any, data2: any) {
+    let id = data.id;
+    //classes/search/QueryCont'; 有详细说明
+    let oneCont =[];
+    let allCont = [];
+    let cont = "";
+    let qCont = new QueryCont('area', id, 12);
+    qCont.setContrast(0);
+    oneCont.push(qCont);
+    if (oneCont.length != 0) {
+      allCont.push(oneCont);
+      cont = "~" + JSON.stringify(allCont);
+    }
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 400;
+    qe.cont = cont;
+    let vv = await tools.getBipInsAidInfo("SORG", 210, qe);
+    if(vv.data.id == 0){
+      let values = vv.data.data.data.values;
+      if(values.length>0){
+        let orgcode = "";
+        for(var i=0;i<values.length;i++){
+          orgcode +=values[i].orgcode+";"
+        }
+        orgcode = orgcode.substring(0,orgcode.length-1);
+        this.operaTjCell.currRecord.data.sorg = orgcode;
+        this.getOpera()
+      }else{
+        this.operaData=[];
+        this.clearCover();
+      }
+    }
     this.addresSel(data.name);
   }
   /**
@@ -699,7 +822,7 @@ export default class OperatingArea extends Vue {
       let kid = data[i];
       if (!this.mapOpera[kid]) {
         let d1 = this.operaJSON[kid];
-        let cc = this.makeOpera(d1);
+        let cc:any = this.makeOpera(d1);
         let polygon = cc[0];
         let points = cc[1];
         //向地图上添加面
@@ -714,7 +837,7 @@ export default class OperatingArea extends Vue {
     }
     for (let key in this.mapOpera) {
       if (data.indexOf(key) == -1) {
-        if (key.indexOf("non-") == -1) {
+        if (key.indexOf("non-") == -1 && key.indexOf("copy-") == -1) {
           if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
           if (this.mapOperaTxt[key])
             this.tMap.removeOverLay(this.mapOperaTxt[key]);
@@ -887,6 +1010,20 @@ export default class OperatingArea extends Vue {
 }
 .tools-li {
     margin-left: 5px;
+}
+.bip-lay {
+  margin-top: 20px;
+}
+.line {
+  height: 1px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.oper-pagination {
+  text-align: center;
+}
+
+.op-drop {
+  background-color: #fff;
 }
 </style>
 <style lang="scss" >
