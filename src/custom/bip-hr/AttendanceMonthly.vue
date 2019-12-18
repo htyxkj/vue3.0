@@ -1,6 +1,9 @@
 <template>
   <div>
-    <el-button type="primary" icon="el-icon-search" size="mini" @click.native="select">查找</el-button>
+    <el-row style="padding: 5px 0px;">
+      <el-button type="primary" icon="el-icon-search" size="mini" @click.native="select">查找</el-button>
+      <el-button type="primary" icon="el-icon-files" size="mini" @click.native="exportDataEvent">导出</el-button>
+    </el-row>
     <el-row class="bip-lay" >
       <el-form @submit.native.prevent label-position="right" label-width="100px">
         <div v-for="(cel,index) in tjCell.ccells.cels" :key="'A'+index" >
@@ -8,7 +11,7 @@
         </div> 
       </el-form>
     </el-row>
-    <vxe-grid border stripe resizable height="550" :columns="tableColumn" :data="tableData"></vxe-grid>
+    <vxe-grid ref="ybTable" align="center" border stripe resizable height="550" :columns="tableColumn" :span-method="rowspanMethod" :data="tableData"></vxe-grid>
   </div>
 </template>
 <script lang="ts">
@@ -34,6 +37,7 @@ export default class AttendanceMonthly extends Vue {
   @Provide() tableColumn:any=[];
   @Provide() tableData:any=[];
   @Provide() tjCell:CDataSet= new CDataSet("");
+  @Provide() span_id:any={sorg:"sorg"};//合并列id
   @Provide() yymm:any=null;
   @Provide() sopr:any=null;
   @Provide() sorg:any=null;
@@ -46,6 +50,8 @@ export default class AttendanceMonthly extends Vue {
     this.sopr = this.tjCell.currRecord.data.sopr;
     this.sorg = this.tjCell.currRecord.data.sorg;
     this.yymm = this.tjCell.currRecord.data.yymm;
+    let bok = this.checkNotNull(this.tjCell);
+    if (!bok) return;
     this.assemblyTableColumn();//组成表头
     const loading = this.$loading({
       lock: true,
@@ -227,6 +233,40 @@ export default class AttendanceMonthly extends Vue {
       }
     }
   }
+  //行合并
+  rowspanMethod(row:any) {
+    let $rowIndex = row.$rowIndex;
+        let data = row.data;
+        let column = row.column;
+        if(this.span_id !=null){ 
+            let prevRow = data[$rowIndex - 1]
+            let nextRow = data[$rowIndex + 1]
+            if (this.span_id[column.property]) {
+                let cellValue = row.row[column.property];
+                if (prevRow && prevRow[column.property] === cellValue) {
+                    return {rowspan: 0,colspan: 0}
+                }else{
+                    let countRowspan = 1
+                    while (nextRow && nextRow[column.property] === cellValue) {
+                        nextRow = data[++countRowspan + $rowIndex]
+                    }
+                    if (countRowspan > 1) {
+                        return { rowspan: countRowspan, colspan: 1 }
+                    }
+                }
+            }
+        }
+  }
+  //导出数据
+  exportDataEvent(){
+    let tb:any = this.$refs.ybTable;
+    if(tb){
+      tb.exportData({
+          filename: '考勤月报',
+          data: this.tableData
+        })
+    }
+  }
   async getCell(cellid:string){
     let res = await tools.getCCellsParams(cellid); 
     let rtn: any = res.data; 
@@ -237,6 +277,23 @@ export default class AttendanceMonthly extends Vue {
     }else{
       return new CDataSet('');
     }
+  }
+  checkNotNull(cds: CDataSet): boolean {
+    let bok = true;
+    cds.ccells.cels.forEach(item => {
+      if (item.unNull && bok) {
+        let vl = null;
+        let hide: any = [];
+        if (cds.currRecord.data[item.id] != null)
+          vl = cds.currRecord.data[item.id] + "";
+        if (!vl && hide.indexOf(item.id) == -1) {
+          this.$notify.warning("【" + item.labelString + "】不能为空!");
+          bok = false;
+          return false;
+        }
+      }
+    });
+    return bok;
   }
 }
 </script>

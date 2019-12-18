@@ -212,6 +212,7 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
+import {T} from "@/components/map/js/TMap";
 @Component({
   components: {
     tMap,

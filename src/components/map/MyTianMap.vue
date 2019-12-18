@@ -4,6 +4,7 @@
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
+import {T} from "./js/TMap";
 @Component({
   components: {
 
