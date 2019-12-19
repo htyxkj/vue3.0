@@ -4,7 +4,8 @@
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
-import {T} from "./js/TMap";
+// import {TMap} from "@/lib/TMap";
+import {T} from "./js/TMap"
 @Component({
   components: {
 
@@ -21,6 +22,10 @@ export default class MyTianMap extends Vue {
     }
     createdMap(){
         console.log("初始化天地图！")
+        // var imageURL = 'http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=7b036021d9213378213ecdefb18162db';
+        // //创建自定义图层对象
+        // var lay = new T.TileLayer(imageURL, {minZoom: 1, maxZoom: 18,zIndex:6});
+        // this.tMap = new T.Map('tMapDiv', {layers: [lay]});
         //初始化地图对象
         this.tMap = new T.Map("tMapDiv");
         //设置显示地图的中心点和级别
