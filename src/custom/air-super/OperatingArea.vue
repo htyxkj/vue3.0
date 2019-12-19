@@ -101,7 +101,7 @@
                       </el-col>
                     </el-row>
                     <el-row style="font-size:14px;">
-                      <el-row v-for="(item,index) in operaBrData[item.data.kid]">
+                      <el-row v-for="(item,index) in operaBrData[item.data.kid]" :key="index">
                         <el-col :span="4">&nbsp;</el-col>
                         <el-col :span="12">{{item.data.name}}</el-col>
                         <el-col :span="8">
