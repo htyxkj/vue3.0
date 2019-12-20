@@ -11,37 +11,8 @@
                     <el-header style="height:35px; padding-bottom:5px;" class="padding0">
                         <div>
                             <el-row>
-                                <el-col :span="12">
-                                    <el-input
-                                        style="width:300px"
-                                        size="mini"
-                                        placeholder="请输入行政名称如：北京"
-                                        v-model="addressInput"
-                                        class="input-with-select"
-                                    >
-                                        <el-button
-                                            slot="append"
-                                            size="mini"
-                                            icon="el-icon-search"
-                                            @click.native="addresSel(addressInput)"
-                                        ></el-button>
-                                    </el-input>
-                                </el-col>
-                                <el-col :span="12">
+                                <el-col :span="24">
                                     <div class="tools">
-                                        <span class="tools-li">
-                                            <el-dropdown
-                                                trigger="click"
-                                                @command="toolClick"
-                                                size="mini"
-                                                split-button
-                                            >
-                                                <span class="el-dropdown-link">工具</span>
-                                                <el-dropdown-menu slot="dropdown">
-                                                    <el-dropdown-item command="1">线路规划</el-dropdown-item>
-                                                </el-dropdown-menu>
-                                            </el-dropdown>
-                                        </span>
                                         <span class="tools-li">
                                             <el-button
                                                 size="mini"
@@ -56,25 +27,23 @@
                                                 @click="showTaskTJDia =!showTaskTJDia"
                                             >查找</el-button>
                                         </span>
+                                        <span class="tools-li">
+                                            <el-button
+                                                size="mini"
+                                                icon="iconfont icon-bip-save"
+                                                @click="saveRoute"
+                                            >保存</el-button>
+                                        </span>
                                     </div>
                                 </el-col>
                             </el-row>
                         </div>
                     </el-header>
                     <el-container class="padding0 mapMain">
-                        <el-aside :width="areaWidth+'px'">左侧</el-aside>
                         <el-main class="padding0" style="overflow: hidden;position: relative;">
                             <t-map ref="TMap" class="myTMap"></t-map>
-                            <a class="areaBtn" @click="areaBtnClick">
-                                <template v-if="areaBtnOpen">
-                                    <i class="iconfont icon-bip-up"></i>
-                                </template>
-                                <template v-else>
-                                    <i class="iconfont icon-bip-next"></i>
-                                </template>
-                            </a>
-                            <a class="operaBtn" @click="operaBtnClick">
-                                <template v-if="!operaBtnOpen">
+                            <a class="showTaskBtn" @click="taskBtnClick">
+                                <template v-if="!taskBtnOpen">
                                     <i class="iconfont icon-bip-up"></i>
                                 </template>
                                 <template v-else>
@@ -82,44 +51,29 @@
                                 </template>
                             </a>
                         </el-main>
-                        <el-aside :width="operaWidth+'px'">
+                        <el-aside :width="taskWidth+'px'">
                             <div>
                                 <el-row v-for="(item,index) in taskData" :key="index">
                                     <el-row
                                         style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;"
                                     >
-                                        <el-col :span="20" style="height:60px;">
+                                        <el-col :span="24" style="height:60px;">
                                             <el-row>
-                                                <el-col
-                                                    :span="24"
-                                                    style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)"
-                                                >{{item.data.taskname}}</el-col>
-                                                <el-col
-                                                    :span="24"
-                                                    style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;"
-                                                >{{item.data.sid}}</el-col>
+                                                <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.taskname}}</el-col>
                                             </el-row>
                                         </el-col>
-                                        <el-col
-                                            :span="4"
-                                            style="height:60px;line-height:60px;text-align: center;"
-                                        >
-                                            <el-button
-                                                type="text"
-                                                @click="routePlanning(index)"
-                                                size="mini"
-                                            >规划路线</el-button>
-                                        </el-col>
                                     </el-row>
+                                    <el-row style="textAlign:center;">
+                                        <el-col :span="8">
+                                            <el-button type="primary" @click="routePlanning(index)" style="padding:2px; font-size:0.12rem;">规划路线</el-button>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <el-button type="danger" @click="delPlanning(index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                        </el-col>
+                                    </el-row>                   
                                 </el-row>
                                 <div class="oper-pagination">
-                                    <el-pagination
-                                        small
-                                        layout="prev, pager, next"
-                                        @current-change="pageChange"
-                                        :page-size="taskCellPage.pageSize"
-                                        :total="taskCellPage.total"
-                                    ></el-pagination>
+                                    <el-pagination small layout="prev, pager, next" @current-change="pageChange" :page-size="taskCellPage.pageSize" :total="taskCellPage.total"></el-pagination>
                                 </div>
                             </div>
                         </el-aside>
@@ -130,23 +84,11 @@
                 <b-map style="width:100%;height:100%"></b-map>
             </el-tab-pane>
         </el-tabs>
-        <el-dialog
-            v-if="taskTJCell"
-            title="查找任务"
-            :visible.sync="showTaskTJDia"
-            width="50%"
-            class="bip-query"
-        >
+        <el-dialog v-if="taskTJCell" title="查找任务" :visible.sync="showTaskTJDia" width="50%" class="bip-query">
             <el-row class="bip-lay">
                 <el-form @submit.native.prevent label-position="right" label-width="100px">
                     <div v-for="(cel,index) in taskTJCell.ccells.cels" :key="'A'+index">
-                        <bip-comm-editor
-                            v-if="(cel.attr&0x400) <= 0 "
-                            :cell="cel"
-                            :bgrid="false"
-                            :cds="taskTJCell"
-                            :row="0"
-                        />
+                        <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="taskTJCell" :row="0"/>
                     </div>
                 </el-form>
             </el-row>
@@ -182,13 +124,12 @@ export default class TaskRoutePlanning extends Vue {
     @Provide() selMap: string = "tianMap";
     @Provide() tMap: any = null;
     @Provide() tZoom: number = 12;
-    @Provide() areaWidth: number = 0; //测边行政区宽度
-    @Provide() areaBtnOpen: boolean = false; //左侧行政区是否显示
 
-    @Provide() operaWidth: number = 0; //右侧作业区宽度
-    @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
+    @Provide() taskWidth: number = 0; //右侧作业区宽度
+    @Provide() taskBtnOpen: boolean = false; //右侧作业区是否显示
 
     @Provide() lineTool: any = null; //天地图划线对象
+    @Provide() editLine:any =null;//当前正在编辑的线
 
     @Provide() localsearch: any = null; //地址搜索对象
     @Provide() selCityLine: any = null; //搜索的地址边界线
@@ -209,6 +150,7 @@ export default class TaskRoutePlanning extends Vue {
     @Provide() taskData: any = []; //符合条件的任务
     @Provide() editTaskId: any = null; //当前正在规划路线的任务编码
     @Provide() editTaskState: boolean = false; //当前任务规划路线是否保存
+    @Provide() editTaskIndex:any=null;
 
     async created() {
         if (this.height) {
@@ -230,47 +172,23 @@ export default class TaskRoutePlanning extends Vue {
     //清空地图覆盖物
     clearCover() {
         this.tMap.clearOverLays();
-    }
-    //左侧行政区开关
-    async areaBtnClick() {
-        this.areaBtnOpen = !this.areaBtnOpen;
-        if (this.areaBtnOpen) {
-            //进行打开左侧行政区
-            while (this.areaWidth <= 200) {
-                this.areaWidth++;
-            }
-        } else {
-            //关闭左侧行政区
-            while (this.areaWidth > 0) {
-                this.areaWidth--;
-            }
-        }
-        if (!this.tMap) {
-            if (this.$refs.TMap) {
-                let refT: any = this.$refs.TMap;
-                this.tMap = refT.getMap();
-                setTimeout(() => {
-                    this.tMap.checkResize();
-                }, 200);
-            }
-        } else {
-            setTimeout(() => {
-                this.tMap.checkResize();
-            }, 200);
-        }
+        this.editTaskId = null; //当前正在规划路线的任务编码
+        this.editTaskState = false; //当前任务规划路线是否保存
+        this.editTaskIndex =null;//
+        this.editLine = null;
     }
     //右侧作业区开关
-    async operaBtnClick() {
-        this.operaBtnOpen = !this.operaBtnOpen;
-        if (this.operaBtnOpen) {
+    async taskBtnClick() {
+        this.taskBtnOpen = !this.taskBtnOpen;
+        if (this.taskBtnOpen) {
             //进行打开右侧作业区开关
-            while (this.operaWidth <= 300) {
-                this.operaWidth++;
+            while (this.taskWidth <= 300) {
+                this.taskWidth++;
             }
         } else {
             //关闭右侧作业区开关
-            while (this.operaWidth > 0) {
-                this.operaWidth--;
+            while (this.taskWidth > 0) {
+                this.taskWidth--;
             }
         }
         if (!this.tMap) {
@@ -287,11 +205,7 @@ export default class TaskRoutePlanning extends Vue {
             }, 200);
         }
     }
-    //工具下拉选中
-    toolClick(item: any) {
-        if (item == 1) {
-        }
-    }
+
     /**
      * 线绘制结束
      * currentLnglats：用户当前绘制的折线的点坐标数组。
@@ -299,7 +213,48 @@ export default class TaskRoutePlanning extends Vue {
      * currentPolyline：当前测距所画线的对象。
      * allPolylines：返回所有工具绘制的线对象。
      */
-    lineToolEnd(parameter: any) {}
+    lineToolEnd(parameter: any) {
+        this.editLine = parameter.currentPolyline;
+        this.editLine.enableEdit()
+    }
+    async delPlanning(index:any){
+        this.taskCell.clear();
+        this.taskCell.createRecord();
+        this.taskCell.currRecord.data = this.taskData[index].data
+        this.taskCell.currRecord.data.route = "";
+        this.taskCell.currRecord.c_state = 2;
+        let res: any = await this.taskCell.saveData();
+        if (res.data && res.data.id == 0) {
+            this.$notify.success("删除成功！");
+        } else {
+            this.$notify.error("删除失败！");
+        }
+    }
+    /**
+     * 保存线路
+     */
+    async saveRoute(){
+        if(this.editLine){
+            let poins:any = this.editLine.getLngLats();
+            let boundary1 = "";
+            for (var i = 0; i < poins.length; i++) {
+            let point = poins[i];
+            boundary1 += point.getLng() + "," + point.getLat() + ";";
+            }
+            this.taskCell.clear();
+            this.taskCell.createRecord();
+            this.taskCell.currRecord.data = this.taskData[this.editTaskIndex].data
+            this.taskCell.currRecord.data.route = boundary1;
+            this.taskCell.currRecord.c_state = 2;
+            let res: any = await this.taskCell.saveData();
+            if (res.data && res.data.id == 0) {
+                this.$notify.success("保存成功！");
+                this.editTaskState = true;
+            } else {
+                this.$notify.error("保存失败！");
+            }
+        }
+    }
     /**
      * 规划路线
      * 第几条任务
@@ -313,44 +268,76 @@ export default class TaskRoutePlanning extends Vue {
             type: "warning"
             })
             .then(() => {
+                this.clearCover();
+                this.editTaskIndex=index;
                this.routePlanning0(index);
             })
             .catch(() => {
                 
             });
         }else{
+            this.clearCover();
+            this.editTaskIndex=index;
             this.routePlanning0(index);
         }
     }
-    routePlanning0(index:any){
-        let data = this.taskData[index]
-        this.editTaskId = data.data.sid;
+    async routePlanning0(index:any){
+        let data = this.taskData[index].data
+        this.editTaskId = data.sid;
         this.editTaskState = false;
         let oaid = data.oaid;
-        let hoaid = data.oaid;
+        let hoaid = data.hoaid;
         if(oaid){
             let aid = oaid.split(";")
+            let points:any = [];
             for(var i=0;i<aid.length;i++){
-                this.getOpera(aid[i]);
+                let cc = await this.getOpera(aid[i]);
+                points = points.concat(cc);
                 this.getOperaBr(aid[i]);
             }
+            let t1 = this.tMap.getViewport(points);
+            this.tMap.panTo(t1.center, t1.zoom);
         }
         if(hoaid){
             let haid = hoaid.split(";")
             for(var i=0;i<haid.length;i++){
                 this.getOpera(haid[i]);
-                this.getOperaBr(haid[i]);
             }
         }
         let route = data.route;
+        if(route && route.length>1){//存在修改线路
+            let points:any = [];
+            let boundary = route.split(";");
+            for (var j = 0; j < boundary.length; j++) {
+                let poin = boundary[j].split(",");
+                if (poin.length >= 2) {
+                points.push(new T.LngLat(poin[0], poin[1]));
+                }
+            }
+            //创建线对象
+            this.editLine = new T.Polyline(points);
+            //向地图上添加线
+            this.tMap.addOverLay(this.editLine);
+            this.editLine.enableEdit();
+        }else{//不存在从新画线路
+            var config = {
+                showLabel: false
+            };
+            //创建标注工具对象
+            if(!this.lineTool){
+                this.lineTool = new T.PolylineTool(this.tMap, config);
+                this.lineTool.addEventListener("draw", this.lineToolEnd);
+            }
+            this.lineTool.open()
+        }
     }
     //获取作业区、航空区
     async getOpera(oid:any){
         let oneCont =[];
         let allCont = [];
         let cont = "";
-        let qCont = new QueryCont('a.name', oid, 12);
-        qCont.setContrast(3);
+        let qCont = new QueryCont('id', oid, 12);
+        qCont.setContrast(0);
         oneCont.push(qCont);
         if (oneCont.length != 0) {
         allCont.push(oneCont);
@@ -360,19 +347,25 @@ export default class TaskRoutePlanning extends Vue {
         qe.page.currPage = 1;
         qe.page.pageSize = 400;
         qe.cont = cont;
-        let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
+        let vv = await tools.getBipInsAidInfo("ROUTEOPERA", 210, qe);
+        let points:any =[];
         if(vv.data.id == 0){
             let values = vv.data.data.data.values;
-             
+            for(var i =0;i<values.length;i++){
+                let vl = values[i];
+                let cc = this.markSurface(vl.boundary1,vl.color)
+                points = points.concat(cc);
+            }
         }
+        return points;
     }
     //获取避让区域
     async getOperaBr(oid:any){
         let oneCont =[];
         let allCont = [];
         let cont = "";
-        let qCont = new QueryCont('a.name', oid, 12);
-        qCont.setContrast(3);
+        let qCont = new QueryCont('oid', oid, 12);
+        qCont.setContrast(0);
         oneCont.push(qCont);
         if (oneCont.length != 0) {
         allCont.push(oneCont);
@@ -382,9 +375,17 @@ export default class TaskRoutePlanning extends Vue {
         qe.page.currPage = 1;
         qe.page.pageSize = 400;
         qe.cont = cont;
-        let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
+        let vv = await tools.getBipInsAidInfo("ROUTEOPERAA", 210, qe);
         if(vv.data.id == 0){
             let values = vv.data.data.data.values;
+            for(var i =0;i<values.length;i++){
+                let vl = values[i];
+                if(vl.type ==1){
+                    this.markSurface(vl.avoid,vl.color)
+                }else{
+                    this.markpoint(vl.avoid)
+                }
+            }
         }
     }
     /**
@@ -406,125 +407,47 @@ export default class TaskRoutePlanning extends Vue {
                 }
                 this.taskCellPage = res.data.data.data.page;
                 this.showTaskTJDia = false;
+                this.taskBtnOpen = false;
+                this.taskBtnClick();
             })
             .catch((err: any) => {
                 this.showTaskTJDia = false;
                 this.$notify.error(err);
             });
     }
-    //定位地址
-    async addresSel(address: string) {
-        if (!this.localsearch) {
-            var config = {
-                pageCapacity: 10, //每页显示的数量
-                onSearchComplete: this.localSearchResult //接收数据的回调函数
-            };
-            //创建搜索对象
-            this.localsearch = new T.LocalSearch(this.tMap, config);
-        }
-        let oneCont = [];
-        let allCont = [];
-        let cont = "";
-        let qCont = new QueryCont("a.name", address, 12);
-        qCont.setContrast(3);
-        oneCont.push(qCont);
-        if (oneCont.length != 0) {
-            allCont.push(oneCont);
-            cont = "~" + JSON.stringify(allCont);
-        }
-        let qe: QueryEntity = new QueryEntity("", "");
-        qe.page.currPage = 1;
-        qe.page.pageSize = 400;
-        qe.cont = cont;
-        let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
-        if (vv.data.id == 0) {
-            let values = vv.data.data.data.values;
-            if (values.length > 0) {
-                let orgcode = "";
-                for (var i = 0; i < values.length; i++) {
-                    orgcode += values[i].orgcode + ";";
-                }
-                orgcode = orgcode.substring(0, orgcode.length - 1);
-            } else {
-            }
-        }
-        this.clearCover();
-        this.localsearch.search(address);
-    }
-    //搜索返回结果
-    localSearchResult(result: any) {
-        //根据返回类型解析搜索结果
-        switch (parseInt(result.getResultType())) {
-            case 1:
-                //解析点数据结果
-                this.pois(result.getPois());
-                break;
-            case 3:
-                //解析行政区划边界
-                this.area(result.getArea());
-                break;
-        }
-    }
-    //行政区
-    area(obj: any) {
-        if (obj) {
-            if (obj.points) {
-                //坐标数组，设置最佳比例尺时会用到
-                var pointsArr = [];
-                var points = obj.points;
-                for (var i = 0; i < points.length; i++) {
-                    var regionLngLats = [];
-                    var regionArr = points[i].region.split(",");
-                    for (var m = 0; m < regionArr.length; m++) {
-                        var lnglatArr = regionArr[m].split(" ");
-                        var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-                        regionLngLats.push(lnglat);
-                        pointsArr.push(lnglat);
-                    }
-                    //创建线对象
-                    var line = new T.Polyline(regionLngLats, {
-                        color: "blue",
-                        weight: 3,
-                        opacity: 1,
-                        lineStyle: "dashed"
-                    });
-                    //向地图上添加线
-                    this.tMap.addOverLay(line);
-                }
-                //显示最佳比例尺
-                this.tMap.setViewport(pointsArr);
-            }
-            if (obj.lonlat) {
-                var regionArr = obj.lonlat.split(",");
-                this.tMap.panTo(new T.LngLat(regionArr[0], regionArr[1]));
-            }
-        }
-    }
-    //点
-    pois(obj: any) {
-        if (obj) {
-            //坐标数组，设置最佳比例尺时会用到
-            var zoomArr = [];
-            for (var i = 0; i < obj.length; i++) {
-                //闭包
-                (function(i) {
-                    //坐标
-                    var lnglatArr = obj[i].lonlat.split(" ");
-                    var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-                    zoomArr.push(lnglat);
-                })(i);
-            }
-            //显示地图的最佳级别
-            this.tMap.setViewport(zoomArr);
-        }
-    }
-
     /**
      * 作业区页数发生变化
      */
     pageChange(page: number) {
         this.taskCellPage.currPage = page;
         this.getTask();
+    }
+    //画面
+    markSurface(lngLat:string,color:string){
+        let boundary = lngLat.split(";");
+        var points = [];
+        for (var j = 0; j < boundary.length; j++) {
+            let poin = boundary[j].split(",");
+            if (poin.length >= 2) {
+            points.push(new T.LngLat(poin[0], poin[1]));
+            }
+        }
+        //创建面对象
+        var polygon = new T.Polygon(points, {
+            color: "blue",
+            weight: 3,
+            opacity: 0.5,
+            fillColor: color,
+            fillOpacity: 0.5
+        });
+        this.tMap.addOverLay(polygon);
+        return points;
+    }
+    //画点
+    markpoint(lngLat:string){
+        var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]));
+        //向地图上添加标注
+        this.tMap.addOverLay(marker);
     }
     async getCell(cellid: string) {
         let res = await tools.getCCellsParams(cellid);
@@ -566,34 +489,7 @@ export default class TaskRoutePlanning extends Vue {
 .myTab {
     height: 600px;
 }
-.heightWidth {
-    // height: 100%;
-    width: 100%;
-    padding: 0px;
-}
-.areaBtn {
-    height: 63px;
-    line-height: 63px;
-    width: 15px;
-    float: left;
-    top: 40%;
-    position: absolute;
-    z-index: 999;
-    background-color: #fff;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-top-style: solid;
-    border-right-style: solid;
-    border-bottom-style: solid;
-    border-top-color: #ccc;
-    border-right-color: #ccc;
-    border-bottom-color: #ccc;
-    -moz-border-radius: 0 6px 6px 0;
-    -webkit-border-radius: 0 6px 6px 0;
-    border-radius: 0 6px 6px 0;
-}
-.operaBtn {
+.showTaskBtn {
     height: 63px;
     line-height: 63px;
     width: 15px;
@@ -627,10 +523,6 @@ export default class TaskRoutePlanning extends Vue {
 .padding0 {
     padding: 0px;
 }
-.operaCheck {
-    line-height: 50px;
-    text-align: center;
-}
 .tools {
     text-align: right;
 }
@@ -646,10 +538,6 @@ export default class TaskRoutePlanning extends Vue {
 }
 .oper-pagination {
     text-align: center;
-}
-
-.op-drop {
-    background-color: #fff;
 }
 </style>
 <style lang="scss" >
