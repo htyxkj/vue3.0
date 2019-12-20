@@ -108,7 +108,7 @@
                           <el-col :span="8">
                             <el-row type="flex" justify="end">
                               <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                              <el-button type="text" @click="delOperaBr(item.data,indexbr)" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                              <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
                             </el-row>
                           </el-col>
                         </el-row>
@@ -520,15 +520,17 @@ export default class OperatingArea extends Vue {
     if (!bok) return;
     let res: any = await this.operaBrCell.saveData();
     if (res.data && res.data.id == 0) {
-      let id = res.data.data.oid;
-        if(id){
+      let id = res.data.data.oaid;
+      let oaid = this.operaBrCell.currRecord.data.oaid
+      if(id){
+        oaid = id;
         if (this.mapOperaBr[this.editBrk]){
           this.tMap.removeOverLay(this.mapOperaBr[this.editBrk]);
           delete this.mapOperaBr[this.editBrk];
         }
       }
       let oid = this.operaBrCell.currRecord.data.oid;
-      let k = oid + "_" + this.operaBrCell.currRecord.data.oaid;
+      let k = oid + "_" + oaid;
       await this.showOperaBr(oid);
       this.makrAllBr(oid,k);
       this.$notify.success("保存成功！");
@@ -541,7 +543,7 @@ export default class OperatingArea extends Vue {
     /**
    * 删除避让区
    */
-  delOperaBr(data:any,index:any){
+  delOperaBr(data:any,indexBr:any,index:any){
     let k = data.oid+"_"+data.oaid;
     let d1 = this.operaBrJSON[k];
     let co = "此操作将删除避让区区：" + d1.name + "，是否继续？";
@@ -558,7 +560,7 @@ export default class OperatingArea extends Vue {
           this.operaBrCell.currRecord.data = d1;
           this.operaBrCell.currRecord.c_state = 4;
         }
-        this.delBr(k);
+        this.delBr(k,indexBr,index);
       })
       .catch(() => {
         this.$message({
@@ -570,9 +572,14 @@ export default class OperatingArea extends Vue {
   /**
    * 进行删除避让区
    */
-  async delBr(key:string){
+  async delBr(key:string,indexBr:any,index:any){
     let res: any = await this.operaBrCell.saveData();
     if (res.data && res.data.id == 0) {
+      this.showoperaBrData["BR"+index] = false;
+      let data = this.operaBrData[key.split("_")[0]];
+      data.splice(indexBr,1);
+      this.operaBrData[key.split("_")[0]] = data;
+      this.showoperaBrData["BR"+index] = true;
       if (this.mapOperaBr[key]) this.tMap.removeOverLay(this.mapOperaBr[key]);
       delete this.operaBrJSON[key]
       this.$notify.success("删除成功！");
@@ -596,20 +603,18 @@ export default class OperatingArea extends Vue {
             //创建标注对象
             var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]));
             if(this.mapOperaBr[kk]){
-
-            }else{
-              //向地图上添加标注
-              this.tMap.addOverLay(marker);
-              this.mapOperaBr[kk] = marker;
-            }
+              this.tMap.removeOverLay(this.mapOperaBr[kk]);
+            } 
+            //向地图上添加标注
+            this.tMap.addOverLay(marker);
+            this.mapOperaBr[kk] = marker;
           }else{//面
             let ccbr:any = this.makeOpera(dbr1);
             if(this.mapOperaBr[kk]){
-              
-            }else{
-              this.tMap.addOverLay(ccbr[0]);
-              this.mapOperaBr[kk] = ccbr[0];
+              this.tMap.removeOverLay(this.mapOperaBr[kk]);
             }
+            this.tMap.addOverLay(ccbr[0]);
+            this.mapOperaBr[kk] = ccbr[0];
           }
         }
       }
