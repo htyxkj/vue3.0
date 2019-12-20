@@ -8,39 +8,16 @@
         >
             <el-tab-pane :style="style" label="天地图" name="tianMap">
                 <el-container class="padding0" :style="style">
-                    <el-header style="height:35px; padding-bottom:5px;" class="padding0">
-                        <div>
-                            <el-row>
-                                <el-col :span="24">
-                                    <div class="tools">
-                                        <span class="tools-li">
-                                            <el-button
-                                                size="mini"
-                                                icon="el-icon-delete"
-                                                @click="clearCover"
-                                            >清空</el-button>
-                                        </span>
-                                        <span class="tools-li">
-                                            <el-button
-                                                size="mini"
-                                                icon="el-icon-search"
-                                                @click="showTaskTJDia =!showTaskTJDia"
-                                            >查找</el-button>
-                                        </span>
-                                        <span class="tools-li">
-                                            <el-button
-                                                size="mini"
-                                                icon="iconfont icon-bip-save"
-                                                @click="saveRoute"
-                                            >保存</el-button>
-                                        </span>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-header>
                     <el-container class="padding0 mapMain">
                         <el-main class="padding0" style="overflow: hidden;position: relative;">
+                             <div class="nav-tools">
+                                <!-- 搜索 -->
+                                <el-button icon="el-icon-search"  circle  @click="showTaskTJDia =!showTaskTJDia"></el-button>
+                                <!-- 保存 -->
+                                <el-button icon="iconfont icon-bip-save" @click="saveRoute" circle></el-button>
+                                <!-- 清空 -->
+                                <el-button icon="el-icon-delete"   @click="clearCover" circle></el-button>
+                            </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="showTaskBtn" @click="taskBtnClick">
                                 <template v-if="!taskBtnOpen">
@@ -52,23 +29,34 @@
                             </a>
                         </el-main>
                         <el-aside :width="taskWidth+'px'">
-                            <div>
+                            <div class="task-info">
                                 <el-row v-for="(item,index) in taskData" :key="index">
                                     <el-row
-                                        style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;"
-                                    >
-                                        <el-col :span="24" style="height:60px;">
+                                        style="padding:5px; paddingLeft:10px; border-bottom: 1px solid #f1f1f1; margin-bottom: 5px;">
+                                        <el-col :span="24">
                                             <el-row>
-                                                <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.taskname}}</el-col>
+                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.taskname}}</el-col>
+                                            </el-row>
+                                             <el-row>
+                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.bgtime}}</el-col>
+                                                <el-col :span="2">~</el-col>
+                                                
+                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.edtime}}</el-col>
+                                            </el-row>
+                                             <el-row>
+                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.asname}}</el-col>
                                             </el-row>
                                         </el-col>
                                     </el-row>
-                                    <el-row style="textAlign:center;">
-                                        <el-col :span="8">
-                                            <el-button type="primary" @click="routePlanning(index)" style="padding:2px; font-size:0.12rem;">规划路线</el-button>
+                                    <el-row style="textAlign:center; border-bottom: 1px solid #f1f1f1; height:30px;">
+                                         <el-col :span="8">
+                                            <el-button type="primary" @click="routePlanningRech(index)" style="padding:2px; font-size:0.12rem;">查看路线</el-button>
                                         </el-col>
                                         <el-col :span="8">
-                                            <el-button type="danger" @click="delPlanning(index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                            <el-button type="success" @click="routePlanning(index)" style="padding:2px; font-size:0.12rem;">规划路线</el-button>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <el-button type="danger" @click="delPlanning(index)" style="padding:1px; font-size:0.12rem;">删除路线</el-button>   
                                         </el-col>
                                     </el-row>                   
                                 </el-row>
@@ -143,7 +131,7 @@ export default class TaskRoutePlanning extends Vue {
     }; //作业区查询分页数据
 
     @Provide() taskCellID: any = "F2018";
-    @Provide() taskTJCellID: any = "B07ATJ";
+    @Provide() taskTJCellID: any = "F2018ATJ";
     @Provide() taskCell: any = null; //任务对象
     @Provide() taskTJCell: any = null; //任务条件对象
     @Provide() showTaskTJDia: boolean = false; //是否显示任务查找弹框
@@ -226,9 +214,11 @@ export default class TaskRoutePlanning extends Vue {
         let res: any = await this.taskCell.saveData();
         if (res.data && res.data.id == 0) {
             this.$notify.success("删除成功！");
+            this.tMap.removeOverLay(this.editLine);
+            this.editTaskState = true;
         } else {
             this.$notify.error("删除失败！");
-        }
+        }     
     }
     /**
      * 保存线路
@@ -270,7 +260,7 @@ export default class TaskRoutePlanning extends Vue {
             .then(() => {
                 this.clearCover();
                 this.editTaskIndex=index;
-               this.routePlanning0(index);
+               this.routePlanning0(index,true);
             })
             .catch(() => {
                 
@@ -278,10 +268,33 @@ export default class TaskRoutePlanning extends Vue {
         }else{
             this.clearCover();
             this.editTaskIndex=index;
-            this.routePlanning0(index);
+            this.routePlanning0(index,true);
         }
     }
-    async routePlanning0(index:any){
+    // 查看路线
+    routePlanningRech(index: any) {
+        if(this.editTaskState == false && this.editTaskId){
+            let co = "任务："+this.editTaskId+" 规划路线尚未保存，是否放弃？"
+            this.$confirm(co, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+            })
+            .then(() => {
+                this.clearCover();
+                this.editTaskIndex=index;
+               this.routePlanning0(index,false);
+            })
+            .catch(() => {
+                
+            });
+        }else{
+            this.clearCover();
+            this.editTaskIndex=index;
+            this.routePlanning0(index,false);
+        }
+    }
+    async routePlanning0(index:any,editor:Boolean){
         let data = this.taskData[index].data
         this.editTaskId = data.sid;
         this.editTaskState = false;
@@ -318,7 +331,11 @@ export default class TaskRoutePlanning extends Vue {
             this.editLine = new T.Polyline(points);
             //向地图上添加线
             this.tMap.addOverLay(this.editLine);
-            this.editLine.enableEdit();
+            if(editor){
+                // 开启编辑
+                this.editLine.enableEdit();
+            }
+            
         }else{//不存在从新画线路
             var config = {
                 showLabel: false
@@ -518,7 +535,7 @@ export default class TaskRoutePlanning extends Vue {
     outline: none;
 }
 .mapMain {
-    height: calc(100% - 35px) !important;
+    height: calc(100%-0px) !important;
 }
 .padding0 {
     padding: 0px;
@@ -538,6 +555,15 @@ export default class TaskRoutePlanning extends Vue {
 }
 .oper-pagination {
     text-align: center;
+}
+.nav-tools {
+    position: absolute;
+    top: 1rem;
+    left: 3rem;
+    z-index: 999;
+}
+.task-info{
+    border-top: 1px solid #f1f1f1;
 }
 </style>
 <style lang="scss" >

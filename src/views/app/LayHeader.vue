@@ -85,7 +85,7 @@ export default class LayHeader extends Vue {
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() qp:boolean = false;
-    @Provide() icon:String = "el-icon-upload2 pointer"
+    @Provide() icon:String = "el-icon-full-screen pointer"
     async mounted() {
         this.rules={
             // oldPwd: [
@@ -213,12 +213,12 @@ export default class LayHeader extends Vue {
     isQP(){
         if(this.qp==true){
         this.exitFullScreen();
-        this.icon ="el-icon-upload2  pointer"
+        this.icon ="el-icon-full-screen  pointer"
         this.qp=false;
       }else{
         this.fullScreen();
         this.qp=true;
-         this.icon ="el-icon-download  pointer"
+         this.icon ="el-icon-full-screen  pointer"
       }
     }
     //全屏
