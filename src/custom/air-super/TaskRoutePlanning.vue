@@ -161,7 +161,7 @@ export default class TaskRoutePlanning extends Vue {
     clearCover() {
         this.tMap.clearOverLays();
         this.editTaskId = null; //当前正在规划路线的任务编码
-        this.editTaskState = false; //当前任务规划路线是否保存
+        this.editTaskState = true; //当前任务规划路线是否保存
         this.editTaskIndex =null;//
         this.editLine = null;
     }
@@ -239,6 +239,7 @@ export default class TaskRoutePlanning extends Vue {
             let res: any = await this.taskCell.saveData();
             if (res.data && res.data.id == 0) {
                 this.$notify.success("保存成功！");
+                this.editLine.disableEdit();
                 this.editTaskState = true;
             } else {
                 this.$notify.error("保存失败！");
@@ -272,26 +273,41 @@ export default class TaskRoutePlanning extends Vue {
         }
     }
     // 查看路线
-    routePlanningRech(index: any) {
-        if(this.editTaskState == false && this.editTaskId){
-            let co = "任务："+this.editTaskId+" 规划路线尚未保存，是否放弃？"
-            this.$confirm(co, "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-            })
-            .then(() => {
-                this.clearCover();
-                this.editTaskIndex=index;
-               this.routePlanning0(index,false);
-            })
-            .catch(() => {
-                
-            });
-        }else{
-            this.clearCover();
-            this.editTaskIndex=index;
-            this.routePlanning0(index,false);
+    async routePlanningRech(index: any) {
+        let data = this.taskData[index].data
+        let oaid = data.oaid;
+        let hoaid = data.hoaid;
+        if(oaid){
+            let aid = oaid.split(";")
+            let points:any = [];
+            for(var i=0;i<aid.length;i++){
+                let cc = await this.getOpera(aid[i]);
+                points = points.concat(cc);
+                this.getOperaBr(aid[i]);
+            }
+            let t1 = this.tMap.getViewport(points);
+            this.tMap.panTo(t1.center, t1.zoom);
+        }
+        if(hoaid){
+            let haid = hoaid.split(";")
+            for(var i=0;i<haid.length;i++){
+                this.getOpera(haid[i]);
+            }
+        }
+        let route = data.route;
+        if(route && route.length>1){//存在修改线路
+            let points:any = [];
+            let boundary = route.split(";");
+            for (var j = 0; j < boundary.length; j++) {
+                let poin = boundary[j].split(",");
+                if (poin.length >= 2) {
+                points.push(new T.LngLat(poin[0], poin[1]));
+                }
+            }
+            //创建线对象
+            this.editLine = new T.Polyline(points);
+            //向地图上添加线
+            this.tMap.addOverLay(this.editLine); 
         }
     }
     async routePlanning0(index:any,editor:Boolean){
@@ -348,6 +364,7 @@ export default class TaskRoutePlanning extends Vue {
             this.lineTool.open()
         }
     }
+
     //获取作业区、航空区
     async getOpera(oid:any){
         let oneCont =[];

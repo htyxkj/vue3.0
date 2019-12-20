@@ -93,7 +93,7 @@
                                 <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                               </el-col>
                               <el-col :span="6">
-                                <el-button type="danger" @click="showOperaBr(item.data.kid)" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
                               </el-col>
                             </el-row>                   
                           </el-col>
@@ -101,14 +101,18 @@
                       </el-col>
                     </el-row>
                     <el-row style="font-size:14px;">
-                      <el-row v-for="(item,index) in operaBrData[item.data.kid]" :key="index">
-                        <el-col :span="4">&nbsp;</el-col>
-                        <el-col :span="12">{{item.data.name}}</el-col>
-                        <el-col :span="8">
-                          <el-button type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                          <el-button type="text" @click="delOperaBr(item.data,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
-                        </el-col>
-                      </el-row>
+                      <template v-if="showoperaBrData['BR'+index]">
+                        <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                          <el-col :span="4">&nbsp;</el-col>
+                          <el-col :span="12">{{item.data.name}}</el-col>
+                          <el-col :span="8">
+                            <el-row type="flex" justify="end">
+                              <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                              <el-button type="text" @click="delOperaBr(item.data,indexbr)" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                            </el-row>
+                          </el-col>
+                        </el-row>
+                      </template>
                     </el-row>
                   </el-row>
                 </el-checkbox-group>
@@ -144,7 +148,7 @@
         <el-button type="primary" @click="getOpera" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="新增作业区" :visible.sync="showSaveOperaDia" width="50%" class="bip-query">
+    <el-dialog title="新增作业区" :close-on-click-modal="false" :visible.sync="showSaveOperaDia" width="50%" class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in operaSaveCell.ccells.cels" :key="'A'+index">
@@ -163,7 +167,7 @@
         <el-button type="primary" @click="saveOpera" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="新增避让区" :visible.sync="showSaveOperaBrDia" width="50%" class="bip-query">
+    <el-dialog title="新增避让区" :close-on-click-modal="false" :visible.sync="showSaveOperaBrDia" width="50%" class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in operaBrCell.ccells.cels" :key="'A'+index">
@@ -182,7 +186,6 @@
         <el-button type="primary" @click="saveOperaBr" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    
   </div>
 </template>
 <script lang="ts">
@@ -220,10 +223,6 @@ export default class OperatingArea extends Vue {
   @Provide() operaWidth: number = 0; //右侧作业区宽度
   @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
 
-  @Provide() polygonTool: any = null; //天地图画面对象
-  @Provide() lineTool:any = null;//天地图划线对象
-  @Provide() markerTool:any = null;//天地图画点对象
-
   @Provide() localsearch: any = null; //地址搜索对象
   @Provide() selCityLine: any = null; //搜索的地址边界线
   @Provide() addressInput: any = null; //地址框
@@ -235,22 +234,36 @@ export default class OperatingArea extends Vue {
   @Provide() checkOperaList: any = []; //作业区勾选数据
   @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 20,total: 0}; //作业区查询分页数据
 
+  @Provide() operaPolygon:any=null;//天地图作业区 画面对象
+  @Provide() operaLine:any=null;//天地图作业区 画线对象
+
+
+  @Provide() operaBrPolygon:any=null;//天地图避让区 画面对象
+  @Provide() operaBrLine:any=null;//天地图避让区 画线对象
+  @Provide() operaBrMarker:any = null;//天地图避让区 画点对象
+
+ 
+  @Provide() showoperaBrData:any ={'BR0':false,'BR1':false,'BR2':false,'BR3':false,'BR4':false,'BR5':false,'BR6':false,'BR7':false,'BR8':false,'BR9':false,'BR10':false,
+  'BR11':false,'BR12':false,'BR13':false,'BR14':false,'BR15':false,'BR16':false,'BR17':false,'BR18':false,'BR19':false,'BR20':false};//是否显示每一条作业区的避让点
+
   @Provide() operaBrData: any = {}; //避让区数据
   @Provide() operaBrJSON: any = {}; //避让区数据每一条
+  @Provide() mapOperaBr: any = {}; //地图避让区覆盖集合
 
   @Provide() operaBrCell:CDataSet = new CDataSet("");//避让点对象
   @Provide() showSaveOperaBrDia:boolean =false;//是否显示新增避让点弹框
 
+
   @Provide() mapOpera: any = {}; //地图作业区覆盖集合
   @Provide() mapOperaTxt: any = {}; //地图作业区文字说明集合
+
 
   @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
   @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
   @Provide() editKid: any = null; //当前正在进行保存的kid 已经弹出保存框了
 
+  @Provide() editBrk:any = null;//当前正在进行保存的kid 已经弹出保存框了
   @Provide() checkkid:any = null;//当前页选中的作业区ID 在勾选避让区域时用到
-
-  @Provide() selTool:any = null;//当前选中工具
 
   async created() {
     if (this.height) {
@@ -273,39 +286,181 @@ export default class OperatingArea extends Vue {
   //清空地图覆盖物
   clearCover() {
     this.mapOpera = {};
+    this.mapOperaBr = {};
     this.mapOperaTxt = {};
     this.checkOperaList = [];
     this.tMap.clearOverLays();
   }
-  //左侧行政区开关
-  async areaBtnClick() {
-    this.areaBtnOpen = !this.areaBtnOpen;
-    if (this.areaBtnOpen) {
-      //进行打开左侧行政区
-      while (this.areaWidth <= 200) {
-        this.areaWidth++;
+  //工具下拉选中
+  toolClick(item: any) {
+    if(item == 3 || item == 4 || item ==5){//画避让区域
+      //判断一下是否只勾选了一个作业区
+      let num =0;
+      for(var i =0;i<this.operaData.length;i++){
+        let d1 = this.operaData[i].data
+        if(this.checkOperaList.indexOf(d1.kid) !=-1){
+          this.checkkid = d1.kid;
+          num++
+        }
+        if(num == 2)
+          break;
       }
-    } else {
-      //关闭左侧行政区
-      while (this.areaWidth > 0) {
-        this.areaWidth--;
-      }
+      if(num>1){
+        this.$notify.warning("请勾选一个作业区！")
+        return;
+      }else if(num ==0){
+        this.$notify.warning("请勾选作业区！")
+        return;
+      }      
     }
-    if (!this.tMap) {
-      if (this.$refs.TMap) {
-        let refT: any = this.$refs.TMap;
-        this.tMap = refT.getMap();
-        setTimeout(() => {
-          this.tMap.checkResize();  
-        }, 200);        
+    if(item == 2){ //规划作业区  线
+      //创建标注工具对象
+      if(!this.operaLine){
+        this.operaLine = new T.PolylineTool(this.tMap);        
+        this.operaLine.addEventListener("draw", this.operaLineToolEnd);
       }
-    } else {
-      setTimeout(() => {
-        this.tMap.checkResize();  
-      }, 200);
+      this.operaLine.close();
+      this.operaLine.open();
+    }else if(item == 4){//规划避让区
+      //创建标注工具对象
+      if(!this.operaBrLine){
+        this.operaBrLine = new T.PolylineTool(this.tMap);        
+        this.operaBrLine.addEventListener("draw", this.operaBrLineToolEnd);
+      }
+      this.operaBrLine.close();
+      this.operaBrLine.open();
+    }else if(item == 1){ //规划作业区  面
+      let config = { showLabel: false,
+        color: "blue", weight: 2, opacity: 0.5,
+        fillColor: "#FFFFFF", fillOpacity: 0.5
+      };
+      //创建标注工具对象
+      if (!this.operaPolygon) {
+        this.operaPolygon = new T.PolygonTool(this.tMap, config);
+        //绑定draw事件 用户每次完成拉框操作时触发事件。
+        this.operaPolygon.addEventListener("draw", this.operaPolygonToolEnd);
+      }
+      this.operaPolygon.close();
+      this.operaPolygon.open();
+    }else if(item == 3){//避让区规划 面
+      let config = { showLabel: false,
+        color: "blue", weight: 2, opacity: 0.5,
+        fillColor: "#FFFFFF", fillOpacity: 0.5
+      };
+      //创建标注工具对象
+      if (!this.operaBrPolygon) {
+        this.operaBrPolygon = new T.PolygonTool(this.tMap, config);
+        //绑定draw事件 用户每次完成拉框操作时触发事件。
+        this.operaBrPolygon.addEventListener("draw", this.operaBrPolygonToolEnd);
+      }
+      this.operaBrPolygon.close();
+      this.operaBrPolygon.open();
+    }else if(item == 5){//避让点规划
+      //创建标注工具对象
+      if(!this.operaBrMarker){
+        this.operaBrMarker = new T.MarkTool(this.tMap, { follow: true });
+        this.operaBrMarker.addEventListener("mouseup",this.operaBrMarkerToolEnd);
+      }
+      this.operaBrMarker.close();
+      this.operaBrMarker.open();
     }
   }
-  //右侧作业区开关
+  /**
+   * 勾选发生变化
+   */
+  checkBoxChange(data: any) {
+    for (var i = 0; i < data.length; i++) {
+      let kid = data[i];
+      if (!this.mapOpera[kid]) {
+        //作业区
+        let d1 = this.operaJSON[kid];
+        let cc:any = this.makeOpera(d1);
+        let polygon = cc[0];
+        let points = cc[1];
+        //向地图上添加面
+        this.tMap.addOverLay(polygon);
+        let t1 = this.tMap.getViewport(points);
+        this.tMap.panTo(t1.center, t1.zoom);
+        this.mapOpera[kid] = polygon;
+        let label = this.makeOperaLableTXT(d1, t1);
+        this.tMap.addOverLay(label);
+        this.mapOperaTxt[kid] = label;
+        this.makrAllBr(kid,null);
+      }
+    }
+    for (let key in this.mapOpera) {
+      let ka = key.split("_")[0];
+      if (data.indexOf(ka) == -1) {
+        if (ka.indexOf("non-") == -1 && ka.indexOf("copy-") == -1) {
+          if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
+          if (this.mapOperaTxt[key])
+            this.tMap.removeOverLay(this.mapOperaTxt[key]);
+          delete this.mapOpera[key];
+          delete this.mapOperaTxt[key];
+          this.delAllBr(key);
+        }
+      }
+    }
+  }
+  /**
+   * 创建作业区文字说明
+   */
+  makeOperaLableTXT(d1: any, t1: any) {
+    if (d1) {
+      var co = "";
+      co =
+        d1.id +
+        "<br/>" +
+        d1.name +
+        "<br/>" +
+        d1.township +
+        "<br/>" +
+        d1.address;
+      if (d1.area != 0) {
+        co += "<br/>面积：" + d1.area + "亩";
+      }
+      var label = new T.Label({
+        text: co,
+        position: t1.center,
+        offset: new T.Point(-50, -50)
+      });
+      label.setBackgroundColor(null);
+      return label;
+    } else {
+      return null;
+    }
+  }
+  /**
+   * 创建覆盖面
+   */
+  makeOpera(d1: any) {
+    if (d1) {
+      let boundary1 = d1.boundary1;
+      let boundary = boundary1.split(";");
+      var points = [];
+      for (var j = 0; j < boundary.length; j++) {
+        let poin = boundary[j].split(",");
+        if (poin.length >= 2) {
+          points.push(new T.LngLat(poin[0], poin[1]));
+        }
+      }
+      //创建面对象
+      var polygon = new T.Polygon(points, {
+        color: "blue",
+        weight: 3,
+        opacity: 0.5,
+        fillColor: d1.color,
+        fillOpacity: 0.5
+      });
+      return [polygon, points];
+    } else {
+      return null;
+    }
+  }
+
+
+  /**************** 避让区 **************/
+   //右侧避让区开关
   async operaBtnClick() {
     this.operaBtnOpen = !this.operaBtnOpen;
     if (this.operaBtnOpen) {
@@ -333,198 +488,190 @@ export default class OperatingArea extends Vue {
       }, 200);
     }
   }
-  //工具下拉选中
-  toolClick(item: any) {
-    // <el-dropdown-item command="1">作业区规划(面)</el-dropdown-item>
-    // <el-dropdown-item command="2">作业区规划(线)</el-dropdown-item>
-    // <el-dropdown-item command="3">避让区规划(面)</el-dropdown-item>
-    // <el-dropdown-item command="4">避让区规划(线)</el-dropdown-item>
-    // <el-dropdown-item command="5">避让点</el-dropdown-item>
-    if(item == 3 || item == 4 || item ==5){//画避让区域
-      //判断一下是否只勾选了一个作业区
-      let num =0;
-      for(var i =0;i<this.operaData.length;i++){
-        let d1 = this.operaData[i].data
-        if(this.checkOperaList.indexOf(d1.kid) !=-1){
-          this.checkkid = d1.kid;
-          num++
+  /**
+   * 查找避让区
+   */
+  async showOperaBr(kid:string){
+    let qe: QueryEntity = new QueryEntity("F2015A", "F2015A");
+    qe.page = {currPage: 1,index: 0,pageSize: 20000,total: 0};
+    qe.cont = "{'oid':'"+kid+"'}";
+    qe.oprid = 13;
+    await this.operaBrCell
+      .queryData(qe)
+      .then(res => {
+        if (res.data.id == 0) {
+          this.operaBrData[kid] = res.data.data.data.data
+          for (var i = 0; i < this.operaBrData[kid].length; i++) {
+            let d1 = this.operaBrData[kid][i].data;
+            let k = d1.oid+"_"+d1.oaid
+            this.operaBrJSON[k] = d1;
+          }
         }
-        if(num == 2)
-          break;
+      })
+      .catch(err => {
+        this.$notify.error(err);
+      });
+  }
+  /**
+   * 保存新增避让区
+   */
+  async saveOperaBr() {
+    let bok = this.checkNotNull(this.operaBrCell);
+    if (!bok) return;
+    let res: any = await this.operaBrCell.saveData();
+    if (res.data && res.data.id == 0) {
+      let id = res.data.data.oid;
+        if(id){
+        if (this.mapOperaBr[this.editBrk]){
+          this.tMap.removeOverLay(this.mapOperaBr[this.editBrk]);
+          delete this.mapOperaBr[this.editBrk];
+        }
       }
-      if(num>1){
-        this.$notify.warning("请勾选一个作业区！")
-        return;
-      }else if(num ==0){
-        this.$notify.warning("请勾选作业区！")
-        return;
-      }      
+      let oid = this.operaBrCell.currRecord.data.oid;
+      let k = oid + "_" + this.operaBrCell.currRecord.data.oaid;
+      await this.showOperaBr(oid);
+      this.makrAllBr(oid,k);
+      this.$notify.success("保存成功！");
+      this.showSaveOperaBrDia = false;
+    } else {
+      this.showSaveOperaBrDia = false;
+      this.$notify.error("保存失败！");
     }
-    this.selTool = item;
-    if (item == 2 || item == 4) {
-      //线
-      let config = {
-        showLabel: false
-      };
-      //创建标注工具对象
-      if(!this.lineTool){
-        this.lineTool = new T.PolylineTool(this.tMap, config);        
-        this.lineTool.addEventListener("draw", this.lineToolEnd);
-      }
-      this.lineTool.open();
-      if(this.polygonTool)
-        this.polygonTool.close();
-      if(this.markerTool)
-        this.markerTool.close();
-    } else if (item == 1 || item == 3) {
-      //面
-      let config = {
-        showLabel: false,
-        color: "blue",
-        weight: 3,
-        opacity: 0.5,
-        fillColor: "#FFFFFF",
-        fillOpacity: 0.5
-      };
-      //创建标注工具对象
-      if (!this.polygonTool) {
-        this.polygonTool = new T.PolygonTool(this.tMap, config);
-        //绑定draw事件 用户每次完成拉框操作时触发事件。
-        this.polygonTool.addEventListener("draw", this.polygonToolEnd);
-      }
-      this.polygonTool.open();
-      if(this.markerTool)
-        this.markerTool.close();
-      if(this.lineTool)
-        this.lineTool.close();
-    } else if (item == 5) {
-      //点
-      //创建标注工具对象
-      if(!this.markerTool){
-        this.markerTool = new T.MarkTool(this.tMap, { follow: true });
-        this.markerTool.addEventListener("mouseup",this.markerToolEnd);
-      }
-      this.markerTool.open();
-      if(this.lineTool)
-        this.lineTool.close();
-      if(this.polygonTool)
-        this.polygonTool.close();
+  }
+    /**
+   * 删除避让区
+   */
+  delOperaBr(data:any,index:any){
+    let k = data.oid+"_"+data.oaid;
+    let d1 = this.operaBrJSON[k];
+    let co = "此操作将删除避让区区：" + d1.name + "，是否继续？";
+    this.operaBrCell.clear();
+    this.operaBrCell.createRecord();
+    this.$confirm(co, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    })
+      .then(() => {
+        if (d1) {
+          //存在进行修改
+          this.operaBrCell.currRecord.data = d1;
+          this.operaBrCell.currRecord.c_state = 4;
+        }
+        this.delBr(k);
+      })
+      .catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
+      });
+  }
+  /**
+   * 进行删除避让区
+   */
+  async delBr(key:string){
+    let res: any = await this.operaBrCell.saveData();
+    if (res.data && res.data.id == 0) {
+      if (this.mapOperaBr[key]) this.tMap.removeOverLay(this.mapOperaBr[key]);
+      delete this.operaBrJSON[key]
+      this.$notify.success("删除成功！");
+      await this.showOperaBr(key.split("_")[0]);
+    } else {
+      this.$notify.error("删除失败！");
     }
   }
   /**
-   * 线绘制结束
-   * currentLnglats：用户当前绘制的折线的点坐标数组。
-   * currentDistance：用户当前绘制的折线的地理长度。
-   * currentPolyline：当前测距所画线的对象。
-   * allPolylines：返回所有工具绘制的线对象。
+   * 画单个作业区的全部避让区域
    */
-  lineToolEnd(parameter: any) {
-    this.tMap.removeOverLay(parameter.currentPolyline)
-    //创建面对象
-    let editCover = new T.Polygon(parameter.currentLnglats, {
-      color: "blue",
-      weight: 3,
-      opacity: 0.5,
-      fillColor: '#FFFFFF',
-      fillOpacity: 0.5
-    });
-    this.tMap.addOverLay(editCover);
-    let key = "non-" + new Date().getTime();
-    editCover.kid = key;
-    this.editKid = key;
-    editCover.addEventListener("dblclick", this.coverDBClick);
-    this.mapOpera[key] = editCover;
-    editCover.enableEdit();
-    let boundary1 = "";
-    for (var i = 0; i < parameter.currentLnglats.length; i++) {
-      let point = parameter.currentLnglats[i];
-      boundary1 += point.getLng() + "," + point.getLat() + ";";
-    }
-    boundary1 = boundary1.substring(0, boundary1.length - 1);
-    if(this.selTool == 2){//作业区规划  线
-      console.log("作业区规划 线")
-      this.operaSaveCell.clear();
-      this.operaSaveCell.createRecord();
-      this.operaSaveCell.currRecord.data.area = (
-        parameter.currentArea / 666.66
-      ).toFixed(2);
-      this.operaSaveCell.currRecord.data.boundary1 = boundary1;
-      this.showSaveOperaDia = true;
-    }else if(this.selTool == 4){//避让区规划  线
-      this.operaBrCell.clear()
-      this.operaBrCell.createRecord();
-      this.operaBrCell.currRecord.data.oid = this.checkkid;
-      this.operaBrCell.currRecord.data.type = 1;
-      this.operaBrCell.currRecord.data.avoid = boundary1;
-      this.showSaveOperaBrDia = true;
+  makrAllBr(kid:any,koid:any){
+    if(this.operaBrData[kid]){
+      let br = this.operaBrData[kid]
+      for(var j=0;j<br.length;j++){
+        let br1 = br[j].data;
+        let dbr1 ={boundary1: br1.avoid,color:br1.color}
+        let kk = kid+"_"+br1.oaid;
+        if(!koid || koid == kk){
+          if(br1.type ==0){//点的
+            //创建标注对象
+            var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]));
+            if(this.mapOperaBr[kk]){
+
+            }else{
+              //向地图上添加标注
+              this.tMap.addOverLay(marker);
+              this.mapOperaBr[kk] = marker;
+            }
+          }else{//面
+            let ccbr:any = this.makeOpera(dbr1);
+            if(this.mapOperaBr[kk]){
+              
+            }else{
+              this.tMap.addOverLay(ccbr[0]);
+              this.mapOperaBr[kk] = ccbr[0];
+            }
+          }
+        }
+      }
     }
   }
   /**
-   * 多边形绘制结束
-   *  currentLnglats：用户当前绘制的多边形的点坐标数组。
-   *  currentArea：用户最后绘制的多边形的地理面积。
-   *  currentPolygon：当前所画多边形的对象。
-   *  allPolygons： 获取工具所有绘制的多边形。
+   * 删除单个作业区的全部避让区域
    */
-  polygonToolEnd(parameter: any) {
-    let editCover = parameter.currentPolygon;
-    let key = "non-" + new Date().getTime();
-    editCover.kid = key;
-    this.editKid = key;
-    editCover.addEventListener("dblclick", this.coverDBClick);
-    this.mapOpera[key] = editCover;
-    editCover.enableEdit();
-    let boundary1 = "";
-    for (var i = 0; i < parameter.currentLnglats.length; i++) {
-      let point = parameter.currentLnglats[i];
-      boundary1 += point.getLng() + "," + point.getLat() + ";";
-    }
-    boundary1 = boundary1.substring(0, boundary1.length - 1);
-    if(this.selTool == 1){//作业区规划  面      
-      this.operaSaveCell.clear();
-      this.operaSaveCell.createRecord();
-      this.operaSaveCell.currRecord.data.area = (
-        parameter.currentArea / 666.66
-      ).toFixed(2);
-      this.operaSaveCell.currRecord.data.boundary1 = boundary1;
-      this.showSaveOperaDia = true;
-    }else if(this.selTool == 3){//避让区规划  面
-      this.operaBrCell.clear()
-      this.operaBrCell.createRecord();
-      this.operaBrCell.currRecord.data.oid = this.checkkid;
-      this.operaBrCell.currRecord.data.type = 1;
-      this.operaBrCell.currRecord.data.avoid = boundary1;
-      this.showSaveOperaBrDia = true;
+  delAllBr(kid:any){
+    if(this.operaBrData[kid]){
+      let br = this.operaBrData[kid]
+      for(var j=0;j<br.length;j++){
+        let br1 = br[j].data;
+        let kk = kid+"_"+br1.oaid;
+        if(this.mapOperaBr[kk]){
+          this.tMap.removeOverLay(this.mapOperaBr[kk]);
+          delete this.mapOperaBr[kk];
+        }
+      }
     }
   }
   /**
-   * 点绘制完成
-   * currentLnglat:：用户在地图上标的坐标。
-   * currentMarker：用户当前的标注点对象。
-   * allMarkers：用户使用工具所有的标注点对象。
+   * 编辑避让区
    */
-  markerToolEnd(parameter: any){
-    if(this.selTool == 5){
-      console.log("避让点")
-      let lnglat = parameter.currentLnglat;
-      let avoid = lnglat.getLng()+","+lnglat.getLat();
-      this.operaBrCell.clear()
-      this.operaBrCell.createRecord();
-      this.operaBrCell.currRecord.data.oid = this.checkkid;
-      this.operaBrCell.currRecord.data.type = 0;
-      this.operaBrCell.currRecord.data.avoid = avoid;
-      this.showSaveOperaBrDia = true;
+  editOperaBr(data:any){
+    let kid = data.oid+"_"+data.oaid;
+    let cover = this.mapOperaBr[kid];
+    if (cover) {
+      cover.removeEventListener("dblclick", this.operaBrDBClick);
+      cover.addEventListener("dblclick", this.operaBrDBClick);
+      cover.enableEdit();
+      cover.kid = kid;
+    } else {
+      let d11 = this.operaBrJSON[kid];
+      let d1 = {boundary1:d11.avoid,color:d11.color}
+      let cc:any = this.makeOpera(d1);
+      let polygon = cc[0];
+      let points = cc[1];
+      //向地图上添加面
+      this.tMap.addOverLay(polygon);
+      let t1 = this.tMap.getViewport(points);
+      this.tMap.panTo(t1.center, t1.zoom);
+      this.mapOperaBr[kid] = polygon;
+      polygon.enableEdit();
+      polygon.kid = kid;
+      polygon.addEventListener("dblclick", this.operaBrDBClick);
     }
   }
   /**
-   * 作业区双击
+   * 避让区双击
    */
-  coverDBClick(data: any) {
+  operaBrDBClick(data: any) {
     let target = data.target;
     let kid = target.kid;
-    this.editKid = target.kid;
+    this.editBrk = kid;
+    if(kid.indexOf("non-") == 1){
+      kid = this.checkkid;
+    }else{
+      // kid = kid.split("_")[0];
+    }
     let points = target.getLngLats()[0];
-    let cover = this.mapOpera[kid];
+    let cover = this.mapOperaBr[kid];
     if (kid) {
       let iscopy:boolean = false;
       if(kid.indexOf("copy-") !=-1){//是复制的图层
@@ -539,68 +686,183 @@ export default class OperatingArea extends Vue {
         boundary1 += point.getLng() + "," + point.getLat() + ";";
       }
       boundary1 = boundary1.substring(0, boundary1.length - 1);
-      if(this.selTool == 1 || this.selTool == 2){//作业区域
-        let d1 = this.operaJSON[kid];
-        this.operaSaveCell.clear();
-        this.operaSaveCell.createRecord();
-        let area = polygonTool.getArea(points);
-        if (d1 && iscopy == false) {
-          //存在进行修改
-          this.operaSaveCell.currRecord.data = d1;
-          this.operaSaveCell.currRecord.c_state = 2;
-        } else {
-          if(iscopy){
-            this.operaSaveCell.currRecord.data = d1;
-          }
-          //新增
-          this.operaSaveCell.currRecord.c_state = 1;
-        }
-        this.operaSaveCell.currRecord.data.area = (area / 666.66).toFixed(2);
-        this.operaSaveCell.currRecord.data.boundary1 = boundary1;
-        this.showSaveOperaDia = true;
-      }else if(this.selTool == 3 || this.selTool == 4){//避让区域
-        let d1 = this.operaBrJSON[kid];
-        this.operaBrCell.clear()
-        this.operaBrCell.createRecord();
-        if(d1){
-          this.operaBrCell.currRecord.data = d1;
-          this.operaBrCell.currRecord.c_state = 2;
-        }else{
-          this.operaBrCell.currRecord.c_state = 1;
-          this.operaBrCell.currRecord.data.oid = this.checkkid;
-        }
-        this.operaBrCell.currRecord.data.type = 1;
-        this.operaBrCell.currRecord.data.avoid = boundary1;
-        this.showSaveOperaBrDia = true;
+      let d1 = this.operaBrJSON[kid];
+      this.operaBrCell.clear()
+      this.operaBrCell.createRecord();
+      if(d1){
+        this.operaBrCell.currRecord.data = d1;
+        this.operaBrCell.currRecord.c_state = 2;
+      }else{
+        this.operaBrCell.currRecord.c_state = 1;
+        this.operaBrCell.currRecord.data.oid = kid.split("_")[0];
       }
+      this.operaBrCell.currRecord.data.type = 1;
+      this.operaBrCell.currRecord.data.avoid = boundary1;
+      this.showSaveOperaBrDia = true;
     }
   }
   /**
-   * 复制作业区  作业区唯一码
-   * @param kid 作业区唯一码
+   * 线绘制结束
+   * currentLnglats：用户当前绘制的折线的点坐标数组。
+   * currentDistance：用户当前绘制的折线的地理长度。
+   * currentPolyline：当前测距所画线的对象。
+   * allPolylines：返回所有工具绘制的线对象。
    */
-  copyOpera(kid: any){
-    if(this.checkOperaList.indexOf(kid) ==-1){
-      this.checkOperaList.push(kid);
+  operaBrLineToolEnd(parameter:any){
+    this.tMap.removeOverLay(parameter.currentPolyline)
+    //创建面对象
+    let editCover = new T.Polygon(parameter.currentLnglats, {
+      color: "blue",
+      weight: 3,
+      opacity: 0.5,
+      fillColor: '#FFFFFF',
+      fillOpacity: 0.5
+    });
+    this.tMap.addOverLay(editCover);
+    let key = "non-" + new Date().getTime();
+    editCover.kid = key;
+    this.editBrk = key;
+    editCover.addEventListener("dblclick", this.operaBrDBClick);
+    this.mapOperaBr[key] = editCover;
+    editCover.enableEdit();
+    let boundary1 = "";
+    for (var i = 0; i < parameter.currentLnglats.length; i++) {
+      let point = parameter.currentLnglats[i];
+      boundary1 += point.getLng() + "," + point.getLat() + ";";
     }
-    let d1 = this.operaJSON[kid];
-    kid = "copy-"+kid;
-    let cc:any = this.makeOpera(d1);
-    let polygon = cc[0];
-    let points = cc[1];
-    //向地图上添加面
-    this.tMap.addOverLay(polygon);
-    let t1 = this.tMap.getViewport(points);
-    this.tMap.panTo(t1.center, t1.zoom);
-    this.mapOpera[kid] = polygon;
-    let label = this.makeOperaLableTXT(d1, t1);
-    this.tMap.addOverLay(label);
-    this.mapOperaTxt[kid] = label;
-    polygon.enableEdit();
-    polygon.kid = kid;
-    polygon.addEventListener("dblclick", this.coverDBClick);
+    boundary1 = boundary1.substring(0, boundary1.length - 1);
+    this.operaBrCell.clear()
+    this.operaBrCell.createRecord();
+    this.operaBrCell.currRecord.data.oid = this.checkkid;
+    this.operaBrCell.currRecord.data.type = 1;
+    this.operaBrCell.currRecord.data.avoid = boundary1;
+    this.showSaveOperaBrDia = true;
+  }
+   /**
+   * 多边形绘制结束
+   *  currentLnglats：用户当前绘制的多边形的点坐标数组。
+   *  currentArea：用户最后绘制的多边形的地理面积。
+   *  currentPolygon：当前所画多边形的对象。
+   *  allPolygons： 获取工具所有绘制的多边形。
+   */
+  operaBrPolygonToolEnd(parameter: any) {
+    let editCover = parameter.currentPolygon;
+    let key = "non-" + new Date().getTime();
+    editCover.kid = key;
+    this.editBrk = key;
+    editCover.addEventListener("dblclick", this.operaBrDBClick);
+    this.mapOperaBr[key] = editCover;
+    editCover.enableEdit();
+    let boundary1 = "";
+    for (var i = 0; i < parameter.currentLnglats.length; i++) {
+      let point = parameter.currentLnglats[i];
+      boundary1 += point.getLng() + "," + point.getLat() + ";";
+    }
+    boundary1 = boundary1.substring(0, boundary1.length - 1);
+    this.operaBrCell.clear()
+    this.operaBrCell.createRecord();
+    this.operaBrCell.currRecord.data.oid = this.checkkid;
+    this.operaBrCell.currRecord.data.type = 1;
+    this.operaBrCell.currRecord.data.avoid = boundary1;
+    this.showSaveOperaBrDia = true;
   }
   /**
+   * 点绘制完成
+   * currentLnglat:：用户在地图上标的坐标。
+   * currentMarker：用户当前的标注点对象。
+   * allMarkers：用户使用工具所有的标注点对象。
+   */
+  operaBrMarkerToolEnd(parameter:any){
+    let editCover = parameter.currentMarker;
+    let key = "non-" + new Date().getTime();
+    this.editBrk = key;
+    this.mapOperaBr[key] = editCover;
+
+    let lnglat = parameter.currentLnglat;
+    let avoid = lnglat.getLng()+","+lnglat.getLat();
+    this.operaBrCell.clear()
+    this.operaBrCell.createRecord();
+    this.operaBrCell.currRecord.data.oid = this.checkkid;
+    this.operaBrCell.currRecord.data.type = 0;
+    this.operaBrCell.currRecord.data.avoid = avoid;
+    this.showSaveOperaBrDia = true;
+  }
+  /**************** END **************/
+
+
+
+
+
+
+
+
+
+
+
+  /**************** 作业区 **************/
+  //查找作业区
+  async getOpera() {
+    let qe: QueryEntity = new QueryEntity("F2015", "F2015TJ");
+    qe.page = this.operaCellPage;
+    qe.cont = JSON.stringify(this.operaTjCell.currRecord.data);
+    qe.oprid = 13;
+    await this.operaTjCell
+      .queryData(qe)
+      .then(res => {
+        if (res.data.id == 0) {
+          this.operaData = res.data.data.data.data;
+          for (var i = 0; i < this.operaData.length; i++) {
+            let d1 = this.operaData[i].data;
+            this.showOperaBr(d1.kid);
+            this.operaJSON[d1.kid] = d1;
+          }
+        }
+        this.operaCellPage = res.data.data.data.page;
+        this.showOperaDia = false;
+        this.operaBtnOpen = false;
+        this.operaBtnClick();
+      })
+      .catch(err => {
+        this.showOperaDia = false;
+        this.$notify.error(err);
+      });
+  }
+  /**
+   * 作业区页数发生变化
+   */
+  pageChange(page: number) {
+    this.operaCellPage.currPage = page;
+    this.getOpera();
+  }
+    /**
+   * 保存新增作业区
+   */
+  async saveOpera() {
+    let bok = this.checkNotNull(this.operaSaveCell);
+    if (!bok) return;
+    let res: any = await this.operaSaveCell.saveData();
+    if (res.data && res.data.id == 0) {
+      await this.getOpera();
+      let kid = res.data.data.kid;
+      if (kid) {
+        if (this.mapOpera[this.editKid]){
+          this.tMap.removeOverLay(this.mapOpera[this.editKid]);
+          delete this.mapOpera[this.editKid];
+        }
+        if(this.mapOperaTxt[this.editKid]){
+          this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
+          delete this.mapOperaTxt[this.editKid];
+        }
+        this.checkOperaList.push(kid);
+        this.checkBoxChange(this.checkOperaList);
+      }
+      this.$notify.success("保存成功！");
+      this.showSaveOperaDia = false;
+    } else {
+      this.$notify.error("保存失败！");
+    }
+  }
+   /**
    * 编辑作业区  作业区唯一码
    * @param kid 作业区唯一码
    */
@@ -674,236 +936,173 @@ export default class OperatingArea extends Vue {
       this.$notify.error("删除失败！");
     }
   }
-  /**
-   * 编辑避让区
+    /**
+   * 复制作业区  作业区唯一码
+   * @param kid 作业区唯一码
    */
-  editOperaBr(data:any){
-    this.selTool = 3;
-    let kid = data.oid+"_"+data.oaid;
+  copyOpera(kid: any){
+    if(this.checkOperaList.indexOf(kid) ==-1){
+      this.checkOperaList.push(kid);
+    }
+    let d1 = this.operaJSON[kid];
+    kid = "copy-"+kid;
+    let cc:any = this.makeOpera(d1);
+    let polygon = cc[0];
+    let points = cc[1];
+    //向地图上添加面
+    this.tMap.addOverLay(polygon);
+    let t1 = this.tMap.getViewport(points);
+    this.tMap.panTo(t1.center, t1.zoom);
+    this.mapOpera[kid] = polygon;
+    let label = this.makeOperaLableTXT(d1, t1);
+    this.tMap.addOverLay(label);
+    this.mapOperaTxt[kid] = label;
+    polygon.enableEdit();
+    polygon.kid = kid;
+    polygon.addEventListener("dblclick", this.coverDBClick);
+  }
+  /**
+   * 线绘制结束
+   * currentLnglats：用户当前绘制的折线的点坐标数组。
+   * currentDistance：用户当前绘制的折线的地理长度。
+   * currentPolyline：当前测距所画线的对象。
+   * allPolylines：返回所有工具绘制的线对象。
+   */
+  operaLineToolEnd(parameter:any){
+    this.tMap.removeOverLay(parameter.currentPolyline)
+    //创建面对象
+    let editCover = new T.Polygon(parameter.currentLnglats, {
+      color: "blue",
+      weight: 3,
+      opacity: 0.5,
+      fillColor: '#FFFFFF',
+      fillOpacity: 0.5
+    });
+    this.tMap.addOverLay(editCover);
+    let key = "non-" + new Date().getTime();
+    editCover.kid = key;
+    this.editKid = key;
+    editCover.addEventListener("dblclick", this.coverDBClick);
+    this.mapOpera[key] = editCover;
+    editCover.enableEdit();
+    let boundary1 = "";
+    for (var i = 0; i < parameter.currentLnglats.length; i++) {
+      let point = parameter.currentLnglats[i];
+      boundary1 += point.getLng() + "," + point.getLat() + ";";
+    }
+    boundary1 = boundary1.substring(0, boundary1.length - 1);
+    this.operaSaveCell.clear();
+    this.operaSaveCell.createRecord();
+    this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
+    this.operaSaveCell.currRecord.data.boundary1 = boundary1;
+    this.showSaveOperaDia = true;
+  }
+  /**
+   * 多边形绘制结束
+   *  currentLnglats：用户当前绘制的多边形的点坐标数组。
+   *  currentArea：用户最后绘制的多边形的地理面积。
+   *  currentPolygon：当前所画多边形的对象。
+   *  allPolygons： 获取工具所有绘制的多边形。
+   */
+  operaPolygonToolEnd(parameter:any){
+    let editCover = parameter.currentPolygon;
+    let key = "non-" + new Date().getTime();
+    editCover.kid = key;
+    this.editKid = key;
+    editCover.addEventListener("dblclick", this.coverDBClick);
+    this.mapOpera[key] = editCover;
+    editCover.enableEdit();
+    let boundary1 = "";
+    for (var i = 0; i < parameter.currentLnglats.length; i++) {
+      let point = parameter.currentLnglats[i];
+      boundary1 += point.getLng() + "," + point.getLat() + ";";
+    }
+    boundary1 = boundary1.substring(0, boundary1.length - 1);
+    this.operaSaveCell.clear();
+    this.operaSaveCell.createRecord();
+    this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
+    this.operaSaveCell.currRecord.data.boundary1 = boundary1;
+    this.showSaveOperaDia = true;
+  }
+    /**
+   * 作业区双击
+   */
+  coverDBClick(data: any) {
+    let target = data.target;
+    let kid = target.kid;
+    this.editKid = target.kid;
+    let points = target.getLngLats()[0];
     let cover = this.mapOpera[kid];
-    if (cover) {
-      cover.removeEventListener("dblclick", this.coverDBClick);
-      cover.addEventListener("dblclick", this.coverDBClick);
-      cover.enableEdit();
-      cover.kid = kid;
-    } else {
-      let d11 = this.operaBrJSON[kid];
-      let d1 = {boundary1:d11.avoid,color:d11.color}
-      let cc:any = this.makeOpera(d1);
-      let polygon = cc[0];
-      let points = cc[1];
-      //向地图上添加面
-      this.tMap.addOverLay(polygon);
-      let t1 = this.tMap.getViewport(points);
-      this.tMap.panTo(t1.center, t1.zoom);
-      this.mapOpera[kid] = polygon;
-      polygon.enableEdit();
-      polygon.kid = kid;
-      polygon.addEventListener("dblclick", this.coverDBClick);
-    }
-  }
-  /**
-   * 删除避让区
-   */
-  delOperaBr(data:any,index:any){
-    let k = data.oid+"_"+data.oaid;
-    let d1 = this.operaBrJSON[k];
-    let co = "此操作将删除避让区区：" + d1.name + "，是否继续？";
-    this.operaBrCell.clear();
-    this.operaBrCell.createRecord();
-    this.$confirm(co, "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning"
-    })
-      .then(() => {
-        if (d1) {
-          //存在进行修改
-          this.operaBrCell.currRecord.data = d1;
-          this.operaBrCell.currRecord.c_state = 4;
+    if (kid) {
+      let iscopy:boolean = false;
+      if(kid.indexOf("copy-") !=-1){//是复制的图层
+        kid = kid.split("-")[1];
+        iscopy = true;
+      }
+      //创建标注工具对象 用来计算面积
+      let polygonTool = new T.PolygonTool(this.tMap);
+      let boundary1 = "";
+      for (var i = 0; i < points.length; i++) {
+        let point = points[i];
+        boundary1 += point.getLng() + "," + point.getLat() + ";";
+      }
+      boundary1 = boundary1.substring(0, boundary1.length - 1);
+      let d1 = this.operaJSON[kid];
+      this.operaSaveCell.clear();
+      this.operaSaveCell.createRecord();
+      let area = polygonTool.getArea(points);
+      if (d1 && iscopy == false) {
+        //存在进行修改
+        this.operaSaveCell.currRecord.data = d1;
+        this.operaSaveCell.currRecord.c_state = 2;
+      } else {
+        if(iscopy){
+          this.operaSaveCell.currRecord.data = d1;
         }
-        this.delBr(k);
-      })
-      .catch(() => {
-        this.$message({
-          type: "info",
-          message: "已取消删除"
-        });
-      });
+        //新增
+        this.operaSaveCell.currRecord.c_state = 1;
+      }
+      this.operaSaveCell.currRecord.data.area = (area / 666.66).toFixed(2);
+      this.operaSaveCell.currRecord.data.boundary1 = boundary1;
+      this.showSaveOperaDia = true;
+    }
   }
-  /**
-   * 进行删除避让区
-   */
-  async delBr(key:string){
-    let res: any = await this.operaBrCell.saveData();
-    if (res.data && res.data.id == 0) {
-      if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
-      delete this.operaBrJSON[key]
-      this.$notify.success("删除成功！");
-      await this.showOperaBr(key.split("_")[0]);
+  /**************** 地址定位 **************/  
+
+
+
+
+
+  /**************** 左侧树状行政区 **************/
+  //左侧行政区开关
+  async areaBtnClick() {
+    this.areaBtnOpen = !this.areaBtnOpen;
+    if (this.areaBtnOpen) {
+      //进行打开左侧行政区
+      while (this.areaWidth <= 200) {
+        this.areaWidth++;
+      }
     } else {
-      this.$notify.error("删除失败！");
-    }
-  }
-  /**
-   * 保存新增作业区
-   */
-  async saveOpera() {
-    let bok = this.checkNotNull(this.operaSaveCell);
-    if (!bok) return;
-    let res: any = await this.operaSaveCell.saveData();
-    if (res.data && res.data.id == 0) {
-      await this.getOpera();
-      let kid = res.data.data.kid;
-      if (kid) {
-        if (this.mapOpera[this.editKid]){
-          this.tMap.removeOverLay(this.mapOpera[this.editKid]);
-          delete this.mapOpera[this.editKid];
-        }
-        if(this.mapOperaTxt[this.editKid]){
-          this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
-          delete this.mapOperaTxt[this.editKid];
-        }
-        this.checkOperaList.push(kid);
-        this.checkBoxChange(this.checkOperaList);
+      //关闭左侧行政区
+      while (this.areaWidth > 0) {
+        this.areaWidth--;
       }
-      this.$notify.success("保存成功！");
-      this.showSaveOperaDia = false;
+    }
+    if (!this.tMap) {
+      if (this.$refs.TMap) {
+        let refT: any = this.$refs.TMap;
+        this.tMap = refT.getMap();
+        setTimeout(() => {
+          this.tMap.checkResize();  
+        }, 200);        
+      }
     } else {
-      this.$notify.error("保存失败！");
+      setTimeout(() => {
+        this.tMap.checkResize();  
+      }, 200);
     }
   }
   /**
-   * 保存新增避让区
-   */
-  async saveOperaBr() {
-    let bok = this.checkNotNull(this.operaBrCell);
-    if (!bok) return;
-    let res: any = await this.operaBrCell.saveData();
-    if (res.data && res.data.id == 0) {
-      if (this.mapOpera[this.editKid]){
-        this.tMap.removeOverLay(this.mapOpera[this.editKid]);
-        delete this.mapOpera[this.editKid];
-      }
-      await this.showOperaBr(this.operaBrCell.currRecord.data.oid);
-      this.makrAllBr(this.operaBrCell.currRecord.data.oid);
-      this.$notify.success("保存成功！");
-      this.showSaveOperaBrDia = false;
-    } else {
-      this.$notify.error("保存失败！");
-    }
-  }
-  //定位地址
-  async addresSel(address: string) {
-    if (!this.localsearch) {
-      var config = {
-        pageCapacity: 10, //每页显示的数量
-        onSearchComplete: this.localSearchResult //接收数据的回调函数
-      };
-      //创建搜索对象
-      this.localsearch = new T.LocalSearch(this.tMap, config);
-    }
-    let oneCont =[];
-    let allCont = [];
-    let cont = "";
-    let qCont = new QueryCont('a.name', address, 12);
-    qCont.setContrast(3);
-    oneCont.push(qCont);
-    if (oneCont.length != 0) {
-      allCont.push(oneCont);
-      cont = "~" + JSON.stringify(allCont);
-    }
-    let qe: QueryEntity = new QueryEntity("", "");
-    qe.page.currPage = 1;
-    qe.page.pageSize = 400;
-    qe.cont = cont;
-    let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
-    if(vv.data.id == 0){
-      let values = vv.data.data.data.values;
-      if(values.length>0){
-        let orgcode = "";
-        for(var i=0;i<values.length;i++){
-          orgcode +=values[i].orgcode+";"
-        }
-        orgcode = orgcode.substring(0,orgcode.length-1);
-        this.operaTjCell.currRecord.data.sorg = orgcode;
-        this.getOpera()
-      }else{
-        this.operaData=[];
-      }
-    }
-    this.clearCover();
-    this.localsearch.search(address);
-  }
-  //搜索返回结果
-  localSearchResult(result: any) {
-    //根据返回类型解析搜索结果
-    switch (parseInt(result.getResultType())) {
-      case 1:
-        //解析点数据结果
-        this.pois(result.getPois());
-        break;
-      case 3:
-        //解析行政区划边界
-        this.area(result.getArea());
-        break;
-    }
-  }
-  //行政区
-  area(obj: any) {
-    if (obj) {
-      if(obj.points){
-        //坐标数组，设置最佳比例尺时会用到
-            var pointsArr = [];
-            var points = obj.points;
-            for (var i = 0; i < points.length; i++) {
-                var regionLngLats = [];
-                var regionArr = points[i].region.split(",");
-                for (var m = 0; m < regionArr.length; m++) {
-                    var lnglatArr = regionArr[m].split(" ");
-                    var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-                    regionLngLats.push(lnglat);
-                    pointsArr.push(lnglat);
-                }
-                //创建线对象
-                var line = new T.Polyline(regionLngLats, {
-                    color: "blue",
-                    weight: 3,
-                    opacity: 1,
-                    lineStyle: "dashed"
-                });
-                //向地图上添加线
-                this.tMap.addOverLay(line);
-            }
-            //显示最佳比例尺
-            this.tMap.setViewport(pointsArr);
-      }
-      if(obj.lonlat){
-        var regionArr = obj.lonlat.split(",");
-        this.tMap.panTo(new T.LngLat(regionArr[0], regionArr[1]));
-      }
-    }
-  }
-  //点
-  pois(obj:any) {
-    if (obj) {
-      //坐标数组，设置最佳比例尺时会用到
-      var zoomArr = [];
-      for (var i = 0; i < obj.length; i++) {
-          //闭包
-          (function (i) {
-              //坐标
-              var lnglatArr = obj[i].lonlat.split(" ");
-              var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-              zoomArr.push(lnglat);
-          })(i);
-      }
-      //显示地图的最佳级别
-      this.tMap.setViewport(zoomArr);
-    }
-  }
-  /**
-   * 懒加载
    * 获取下一节点树状行政区
    */
   async loadNode(node: any, resolve: any) {
@@ -1014,183 +1213,120 @@ export default class OperatingArea extends Vue {
     }
     this.addresSel(data.name);
   }
-  /**
-   * 查找作业区
-   */
-  async getOpera() {
-    let qe: QueryEntity = new QueryEntity("F2015", "F2015TJ");
-    qe.page = this.operaCellPage;
-    qe.cont = JSON.stringify(this.operaTjCell.currRecord.data);
-    qe.oprid = 13;
-    await this.operaTjCell
-      .queryData(qe)
-      .then(res => {
-        console.log(res);
-        if (res.data.id == 0) {
-          this.operaData = res.data.data.data.data;
-          for (var i = 0; i < this.operaData.length; i++) {
-            let d1 = this.operaData[i].data;
-            this.showOperaBr(d1.kid);
-            this.operaJSON[d1.kid] = d1;
-          }
-        }
-        this.operaCellPage = res.data.data.data.page;
-        this.showOperaDia = false;
-        this.operaBtnOpen = false;
-        this.operaBtnClick();
-      })
-      .catch(err => {
-        this.showOperaDia = false;
-        this.$notify.error(err);
-      });
-  }
-  /**
-   * 查找避让区
-   */
-  async showOperaBr(kid:string){
-    let qe: QueryEntity = new QueryEntity("F2015A", "F2015A");
-    qe.page = {currPage: 1,index: 0,pageSize: 20000,total: 0};
-    qe.cont = "{'oid':'"+kid+"'}";
-    qe.oprid = 13;
-    await this.operaBrCell
-      .queryData(qe)
-      .then(res => {
-        if (res.data.id == 0) {
-          this.operaBrData[kid] = res.data.data.data.data
-          for (var i = 0; i < this.operaBrData[kid].length; i++) {
-            let d1 = this.operaBrData[kid][i].data;
-            let k = d1.oid+"_"+d1.oaid
-            this.operaBrJSON[k] = d1;
-          }
-        }
-      })
-      .catch(err => {
-        this.$notify.error(err);
-      });
-  }
-  /**
-   * 作业区页数发生变化
-   */
-  pageChange(page: number) {
-    this.operaCellPage.currPage = page;
-    this.getOpera();
-  }
-  /**
-   * 勾选发生变化
-   */
-  checkBoxChange(data: any) {
-    for (var i = 0; i < data.length; i++) {
-      let kid = data[i];
-      if (!this.mapOpera[kid]) {
-        //作业区
-        let d1 = this.operaJSON[kid];
-        let cc:any = this.makeOpera(d1);
-        let polygon = cc[0];
-        let points = cc[1];
-        //向地图上添加面
-        this.tMap.addOverLay(polygon);
-        let t1 = this.tMap.getViewport(points);
-        this.tMap.panTo(t1.center, t1.zoom);
-        this.mapOpera[kid] = polygon;
-        let label = this.makeOperaLableTXT(d1, t1);
-        this.tMap.addOverLay(label);
-        this.mapOperaTxt[kid] = label;
-        this.makrAllBr(kid);
-      }
-    }
-    for (let key in this.mapOpera) {
-      let ka = key.split("_")[0];
-      if (data.indexOf(ka) == -1) {
-        if (ka.indexOf("non-") == -1 && ka.indexOf("copy-") == -1) {
-          if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
-          if (this.mapOperaTxt[key])
-            this.tMap.removeOverLay(this.mapOperaTxt[key]);
-          delete this.mapOpera[key];
-          delete this.mapOperaTxt[key];
-        }
-      }
-    }
-  }
+  /*********** END *************/
 
-  /**
-   * 画单个作业区的全部避让区域
-   */
-  makrAllBr(kid:any){
-    if(this.operaBrData[kid]){
-      let br = this.operaBrData[kid]
-      for(var j=0;j<br.length;j++){
-        let br1 = br[j].data;
-        let dbr1 ={boundary1: br1.avoid,color:br1.color}
-        let kk = kid+"_"+br1.oaid;
-        if(br1.type ==0){//点的
-          //创建标注对象
-          var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]));
-          //向地图上添加标注
-          this.tMap.addOverLay(marker);
-          this.mapOpera[kk] = marker;
-        }else{//面
-          let ccbr:any = this.makeOpera(dbr1);
-          this.tMap.addOverLay(ccbr[0]);
-          this.mapOpera[kk] = ccbr[0];
+
+  /**************** 地址定位 **************/  
+  async addresSel(address: string) {
+    if (!this.localsearch) {
+      var config = {
+        pageCapacity: 10, //每页显示的数量
+        onSearchComplete: this.localSearchResult //接收数据的回调函数
+      };
+      //创建搜索对象
+      this.localsearch = new T.LocalSearch(this.tMap, config);
+    }
+    let oneCont =[];
+    let allCont = [];
+    let cont = "";
+    let qCont = new QueryCont('a.name', address, 12);
+    qCont.setContrast(3);
+    oneCont.push(qCont);
+    if (oneCont.length != 0) {
+      allCont.push(oneCont);
+      cont = "~" + JSON.stringify(allCont);
+    }
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 400;
+    qe.cont = cont;
+    let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
+    if(vv.data.id == 0){
+      let values = vv.data.data.data.values;
+      if(values.length>0){
+        let orgcode = "";
+        for(var i=0;i<values.length;i++){
+          orgcode +=values[i].orgcode+";"
         }
+        orgcode = orgcode.substring(0,orgcode.length-1);
+        this.operaTjCell.currRecord.data.sorg = orgcode;
+        this.getOpera()
+      }else{
+        this.operaData=[];
+      }
+    }
+    this.clearCover();
+    this.localsearch.search(address);
+  }
+  //搜索返回结果
+  localSearchResult(result: any) {
+    //根据返回类型解析搜索结果
+    switch (parseInt(result.getResultType())) {
+      case 1:
+        //解析点数据结果
+        this.pois(result.getPois());
+        break;
+      case 3:
+        //解析行政区划边界
+        this.area(result.getArea());
+        break;
+    }
+  }
+  //行政区
+  area(obj: any) {
+    if (obj) {
+      if(obj.points){
+        //坐标数组，设置最佳比例尺时会用到
+            var pointsArr = [];
+            var points = obj.points;
+            for (var i = 0; i < points.length; i++) {
+                var regionLngLats = [];
+                var regionArr = points[i].region.split(",");
+                for (var m = 0; m < regionArr.length; m++) {
+                    var lnglatArr = regionArr[m].split(" ");
+                    var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+                    regionLngLats.push(lnglat);
+                    pointsArr.push(lnglat);
+                }
+                //创建线对象
+                var line = new T.Polyline(regionLngLats, {
+                    color: "blue",
+                    weight: 3,
+                    opacity: 1,
+                    lineStyle: "dashed"
+                });
+                //向地图上添加线
+                this.tMap.addOverLay(line);
+            }
+            //显示最佳比例尺
+            this.tMap.setViewport(pointsArr);
+      }
+      if(obj.lonlat){
+        var regionArr = obj.lonlat.split(",");
+        this.tMap.panTo(new T.LngLat(regionArr[0], regionArr[1]));
       }
     }
   }
-  /**
-   * 创建作业区文字说明
-   */
-  makeOperaLableTXT(d1: any, t1: any) {
-    if (d1) {
-      var co = "";
-      co =
-        d1.id +
-        "<br/>" +
-        d1.name +
-        "<br/>" +
-        d1.township +
-        "<br/>" +
-        d1.address;
-      if (d1.area != 0) {
-        co += "<br/>面积：" + d1.area + "亩";
+  //点
+  pois(obj:any) {
+    if (obj) {
+      //坐标数组，设置最佳比例尺时会用到
+      var zoomArr = [];
+      for (var i = 0; i < obj.length; i++) {
+          //闭包
+          (function (i) {
+              //坐标
+              var lnglatArr = obj[i].lonlat.split(" ");
+              var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+              zoomArr.push(lnglat);
+          })(i);
       }
-      var label = new T.Label({
-        text: co,
-        position: t1.center,
-        offset: new T.Point(-50, -50)
-      });
-      label.setBackgroundColor(null);
-      return label;
-    } else {
-      return null;
+      //显示地图的最佳级别
+      this.tMap.setViewport(zoomArr);
     }
   }
-  /**
-   * 创建作业区
-   */
-  makeOpera(d1: any) {
-    if (d1) {
-      let boundary1 = d1.boundary1;
-      let boundary = boundary1.split(";");
-      var points = [];
-      for (var j = 0; j < boundary.length; j++) {
-        let poin = boundary[j].split(",");
-        if (poin.length >= 2) {
-          points.push(new T.LngLat(poin[0], poin[1]));
-        }
-      }
-      //创建面对象
-      var polygon = new T.Polygon(points, {
-        color: "blue",
-        weight: 3,
-        opacity: 0.5,
-        fillColor: d1.color,
-        fillOpacity: 0.5
-      });
-      return [polygon, points];
-    } else {
-      return null;
-    }
-  }
+  /*********** END *************/
+
   async getCell(cellid: string) {
     let res = await tools.getCCellsParams(cellid);
     let rtn: any = res.data;
