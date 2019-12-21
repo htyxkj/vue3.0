@@ -23,6 +23,8 @@
                                 <el-button icon="el-icon-video-play" circle @click="start"></el-button>
                                 <!-- 暂停 -->
                                 <el-button icon="el-icon-video-pause" circle @click="stop"></el-button>
+                                <!-- 快进 -->
+                                <el-button icon="el-icon-video-pause" circle @click="fastForward(forward++)"></el-button>
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="areaBtn" @click="areaBtnClick">
@@ -44,20 +46,24 @@
                         </el-main>
                         <!-- 右侧隐藏区域 -->
                         <el-aside :width="operaWidth+'px'">
-                            <div>
-                                <!-- <vxe-table
-                    border
-                    ref="xTable1"
-                    @select-change="selectChangeEvent"
-                    :data="tableData">
-                    <vxe-table-column type="checkbox" width="40"></vxe-table-column>
-                    <vxe-table-column field="speedtime1" title="时间" width="110"></vxe-table-column>
-                    <vxe-table-column field="speed" title="速度" width="60"></vxe-table-column>
-                    <vxe-table-column field="height" title="高度" width="60"></vxe-table-column>
-                    <vxe-table-column field="flow" title="瞬时流量" width="80"></vxe-table-column>
-                    <vxe-table-column field="sumfolw " title="累计流量" width="80"></vxe-table-column>
-                                </vxe-table>-->
-                            </div>
+                            <el-row style="width:100%">
+                                <el-col :span="12">
+                                    <div ref="speedChart" style="height:200px;background-color:#ffffff;width:195px;"></div> 
+                                </el-col>
+                                <el-col :span="12">
+                                    <div ref="pressureChart" style="height:200px;background-color:#ffffff;width:195px;"></div> 
+                                </el-col>
+                            </el-row>
+                            <el-row style="width:100%">
+                                <el-col :span="24">
+                                    <div ref="flowChart" style="height:200px;background-color:#ffffff;width:390px;"></div> 
+                                </el-col>
+                            </el-row>
+                            <el-row style="width:100%">
+                                <el-col :span="24">
+                                   <div ref="heightChart" style="height:200px;background-color:#ffffff;width:390px;"></div> 
+                                </el-col>
+                            </el-row>
                         </el-aside>
                     </el-container>
                 </el-container>
@@ -101,6 +107,7 @@ import bMap from "@/components/map/MyBaiMap.vue";
 import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
+import echarts from 'echarts'; 
 @Component({
     components: {
         tMap,
@@ -131,7 +138,23 @@ export default class OperatingArea extends Vue {
     @Provide() flightBeltWidth:number = 45;//航带宽度 米
     @Provide() trackColor:string = "#C00000";//航迹颜色
 
+    @Provide() speedChart:any = null;//速度仪表盘对象
+    @Provide() speedChartOption:any = null;//速度数据
 
+    @Provide() pressureChart:any = null;//压强仪表盘对象
+    @Provide() pressureChartOption:any = null;//压强仪表盘对象
+
+    @Provide() flowChart:any = null;//流量图对象
+    @Provide() flowChartOption:any = null;
+    @Provide() flowChartData:any = [];//数据
+
+    @Provide() heightChart:any = null;//高度图对象
+    @Provide() heightChartOption:any = null;//
+    @Provide() heightChartData:any = [];//数据
+
+    @Provide() interval:number = 1000;//数据上报间隔
+
+    @Provide() forward:number = 1;//快进倍数
 
     @Provide() expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
     @Provide() keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
@@ -178,6 +201,110 @@ export default class OperatingArea extends Vue {
             this.tMap = refT.getMap();
             this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
         }
+        this.speedChart = echarts.init(this.$refs.speedChart as HTMLCanvasElement); 
+        this.speedChartOption  = { series: [{
+            name: '飞行速度',
+            type: 'gauge',
+            axisLine: {
+                lineStyle: {
+                    width: 8 // 这个是修改宽度的属性
+                }
+            },splitLine:{
+                length:12
+            },
+            pointer:{
+                width:4
+            },
+            max: 220,
+            detail: {formatter:'{value}km/h',fontSize:12},
+            data: [{value: 0, name: '速度'}]}]};
+        this.speedChart.setOption(this.speedChartOption);  
+
+        this.pressureChart = echarts.init(this.$refs.pressureChart as HTMLCanvasElement); 
+        this.pressureChartOption  = { series: [{
+            name: '喷雾压强',
+            type: 'gauge', 
+           axisLine: {
+                lineStyle: {
+                    width: 8 // 这个是修改宽度的属性
+                }
+            },splitLine:{
+                length:12
+            },
+            pointer:{
+                width:4
+            },
+            detail: {formatter:'{value}Kpa',fontSize:12},
+            data: [{value: 0, name: 'Kpa'}]}]};
+        this.pressureChart.setOption(this.pressureChartOption);  
+
+        let datanow = new Date();
+
+        this.heightChart = echarts.init(this.$refs.heightChart as HTMLCanvasElement); 
+        this.heightChartOption = {
+            title: {
+                text: '海拔高度'
+            },
+            xAxis: {
+                type: 'time',
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                splitLine: {
+                    show: false
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                data: [{
+                    name:datanow,
+                    value:[
+                        0
+                    ]}
+                ]
+            }]
+        };
+        this.heightChart.setOption(this.heightChartOption);  
+
+        this.flowChart = echarts.init(this.$refs.flowChart as HTMLCanvasElement); 
+        this.flowChartOption= {
+            title: {
+                text: '瞬时流量'
+            },
+            xAxis: {
+                type: 'time',
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                splitLine: {
+                    show: false
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                data: [{
+                    name:datanow,
+                    value:[
+                        0
+                    ]}
+                ]
+            }]
+        };
+        this.flowChart.setOption(this.flowChartOption);  
     }
     mapChnage() {
         console.log("地图切换！");
@@ -217,7 +344,7 @@ export default class OperatingArea extends Vue {
         this.operaBtnOpen = !this.operaBtnOpen;
         if (this.operaBtnOpen) {
             //进行打开右侧作业区开关
-            while (this.operaWidth <= 450) {
+            while (this.operaWidth <= 400) {
                 this.operaWidth++;
             }
         } else {
@@ -273,7 +400,7 @@ export default class OperatingArea extends Vue {
             if (cc.data.id == 0) {
                 let values = cc.data.data.data.values;
                 this.taskData = values;
-                let opt:any = {interval: 1000,dynamicLine: true,
+                let opt:any = {interval: this.interval,dynamicLine: true,
                                 polylinestyle: {color: "#2C64A7", weight: 3, opacity: 0.9},Datas: [],
                                 passOneNode:this.passOneNode}
                 for(var i=0;i<values.length;i++){
@@ -333,6 +460,39 @@ export default class OperatingArea extends Vue {
             }else{
                 this.sprayBreak = true;
             }
+            let speed = data.speed;
+            this.speedChartOption.series[0].data[0].value = speed;
+            this.speedChart.setOption(this.speedChartOption, true);
+            //压强暂时没有
+
+            //高度
+            let hData = {
+                name:data.speedtime1,
+                value:[data.speedtime,data.height],
+            };
+            if(this.heightChartData.length>=5){
+                this.heightChartData.shift();
+            }
+            this.heightChartData.push(hData);
+            this.heightChart.setOption({
+                series: [{
+                    data: this.heightChartData
+                }]
+            });
+            //流量
+            let fData = {
+                name:data.speedtime1,
+                value:[data.speedtime,data.flow],
+            };
+            if(this.flowChartData.length>=5){
+                this.flowChartData.shift();
+            }
+            this.flowChartData.push(fData);
+            this.flowChart.setOption({
+                series: [{
+                    data: this.flowChartData
+                }]
+            });
         }
 
         if(index >= length){//最后一点
@@ -365,6 +525,19 @@ export default class OperatingArea extends Vue {
     stop(){
         if( this.taskTrack)
             this.taskTrack.pause()
+    }
+    //快进
+    fastForward(forward:number){
+        if(this.taskTrack){
+            if(forward >=5){
+                this.forward =1;
+                forward =1
+            }
+            let interval = this.interval/forward;
+            this.taskTrack.options.interval= interval
+            this.stop();
+            this.start();
+        }
     }
     /**
      * 页面关闭后
