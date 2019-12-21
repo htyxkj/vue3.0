@@ -99,6 +99,8 @@ import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
 import { T } from "@/components/map/js/TMap";
+import { TMapUtils } from "./class/TMapUtils";
+let TMapUt = TMapUtils.TMapUt;
 @Component({
     components: {
         tMap,
@@ -144,9 +146,9 @@ export default class TaskRoutePlanning extends Vue {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
         }
-        this.taskTJCell = await this.getCell(this.taskTJCellID); //任务条件对象
+        this.taskTJCell = await TMapUt.getCell(this.taskTJCellID); //任务条件对象
         this.taskTJCell.createRecord();
-        this.taskCell = await this.getCell(this.taskCellID); //任务对象
+        this.taskCell = await TMapUt.getCell(this.taskCellID); //任务对象
     }
     mounted() {
         if (this.$refs.TMap) {
@@ -261,7 +263,7 @@ export default class TaskRoutePlanning extends Vue {
             .then(() => {
                 this.clearCover();
                 this.editTaskIndex=index;
-               this.routePlanning0(index,true);
+               this.routePlanning0(index);
             })
             .catch(() => {
                 
@@ -269,7 +271,7 @@ export default class TaskRoutePlanning extends Vue {
         }else{
             this.clearCover();
             this.editTaskIndex=index;
-            this.routePlanning0(index,true);
+            this.routePlanning0(index);
         }
     }
     // 查看路线
@@ -277,149 +279,44 @@ export default class TaskRoutePlanning extends Vue {
         let data = this.taskData[index].data
         let oaid = data.oaid;
         let hoaid = data.hoaid;
-        if(oaid){
-            let aid = oaid.split(";")
-            let points:any = [];
-            for(var i=0;i<aid.length;i++){
-                let cc = await this.getOpera(aid[i]);
-                points = points.concat(cc);
-                this.getOperaBr(aid[i]);
-            }
+
+        let points:any = await TMapUt.getOpera(oaid,this.tMap);
+        if(points && points.length>0){
             let t1 = this.tMap.getViewport(points);
             this.tMap.panTo(t1.center, t1.zoom);
         }
-        if(hoaid){
-            let haid = hoaid.split(";")
-            for(var i=0;i<haid.length;i++){
-                this.getOpera(haid[i]);
-            }
-        }
+        TMapUt.getOperaBr(oaid,this.tMap);
+        TMapUt.getOpera(hoaid,this.tMap);
         let route = data.route;
-        if(route && route.length>1){//存在修改线路
-            let points:any = [];
-            let boundary = route.split(";");
-            for (var j = 0; j < boundary.length; j++) {
-                let poin = boundary[j].split(",");
-                if (poin.length >= 2) {
-                points.push(new T.LngLat(poin[0], poin[1]));
-                }
-            }
-            //创建线对象
-            this.editLine = new T.Polyline(points);
-            //向地图上添加线
-            this.tMap.addOverLay(this.editLine); 
-        }
+        TMapUt.makeRoute(data.route,"",this.tMap)
     }
-    async routePlanning0(index:any,editor:Boolean){
+    async routePlanning0(index:any){
         let data = this.taskData[index].data
         this.editTaskId = data.sid;
         this.editTaskState = false;
         let oaid = data.oaid;
         let hoaid = data.hoaid;
-        if(oaid){
-            let aid = oaid.split(";")
-            let points:any = [];
-            for(var i=0;i<aid.length;i++){
-                let cc = await this.getOpera(aid[i]);
-                points = points.concat(cc);
-                this.getOperaBr(aid[i]);
-            }
+        TMapUt.getOperaBr(oaid,this.tMap);
+        let points:any = await TMapUt.getOpera(oaid,this.tMap);
+        if(points && points.length>0){
             let t1 = this.tMap.getViewport(points);
             this.tMap.panTo(t1.center, t1.zoom);
         }
-        if(hoaid){
-            let haid = hoaid.split(";")
-            for(var i=0;i<haid.length;i++){
-                this.getOpera(haid[i]);
-            }
-        }
+        TMapUt.getOpera(hoaid,this.tMap);
         let route = data.route;
         if(route && route.length>1){//存在修改线路
-            let points:any = [];
-            let boundary = route.split(";");
-            for (var j = 0; j < boundary.length; j++) {
-                let poin = boundary[j].split(",");
-                if (poin.length >= 2) {
-                points.push(new T.LngLat(poin[0], poin[1]));
-                }
-            }
             //创建线对象
-            this.editLine = new T.Polyline(points);
-            //向地图上添加线
-            this.tMap.addOverLay(this.editLine);
-            if(editor){
-                // 开启编辑
-                this.editLine.enableEdit();
-            }
-            
+            this.editLine = await TMapUt.makeRoute(data.route,"",this.tMap)
+            // 开启编辑
+            this.editLine.enableEdit();
         }else{//不存在从新画线路
-            var config = {
-                showLabel: false
-            };
             //创建标注工具对象
             if(!this.lineTool){
-                this.lineTool = new T.PolylineTool(this.tMap, config);
+                this.lineTool = new T.PolylineTool(this.tMap);
                 this.lineTool.addEventListener("draw", this.lineToolEnd);
             }
+            this.lineTool.close();
             this.lineTool.open()
-        }
-    }
-
-    //获取作业区、航空区
-    async getOpera(oid:any){
-        let oneCont =[];
-        let allCont = [];
-        let cont = "";
-        let qCont = new QueryCont('id', oid, 12);
-        qCont.setContrast(0);
-        oneCont.push(qCont);
-        if (oneCont.length != 0) {
-        allCont.push(oneCont);
-        cont = "~" + JSON.stringify(allCont);
-        }
-        let qe: QueryEntity = new QueryEntity("", "");
-        qe.page.currPage = 1;
-        qe.page.pageSize = 400;
-        qe.cont = cont;
-        let vv = await tools.getBipInsAidInfo("ROUTEOPERA", 210, qe);
-        let points:any =[];
-        if(vv.data.id == 0){
-            let values = vv.data.data.data.values;
-            for(var i =0;i<values.length;i++){
-                let vl = values[i];
-                let cc = this.markSurface(vl.boundary1,vl.color)
-                points = points.concat(cc);
-            }
-        }
-        return points;
-    }
-    //获取避让区域
-    async getOperaBr(oid:any){
-        let oneCont =[];
-        let allCont = [];
-        let cont = "";
-        let qCont = new QueryCont('oid', oid, 12);
-        qCont.setContrast(0);
-        oneCont.push(qCont);
-        if (oneCont.length != 0) {
-        allCont.push(oneCont);
-        cont = "~" + JSON.stringify(allCont);
-        }
-        let qe: QueryEntity = new QueryEntity("", "");
-        qe.page.currPage = 1;
-        qe.page.pageSize = 400;
-        qe.cont = cont;
-        let vv = await tools.getBipInsAidInfo("ROUTEOPERAA", 210, qe);
-        if(vv.data.id == 0){
-            let values = vv.data.data.data.values;
-            for(var i =0;i<values.length;i++){
-                let vl = values[i];
-                if(vl.type ==1){
-                    this.markSurface(vl.avoid,vl.color)
-                }else{
-                    this.markpoint(vl.avoid)
-                }
-            }
         }
     }
     /**
@@ -455,63 +352,6 @@ export default class TaskRoutePlanning extends Vue {
     pageChange(page: number) {
         this.taskCellPage.currPage = page;
         this.getTask();
-    }
-    //画面
-    markSurface(lngLat:string,color:string){
-        let boundary = lngLat.split(";");
-        var points = [];
-        for (var j = 0; j < boundary.length; j++) {
-            let poin = boundary[j].split(",");
-            if (poin.length >= 2) {
-            points.push(new T.LngLat(poin[0], poin[1]));
-            }
-        }
-        //创建面对象
-        var polygon = new T.Polygon(points, {
-            color: "blue",
-            weight: 3,
-            opacity: 0.5,
-            fillColor: color,
-            fillOpacity: 0.5
-        });
-        this.tMap.addOverLay(polygon);
-        return points;
-    }
-    //画点
-    markpoint(lngLat:string){
-        var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]));
-        //向地图上添加标注
-        this.tMap.addOverLay(marker);
-    }
-    async getCell(cellid: string) {
-        let res = await tools.getCCellsParams(cellid);
-        let rtn: any = res.data;
-        if (rtn.id == 0) {
-            let kn: Array<Cells> = rtn.data.layCels;
-            let cells = kn;
-            return new CDataSet(cells[0]);
-        } else {
-            return new CDataSet("");
-        }
-    }
-    checkNotNull(cds: CDataSet): boolean {
-        let bok = true;
-        cds.ccells.cels.forEach(item => {
-            if (item.unNull && bok) {
-                let vl = null;
-                let hide: any = [];
-                if (cds.currRecord.data[item.id] != null)
-                    vl = cds.currRecord.data[item.id] + "";
-                if (!vl && hide.indexOf(item.id) == -1) {
-                    this.$notify.warning(
-                        "【" + item.labelString + "】不能为空!"
-                    );
-                    bok = false;
-                    return false;
-                }
-            }
-        });
-        return bok;
     }
     @Watch("height")
     heightChange() {
