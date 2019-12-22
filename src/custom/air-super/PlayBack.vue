@@ -133,10 +133,11 @@ export default class OperatingArea extends Vue {
     @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#0000FF"//行带颜色
+    @Provide() flightBeltColor:string = "#382518"//行带颜色
     @Provide() flightBeltOpacity:number = 0.5;//航道透明度
     @Provide() flightBeltWidth:number = 45;//航带宽度 米
-    @Provide() trackColor:string = "#C00000";//航迹颜色
+    @Provide() trackColor:string = "#CEFF00";//航迹颜色
+    @Provide() noFlowColor:string = "#C00000";//未喷洒农药时的轨迹颜色
 
     @Provide() speedChart:any = null;//速度仪表盘对象
     @Provide() speedChartOption:any = null;//速度数据
@@ -156,37 +157,10 @@ export default class OperatingArea extends Vue {
 
     @Provide() forward:number = 1;//快进倍数
 
-    @Provide() expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
-    @Provide() keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
-    @Provide() expandedLevel: any = -1; //默认展开级次数
-    @Provide() fatherID: any = "parid"; //树状结构上下级关系字段
-    @Provide() defaultProps: any = { label: "name" };
 
     @Provide() operaWidth: number = 0; //右侧作业区宽度
     @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
-
-    @Provide() polygonTool: any = null; //天地图画面对象
-    @Provide() localsearch: any = null; //地址搜索对象
-    @Provide() selCityLine: any = null; //搜索的地址边界线
-    @Provide() addressInput: any = null; //地址框
-
-    @Provide() showOperaDia: boolean = false; //是否显示飞防任务查找框
-    @Provide() operaData: any = []; //作业区数据
-    @Provide() operaJSON: any = {}; //k v 格式作业区
-    @Provide() checkOperaList: any = []; //作业区勾选数据
-    @Provide() operaCellPage: any = {
-        currPage: 1,
-        index: 0,
-        pageSize: 20,
-        total: 0
-    }; //作业区查询分页数据
-
-    @Provide() mapOpera: any = {}; //地图作业区覆盖集合
-    @Provide() mapOperaTxt: any = {}; //地图作业区文字说明集合
-
-    @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
-    @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
-    @Provide() editKid: any = null; //当前正在进行保存的kid 已经弹出保存框了
+ 
     @Provide() tableData: any = null;
     async created() {
         if (this.height) {
@@ -201,110 +175,8 @@ export default class OperatingArea extends Vue {
             this.tMap = refT.getMap();
             this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
         }
-        this.speedChart = echarts.init(this.$refs.speedChart as HTMLCanvasElement); 
-        this.speedChartOption  = { series: [{
-            name: '飞行速度',
-            type: 'gauge',
-            axisLine: {
-                lineStyle: {
-                    width: 8 // 这个是修改宽度的属性
-                }
-            },splitLine:{
-                length:12
-            },
-            pointer:{
-                width:4
-            },
-            max: 220,
-            detail: {formatter:'{value}km/h',fontSize:12},
-            data: [{value: 0, name: '速度'}]}]};
-        this.speedChart.setOption(this.speedChartOption);  
-
-        this.pressureChart = echarts.init(this.$refs.pressureChart as HTMLCanvasElement); 
-        this.pressureChartOption  = { series: [{
-            name: '喷雾压强',
-            type: 'gauge', 
-           axisLine: {
-                lineStyle: {
-                    width: 8 // 这个是修改宽度的属性
-                }
-            },splitLine:{
-                length:12
-            },
-            pointer:{
-                width:4
-            },
-            detail: {formatter:'{value}Kpa',fontSize:12},
-            data: [{value: 0, name: 'Kpa'}]}]};
-        this.pressureChart.setOption(this.pressureChartOption);  
-
-        let datanow = new Date();
-
-        this.heightChart = echarts.init(this.$refs.heightChart as HTMLCanvasElement); 
-        this.heightChartOption = {
-            title: {
-                text: '海拔高度'
-            },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
-                }
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [{
-                    name:datanow,
-                    value:[
-                        0
-                    ]}
-                ]
-            }]
-        };
-        this.heightChart.setOption(this.heightChartOption);  
-
-        this.flowChart = echarts.init(this.$refs.flowChart as HTMLCanvasElement); 
-        this.flowChartOption= {
-            title: {
-                text: '瞬时流量'
-            },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
-                }
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [{
-                    name:datanow,
-                    value:[
-                        0
-                    ]}
-                ]
-            }]
-        };
-        this.flowChart.setOption(this.flowChartOption);  
+        //初始化图表参数
+        this.initOptions();
     }
     mapChnage() {
         console.log("地图切换！");
@@ -401,7 +273,7 @@ export default class OperatingArea extends Vue {
                 let values = cc.data.data.data.values;
                 this.taskData = values;
                 let opt:any = {interval: this.interval,dynamicLine: true,
-                                polylinestyle: {color: "#2C64A7", weight: 3, opacity: 0.9},Datas: [],
+                                polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
                                 passOneNode:this.passOneNode}
                 for(var i=0;i<values.length;i++){
                     let v = values[i];
@@ -441,7 +313,7 @@ export default class OperatingArea extends Vue {
                     this.tMap.addOverLay(newLine0);
                     this.sprayLine0.push(newLine0)
 
-                    let opts1 = {color:this.trackColor,weight:3,opacity:1};
+                    let opts1 = {color:this.trackColor,weight:1,opacity:1};
                     var newLine1 = new T.Polyline(points,opts1);
                     this.tMap.addOverLay(newLine1);     
                     this.sprayLine1.push(newLine1)
@@ -546,6 +418,117 @@ export default class OperatingArea extends Vue {
         if(this.taskTrack){
             this.taskTrack.clear()
         }
+    }
+    /**
+     * 初始化右侧图表
+     */
+    initOptions(){
+        this.speedChart = echarts.init(this.$refs.speedChart as HTMLCanvasElement); 
+        this.speedChartOption  = { series: [{
+            name: '飞行速度',
+            type: 'gauge',
+            axisLine: {
+                lineStyle: {
+                    width: 8 // 这个是修改宽度的属性
+                }
+            },splitLine:{
+                length:12
+            },
+            pointer:{
+                width:4
+            },
+            max: 220,
+            detail: {formatter:'{value}km/h',fontSize:12},
+            data: [{value: 0, name: '速度'}]}]};
+        this.speedChart.setOption(this.speedChartOption);  
+
+        this.pressureChart = echarts.init(this.$refs.pressureChart as HTMLCanvasElement); 
+        this.pressureChartOption  = { series: [{
+            name: '喷雾压强',
+            type: 'gauge', 
+           axisLine: {
+                lineStyle: {
+                    width: 8 // 这个是修改宽度的属性
+                }
+            },splitLine:{
+                length:12
+            },
+            pointer:{
+                width:4
+            },
+            detail: {formatter:'{value}Kpa',fontSize:12},
+            data: [{value: 0, name: 'Kpa'}]}]};
+        this.pressureChart.setOption(this.pressureChartOption);  
+
+        let datanow = new Date();
+
+        this.heightChart = echarts.init(this.$refs.heightChart as HTMLCanvasElement); 
+        this.heightChartOption = {
+            title: {
+                text: '海拔高度'
+            },
+            xAxis: {
+                type: 'time',
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                splitLine: {
+                    show: false
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                data: [{
+                    name:datanow,
+                    value:[
+                        datanow,
+                        0
+                    ]}
+                ]
+            }]
+        };
+        this.heightChart.setOption(this.heightChartOption);  
+
+        this.flowChart = echarts.init(this.$refs.flowChart as HTMLCanvasElement); 
+        this.flowChartOption= {
+            title: {
+                text: '瞬时流量'
+            },
+            xAxis: {
+                type: 'time',
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                splitLine: {
+                    show: false
+                }
+            },
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                data: [{
+                    name:datanow,
+                    value:[
+                        datanow,
+                        0
+                    ]}
+                ]
+            }]
+        };
+        this.flowChart.setOption(this.flowChartOption);  
     }
     @Watch("height")
     heightChange() {
