@@ -1,5 +1,5 @@
 <template>
-    <div id="tMapDiv" class="TMap"></div>
+    <div :id="tMapDiv" class="TMap"></div>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
@@ -14,6 +14,7 @@ import {T} from "./js/TMap"
 export default class MyTianMap extends Vue {
     @Provide() tMap:any=null;
     @Provide() tZoom:number=12;
+    @Provide() tMapDiv:any= "MAP"+new Date().getTime();
     created(){
 
     }
@@ -27,7 +28,8 @@ export default class MyTianMap extends Vue {
         // var lay = new T.TileLayer(imageURL, {minZoom: 1, maxZoom: 18,zIndex:6});
         // this.tMap = new T.Map('tMapDiv', {layers: [lay]});
         //初始化地图对象
-        this.tMap = new T.Map("tMapDiv");
+        this.tMap = new T.Map(this.tMapDiv,{projection:"EPSG:4326"});
+        // this.tMap = new T.Map(this.tMapDiv);
         //设置显示地图的中心点和级别
         this.tMap.centerAndZoom(new T.LngLat(116.40969, 39.89945), this.tZoom);
         //创建缩放平移控件对象

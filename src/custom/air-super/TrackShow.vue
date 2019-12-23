@@ -216,6 +216,7 @@ export default class TrackShow extends Vue {
                 }
             }
         }
+        this.taskData=[];
         let t1 = this.tMap.getViewport(po);
         this.tMap.panTo(t1.center, t1.zoom);
         this.zoomend();

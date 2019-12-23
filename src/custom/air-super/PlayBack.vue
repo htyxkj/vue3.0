@@ -298,7 +298,7 @@ export default class OperatingArea extends Vue {
         if(this.isFollow){//画面跟随
             this.tMap.panTo(LngLat);
         }
-        let data = this.taskData[index];
+        let data = this.taskData[index-1];
         if(data){
             let flow = data.flow;
             if(flow>0){//有流量去划线
@@ -366,7 +366,7 @@ export default class OperatingArea extends Vue {
                 }]
             });
         }
-
+        this.taskData[index-1] = null;
         if(index >= length){//最后一点
             this.taskTrack.pause()
         }
