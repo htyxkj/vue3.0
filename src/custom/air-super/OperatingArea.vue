@@ -12,7 +12,7 @@
               <el-row>
                 <el-col :span="12">
                   <el-input style="width:300px" size="mini" placeholder="请输入行政名称如：北京" v-model="addressInput" class="input-with-select" >
-                    <el-button slot="append" size="mini" icon="el-icon-search" @click.native="addresSel(addressInput)" ></el-button>
+                    <el-button slot="append" size="mini" icon="el-icon-search" @click.native="addresSel(addressInput,1)" ></el-button>
                   </el-input>
                 </el-col>
                 <el-col :span="12">
@@ -43,7 +43,7 @@
           </el-header>
           <el-container class="padding0 mapMain">
             <el-aside :width="areaWidth+'px'">
-              <el-tree :node-key="keyID" lazy :load="loadNode" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="expandedKeys" ></el-tree>
+              <el-tree :node-key="keyID" lazy :load="loadNode" check-on-click-node :check-strictly="false" :props="defaultProps"  show-checkbox @check-change="handleCheckChange" :default-expanded-keys="expandedKeys" ></el-tree>
             </el-aside>
             <el-main class="padding0" style="overflow: hidden;position: relative;">
               <t-map ref="TMap" class="myTMap"></t-map>
@@ -237,6 +237,8 @@ export default class OperatingArea extends Vue {
   @Provide() operaPolygon:any=null;//天地图作业区 画面对象
   @Provide() operaLine:any=null;//天地图作业区 画线对象
 
+  @Provide() areaMap:any={};//行政区域
+  @Provide() treeCheckId:any="";//当前树勾选操作节点
 
   @Provide() operaBrPolygon:any=null;//天地图避让区 画面对象
   @Provide() operaBrLine:any=null;//天地图避让区 画线对象
@@ -1180,6 +1182,22 @@ export default class OperatingArea extends Vue {
       return null;
     }
   }
+    handleCheckChange(data:any, checked:any, indeterminate:any) {
+        console.log(data)
+        let id = data[this.keyID];
+        this.treeCheckId = id;
+        if(checked == false){
+            if(this.areaMap[id]){
+                let area = this.areaMap[id]
+                for(var i=0;i<area.length;i++){
+                    this.tMap.removeOverLay(area[i])
+                }
+                this.areaMap[id]=[];
+            }
+        }else{
+            this.handleNodeClick(data,null,null)
+        }
+    }
   /**
    * 节点点击事件
    */
@@ -1212,17 +1230,19 @@ export default class OperatingArea extends Vue {
         this.operaTjCell.currRecord.data.sorg = orgcode;
         this.getOpera()
       }else{
-        this.operaData=[];
-        this.clearCover();
+        // this.operaData=[];
+        // this.clearCover();
       }
     }
-    this.addresSel(data.name);
+    this.addresSel(data.name,0);
   }
   /*********** END *************/
 
 
   /**************** 地址定位 **************/  
-  async addresSel(address: string) {
+  async addresSel(address: string,type:number) {
+    if(type == 1)
+        this.treeCheckId = null;
     if (!this.localsearch) {
       var config = {
         pageCapacity: 10, //每页显示的数量
@@ -1260,7 +1280,6 @@ export default class OperatingArea extends Vue {
         this.operaData=[];
       }
     }
-    this.clearCover();
     this.localsearch.search(address);
   }
   //搜索返回结果
@@ -1280,10 +1299,17 @@ export default class OperatingArea extends Vue {
   //行政区
   area(obj: any) {
     if (obj) {
+      let area = [];
       if(obj.points){
         //坐标数组，设置最佳比例尺时会用到
             var pointsArr = [];
             var points = obj.points;
+            let area1 = this.areaMap[this.treeCheckId]
+            if(area1){
+                for(var i=0;i<area.length;i++){
+                    this.tMap.removeOverLay(area1[i])
+                }
+            }
             for (var i = 0; i < points.length; i++) {
                 var regionLngLats = [];
                 var regionArr = points[i].region.split(",");
@@ -1302,6 +1328,10 @@ export default class OperatingArea extends Vue {
                 });
                 //向地图上添加线
                 this.tMap.addOverLay(line);
+                area.push(line)
+            }
+            if(this.treeCheckId){
+                this.areaMap[this.treeCheckId] = area;
             }
             //显示最佳比例尺
             this.tMap.setViewport(pointsArr);
