@@ -54,6 +54,7 @@
         <div>
           <el-tabs v-model="activeName1" type="card">
             <el-tab-pane label="航空识别区" name="first" :style="activeName1Style">
+              <el-checkbox :indeterminate="sbqIsIndeterminate" v-model="sbqCheckAll" @change="sbqCheckAllChange">全选</el-checkbox>
               <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
                 <el-row v-for="(item,index) in operaSBQData" :key="index">
                   <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -91,6 +92,7 @@
             <el-tab-pane label="飞防作业区" name="second">
               <el-tabs v-model="activeName2" type="card">
                 <el-tab-pane label="春季" name="c" :style="activeName2Style">
+                  <el-checkbox :indeterminate="cIsIndeterminate" v-model="cCheckAll" @change="cCheckAllChange">全选</el-checkbox>
                   <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
                     <el-row v-for="(item,index) in operaCData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -143,6 +145,7 @@
                   </el-checkbox-group>
                 </el-tab-pane>
                 <el-tab-pane label="夏季" name="x" :style="activeName2Style">
+                  <el-checkbox :indeterminate="xIsIndeterminate" v-model="xCheckAll" @change="xCheckAllChange">全选</el-checkbox>
                   <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
                     <el-row v-for="(item,index) in operaXData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -195,6 +198,7 @@
                   </el-checkbox-group>                  
                 </el-tab-pane>
                 <el-tab-pane label="秋季" name="q" :style="activeName2Style">
+                  <el-checkbox :indeterminate="qIsIndeterminate" v-model="qCheckAll" @change="qCheckAllChange">全选</el-checkbox>
                   <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
                     <el-row v-for="(item,index) in operaQData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -337,6 +341,16 @@ export default class OperatingArea extends Vue {
   @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
   @Provide() activeName1: string = "first";
   @Provide() activeName2: string = "c";
+  @Provide() sbqCheckAll:boolean =false;
+  @Provide() sbqIsIndeterminate:boolean =true;
+  @Provide() cCheckAll:boolean =false;
+  @Provide() cIsIndeterminate:boolean =true;
+  @Provide() xCheckAll:boolean =false;
+  @Provide() xIsIndeterminate:boolean =true;
+  @Provide() qCheckAll:boolean =false;
+  @Provide() qIsIndeterminate:boolean =true;
+
+
   @Provide() tMap: any = null;
   @Provide() tZoom: number = 12;
   @Provide() loading:number = 0;
@@ -364,7 +378,13 @@ export default class OperatingArea extends Vue {
   @Provide() operaXData: any = []; //作业区数据   夏季
   @Provide() operaQData: any = []; //作业区数据   秋季
   @Provide() operaJSON: any = {}; //k v 格式作业区
+  
   @Provide() checkOperaList: any = []; //作业区勾选数据
+  @Provide() sbqCheckOperaList: any = []; //识别区勾选数据
+  @Provide() cCheckOperaList: any = []; //识别区勾选数据
+  @Provide() xCheckOperaList: any = []; //识别区勾选数据
+  @Provide() qCheckOperaList: any = []; //识别区勾选数据
+
   @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 2000,total: 0}; //作业区查询分页数据
 
   @Provide() operaPolygon:any=null;//天地图作业区 画面对象
@@ -1229,6 +1249,74 @@ export default class OperatingArea extends Vue {
       this.operaSaveCell.currRecord.data.boundary1 = boundary1;
       this.showSaveOperaDia = true;
     }
+  }
+  /** 
+   * 航空识别区全选
+  */
+  sbqCheckAllChange(val:any){
+    if(val){
+      for(var i=0;i<this.operaSBQData.length;i++){
+        this.sbqCheckOperaList.push(this.operaSBQData[i].data.kid)
+      }
+    }else{
+      this.sbqCheckOperaList = [];
+    }
+    this.sbqIsIndeterminate = false;
+    this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.xCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.qCheckOperaList)
+    this.checkBoxChange(this.checkOperaList);
+  }
+  /** 
+   * 作业区全选  春
+  */
+  cCheckAllChange(val:any){
+    if(val){
+      for(var i=0;i<this.operaCData.length;i++){
+        this.cCheckOperaList.push(this.operaCData[i].data.kid)
+      }
+    }else{
+      this.cCheckOperaList = [];
+    }
+    this.cIsIndeterminate = false;
+    this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.xCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.qCheckOperaList)
+    this.checkBoxChange(this.checkOperaList);
+  }
+  /** 
+   * 作业区全选  夏
+  */
+  xCheckAllChange(val:any){
+    if(val){
+      for(var i=0;i<this.operaXData.length;i++){
+        this.xCheckOperaList.push(this.operaXData[i].data.kid)
+      }
+    }else{
+      this.xCheckOperaList = [];
+    }
+    this.xIsIndeterminate = false;
+    this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.xCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.qCheckOperaList)
+    this.checkBoxChange(this.checkOperaList);
+  }
+  /** 
+   * 作业区全选  秋
+  */
+  qCheckAllChange(val:any){
+    if(val){
+      for(var i=0;i<this.operaQData.length;i++){
+        this.qCheckOperaList.push(this.operaQData[i].data.kid)
+      }
+    }else{
+      this.qCheckOperaList = [];
+    }
+    this.sbqIsIndeterminate = false;
+    this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.xCheckOperaList)
+    this.checkOperaList = this.checkOperaList.concat(this.qCheckOperaList)
+    this.checkBoxChange(this.checkOperaList);
   }
   /**************** 地址定位 **************/  
 
