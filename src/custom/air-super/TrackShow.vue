@@ -7,8 +7,8 @@
                         <div class="nav-tools">
                             <!-- 搜索 -->
                             <el-button icon="el-icon-search" circle @click="showTaskTjCell =!showTaskTjCell"></el-button>
-                            <!-- 播放 -->
-                            <el-button icon="el-icon-video-play" circle @click="clearCover"></el-button>
+                            <!-- 清空 -->
+                            <el-button icon="el-icon-delete" circle @click="clearCover"></el-button>
                         </div>
                         <t-map ref="TMap" class="myTMap"></t-map>
                     </el-main>
@@ -90,7 +90,7 @@ export default class TrackShow extends Vue {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
         }
-        this.taskTjCell = await TMapUt.getCell("B07ATJ");
+        this.taskTjCell = await TMapUt.getCell("F0313TJ");
         this.taskTjCell.createRecord();
     }
     mounted() {
@@ -124,8 +124,9 @@ export default class TrackShow extends Vue {
                 return;
             }
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
-            let hoaid = this.taskTjCell.currRecord.data.hoadi;//航空识别区
+            let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
+            this.trackType = this.taskTjCell.currRecord.data.type;//航迹类型
             TMapUt.getOpera(oaid,this.tMap);//作业区
             TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             TMapUt.getOperaBr(oaid,this.tMap);//避让区
@@ -137,7 +138,7 @@ export default class TrackShow extends Vue {
             let tkid = this.taskTjCell.currRecord.data.sid;
             let bgtime = this.taskTjCell.currRecord.data.bgtime;
             let edtime = this.taskTjCell.currRecord.data.edtime;
-            let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"' and cast(longitude as NUMERIC)>0 and cast(latitude as NUMERIC)>0 ";
             qe.cont = cont;
             this.loading = !this.loading;
             this.showTaskTjCell = false;
@@ -149,6 +150,8 @@ export default class TrackShow extends Vue {
                 let values = cc.data.data.data.values;
                 this.taskData = values;
                 this.drawTrack();
+            }else{
+                this.loading = !this.loading;
             }
         } catch (error) {
             this.loading = !this.loading;
