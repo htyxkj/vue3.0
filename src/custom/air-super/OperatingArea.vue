@@ -1,135 +1,258 @@
 <template>
-  <div>
-    <el-tabs
-      v-model="selMap"
-      type="card"
-      @tab-click="mapChnage"
-      style="min-height: -webkit-fill-available">
-      <el-tab-pane :style="style" label="天地图" name="tianMap">
-        <el-container class="padding0" :style="style">
-          <el-header style="height:35px; padding-bottom:5px;" class="padding0">
-            <div>
-              <el-row>
-                <el-col :span="12">
-                  <el-input style="width:300px" size="mini" placeholder="请输入行政名称如：北京" v-model="addressInput" class="input-with-select" >
-                    <el-button slot="append" size="mini" icon="el-icon-search" @click.native="addresSel(addressInput,1)" ></el-button>
-                  </el-input>
-                </el-col>
-                <el-col :span="12">
-                    <div class="tools">
-                        <span class="tools-li">
-                            <el-dropdown trigger="click" @command="toolClick" size="mini" split-button >
-                                <span class="el-dropdown-link">工具</span>
-                                <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item command="1">作业区规划(面)</el-dropdown-item>
-                                <el-dropdown-item command="2">作业区规划(线)</el-dropdown-item>
-                                <!-- <el-dropdown-item command="0">航线规划</el-dropdown-item> -->
-                                <el-dropdown-item command="3">避让区规划(面)</el-dropdown-item>
-                                <el-dropdown-item command="4">避让区规划(线)</el-dropdown-item>
-                                <el-dropdown-item command="5">避让点</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
-                        </span>
-                        <span class="tools-li">
-                            <el-button  size="mini" icon="el-icon-delete" @click="clearCover">清空</el-button>
-                        </span>
-                        <span class="tools-li">
-                            <el-button size="mini" icon="el-icon-search" @click="showOperaDia =!showOperaDia">查找</el-button>
-                        </span>       
-                    </div>
-                </el-col>
-              </el-row>
-            </div>
-          </el-header>
-          <el-container class="padding0 mapMain">
-            <el-aside :width="areaWidth+'px'">
-              <el-tree :node-key="keyID" lazy :load="loadNode" check-on-click-node :check-strictly="false" :props="defaultProps"  show-checkbox @check-change="handleCheckChange" :default-expanded-keys="expandedKeys" ></el-tree>
-            </el-aside>
-            <el-main class="padding0" style="overflow: hidden;position: relative;">
-              <t-map ref="TMap" class="myTMap"></t-map>
-              <a class="areaBtn" @click="areaBtnClick">
-                <template v-if="areaBtnOpen">
-                  <i class="iconfont icon-bip-up"></i>
-                </template>
-                <template v-else>
-                  <i class="iconfont icon-bip-next"></i>
-                </template>
-              </a>
-              <a class="operaBtn" @click="operaBtnClick">
-                <template v-if="!operaBtnOpen">
-                  <i class="iconfont icon-bip-up"></i>
-                </template>
-                <template v-else>
-                  <i class="iconfont icon-bip-next"></i>
-                </template>
-              </a>
-            </el-main>
-            <el-aside :width="operaWidth+'px'">
-              <div>
-                <el-checkbox-group v-model="checkOperaList" @change="checkBoxChange">
-                  <el-row v-for="(item,index) in operaData" :key="index">
-                    <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
-                      <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
-                        <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
-                      </el-col>
-                      <el-col :span="20" style="height:60px;">
-                        <el-row>
-                          <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
-                          <el-col
-                            :span="24"
-                            style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;"
-                          >{{item.data.address}}</el-col>
-                        </el-row>
-                        <el-row>
-                          <el-col :span="24" > 
-                            <el-row style="textAlign:center;">
-                              <el-col :span="6">
-                                <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                              </el-col>
-                              <el-col :span="6">
-                                  <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
-                              </el-col>
-                              <el-col :span="6">
-                                <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
-                              </el-col>
-                              <el-col :span="6">
-                                <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
-                              </el-col>
-                            </el-row>                   
-                          </el-col>
-                        </el-row>
-                      </el-col>
+  <div v-loading="loading">
+    <el-container class="padding0" :style="style">
+      <el-aside :width="areaWidth+'px'">
+        <el-row>
+          <el-input style="width:180px" size="mini" placeholder="行政区名称如：北京" v-model="addressInput" class="input-with-select" >
+            <el-button slot="append" size="mini" icon="el-icon-search" @click.native="addresSel(addressInput,1)" ></el-button>
+          </el-input>
+        </el-row>
+        <el-row>
+          <el-tree :node-key="keyID" lazy :load="loadNode" :check-strictly="false" :props="defaultProps"  show-checkbox @check="handleCheckChange" :default-expanded-keys="expandedKeys" ></el-tree>
+        </el-row>
+      </el-aside>
+      <el-main class="padding0" style="overflow: hidden;position: relative;">
+        <t-map ref="TMap" class="myTMap"></t-map>
+        <a class="areaBtn" @click="areaBtnClick">
+          <template v-if="areaBtnOpen">
+            <i class="iconfont icon-bip-up"></i>
+          </template>
+          <template v-else>
+            <i class="iconfont icon-bip-next"></i>
+          </template>
+        </a>
+        <a class="operaBtn" @click="operaBtnClick">
+          <template v-if="!operaBtnOpen">
+            <i class="iconfont icon-bip-up"></i>
+          </template>
+          <template v-else>
+            <i class="iconfont icon-bip-next"></i>
+          </template>
+        </a>
+        <div class="nav-tools">
+          <span class="tools-li">
+            <el-dropdown trigger="click" @command="toolClick" size="mini" split-button >
+              <span class="el-dropdown-link">工具</span>
+              <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="1">作业区规划(面)</el-dropdown-item>
+              <el-dropdown-item command="2">作业区规划(线)</el-dropdown-item>
+              <el-dropdown-item command="3">避让区规划(面)</el-dropdown-item>
+              <el-dropdown-item command="4">避让区规划(线)</el-dropdown-item>
+              <el-dropdown-item command="5">避让点</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </span>
+          <span class="tools-li">
+              <el-button  size="mini" icon="el-icon-delete" @click="clearCover">清空</el-button>
+          </span>
+          <span class="tools-li">
+              <el-button size="mini" icon="el-icon-search" @click="showOperaDia =!showOperaDia">查找</el-button>
+          </span>  
+        </div>
+      </el-main>
+      <el-aside :width="operaWidth+'px'">
+        <div>
+          <el-tabs v-model="activeName1" type="card">
+            <el-tab-pane label="航空识别区" name="first" :style="activeName1Style">
+              <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                <el-row v-for="(item,index) in operaSBQData" :key="index">
+                  <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
+                    <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
+                      <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                    </el-col>
+                    <el-col :span="20" style="height:60px;">
+                      <el-row>
+                        <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                        <el-col
+                          :span="24"
+                          style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;"
+                        >{{item.data.address}}</el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="24" > 
+                          <el-row style="textAlign:center;">
+                            <el-col :span="8">
+                              <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                            </el-col>
+                            <el-col :span="8">
+                              <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                            </el-col>
+                          </el-row>                   
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                  </el-row> 
+                </el-row>
+              </el-checkbox-group>
+            </el-tab-pane>
+            <el-tab-pane label="飞防作业区" name="second">
+              <el-tabs v-model="activeName2" type="card">
+                <el-tab-pane label="春季" name="c" :style="activeName2Style">
+                  <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                    <el-row v-for="(item,index) in operaCData" :key="index">
+                      <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
+                        <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
+                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                        </el-col>
+                        <el-col :span="20">
+                          <el-row>
+                            <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                            <el-col
+                              :span="24"
+                              style="color: rgba(0,0,0,.54);font-size: .12rem;"
+                            >{{item.data.address}}</el-col>
+                          </el-row>
+                          <el-row>
+                            <el-col :span="24" > 
+                              <el-row style="textAlign:center;">
+                                <el-col :span="6">
+                                  <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                  <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                </el-col>
+                                <el-col :span="6">
+                                  <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                </el-col>
+                              </el-row>                   
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                      </el-row>
+                      <el-row style="font-size:14px;">
+                        <template v-if="showoperaBrData['BR'+index]">
+                          <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                            <el-col :span="4">&nbsp;</el-col>
+                            <el-col :span="12">{{item.data.name}}</el-col>
+                            <el-col :span="8">
+                              <el-row type="flex" justify="end">
+                                <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                              </el-row>
+                            </el-col>
+                          </el-row>
+                        </template>
+                      </el-row>
                     </el-row>
-                    <el-row style="font-size:14px;">
-                      <template v-if="showoperaBrData['BR'+index]">
-                        <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
-                          <el-col :span="4">&nbsp;</el-col>
-                          <el-col :span="12">{{item.data.name}}</el-col>
-                          <el-col :span="8">
-                            <el-row type="flex" justify="end">
-                              <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                              <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
-                            </el-row>
-                          </el-col>
-                        </el-row>
-                      </template>
+                  </el-checkbox-group>
+                </el-tab-pane>
+                <el-tab-pane label="夏季" name="x" :style="activeName2Style">
+                  <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                    <el-row v-for="(item,index) in operaXData" :key="index">
+                      <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
+                        <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
+                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                        </el-col>
+                        <el-col :span="20">
+                          <el-row>
+                            <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                            <el-col
+                              :span="24"
+                              style="color: rgba(0,0,0,.54);font-size: .12rem;"
+                            >{{item.data.address}}</el-col>
+                          </el-row>
+                          <el-row>
+                            <el-col :span="24" > 
+                              <el-row style="textAlign:center;">
+                                <el-col :span="6">
+                                  <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                  <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                </el-col>
+                                <el-col :span="6">
+                                  <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                </el-col>
+                              </el-row>                   
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                      </el-row>
+                      <el-row style="font-size:14px;">
+                        <template v-if="showoperaBrData['BR'+index]">
+                          <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                            <el-col :span="4">&nbsp;</el-col>
+                            <el-col :span="12">{{item.data.name}}</el-col>
+                            <el-col :span="8">
+                              <el-row type="flex" justify="end">
+                                <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                              </el-row>
+                            </el-col>
+                          </el-row>
+                        </template>
+                      </el-row>
                     </el-row>
-                  </el-row>
-                </el-checkbox-group>
-                <div class="line"></div>
-                <div class="oper-pagination">
-                  <el-pagination small layout="prev, pager, next" @current-change="pageChange" :page-size="operaCellPage.pageSize" :total="operaCellPage.total"></el-pagination>
-                </div>
-              </div>
-            </el-aside>
-          </el-container>
-        </el-container>
-      </el-tab-pane>
-      <el-tab-pane :style="style" class="myTab" label="百度地图" name="baiduMap">
-        <b-map style="width:100%;height:100%"></b-map>
-      </el-tab-pane>
-    </el-tabs>
-    <el-dialog title="查找作业区" :visible.sync="showOperaDia" width="50%"  class="bip-query">
+                  </el-checkbox-group>                  
+                </el-tab-pane>
+                <el-tab-pane label="秋季" name="q" :style="activeName2Style">
+                  <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                    <el-row v-for="(item,index) in operaQData" :key="index">
+                      <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
+                        <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
+                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                        </el-col>
+                        <el-col :span="20">
+                          <el-row>
+                            <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                            <el-col
+                              :span="24"
+                              style="color: rgba(0,0,0,.54);font-size: .12rem;"
+                            >{{item.data.address}}</el-col>
+                          </el-row>
+                          <el-row>
+                            <el-col :span="24" > 
+                              <el-row style="textAlign:center;">
+                                <el-col :span="6">
+                                  <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                  <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                </el-col>
+                                <el-col :span="6">
+                                  <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                </el-col>
+                              </el-row>                   
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                      </el-row>
+                      <el-row style="font-size:14px;">
+                        <template v-if="showoperaBrData['BR'+index]">
+                          <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                            <el-col :span="4">&nbsp;</el-col>
+                            <el-col :span="12">{{item.data.name}}</el-col>
+                            <el-col :span="8">
+                              <el-row type="flex" justify="end">
+                                <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                              </el-row>
+                            </el-col>
+                          </el-row>
+                        </template>
+                      </el-row>
+                    </el-row>
+                  </el-checkbox-group>                  
+                </el-tab-pane>
+              </el-tabs>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+      </el-aside>
+    </el-container>
+    <el-dialog title="查找作业区" :close-on-click-modal="false" :visible.sync="showOperaDia" width="50%"  class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in operaTjCell.ccells.cels" :key="'A'+index">
@@ -200,6 +323,7 @@ import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
 import {T} from "@/components/map/js/TMap";
+import { on } from 'cluster';
 @Component({
   components: {
     tMap,
@@ -208,17 +332,22 @@ import {T} from "@/components/map/js/TMap";
 })
 export default class OperatingArea extends Vue {
   @State("bipComHeight", { namespace: "login" }) height!: number;
-  @Provide() style: string ="height:" + (this.height ? this.height - 50 : "400") + "px";
-  @Provide() selMap: string = "tianMap";
+  @Provide() style: string ="height:" + (this.height ? this.height - 20 : "400") + "px";
+  @Provide() activeName1Style:string ="height:" + (this.height ? this.height - 58 : "400") + "px;";
+  @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
+  @Provide() activeName1: string = "first";
+  @Provide() activeName2: string = "c";
   @Provide() tMap: any = null;
   @Provide() tZoom: number = 12;
+  @Provide() loading:number = 0;
   @Provide() areaWidth: number = 0; //测边行政区宽度
   @Provide() areaBtnOpen: boolean = false; //左侧行政区是否显示
   @Provide() expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
   @Provide() keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
   @Provide() expandedLevel: any = -1; //默认展开级次数
   @Provide() fatherID: any = "parid"; //树状结构上下级关系字段
-  @Provide() defaultProps: any = { label: "name" };
+  @Provide() defaultProps: any = { label: "name", children: 'children', };
+  @Provide() treeData:any=[];
 
   @Provide() operaWidth: number = 0; //右侧作业区宽度
   @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
@@ -229,16 +358,20 @@ export default class OperatingArea extends Vue {
 
   @Provide() showOperaDia: boolean = false; //是否显示作业区查找框
   @Provide() operaTjCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
-  @Provide() operaData: any = []; //作业区数据
+  @Provide() operaData: any = []; //作业区数据    全部数据
+  @Provide() operaSBQData: any = []; //作业区数据 识别区
+  @Provide() operaCData: any = []; //作业区数据   春季
+  @Provide() operaXData: any = []; //作业区数据   夏季
+  @Provide() operaQData: any = []; //作业区数据   秋季
   @Provide() operaJSON: any = {}; //k v 格式作业区
   @Provide() checkOperaList: any = []; //作业区勾选数据
-  @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 20,total: 0}; //作业区查询分页数据
+  @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 2000,total: 0}; //作业区查询分页数据
 
   @Provide() operaPolygon:any=null;//天地图作业区 画面对象
   @Provide() operaLine:any=null;//天地图作业区 画线对象
 
-  @Provide() areaMap:any={};//行政区域
-  @Provide() treeCheckId:any="";//当前树勾选操作节点
+  @Provide() areaKv:any={};//行政区域  值  key  集合
+  @Provide() areaMap:any={};//行政区域地图集合
 
   @Provide() operaBrPolygon:any=null;//天地图避让区 画面对象
   @Provide() operaBrLine:any=null;//天地图避让区 画线对象
@@ -269,11 +402,13 @@ export default class OperatingArea extends Vue {
 
   async created() {
     if (this.height) {
-      this.style = "height:" + (this.height - 50) + "px";
+      this.style = "height:" + (this.height - 20) + "px";
+      this.activeName1Style ="height:" + (this.height ? this.height - 58 : "400") + "px;";
+      this.activeName2Style ="height:" + (this.height ? this.height - 95 : "400") + "px";
     }
-    this.operaTjCell = await this.getCell("F2015TJ");//作业区查询条件
+    this.operaTjCell = await this.getCell("FW2015TJ");//作业区查询条件
     this.operaTjCell.createRecord();
-    this.operaSaveCell = await this.getCell("F2015");//作业区
+    this.operaSaveCell = await this.getCell("FW2015");//作业区
     this.operaBrCell = await this.getCell("F2015A");//避让点
   }
   mounted() {
@@ -281,9 +416,6 @@ export default class OperatingArea extends Vue {
       let refT: any = this.$refs.TMap;
       this.tMap = refT.getMap();
     }
-  }
-  mapChnage() {
-    console.log("地图切换！");
   }
   //清空地图覆盖物
   clearCover() {
@@ -809,10 +941,13 @@ export default class OperatingArea extends Vue {
   /**************** 作业区 **************/
   //查找作业区
   async getOpera() {
-    let qe: QueryEntity = new QueryEntity("F2015", "F2015TJ");
+    let qe: QueryEntity = new QueryEntity("FW2015", "FW2015TJ");
     qe.page = this.operaCellPage;
     qe.cont = JSON.stringify(this.operaTjCell.currRecord.data);
     qe.oprid = 13;
+    this.showOperaDia = false;
+    this.operaBtnOpen = false;
+    this.loading++;
     await this.operaTjCell
       .queryData(qe)
       .then(res => {
@@ -823,14 +958,35 @@ export default class OperatingArea extends Vue {
             this.showOperaBr(d1.kid);
             this.operaJSON[d1.kid] = d1;
           }
+          if(res.data.data.data.data.length == 0)
+            this.operaData = [];
+          this.operaSBQData = [];
+          this.operaCData = [];
+          this.operaXData = [];
+          this.operaQData = [];
+          for(var i=0;i<this.operaData.length;i++){
+            let dd = this.operaData[i];
+            if(dd.data.sbuid == 'F2005'){
+              this.operaSBQData.push(dd);
+            }else if(dd.data.sbuid == 'F2015'){
+              if(dd.data.season == 0){
+                this.operaCData.push(dd);
+              }else if(dd.data.season == 1){
+                this.operaXData.push(dd);
+              }else if(dd.data.season == 2){
+                this.operaQData.push(dd);
+              }
+            }
+          }
+          
         }
         this.operaCellPage = res.data.data.data.page;
-        this.showOperaDia = false;
-        this.operaBtnOpen = false;
+        this.loading--;
         this.operaBtnClick();
       })
       .catch(err => {
         this.showOperaDia = false;
+        this.loading--;
         this.$notify.error(err);
       });
   }
@@ -1182,33 +1338,39 @@ export default class OperatingArea extends Vue {
       return null;
     }
   }
-    handleCheckChange(data:any, checked:any, indeterminate:any) {
-        console.log(data)
-        let id = data[this.keyID];
-        this.treeCheckId = id;
-        if(checked == false){
-            if(this.areaMap[id]){
-                let area = this.areaMap[id]
-                for(var i=0;i<area.length;i++){
-                    this.tMap.removeOverLay(area[i])
-                }
-                this.areaMap[id]=[];
-            }
-        }else{
-            this.handleNodeClick(data,null,null)
+  handleCheckChange(data:any, data2:any) {
+    this.operaData = [];
+    this.operaCellPage.total=0;
+    let checkedNodes = data2.checkedNodes;
+    let checkedKeys =data2.checkedKeys;
+    for(var k in this.areaMap){
+      if(checkedKeys.indexOf(k) ==-1){
+        let area = this.areaMap[k]
+        for(var i=0;i<area.length;i++){
+            this.tMap.removeOverLay(area[i])
         }
+        delete this.areaMap[k];
+      }
     }
+    if(checkedKeys.length>0){
+      let area = "";
+      for(var i=0;i<checkedKeys.length;i++){
+        area += checkedKeys[i]+";";
+      }
+      area = area.substring(0,area.length-1);
+      this.handleNodeClick(area,checkedNodes)
+    }
+  }
   /**
    * 节点点击事件
    */
-  async handleNodeClick(data: any, data1: any, data2: any) {
-    let id = data.id;
+  async handleNodeClick(data: any,address:any) {
     //classes/search/QueryCont'; 有详细说明
     let oneCont =[];
     let allCont = [];
     let cont = "";
-    let qCont = new QueryCont('area', id, 12);
-    qCont.setContrast(0);
+    let qCont = new QueryCont('area', data, 12);
+    qCont.setContrast(5);
     oneCont.push(qCont);
     if (oneCont.length != 0) {
       allCont.push(oneCont);
@@ -1216,7 +1378,7 @@ export default class OperatingArea extends Vue {
     }
     let qe: QueryEntity = new QueryEntity("", "");
     qe.page.currPage = 1;
-    qe.page.pageSize = 400;
+    qe.page.pageSize = 8000;
     qe.cont = cont;
     let vv = await tools.getBipInsAidInfo("SORG", 210, qe);
     if(vv.data.id == 0){
@@ -1234,15 +1396,18 @@ export default class OperatingArea extends Vue {
         // this.clearCover();
       }
     }
-    this.addresSel(data.name,0);
+    for(var i=0;i<address.length;i++){
+      let d = address[i].name
+      this.areaKv[d] = address[i].id;
+      if(!this.areaMap[address[i].id])
+        this.addresSel(d,0);
+    }
   }
   /*********** END *************/
 
 
   /**************** 地址定位 **************/  
   async addresSel(address: string,type:number) {
-    if(type == 1)
-        this.treeCheckId = null;
     if (!this.localsearch) {
       var config = {
         pageCapacity: 10, //每页显示的数量
@@ -1250,35 +1415,6 @@ export default class OperatingArea extends Vue {
       };
       //创建搜索对象
       this.localsearch = new T.LocalSearch(this.tMap, config);
-    }
-    let oneCont =[];
-    let allCont = [];
-    let cont = "";
-    let qCont = new QueryCont('a.name', address, 12);
-    qCont.setContrast(3);
-    oneCont.push(qCont);
-    if (oneCont.length != 0) {
-      allCont.push(oneCont);
-      cont = "~" + JSON.stringify(allCont);
-    }
-    let qe: QueryEntity = new QueryEntity("", "");
-    qe.page.currPage = 1;
-    qe.page.pageSize = 400;
-    qe.cont = cont;
-    let vv = await tools.getBipInsAidInfo("ORGBYAREAN", 210, qe);
-    if(vv.data.id == 0){
-      let values = vv.data.data.data.values;
-      if(values.length>0){
-        let orgcode = "";
-        for(var i=0;i<values.length;i++){
-          orgcode +=values[i].orgcode+";"
-        }
-        orgcode = orgcode.substring(0,orgcode.length-1);
-        this.operaTjCell.currRecord.data.sorg = orgcode;
-        this.getOpera()
-      }else{
-        this.operaData=[];
-      }
     }
     this.localsearch.search(address);
   }
@@ -1292,19 +1428,19 @@ export default class OperatingArea extends Vue {
         break;
       case 3:
         //解析行政区划边界
-        this.area(result.getArea());
+        this.area(result.getArea(),result.keyWord);
         break;
     }
   }
   //行政区
-  area(obj: any) {
+  area(obj: any,keyWord:any) {
     if (obj) {
       let area = [];
       if(obj.points){
         //坐标数组，设置最佳比例尺时会用到
             var pointsArr = [];
             var points = obj.points;
-            let area1 = this.areaMap[this.treeCheckId]
+            let area1 = this.areaMap[this.areaKv[keyWord]]
             if(area1){
                 for(var i=0;i<area.length;i++){
                     this.tMap.removeOverLay(area1[i])
@@ -1330,8 +1466,8 @@ export default class OperatingArea extends Vue {
                 this.tMap.addOverLay(line);
                 area.push(line)
             }
-            if(this.treeCheckId){
-                this.areaMap[this.treeCheckId] = area;
+            if(this.areaKv[keyWord]){
+              this.areaMap[this.areaKv[keyWord]] = area;
             }
             //显示最佳比例尺
             this.tMap.setViewport(pointsArr);
@@ -1392,19 +1528,13 @@ export default class OperatingArea extends Vue {
   }
   @Watch("height")
   heightChange() {
-    this.style = "height:" + (this.height - 50) + "px";
+    this.style = "height:" + (this.height - 20) + "px";
+    this.activeName1Style ="height:" + (this.height ? this.height - 58 : "400") + "px;";
+    this.activeName2Style ="height:" + (this.height ? this.height - 95 : "400") + "px";
   }
 }
 </script>
 <style scoped lang="scss" >
-.myTab {
-  height: 600px;
-}
-.heightWidth {
-  // height: 100%;
-  width: 100%;
-  padding: 0px;
-}
 .areaBtn {
   height: 63px;
   line-height: 63px;
@@ -1456,7 +1586,7 @@ export default class OperatingArea extends Vue {
   outline: none;
 }
 .mapMain {
-  height: calc(100% - 35px) !important;
+  height: calc(100% - 0px) !important;
 }
 .padding0 {
   padding: 0px;
@@ -1484,6 +1614,12 @@ export default class OperatingArea extends Vue {
 
 .op-drop {
   background-color: #fff;
+}
+.nav-tools {
+    position: absolute;
+    top: 1rem;
+    left: 3rem;
+    z-index: 999;
 }
 </style>
 <style lang="scss" >
