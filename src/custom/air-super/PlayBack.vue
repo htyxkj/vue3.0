@@ -10,7 +10,33 @@
                 <el-container class="padding0" :style="style">
                     <el-container class="padding0 mapMain">
                         <!-- 左侧显示区域 -->
-                        <el-aside :width="areaWidth+'px'"></el-aside>
+                        <el-aside :width="areaWidth+'px'">
+                            <div class="taskdata">
+                                <div class="taskdata-cont">
+                                    <vxe-table
+                                        border
+                                        :height="style1"
+                                        ref="xTable1"
+                                        :data="currentPageData">
+                                        <vxe-table-column type="checkbox" width="30"></vxe-table-column>
+                                        <vxe-table-column field="speedtime1" title="时间" width="90"></vxe-table-column>
+                                        <vxe-table-column field="speed" title="速度" width="60"></vxe-table-column>
+                                        <vxe-table-column field="height" title="高度" width="60"></vxe-table-column>
+                                        <vxe-table-column field="flow" title="流量"  width="60"></vxe-table-column>
+                                        <vxe-table-column field="sumflow" title="累计流量" width="80" ></vxe-table-column>
+                                    </vxe-table>
+                                </div>
+                                <div class="page-turn">
+                                    <el-row >
+                                        <el-col :span="4" :offset="1"><i class="el-icon-d-arrow-left" @click="firstPage"></i></el-col>
+                                        <el-col :span="4"><i class="el-icon-arrow-left" @click="prevPage"></i></el-col>
+                                        <el-col :span="6">共{{taskData.length}}条</el-col>
+                                        <el-col :span="4"><i class="el-icon-arrow-right" @click="nextPage"></i></el-col>
+                                        <el-col :span="4"><i class="el-icon-d-arrow-right" @click="lastPage"></i></el-col>
+                                    </el-row>  
+                                </div>
+                            </div>
+                        </el-aside>
                         <el-main class="padding0" style="overflow: hidden;position: relative;">
                             <div class="nav-tools">
                                 <!-- 搜索 -->
@@ -118,6 +144,7 @@ export default class OperatingArea extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
     @Provide() style: string =
         "height:" + (this.height ? this.height - 50 : "400") + "px";
+    @Provide() style1: string = ""+ (this.height ? this.height - 80 : "400");
     @Provide() selMap: string = "tianMap";
     @Provide() tMap: any = null;
     @Provide() tZoom: number = 12;
@@ -162,9 +189,16 @@ export default class OperatingArea extends Vue {
     @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
  
     @Provide() tableData: any = null;
+
+     // 前端分页显示数据
+    @Provide() totalPage:number= 1; // 统共页数，默认为1
+    @Provide() currentPage:number= 1     //前页数 ，默认为1
+    @Provide() pageSize:number= 100; // 每页显示数量
+    @Provide() currentPageData:any =[] //当前页显示内容
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
+            this.style1 = ""+ (this.height - 80);
         }
         this.taskTjCell = await TMapUt.getCell("B07ATJ");
         this.taskTjCell.createRecord();
@@ -178,6 +212,7 @@ export default class OperatingArea extends Vue {
         //初始化图表参数
         this.initOptions();
     }
+   
     mapChnage() {
         console.log("地图切换！");
     }
@@ -192,7 +227,7 @@ export default class OperatingArea extends Vue {
         this.areaBtnOpen = !this.areaBtnOpen;
         if (this.areaBtnOpen) {
             //进行打开左侧行政区
-            while (this.areaWidth <= 200) {
+            while (this.areaWidth <= 400) {
                 this.areaWidth++;
             }
         } else {
@@ -280,10 +315,17 @@ export default class OperatingArea extends Vue {
                     let poin = new T.LngLat(v.longitude,v.latitude);
                     opt.Datas.push(poin);
                 }
+                 // 前端分页
+                this.totalPage = Math.ceil(this.taskData.length / this.pageSize);
+                // // 计算得0时设置为1
+                this.totalPage = this.totalPage == 0 ? 1 : this.totalPage;
+                this.getCurrentPageData();
+
                 this.taskTrack = new T.CarTrack(this.tMap,opt);
                 this.taskTrack.start();
-                this.operaBtnOpen = false;
-                this.operaBtnClick();
+                // this.operaBtnOpen = false;
+                // this.operaBtnClick();
+               
             }
             this.loading = !this.loading;
         } catch (error) {
@@ -366,7 +408,7 @@ export default class OperatingArea extends Vue {
                 }]
             });
         }
-        this.taskData[index-1] = null;
+        // this.taskData[index-1] = null;
         if(index >= length){//最后一点
             this.taskTrack.pause()
         }
@@ -418,6 +460,44 @@ export default class OperatingArea extends Vue {
         if(this.taskTrack){
             this.taskTrack.clear()
         }
+    }
+
+     // 获取当前页数对应的数据
+    getCurrentPageData() {
+        let begin = (this.currentPage - 1) * this.pageSize;
+        let end = this.currentPage * this.pageSize;
+        this.currentPageData = this.taskData.slice(
+            begin,
+            end
+        );
+     }
+     //上一页
+    prevPage() {
+        if (this.currentPage == 1) {
+            return false;
+        } else {
+            this.currentPage--;
+            this.getCurrentPageData();
+        }
+    }
+    //首页
+    firstPage() {
+        this.currentPage = 1;
+        this.getCurrentPageData();  
+    }
+    // 下一页
+    nextPage() {
+        if (this.currentPage == this.totalPage) {
+            return false;
+        } else {
+            this.currentPage++;
+            this.getCurrentPageData();
+        }
+    }
+    //末页
+    lastPage() {
+        this.currentPage = this.totalPage;
+        this.getCurrentPageData();  
     }
     /**
      * 初始化右侧图表
@@ -533,6 +613,7 @@ export default class OperatingArea extends Vue {
     @Watch("height")
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
+        this.style1 = "" + (this.height - 80) ;
     }
 }
 </script>
@@ -630,6 +711,28 @@ export default class OperatingArea extends Vue {
     top: 1rem;
     left: 3rem;
     z-index: 999;
+}
+.taskdata {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+// .taskdata-cont{
+//     height: 400px;
+//     width: 100%;
+//     overflow: auto;
+//     overflow-x: hidden;
+//     // height: calc(100%-30px) !important;
+// }
+.page-turn {
+    position: absolute;
+    bottom: 0px;
+    width: 99%;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #f6f6f6;
+    font-size: 14px;
 }
 </style>
 <style lang="scss" >
