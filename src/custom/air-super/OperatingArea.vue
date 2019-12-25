@@ -55,7 +55,7 @@
           <el-tabs v-model="activeName1" type="card">
             <el-tab-pane label="航空识别区" name="first" :style="activeName1Style">
               <el-checkbox :indeterminate="sbqIsIndeterminate" v-model="sbqCheckAll" @change="sbqCheckAllChange">全选</el-checkbox>
-              <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+              <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
                 <el-row v-for="(item,index) in operaSBQData" :key="index">
                   <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                     <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
@@ -93,7 +93,7 @@
               <el-tabs v-model="activeName2" type="card">
                 <el-tab-pane label="春季" name="c" :style="activeName2Style">
                   <el-checkbox :indeterminate="cIsIndeterminate" v-model="cCheckAll" @change="cCheckAllChange">全选</el-checkbox>
-                  <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                  <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
                     <el-row v-for="(item,index) in operaCData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                         <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
@@ -146,7 +146,7 @@
                 </el-tab-pane>
                 <el-tab-pane label="夏季" name="x" :style="activeName2Style">
                   <el-checkbox :indeterminate="xIsIndeterminate" v-model="xCheckAll" @change="xCheckAllChange">全选</el-checkbox>
-                  <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                  <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
                     <el-row v-for="(item,index) in operaXData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                         <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
@@ -199,7 +199,7 @@
                 </el-tab-pane>
                 <el-tab-pane label="秋季" name="q" :style="activeName2Style">
                   <el-checkbox :indeterminate="qIsIndeterminate" v-model="qCheckAll" @change="qCheckAllChange">全选</el-checkbox>
-                  <el-checkbox-group style="height:100%;overflow: auto;" v-model="checkOperaList" @change="checkBoxChange">
+                  <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
                     <el-row v-for="(item,index) in operaQData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                         <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
@@ -337,7 +337,7 @@ import { on } from 'cluster';
 export default class OperatingArea extends Vue {
   @State("bipComHeight", { namespace: "login" }) height!: number;
   @Provide() style: string ="height:" + (this.height ? this.height - 20 : "400") + "px";
-  @Provide() activeName1Style:string ="height:" + (this.height ? this.height - 58 : "400") + "px;";
+  @Provide() activeName1Style:string ="height:" + (this.height ? this.height - 65 : "400") + "px;";
   @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
   @Provide() activeName1: string = "first";
   @Provide() activeName2: string = "c";
@@ -423,7 +423,7 @@ export default class OperatingArea extends Vue {
   async created() {
     if (this.height) {
       this.style = "height:" + (this.height - 20) + "px";
-      this.activeName1Style ="height:" + (this.height ? this.height - 58 : "400") + "px;";
+      this.activeName1Style ="height:" + (this.height ? this.height - 65 : "400") + "px;";
       this.activeName2Style ="height:" + (this.height ? this.height - 95 : "400") + "px";
     }
     this.operaTjCell = await this.getCell("FW2015TJ");//作业区查询条件
@@ -1617,7 +1617,7 @@ export default class OperatingArea extends Vue {
   @Watch("height")
   heightChange() {
     this.style = "height:" + (this.height - 20) + "px";
-    this.activeName1Style ="height:" + (this.height ? this.height - 58 : "400") + "px;";
+    this.activeName1Style ="height:" + (this.height ? this.height - 65 : "400") + "px;";
     this.activeName2Style ="height:" + (this.height ? this.height - 95 : "400") + "px";
   }
 }
@@ -1667,6 +1667,10 @@ export default class OperatingArea extends Vue {
   -moz-border-radius: 6px 0px 0px 6px;
   -webkit-border-radius: 6px 0px 0px 6px;
   border-radius: 6px 0px 0px 6px;
+}
+.opera{
+  height: calc(100% - 15px) !important;
+  overflow: auto;
 }
 .myTMap {
   height: calc(100% - 0px) !important;

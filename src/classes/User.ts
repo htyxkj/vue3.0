@@ -1,13 +1,14 @@
 /***
  * 用户实体类
  */
+import Dept from './Dept'
 export class User{
 
     private _userCode:string
     private _userName:string
     private _password:string
     private _attr:number = 5
-
+    private _deptInfo:Dept = new Dept();
     constructor(userId:string,userName:string,pwd:string){
         this._userCode = userId;
         this._userName = userName;
@@ -45,5 +46,12 @@ export class User{
         this._password = value;
     }
 
+    public get deptInfo() {
+        return this._deptInfo;
+    }
+
+    public set deptInfo(value:any) {
+        this._deptInfo = value;
+    }
 
 }

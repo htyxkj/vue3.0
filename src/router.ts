@@ -100,6 +100,14 @@ export default new Router({
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/TrackShow.vue')
+      },
+      {
+        path: '/RealTimeTrack',
+        name: 'RealTimeTrack',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue')
       }
   ]
 })

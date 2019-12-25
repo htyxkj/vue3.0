@@ -138,7 +138,7 @@ export default class TrackShow extends Vue {
             let tkid = this.taskTjCell.currRecord.data.sid;
             let bgtime = this.taskTjCell.currRecord.data.bgtime;
             let edtime = this.taskTjCell.currRecord.data.edtime;
-            let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"' and cast(longitude as NUMERIC)>0 and cast(latitude as NUMERIC)>0 ";
+            let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
             qe.cont = cont;
             this.loading = !this.loading;
             this.showTaskTjCell = false;
