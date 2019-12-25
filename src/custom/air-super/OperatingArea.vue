@@ -573,11 +573,17 @@ export default class OperatingArea extends Vue {
       if (d1.area != 0) {
         co += "<br/>面积：" + d1.area + "亩";
       }
+      if(d1.sbuid == 'F2005'){
+        co = d1.id;
+      }
       var label = new T.Label({
         text: co,
         position: t1.center,
-        offset: new T.Point(-50, -50)
       });
+      if(d1.sbuid == 'F2005'){
+        label.setFontSize(16)
+      }
+      label.setBorderLine(0)
       label.setBackgroundColor(null);
       return label;
     } else {
@@ -1254,12 +1260,11 @@ export default class OperatingArea extends Vue {
    * 航空识别区全选
   */
   sbqCheckAllChange(val:any){
+    this.sbqCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaSBQData.length;i++){
         this.sbqCheckOperaList.push(this.operaSBQData[i].data.kid)
       }
-    }else{
-      this.sbqCheckOperaList = [];
     }
     this.sbqIsIndeterminate = false;
     this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
@@ -1271,12 +1276,11 @@ export default class OperatingArea extends Vue {
    * 作业区全选  春
   */
   cCheckAllChange(val:any){
+    this.cCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaCData.length;i++){
         this.cCheckOperaList.push(this.operaCData[i].data.kid)
       }
-    }else{
-      this.cCheckOperaList = [];
     }
     this.cIsIndeterminate = false;
     this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
@@ -1288,12 +1292,11 @@ export default class OperatingArea extends Vue {
    * 作业区全选  夏
   */
   xCheckAllChange(val:any){
+    this.xCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaXData.length;i++){
         this.xCheckOperaList.push(this.operaXData[i].data.kid)
       }
-    }else{
-      this.xCheckOperaList = [];
     }
     this.xIsIndeterminate = false;
     this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)
@@ -1305,12 +1308,11 @@ export default class OperatingArea extends Vue {
    * 作业区全选  秋
   */
   qCheckAllChange(val:any){
+    this.qCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaQData.length;i++){
         this.qCheckOperaList.push(this.operaQData[i].data.kid)
       }
-    }else{
-      this.qCheckOperaList = [];
     }
     this.sbqIsIndeterminate = false;
     this.checkOperaList = this.sbqCheckOperaList.concat(this.cCheckOperaList)

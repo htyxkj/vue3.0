@@ -291,7 +291,6 @@ export namespace BIPUtils {
       var pwd = encodeURIComponent(str);
       pwd = unescape(pwd);
       pwd = window.btoa(pwd);
-      console.log(pwd)
       return pwd;
     }
 

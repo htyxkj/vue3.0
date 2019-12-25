@@ -164,6 +164,27 @@ export namespace TMapUtils {
             tMap.addOverLay(marker);
             return marker;
         }
+        /** 
+         * @description   添加自定义标注图片
+         * @param lngLat  经纬度信息   xxx,xxx
+         * @param tMap    天地图对象
+         * @param key     标注点唯一值
+         * @param click   单机回调方法
+         * @returns 标注点对象
+         * */        
+        markRealTimeAir(lngLat:string,tMap:any,key:any,click:any){
+            var icon = new T.Icon({
+                iconUrl: "http://211.144.37.205/air-super/inet/gimg/check.gif",
+                iconSize: new T.Point(10, 10),
+                iconAnchor: new T.Point(5, 5)
+            });
+            var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), {icon: icon});
+            //向地图上添加标注
+            tMap.addOverLay(marker);
+            marker.key = key;
+            marker.addEventListener("click",click)
+            return marker;
+        }
         /**
          * 获取对象
          * @param cellid  对象编码
@@ -199,6 +220,33 @@ export namespace TMapUtils {
             });
             return bok;
         } 
+        
+        dateFormat(time:any, format:any){
+            var t = new Date(time);
+            var tf = function(i:any){return (i < 10 ? '0' : '') + i};
+            return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a:any){
+                switch(a){
+                    case 'yyyy':
+                        return tf(t.getFullYear());
+                        break;
+                    case 'MM':
+                        return tf(t.getMonth() + 1);
+                        break;
+                    case 'mm':
+                        return tf(t.getMinutes());
+                        break;
+                    case 'dd':
+                        return tf(t.getDate());
+                        break;
+                    case 'HH':
+                        return tf(t.getHours());
+                        break;
+                    case 'ss':
+                        return tf(t.getSeconds());
+                        break;
+                }
+            })
+        }
         
     }
     export let TMapUt = new TMapUtils();

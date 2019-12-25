@@ -92,6 +92,10 @@ export default class RealTimeTrack extends Vue {
     @Provide() loading: boolean = false;
 
     @Provide() scmDevice:any = {};
+    @Provide() _timer:any = null;//计时器  画线
+    @Provide() _timer1:any = null;//计时器 查询数据
+    @Provide() interval:any = 1000;//飞行间隔时间 毫秒
+
 
 
 
@@ -121,7 +125,6 @@ export default class RealTimeTrack extends Vue {
     @Provide() heightChartOption:any = null;//
     @Provide() heightChartData:any = [];//数据
 
-    @Provide() interval:number = 1000;//数据上报间隔
 
     @Provide() forward:number = 1;//快进倍数
 
@@ -136,14 +139,15 @@ export default class RealTimeTrack extends Vue {
     @Provide() currentPage:number= 1     //前页数 ，默认为1
     @Provide() pageSize:number= 100; // 每页显示数量
     @Provide() currentPageData:any =[] //当前页显示内容
-    async created() {
+    created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
-        }
+        }     
+    }
+    async mounted() {
+        this.loading = !this.loading;
         await this.initScmDevice();
         this.initOperDevice();
-    }
-    mounted() {
         if (this.$refs.TMap) {
             let refT: any = this.$refs.TMap;
             this.tMap = refT.getMap();
@@ -151,6 +155,28 @@ export default class RealTimeTrack extends Vue {
         }
         //初始化图表参数
         this.initOptions();
+    }
+    /**
+     * 查询正在今天的任务
+     */
+    async initTask(){
+        let res = await tools.getServerTime();
+        let time:number = res.data.data.data.time;
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 50000;
+        let cont ="bgtime,edtime";
+        qe.cont = cont;
+        let t1 = new Date().getTime();
+        let cc = await tools.getBipInsAidInfo("TKMSG", 210, qe);
+        if(cc.data.id ==0){
+            let values = cc.data.data.data.values;
+            for(var i=0;i<values.length;i++){
+                let v = values[i];
+                this.scmDevice[v.id] = v;
+            }
+             
+        }
     }
     /**
      * 初始化公司设备
@@ -162,6 +188,7 @@ export default class RealTimeTrack extends Vue {
             let dev = window.sessionStorage.getItem(k);
             if(dev){
                 this.scmDevice = JSON.parse(dev);
+                return;
             }
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
@@ -193,32 +220,124 @@ export default class RealTimeTrack extends Vue {
         devID = devID.substring(0,devID.length-1);
         let res = await tools.getServerTime();
         let time:number = res.data.data.data.time;
+        this.maxTime = time = this.sleepTime;
         let oneCont =[];
         let allCont = [];
         let cont = "";
-        let qCont = new QueryCont('time',(time-(5*60*1000))+"", 12);
+        // let qCont = new QueryCont('time',(this.maxTime)+"", 2);
+        let qCont = new QueryCont('time',(1557017484)+"", 2);
+        qCont.setContrast(1);
+        qCont.setLink(1);
+        oneCont.push(qCont);
+        qCont = new QueryCont('number',devID, 12);
         qCont.setContrast(5);
         oneCont.push(qCont);
         if (oneCont.length != 0) {
-        allCont.push(oneCont);
-        cont = "~" + JSON.stringify(allCont);
+            allCont.push(oneCont);
+            cont = "~" + JSON.stringify(allCont);
         }
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
         qe.page.pageSize = 50000;
-
         qe.cont = cont;
         let t1 = new Date().getTime();
-        let cc = await tools.getBipInsAidInfo("GETRUNDEV", 210, qe);
-
+        let cc = await tools.getBipInsAidInfo("GETRUNDEV", 300, qe);
+        let t2 = new Date().getTime();
+        console.log("用时（秒）" + (t2 - t1) / 1000);
+        if(cc.data.id == 0){
+            let values = cc.data.data.data.values;
+            let gd_id="";
+            for(var i = 0; i<values.length;i++){
+                let vl = values[i];
+                gd_id += vl.gd_id+";"
+            }
+            gd_id = gd_id.substring(0,gd_id.length-1);
+            if(gd_id.length>1){
+                this.initAri(gd_id);
+            }else{
+                this.loading = false;
+            }
+        }else{            
+            this.loading = false;
+        }
+    }
+    /**
+     * 初始化飞机初始位置
+     */
+    async initAri(gd_id:any){
+        let oneCont =[];
+        let allCont = [];
+        let cont = "";
+        let qCont = new QueryCont('gd_id',gd_id, 12);
+        qCont.setContrast(5);
+        oneCont.push(qCont);
+        if (oneCont.length != 0) {
+            allCont.push(oneCont);
+            cont = "~" + JSON.stringify(allCont);
+        }
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 50000;
+        qe.cont = cont;
+        let t1 = new Date().getTime();
+        let cc = await tools.getBipInsAidInfo("RUNDEVDATA", 210, qe);
+        let t2 = new Date().getTime();
+        console.log("用时（秒）" + (t2 - t1) / 1000);
+        if(cc.data.id == 0){
+            let values = cc.data.data.data.values;
+            for(var i=0;i<values.length;i++){
+                let v = values[i];
+                let key = v.number;
+                let lnglat = v.gd_longitude+","+v.gd_latitude;
+                TMapUt.markRealTimeAir(lnglat,this.tMap,key,this.ariClick)
+            }
+        }
+        this.loading = false;
+    }
+    ariClick(data:any){
+        this.loading = true;
+        this.clearCover();
+        let key = data.target.key;
+        this.getPointList(key);
+    }
+    lineDrawing(key:any){
+        return "";
+    }
+    //获取实时数据
+    async getPointList(key:any){ 
+        try{
+            let oneCont =[];
+            let allCont = [];
+            let cont = "";
+            let qCont = new QueryCont('time',(this.maxTime)+"", 2);
+            qCont.setContrast(1);
+            oneCont.push(qCont);
+            qCont = new QueryCont('number',key, 12);
+            qCont.setContrast(0);
+            oneCont.push(qCont);
+            if (oneCont.length != 0) {
+                allCont.push(oneCont);
+                cont = "~" + JSON.stringify(allCont);
+            }
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.page.pageSize = 5;
+            qe.cont = cont;
+            let cc = await tools.getBipInsAidInfo("RUNDEVDATA", 210, qe);
+            console.log(cc)
+            this.loading = false;
+            this._timer1 = setTimeout(() => {
+                this.getPointList(key)
+            }, 4000);
+        }catch(err){
+            this.loading = false;
+        }
     }
     mapChnage() {
         console.log("地图切换！");
     }
     //清空地图覆盖物
     clearCover() {
-        this.stop()
-        this.taskTrack = null;
         this.tMap.clearOverLays();
     }
     //右侧作业区开关
