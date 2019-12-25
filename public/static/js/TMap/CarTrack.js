@@ -9,13 +9,13 @@
  * 车辆的图片，包含坐标和旋转相关方法
  */
 var CarOverlay = T.Overlay.extend({
-    initialize: function (lnglat, options) {
+    initialize: function(lnglat, options) {
         this.lnglat = lnglat;
         this.setOptions(options);
         this.options = options;
     },
 
-    onAdd: function (map) {
+    onAdd: function(map) {
         this.map = map;
         var div = this.div = document.createElement("div");
         var img = this.img = document.createElement("img");
@@ -24,7 +24,7 @@ var CarOverlay = T.Overlay.extend({
         div.style.height = this.options.height + "px";
         div.style.marginLeft = -this.options.width / 2 + 'px';
         div.style.marginTop = -this.options.height / 2 + 'px';
-        div.style.zIndex = 200;// this._container.style.zIndex = zIndex;
+        div.style.zIndex = 200; // this._container.style.zIndex = zIndex;
         img.style.width = this.options.width + "px";
         img.style.height = this.options.height + "px";
         img.src = this.options.iconUrl;
@@ -33,7 +33,7 @@ var CarOverlay = T.Overlay.extend({
         this.update(this.lnglat);
     },
 
-    onRemove: function () {
+    onRemove: function() {
         var parent = this.div.parentNode;
         if (parent) {
             parent.removeChild(this.div);
@@ -47,7 +47,7 @@ var CarOverlay = T.Overlay.extend({
      * @returns {string}
      * @constructor
      */
-    CSS_TRANSFORM: function () {
+    CSS_TRANSFORM: function() {
         var div = document.createElement('div');
         var props = [
             'transform',
@@ -70,26 +70,26 @@ var CarOverlay = T.Overlay.extend({
      * 偏转角度
      * @param rotate
      */
-    setRotate: function (rotate) {
+    setRotate: function(rotate) {
         this.img.style[this.CSS_TRANSFORM()] = "rotate(" +
             rotate + "deg)";
     },
 
-    setLnglat: function (lnglat) {
+    setLnglat: function(lnglat) {
         this.lnglat = lnglat;
         this.update();
     },
-    getLnglat: function () {
+    getLnglat: function() {
         return this.lnglat;
     },
-    setPos: function (pos) {
+    setPos: function(pos) {
         this.lnglat = this.map.layerPointToLngLat(pos)
         this.update();
     },
     /**
      * 更新位置
      */
-    update: function () {
+    update: function() {
         var pos = this.map.lngLatToLayerPoint(this.lnglat);
         this.div.style.left = pos.x + "px";
         this.div.style.top = pos.y + "px";
@@ -98,7 +98,7 @@ var CarOverlay = T.Overlay.extend({
 
 })
 
-T.CarTrack = function (map, opt) {
+T.CarTrack = function(map, opt) {
     this.map = map;
 
     //  this.options = opt ? opt : {};
@@ -121,7 +121,7 @@ T.CarTrack.prototype = {
         interval: 1000,
         carstyle: {
             display: true,
-            iconUrl: "http://lbs.tianditu.gov.cn/images/openlibrary/car.png",
+            iconUrl: "http://211.144.37.205/air-super/inet/gimg/plane.png",
             width: 52,
             height: 26
         },
@@ -135,17 +135,16 @@ T.CarTrack.prototype = {
     },
 
 
-    init: function () {
+    init: function() {
         var datas = this.options.Datas;
         this.options = this._deepCopy(this.options);
-        this.options.uid=new Date().getTime();
+        this.options.uid = new Date().getTime();
         this.options.Datas = datas;
         if (this.options.speed > 0) {
             var dis = this.distance(this.options.Datas);
-            this.options.nodeslength = dis / this.options.speed;//总步数；
-        }
-        else {
-            this.options.nodeslength = this.options.Datas.length;//总步数；
+            this.options.nodeslength = dis / this.options.speed; //总步数；
+        } else {
+            this.options.nodeslength = this.options.Datas.length; //总步数；
         }
         //计步器
         this.options.Counter = 0;
@@ -153,7 +152,7 @@ T.CarTrack.prototype = {
 
 
         this.D3OverLayer = new T.D3Overlay(this.d3init, this.d3redraw, this.options);
-        this.D3OverLayer.lineDatas = [];//线数据
+        this.D3OverLayer.lineDatas = []; //线数据
         //共享两个函数
         this.D3OverLayer.dataToLnglat = this.dataToLnglat;
         this.D3OverLayer.applyLatLngToLayer = this.applyLatLngToLayer;
@@ -164,7 +163,7 @@ T.CarTrack.prototype = {
 
     },
 
-    setOptions: function (obj, options) {
+    setOptions: function(obj, options) {
         for (var i in options) {
             if (i != "polylinestyle" && i != "carstyle")
                 obj[i] = options[i];
@@ -174,13 +173,13 @@ T.CarTrack.prototype = {
     /**
      *  清除所有元素，注销事件
      */
-    clear: function () {
+    clear: function() {
         this.state = 4;
         this._Remove();
         delete this;
     },
 
-    _Remove: function () {
+    _Remove: function() {
         this._pause();
         delete this._timer;
         this._timer = null;
@@ -189,14 +188,14 @@ T.CarTrack.prototype = {
     },
 
     /**处理传入的数据**/
-    receiveData: function () {
+    receiveData: function() {
         var opt = this.options;
         var me = this;
 
         if (opt.Datas instanceof Array && opt.Datas.length > 0) {
             //绘制出D3渲染的线段；
             me.map.addOverLay(me.D3OverLayer)
-            //绘制车辆
+                //绘制车辆
             me.carMarker = new CarOverlay(me.dataToLnglat(this.options.Datas[0]), me.options.carstyle);
             if (!this.options.carstyle)
                 me.carMarker.hide();
@@ -211,7 +210,7 @@ T.CarTrack.prototype = {
      * @param obj
      * @returns {T.LngLat}
      */
-    dataToLnglat: function (obj) {
+    dataToLnglat: function(obj) {
         if (obj instanceof T.LngLat || ('lat' in obj && 'lng' in obj))
             return obj;
         else {
@@ -223,7 +222,7 @@ T.CarTrack.prototype = {
 
     },
 
-    bind: function (fn, obj) {
+    bind: function(fn, obj) {
         var slice = Array.prototype.slice;
         if (fn.bind) {
             return fn.bind.apply(fn, slice.call(arguments, 1));
@@ -236,12 +235,12 @@ T.CarTrack.prototype = {
      * @param d
      * @returns {*}
      */
-    applyLatLngToLayer: function (d) {
+    applyLatLngToLayer: function(d) {
 
         return this.map.lngLatToLayerPoint(this.dataToLnglat(d));
     },
 
-    d3init: function (sel, transform) {
+    d3init: function(sel, transform) {
 
         sel.append("path")
             .attr("id", "polyline" + this.options.uid)
@@ -262,7 +261,7 @@ T.CarTrack.prototype = {
     },
 
 
-    d3redraw: function () {
+    d3redraw: function() {
         //像素点坐标转字符串
         function pointsToPath(rings, closed) {
             var str = '',
@@ -291,9 +290,9 @@ T.CarTrack.prototype = {
             }
             return pts;
         }
-        var datasStr1 = pointsToPath([lnglatsTopoints(this.map, this.options.Datas)], false);//this._svg.
+        var datasStr1 = pointsToPath([lnglatsTopoints(this.map, this.options.Datas)], false); //this._svg.
         var lineDatas = this.lineDatas ? this.lineDatas : this.D3OverLayer.lineDatas;
-        var datasStr2 = pointsToPath([lnglatsTopoints(this.map, lineDatas)], false);//this.options.dynamicLine ? this.lineDatas : this.options.Datas;
+        var datasStr2 = pointsToPath([lnglatsTopoints(this.map, lineDatas)], false); //this.options.dynamicLine ? this.lineDatas : this.options.Datas;
         //线数据的重新计算分两种情况 1、缩放地图时要重新计算容器坐标 2、动态线的时候要重绘线
         d3.select("path#polyline" + this.options.uid).attr("d", datasStr1)
             .attr("stroke-width", this.options.polylinestyle.width + "px");
@@ -308,22 +307,22 @@ T.CarTrack.prototype = {
     /**
      * 随着时间
      */
-    update: function () {
+    update: function() {
         //计步器+1
         this.options.Counter++
-        var linePath = d3.select('path#polyline' + this.options.uid)
-            .attr('display', this.options.polylinestyle.display && !this.options.dynamicLine ?
-                "block" : "none")
-        //轨迹像素长度
+            var linePath = d3.select('path#polyline' + this.options.uid)
+                .attr('display', this.options.polylinestyle.display && !this.options.dynamicLine ?
+                    "block" : "none")
+                //轨迹像素长度
         var nodeslength = (this.options.speed > 0 ?
-                Math.ceil(this.options.nodeslength) + 1 :
-                Math.ceil(this.options.nodeslength)
+            Math.ceil(this.options.nodeslength) + 1 :
+            Math.ceil(this.options.nodeslength)
         )
 
         if (this.options.speed > 0) {
             //计算小车所在的像素点
             var l = linePath.node().getTotalLength();
-            var s = (this.options.Counter - 1 ) / this.options.nodeslength
+            var s = (this.options.Counter - 1) / this.options.nodeslength
             var l1 = s * l;
             var p1 = linePath.node().getPointAtLength(l1);
             this.D3OverLayer.lineDatas = [];
@@ -347,8 +346,7 @@ T.CarTrack.prototype = {
                 this.D3OverLayer.lineDatas.push(lnglat);
             }
 
-        }
-        else {
+        } else {
             this.D3OverLayer.lineDatas = this.options.Datas.slice(0, this.options.Counter);
         }
 
@@ -359,8 +357,7 @@ T.CarTrack.prototype = {
                 this.D3OverLayer.lineDatas[this.D3OverLayer.lineDatas.length - 2],
                 this.D3OverLayer.lineDatas[this.D3OverLayer.lineDatas.length - 1]);
             this.carMarker.setRotate(rotate)
-        }
-        else {
+        } else {
             this.carMarker.setRotate(0)
         }
         if (this.options.dynamicLine) this.d3redraw();
@@ -385,7 +382,7 @@ T.CarTrack.prototype = {
      * 计算轨迹的距离
      * @returns {number}
      */
-    distance: function () {
+    distance: function() {
         var d = 0;
         var datas = this.options.Datas;
         var l = datas.length;
@@ -401,7 +398,7 @@ T.CarTrack.prototype = {
      *在每个点的真实步骤中设置小车转动的角度
      */
 
-    angle: function (curPos, targetPos) {
+    angle: function(curPos, targetPos) {
         var deg = 0;
         if (targetPos.lng != curPos.lng) {
             var tan = (targetPos.lat - curPos.lat) / (targetPos.lng - curPos.lng),
@@ -430,8 +427,8 @@ T.CarTrack.prototype = {
     /**
      *开始运动
      */
-    start: function () {
-        if (this.state == 4)return;
+    start: function() {
+        if (this.state == 4) return;
         this.state = 1;
         if (this.D3OverLayer && !this._timer) {
             this._timer = setInterval(this.bind(this.update, this),
@@ -442,8 +439,8 @@ T.CarTrack.prototype = {
     /**
      * 停止运动
      */
-    stop: function () {
-        if (this.state == 4)return;
+    stop: function() {
+        if (this.state == 4) return;
         this.state = 2;
         this._pause();
         this._Remove();
@@ -451,7 +448,7 @@ T.CarTrack.prototype = {
 
     },
 
-    _pause: function () {
+    _pause: function() {
         if (this._timer) {
             clearTimeout(this._timer);
             delete this._timer;
@@ -463,12 +460,12 @@ T.CarTrack.prototype = {
     /**
      * 暂停运动
      */
-    pause: function () {
-        if (this.state == 4)return;
+    pause: function() {
+        if (this.state == 4) return;
         this.state = 3;
         this._pause();
     },
-    _deepCopy: function (source) {
+    _deepCopy: function(source) {
         var result = {};
         for (var key in source) {
             result[key] = typeof source[key] === 'object' ? this._deepCopy(source[key]) : source[key];

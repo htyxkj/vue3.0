@@ -15,8 +15,10 @@
                                 <div class="taskdata-cont">
                                     <vxe-table
                                         border
+                                        size="mini"
                                         :height="style1"
                                         ref="xTable1"
+                                        @select-change="selectChangeEvent"
                                         :data="currentPageData">
                                         <vxe-table-column type="checkbox" width="30"></vxe-table-column>
                                         <vxe-table-column field="speedtime1" title="时间" width="90"></vxe-table-column>
@@ -144,7 +146,7 @@ export default class OperatingArea extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
     @Provide() style: string =
         "height:" + (this.height ? this.height - 50 : "400") + "px";
-    @Provide() style1: string = ""+ (this.height ? this.height - 80 : "400");
+    @Provide() style1: string = ""+ (this.height ? this.height - 85 : "400");
     @Provide() selMap: string = "tianMap";
     @Provide() tMap: any = null;
     @Provide() tZoom: number = 12;
@@ -194,7 +196,8 @@ export default class OperatingArea extends Vue {
     @Provide() totalPage:number= 1; // 统共页数，默认为1
     @Provide() currentPage:number= 1     //前页数 ，默认为1
     @Provide() pageSize:number= 100; // 每页显示数量
-    @Provide() currentPageData:any =[] //当前页显示内容
+    @Provide() currentPageData:any =[]; //当前页显示内容
+    @Provide() lngLatList:any = []; //选中点集合
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
@@ -283,7 +286,7 @@ export default class OperatingArea extends Vue {
             }
             this.clearCover();
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
-            let hoaid = this.taskTjCell.currRecord.data.hoadi;//航空识别区
+            let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
             TMapUt.getOpera(oaid,this.tMap);//作业区
             TMapUt.getOpera(hoaid,this.tMap);//航空识别区
@@ -309,6 +312,7 @@ export default class OperatingArea extends Vue {
                 this.taskData = values;
                 let opt:any = {interval: this.interval,dynamicLine: true,
                                 polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
+                                carstyle:{display:true, iconUrl:"http://211.144.37.205/air-super/inet/gimg/plane.png", width:42, height:30},
                                 passOneNode:this.passOneNode}
                 for(var i=0;i<values.length;i++){
                     let v = values[i];
@@ -499,6 +503,22 @@ export default class OperatingArea extends Vue {
         this.currentPage = this.totalPage;
         this.getCurrentPageData();  
     }
+    // 页面勾选数据点
+   selectChangeEvent ({ checked, row }:any) {
+        if(checked ){
+            let lngLat = row.longitude +","+ row.latitude;
+            let lngLat_bak= TMapUt.markpoint1(lngLat,this.tMap);
+            let lngObject = {item:row.speedtime,values:lngLat_bak};
+            this.lngLatList.push(lngObject)
+        }else {
+            let that = this;
+            this.lngLatList.forEach( function(item:any){
+                if(item.item == row.speedtime){
+                      that.tMap.removeOverLay(item.values);
+                }
+             })
+        }
+    }
     /**
      * 初始化右侧图表
      */
@@ -613,7 +633,7 @@ export default class OperatingArea extends Vue {
     @Watch("height")
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
-        this.style1 = "" + (this.height - 80) ;
+        this.style1 = "" + (this.height - 85) ;
     }
 }
 </script>

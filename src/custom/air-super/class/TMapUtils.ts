@@ -152,6 +152,18 @@ export namespace TMapUtils {
             //向地图上添加标注
             tMap.addOverLay(marker);
         }
+        // 添加自定义标注图片
+        markpoint1(lngLat:string,tMap:any){
+            var icon = new T.Icon({
+                iconUrl: "http://211.144.37.205/air-super/inet/gimg/check.gif",
+                iconSize: new T.Point(10, 10),
+                iconAnchor: new T.Point(5, 5)
+            });
+            var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), {icon: icon});
+            //向地图上添加标注
+            tMap.addOverLay(marker);
+            return marker;
+        }
         /**
          * 获取对象
          * @param cellid  对象编码
