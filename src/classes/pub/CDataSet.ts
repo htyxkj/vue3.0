@@ -463,23 +463,44 @@ export default class CDataSet {
         if (iniVl == "[Y-M-D]") {
           iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_YMD);
         }
+        if(iniVl.indexOf("[Y-M-D]")>-1){
+          iniVl = iniVl.replace("[Y-M-D]",DateUtils.DateTool.now('YYYY-MM-DD'))
+        }
         if (iniVl == "[YMD]") {
           iniVl = DateUtils.DateTool.now("YYYYMMDD");
+        }
+        if(iniVl.indexOf("[YMD]")>-1){
+          iniVl = iniVl.replace("[YMD]",DateUtils.DateTool.now('YYYYMMDD'))
         }
         if (iniVl == "[YM]") {
           iniVl = DateUtils.DateTool.now("YYYYMM");
         }
+        if(iniVl.indexOf("[YM]")>-1){
+          iniVl = iniVl.replace("[YM]",DateUtils.DateTool.now('YYYYMM'))
+        }
         if (iniVl == "[Y2M]") {
           iniVl = DateUtils.DateTool.now("YYMM");
+        }
+        if(iniVl.indexOf("[Y2M]")>-1){
+          iniVl = iniVl.replace("[Y2M]",DateUtils.DateTool.now('YYMM'))
         }
         if (iniVl == "[Y-M]") {
           iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_YM);
         }
+        if(iniVl.indexOf("[Y-M]")>-1){
+          iniVl = iniVl.replace("[Y-M]",DateUtils.DateTool.now(GlobalVariable.DATE_FMT_YM))
+        }
         if (iniVl == "[Y2-M]") {
           iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y2M);
         }
+        if(iniVl.indexOf("[Y2-M]")>-1){
+          iniVl = iniVl.replace("[Y2-M]",DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y2M))
+        }
         if (iniVl == "[Y]") {
           iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y);
+        }
+        if(iniVl.indexOf("[Y]")>-1){
+          iniVl = iniVl.replace("[Y]",DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y))
         }
         if (item.type <= 5 && item.type != 1) {
           if (!iniVl) iniVl = "";

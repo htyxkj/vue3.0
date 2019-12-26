@@ -1,20 +1,15 @@
 <template>
     <div v-loading="loading">
-        <el-tabs
-            v-model="selMap"
-            type="card"
-            @tab-click="mapChnage"
-            style="min-height: -webkit-fill-available"
-        >
+        <el-tabs v-model="selMap" type="card" @tab-click="mapChnage" style="min-height: -webkit-fill-available">
             <el-tab-pane :style="style" label="天地图" name="tianMap">
                 <el-container class="padding0" :style="style">
                     <el-container class="padding0 mapMain">
                         <el-main class="padding0" style="overflow: hidden;position: relative;">
                             <div class="nav-tools">
-                                <!-- 搜索 -->
-                                <el-button icon="el-icon-search" circle @click="showTaskTjCell =!showTaskTjCell"></el-button>
-                                <!-- 播放 -->
-                                <el-button icon="el-icon-video-play" circle @click="start"></el-button>
+                                <!-- 返回 -->
+                                <el-button icon="el-icon-back" circle @click="refresh"></el-button>
+                                <!-- 刷新 -->
+                                <el-button icon="el-icon-refresh-left" circle @click="refresh"></el-button>
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="operaBtn" @click="operaBtnClick">
@@ -71,7 +66,10 @@ import bMap from "@/components/map/MyBaiMap.vue";
 import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
+import { GPSUtil } from "./class/GPSUtil";
+let Gps = GPSUtil.GPS;
 import echarts from 'echarts'; 
+import { tmpdir } from 'os';
 @Component({
     components: {
         tMap,
@@ -91,19 +89,22 @@ export default class RealTimeTrack extends Vue {
     @Provide() maxTime:number = 0;//当前查询的最大时间
     @Provide() loading: boolean = false;
 
-    @Provide() scmDevice:any = {};
+
+    @Provide() taskData:any={};//当天任务集合
+    @Provide() airPoint:any=[];//初始化飞机任务点  用来确认地图基本以及中心点
+    @Provide() taskPoint:any=[];//任务点
+    @Provide() plane:any = null;//单个飞机实时点
+    @Provide() rotate:number = 0;//飞机旋转角度
+
     @Provide() _timer:any = null;//计时器  画线
     @Provide() _timer1:any = null;//计时器 查询数据
-    @Provide() interval:any = 1000;//飞行间隔时间 毫秒
-
-
-
-
-    @Provide() taskTrack:any = null;//轨迹对象
-    @Provide() taskData:any=[];//任务数据集
+    @Provide() interval:any = 1000;//飞行间隔时间 毫秒    
     @Provide() isFollow:boolean = true;//画面跟随
+
+
     @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
+    @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
     @Provide() flightBeltColor:string = "#382518"//行带颜色
     @Provide() flightBeltOpacity:number = 0.5;//航道透明度
@@ -125,36 +126,38 @@ export default class RealTimeTrack extends Vue {
     @Provide() heightChartOption:any = null;//
     @Provide() heightChartData:any = [];//数据
 
-
-    @Provide() forward:number = 1;//快进倍数
-
-
-    @Provide() operaWidth: number = 0; //右侧作业区宽度
-    @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
+    @Provide() operaWidth: number = 0; //右侧作业数据区宽度
+    @Provide() operaBtnOpen: boolean = false; //右侧作业数据是否显示
  
-    @Provide() tableData: any = null;
 
-     // 前端分页显示数据
-    @Provide() totalPage:number= 1; // 统共页数，默认为1
-    @Provide() currentPage:number= 1     //前页数 ，默认为1
-    @Provide() pageSize:number= 100; // 每页显示数量
-    @Provide() currentPageData:any =[] //当前页显示内容
     created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
         }     
     }
     async mounted() {
-        this.loading = !this.loading;
-        await this.initScmDevice();
-        this.initOperDevice();
-        if (this.$refs.TMap) {
-            let refT: any = this.$refs.TMap;
-            this.tMap = refT.getMap();
-            this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
+        try{
+            //初始化图表参数
+            this.initOptions();
+            if (this.$refs.TMap) {
+                let refT: any = this.$refs.TMap;
+                this.tMap = refT.getMap();
+                this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
+            }
+            this.loading = !this.loading;
+            this.airPoint=[];
+            let t1 = new Date().getTime();
+            await this.initTask();
+            for(var k in this.taskData){
+                await this.initOperDevice(this.taskData[k]);
+            }
+            let t2 = new Date().getTime();
+            console.log("用时(S)："+(t2-t1)/1000)
+            this.loading = !this.loading;
+        }catch(err){
+            this.loading = false;
+            this.$notify.error("出错了！")
         }
-        //初始化图表参数
-        this.initOptions();
     }
     /**
      * 查询正在今天的任务
@@ -162,75 +165,71 @@ export default class RealTimeTrack extends Vue {
     async initTask(){
         let res = await tools.getServerTime();
         let time:number = res.data.data.data.time;
+        let date = TMapUt.dateFormat(time,"yyyy-MM-dd HH:mm:ss")
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
         qe.page.pageSize = 50000;
-        let cont ="bgtime,edtime";
+        let cont ="bgtime<='"+date+"' and edtime>='"+date+"'";
         qe.cont = cont;
-        let t1 = new Date().getTime();
         let cc = await tools.getBipInsAidInfo("TKMSG", 210, qe);
         if(cc.data.id ==0){
             let values = cc.data.data.data.values;
             for(var i=0;i<values.length;i++){
-                let v = values[i];
-                this.scmDevice[v.id] = v;
+                let vl = values[i];
+                let tlid = await this.initNewTlid(vl.asid)
+                // vl.tlid = tlid;
+                vl.tlid = "20003720032"
+                this.taskData[vl.sid]= vl;
             }
-             
         }
     }
     /**
-     * 初始化公司设备
+     * 查询任务最新设备  可能会做设备便跟
+     * @param asid 器械标识
      */
-    async initScmDevice(){
-        if(this.user){
-            let cmcCode = this.user.deptInfo.cmcCode
-            let k = cmcCode+"scmDevice";
-            let dev = window.sessionStorage.getItem(k);
-            if(dev){
-                this.scmDevice = JSON.parse(dev);
-                return;
-            }
-            let qe: QueryEntity = new QueryEntity("", "");
-            qe.page.currPage = 1;
-            qe.page.pageSize = 50000;
-            let cont =" scm like '"+cmcCode+"%' ";
-            qe.cont = cont;
-            let t1 = new Date().getTime();
-            let cc = await tools.getBipInsAidInfo("GETSCMTER", 210, qe);
-            if(cc.data.id ==0){
-                let values = cc.data.data.data.values;
-                for(var i=0;i<values.length;i++){
-                    let v = values[i];
-                    this.scmDevice[v.id] = v;
-                }
-                if(values.length>0){
-                    window.sessionStorage.setItem(k,JSON.stringify(this.scmDevice));
-                }
+    async initNewTlid(asid:any){
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 20;
+        let oneCont =[];
+        let allCont = [];
+        let cont = "";
+        let qCont = new QueryCont('asid',asid, 12);
+        qCont.setContrast(0);
+        oneCont.push(qCont);
+        if (oneCont.length != 0) {
+            allCont.push(oneCont);
+            cont = "~" + JSON.stringify(allCont);
+        }
+        qe.cont = cont;
+        let tlid = "";
+        let cc = await tools.getBipInsAidInfo("EQUI", 210, qe);
+        if(cc.data.id ==0){
+            let values = cc.data.data.data.values;
+            if(values.length>=1){
+                tlid = values[0].tlid;
             }
         }
+        return tlid;
     }
     /**
      * 查询正在作业的设备
      */
-    async initOperDevice(){
-        let devID = "";
-        for(var k in  this.scmDevice){
-            devID += k+";"
-        }
-        devID = devID.substring(0,devID.length-1);
+    async initOperDevice(task:any){
+        let tlid = task.tlid;
         let res = await tools.getServerTime();
         let time:number = res.data.data.data.time;
-        this.maxTime = time = this.sleepTime;
+        this.maxTime = time - this.sleepTime;
+        this.maxTime = 1566597121;
         let oneCont =[];
         let allCont = [];
         let cont = "";
-        // let qCont = new QueryCont('time',(this.maxTime)+"", 2);
-        let qCont = new QueryCont('time',(1557017484)+"", 2);
+        let qCont = new QueryCont('time',(this.maxTime)+"", 2);
         qCont.setContrast(1);
         qCont.setLink(1);
         oneCont.push(qCont);
-        qCont = new QueryCont('number',devID, 12);
-        qCont.setContrast(5);
+        qCont = new QueryCont('number',tlid, 12);
+        qCont.setContrast(0);
         oneCont.push(qCont);
         if (oneCont.length != 0) {
             allCont.push(oneCont);
@@ -238,38 +237,31 @@ export default class RealTimeTrack extends Vue {
         }
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
-        qe.page.pageSize = 50000;
+        qe.page.pageSize = 1;
         qe.cont = cont;
-        let t1 = new Date().getTime();
         let cc = await tools.getBipInsAidInfo("GETRUNDEV", 300, qe);
-        let t2 = new Date().getTime();
-        console.log("用时（秒）" + (t2 - t1) / 1000);
         if(cc.data.id == 0){
             let values = cc.data.data.data.values;
-            let gd_id="";
-            for(var i = 0; i<values.length;i++){
-                let vl = values[i];
-                gd_id += vl.gd_id+";"
-            }
-            gd_id = gd_id.substring(0,gd_id.length-1);
-            if(gd_id.length>1){
-                this.initAri(gd_id);
-            }else{
-                this.loading = false;
-            }
-        }else{            
-            this.loading = false;
+            let vl = values[0];
+            let time = vl.time;
+            this.initAri(time,task)
         }
     }
     /**
      * 初始化飞机初始位置
      */
-    async initAri(gd_id:any){
+    async initAri(time:any,task:any){
+        let number = task.tlid;
         let oneCont =[];
         let allCont = [];
         let cont = "";
-        let qCont = new QueryCont('gd_id',gd_id, 12);
-        qCont.setContrast(5);
+        let qCont = new QueryCont('time',time, 12);
+        qCont.setContrast(0);
+        qCont.setLink(1);
+        oneCont.push(qCont);
+        qCont = new QueryCont('number',number, 12);
+        qCont.setContrast(0);
+        qCont.setLink(1);
         oneCont.push(qCont);
         if (oneCont.length != 0) {
             allCont.push(oneCont);
@@ -277,40 +269,60 @@ export default class RealTimeTrack extends Vue {
         }
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
-        qe.page.pageSize = 50000;
+        qe.page.pageSize = 20;
         qe.cont = cont;
-        let t1 = new Date().getTime();
         let cc = await tools.getBipInsAidInfo("RUNDEVDATA", 210, qe);
-        let t2 = new Date().getTime();
-        console.log("用时（秒）" + (t2 - t1) / 1000);
         if(cc.data.id == 0){
             let values = cc.data.data.data.values;
             for(var i=0;i<values.length;i++){
                 let v = values[i];
-                let key = v.number;
-                let lnglat = v.gd_longitude+","+v.gd_latitude;
-                TMapUt.markRealTimeAir(lnglat,this.tMap,key,this.ariClick)
+                let key = task.sid;
+                let lnglat = Gps.bd09_To_gps84(v.gd_latitude,v.gd_longitude);
+                let cc = lnglat[1]+","+lnglat[0]
+                let poin = new T.LngLat(lnglat[1], lnglat[0]);
+                this.airPoint.push(poin);
+                TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick)
             }
         }
-        this.loading = false;
+        if(this.airPoint.length>0){
+            let d1 = this.tMap.getViewport(this.airPoint);
+            this.tMap.panTo(d1.center, d1.zoom);
+        }
     }
+    /**
+     * 点击单个飞机
+     */
     ariClick(data:any){
-        this.loading = true;
         this.clearCover();
-        let key = data.target.key;
-        this.getPointList(key);
-    }
-    lineDrawing(key:any){
-        return "";
+        this.loading = true;
+        let tkid = data.target.key;
+        let task = this.taskData[tkid];
+        let route = task.route
+        let hoaid = task.hoaid;
+        let oaid = task.oaid;
+        if(route){
+            TMapUt.makeRoute(route,"",this.tMap);
+        }
+        if(hoaid){
+            TMapUt.getOpera(hoaid,this.tMap);
+        }
+        if(oaid){
+            TMapUt.getOpera(oaid,this.tMap);
+            TMapUt.getOperaBr(oaid,this.tMap);
+        }        
+        this.getPointList(task.tlid,true)
+        this.tMap.setZoom(16)//设置地图放大级次
+
     }
     //获取实时数据
-    async getPointList(key:any){ 
+    async getPointList(key:any,frist:boolean){ 
         try{
             let oneCont =[];
             let allCont = [];
             let cont = "";
             let qCont = new QueryCont('time',(this.maxTime)+"", 2);
-            qCont.setContrast(1);
+            qCont.setContrast(6);
+            qCont.setLink(1);
             oneCont.push(qCont);
             qCont = new QueryCont('number',key, 12);
             qCont.setContrast(0);
@@ -323,22 +335,168 @@ export default class RealTimeTrack extends Vue {
             qe.page.currPage = 1;
             qe.page.pageSize = 5;
             qe.cont = cont;
+            let t1 = new Date().getTime();
             let cc = await tools.getBipInsAidInfo("RUNDEVDATA", 210, qe);
-            console.log(cc)
+            let t2 = new Date().getTime();
+            console.log("用时（S）"+(t2-t1)/1000)
+            if(cc.data.id ==0 ){
+                let values = cc.data.data.data.values;
+                for(var i =0;i<values.length;i++){
+                    let v = values[i];
+                    this.maxTime = v.time;
+                    let lnglat = Gps.bd09_To_gps84(v.gd_latitude,v.gd_longitude);
+                    v.gd_latitude = lnglat[0];
+                    v.gd_longitude = lnglat[1];
+                    this.taskPoint.push(v);            
+                }
+            }
+            if(frist){
+                this.drawPointLine();
+            }
             this.loading = false;
-            this._timer1 = setTimeout(() => {
-                this.getPointList(key)
-            }, 4000);
+            this._timer1 = window.setTimeout(() => {
+                this.getPointList(key,false)
+            }, 3000);
         }catch(err){
+            this.$notify.error("出错了！")
             this.loading = false;
         }
     }
-    mapChnage() {
-        console.log("地图切换！");
+    /**
+     * 开始画作业记录
+     */
+    drawPointLine(){
+        if(this.taskPoint.length==0){
+            setTimeout(this.drawPointLine, 1000)
+            return;
+        }
+        let t1 = new Date().getTime();
+        this.passOneNode(this.taskPoint[0]);
+        if(this.taskPoint.length>1){
+            this.loadPlane(this.taskPoint[0],this.taskPoint[1]);
+        }else{
+            this.loadPlane(this.taskPoint[0],this.taskPoint[0]);
+        }
+        this.taskPoint = this.taskPoint.slice(1);
+        let t2 = new Date().getTime();
+        let t=1000;
+        if(t2-t1<this.interval){ 
+            t=t-(t2-t1);
+        }else{
+            t=0;
+        } 
+        this._timer = window.setTimeout(() => {
+           this.drawPointLine();
+        }, t);
     }
-    //清空地图覆盖物
-    clearCover() {
-        this.tMap.clearOverLays();
+    /**
+     * 路线节点变化
+     * lnglat:LngLat, index:Number, length:Number
+     */
+    passOneNode(data:any){
+        if(this.isFollow){//画面跟随
+            this.tMap.panTo(new T.LngLat(data.gd_longitude, data.gd_latitude));
+        }
+        if(data){
+            let flow = data.speed;
+            let lgt = new T.LngLat(data.gd_longitude, data.gd_latitude)
+            if(flow>0){//有流量去划线
+                if(this.sprayBreak){//中断过需要从起一条线
+                    let points = [];
+                    let zoom = this.tMap.getZoom();
+                    let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
+                    let opts0 = {color:this.flightBeltColor,weight:cc*this.flightBeltWidth,opacity:this.flightBeltOpacity};
+                    points.push(lgt);
+                    var newLine0 = new T.Polyline(points,opts0);
+                    this.tMap.addOverLay(newLine0);
+                    this.sprayLine0.push(newLine0)
+
+                    let opts1 = {color:this.trackColor,weight:1,opacity:1};
+                    var newLine1 = new T.Polyline(points,opts1);
+                    this.tMap.addOverLay(newLine1);     
+                    this.sprayLine1.push(newLine1)
+                }else{//没有中断需要在最后一条线追加点 或重画最后一条线
+                    let line0 = this.sprayLine0[this.sprayLine0.length-1];
+                    let points0 = line0.getLngLats();
+                    points0.push(lgt);
+                    line0.setLngLats(points0)
+
+                    let line1 = this.sprayLine1[this.sprayLine1.length-1];
+                    let points1 = line1.getLngLats();
+                    points1.push(lgt);
+                    line1.setLngLats(points1)
+                }
+                this.sprayBreak = false;
+            }else{
+                if(this.sprayBreak && this.sprayLine2.length>0){
+                    let line2 = this.sprayLine2[this.sprayLine2.length-1];
+                    let points2 = line2.getLngLats();
+                    points2.push(lgt);
+                    line2.setLngLats(points2)
+                }else{
+                    let opts2 = {color:this.noFlowColor,weight:1,opacity:1};
+                    let points = [];
+                    points.push(lgt);
+                    var newLine2 = new T.Polyline(points,opts2);
+                    this.tMap.addOverLay(newLine2);     
+                    this.sprayLine2.push(newLine2)
+                }   
+                this.sprayBreak = true;
+            }
+            let speed = data.gd_speed;
+            this.speedChartOption.series[0].data[0].value = data.gd_speed;
+            this.speedChart.setOption(this.speedChartOption, true);
+            //压强暂时没有
+
+            //高度
+            let hData = {
+                name:data.time,
+                value:[data.time,data.gd_altitude],
+            };
+            if(this.heightChartData.length>=5){
+                this.heightChartData.shift();
+            }
+            this.heightChartData.push(hData);
+            this.heightChart.setOption({
+                series: [{
+                    data: this.heightChartData
+                }]
+            });
+            //流量
+            let fData = {
+                name:data.time,
+                value:[data.time,data.speed],
+            };
+            if(this.flowChartData.length>=5){
+                this.flowChartData.shift();
+            }
+            this.flowChartData.push(fData);
+            this.flowChart.setOption({
+                series: [{
+                    data: this.flowChartData
+                }]
+            });
+        }
+    }
+    /**
+     * 设置飞机
+     */
+    loadPlane(lnglat1:any,lnglat2:any) {
+        let cc = lnglat1.gd_longitude + "," + lnglat1.gd_latitude
+        if(!this.plane){
+            this.plane = TMapUt.markRealTimeAir(cc,this.tMap,"",null)
+        }else{
+            this.plane.setLngLat(new T.LngLat(lnglat1.gd_longitude, lnglat1.gd_latitude))
+        }
+        let curPos = new T.LngLat(lnglat1.gd_longitude, lnglat1.gd_latitude)
+        let targetPos = new T.LngLat(lnglat2.gd_longitude, lnglat2.gd_latitude)
+        this.rotate =  TMapUt.setRotation(curPos,targetPos,this.tMap);
+        if(this.rotate == 0 ){
+            this.rotate = 360
+        }
+        let style = this.plane.Fr.style[TMapUt.CSS_TRANSFORM()];
+        this.plane.Fr.style[TMapUt.CSS_TRANSFORM()]= style+" rotate(" +this.rotate + "deg)";
+        this.plane.Fr.style["transform-origin"] = "50% 50%";
     }
     //右侧作业区开关
     async operaBtnClick() {
@@ -364,11 +522,56 @@ export default class RealTimeTrack extends Vue {
             this.tMap.checkResize();
         }, 200);
     }
-
+    //清空地图覆盖物
+    async clearCover() {
+        if(this._timer){
+            window.clearTimeout(this._timer);
+            delete this._timer;
+            this._timer = null;
+        }
+        if(this._timer1){
+            window.clearTimeout(this._timer1);
+            delete this._timer1;
+            this._timer1 = null;
+        } 
+        this.tMap.clearOverLays();
+    }
+    /**
+     * 刷新
+     */
+    async refresh(){
+        try{
+            this.clearCover();
+            this.loading = true;
+            this.plane = null;
+            this.taskData={};//当天任务集合
+            this.airPoint=[];//初始化飞机任务点  用来确认地图基本以及中心点
+            this.taskPoint=[];//任务点
+            this.plane = null;//单个飞机实时点
+            this.isFollow = true;//画面跟随
+            this.sprayLine0=[];//喷洒轨迹（农药范围）
+            this.sprayLine1=[];//喷洒轨迹（一像素的线）
+            this.sprayLine2=[];//飞行轨迹（没有喷洒农药的轨迹线）
+            this.sprayBreak = true;//喷洒是否中断
+            this.airPoint=[];
+            await this.initTask();
+            for(var k in this.taskData){
+                await this.initOperDevice(this.taskData[k]);
+            }
+            this.loading = false;
+        }catch(err){
+            this.$notify.error("出错了！")
+        }
+    }
     /**
      * 地图缩放结束
      */
     zoomend(){
+        if(this.plane){
+            let style = this.plane.Fr.style[TMapUt.CSS_TRANSFORM()];
+            this.plane.Fr.style[TMapUt.CSS_TRANSFORM()]= style+" rotate(" +this.rotate + "deg)";
+            this.plane.Fr.style["transform-origin"] = "50% 50%";
+        }
         let zoom = this.tMap.getZoom();
         let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
         let opts0 = {color:this.flightBeltColor,weight:cc*this.flightBeltWidth,opacity:this.flightBeltOpacity};
@@ -382,38 +585,12 @@ export default class RealTimeTrack extends Vue {
             this.tMap.removeOverLay(line);
         }
     }
-    //开始
-    start(){
-        if( this.taskTrack)
-            this.taskTrack.start()
-    }
-    //暂停
-    stop(){
-        if( this.taskTrack)
-            this.taskTrack.pause()
-    }
-    //快进
-    fastForward(forward:number){
-        if(this.taskTrack){
-            if(forward >=5){
-                this.forward =1;
-                forward =1
-            }
-            let interval = this.interval/forward;
-            this.taskTrack.options.interval= interval
-            this.stop();
-            this.start();
-        }
-    }
     /**
      * 页面关闭后
      */
     beforeDestroy(){
-        if(this.taskTrack){
-            this.taskTrack.clear()
-        }
+        this.clearCover();
     }
-
     /**
      * 初始化右侧图表
      */
@@ -524,6 +701,9 @@ export default class RealTimeTrack extends Vue {
             }]
         };
         this.flowChart.setOption(this.flowChartOption);  
+    }
+    mapChnage() {
+        console.log("地图切换！");
     }
     @Watch("height")
     heightChange() {

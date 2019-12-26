@@ -171,6 +171,8 @@ export default class BipInsAidEditor extends Vue{
                     let layC = this.bipInsAid.cells.cels[idx];
                     if (layC) {
                         record.data[fld] = val[0][layC.id]||"";
+                        let cel = this.cds.getCell(fld)
+                        this.cds.checkGS(cel);
                     }
                 });
             }

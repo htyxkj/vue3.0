@@ -155,7 +155,7 @@ export namespace TMapUtils {
         // 添加自定义标注图片
         markpoint1(lngLat:string,tMap:any){
             var icon = new T.Icon({
-                iconUrl: "http://211.144.37.205/air-super/inet/gimg/check.gif",
+                iconUrl: require('@/assets/map/airfence/check.gif'),
                 iconSize: new T.Point(10, 10),
                 iconAnchor: new T.Point(5, 5)
             });
@@ -165,7 +165,7 @@ export namespace TMapUtils {
             return marker;
         }
         /** 
-         * @description   添加自定义标注图片
+         * @description   添加自定义飞机标注图片
          * @param lngLat  经纬度信息   xxx,xxx
          * @param tMap    天地图对象
          * @param key     标注点唯一值
@@ -174,9 +174,9 @@ export namespace TMapUtils {
          * */        
         markRealTimeAir(lngLat:string,tMap:any,key:any,click:any){
             var icon = new T.Icon({
-                iconUrl: "http://211.144.37.205/air-super/inet/gimg/check.gif",
-                iconSize: new T.Point(10, 10),
-                iconAnchor: new T.Point(5, 5)
+                iconUrl: require('@/assets/map/airfence/plane.png'),
+                iconSize: new T.Point(40, 40),
+                iconAnchor: new T.Point(20, 20)
             });
             var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), {icon: icon});
             //向地图上添加标注
@@ -184,6 +184,63 @@ export namespace TMapUtils {
             marker.key = key;
             marker.addEventListener("click",click)
             return marker;
+        }
+        /**
+         *在每个点的真实步骤中设置小车转动的角度
+         */
+        setRotation(curPos:any, targetPos:any,TMap:any) {
+            var deg = 0;
+            //start!
+            curPos = TMap.lngLatToContainerPoint(curPos);//起点经纬度
+            targetPos = TMap.lngLatToContainerPoint(targetPos);//终点经纬度
+            if(curPos == null)
+                return 360;
+            if(targetPos == null)
+                return 360;
+            if (targetPos.x != curPos.x) {
+                var tan = (targetPos.y - curPos.y) / (targetPos.x - curPos.x),
+                        atan = Math.atan(tan);
+                deg = atan * 360 / (2 * Math.PI);
+                //degree  correction;
+                if (targetPos.x < curPos.x) {
+                    deg = -deg + 90 + 90;
+                } else {
+                    deg = -deg;
+                }
+                return (-deg);
+            } else {
+                var disy = targetPos.y - curPos.y;
+                var bias = 0;
+                if (disy > 0)
+                    bias = -1
+                else
+                    bias = 1
+                return (-bias * 90);
+            }
+            return 0;
+        }
+        /**
+         * 每个浏览器的偏转兼容
+         * @returns {string}
+         * @constructor
+         */
+        CSS_TRANSFORM() {
+            var div = document.createElement('div');
+            var props = [
+                'transform',
+                'WebkitTransform',
+                'MozTransform',
+                'OTransform',
+                'msTransform'
+            ];
+
+            for (var i = 0; i < props.length; i++) {
+                var prop:any = props[i];
+                if (div.style[prop] !== undefined) {
+                    return prop;
+                }
+            }
+            return props[0];
         }
         /**
          * 获取对象

@@ -195,7 +195,23 @@ export default class BipScriptProc {
     console.log("invokemem", ov);
     return ov;
   }
-
+  f_ifelse(s0:any){
+    if(s0[1]){
+      return s0[1]
+    }else{
+      return s0[2]
+    }
+  }
+  /**
+   * 字符串截取
+   * @param s0 
+   */
+  f_substr(s0:any){ 
+    if(s0[0].length>=s0[2]){
+      return s0[0].substring(s0[1],s0[2]);
+    }else{
+    }
+  }
   /**
    * 调整日期。
    * 参数：日期,日[天,月,年,小时,分钟]]
