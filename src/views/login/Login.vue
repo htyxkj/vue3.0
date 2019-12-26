@@ -1,7 +1,7 @@
 <template>
   <div class="login-img">
        <div class="login-card">
-      <div class="login-title">欢迎登陆人力资源系统</div>
+      <div class="login-title">欢迎登陆飞防管控平台</div>
       <div class="login-cont" @keyup.enter="login">
 
         <el-form @submit.native.prevent label-position="left" label-width="55px" >
@@ -29,7 +29,7 @@
         </el-row>
       </div>
       <div class="login-footer">
-        <address>&copy;©2019：华泰益兴科技 版权所有</address>
+        <address>&copy;2019：北京一风立创科技有限公司 版权所有</address>
       </div>
     </div>
   </div>

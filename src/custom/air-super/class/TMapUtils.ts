@@ -134,7 +134,7 @@ export namespace TMapUtils {
             //创建面对象
             var polygon = new T.Polygon(points, {
                 color: "blue",
-                weight: 3,
+                weight: 1,
                 opacity: 0.5,
                 fillColor: color,
                 fillOpacity: 0.5

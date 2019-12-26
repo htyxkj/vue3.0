@@ -25,7 +25,7 @@
                                         <vxe-table-column field="speed" title="速度" width="60"></vxe-table-column>
                                         <vxe-table-column field="height" title="高度" width="60"></vxe-table-column>
                                         <vxe-table-column field="flow" title="流量"  width="60"></vxe-table-column>
-                                        <vxe-table-column field="sumflow" title="累计流量" width="80" ></vxe-table-column>
+                                        <vxe-table-column field="sumfolw" title="累计流量" width="80" ></vxe-table-column>
                                     </vxe-table>
                                 </div>
                                 <div class="page-turn">
@@ -42,17 +42,46 @@
                         <el-main class="padding0" style="overflow: hidden;position: relative;">
                             <div class="nav-tools">
                                 <!-- 搜索 -->
-                                <el-button
-                                    icon="el-icon-search"
-                                    circle
-                                    @click="showTaskTjCell =!showTaskTjCell"
-                                ></el-button>
+                                 <el-tooltip class="item" effect="light" content="搜索任务" placement="top" >
+                                      <el-button
+                                            icon="el-icon-search"
+                                            circle
+                                            @click="showTaskTjCell =!showTaskTjCell"
+                                        ></el-button>
+                                </el-tooltip>
+                               
                                 <!-- 播放 -->
-                                <el-button icon="el-icon-video-play" circle @click="start"></el-button>
+                                 <el-tooltip class="item" effect="light" content="开始播放" placement="top" >
+                                     <el-button icon="el-icon-video-play" circle @click="start"></el-button>
+                                </el-tooltip>
+                                
                                 <!-- 暂停 -->
-                                <el-button icon="el-icon-video-pause" circle @click="stop"></el-button>
+                                <el-tooltip class="item" effect="light" content="暂停播放" placement="top" >
+                                     <el-button icon="el-icon-video-pause" circle @click="stop"></el-button>
+                                </el-tooltip>
+                                
                                 <!-- 快进 -->
-                                <el-button icon="el-icon-video-pause" circle @click="fastForward(forward++)"></el-button>
+                                <el-tooltip class="item" effect="light" :content="'播放快进'+forward+'倍'" placement="top" >
+                                     <el-button icon="el-icon-d-arrow-right" circle @click="fastForward(forward++)"></el-button>
+                                </el-tooltip>
+
+                                 <!-- 清空 -->
+                                <el-tooltip class="item" effect="light" content="轨迹清空" placement="top" >
+                                     <el-button icon="el-icon-delete" circle @click="clearCover"></el-button>
+                                </el-tooltip>
+
+                                 <!-- 画面跟随 -->
+                                 <span class="follow">
+                                    <el-switch
+                                        v-model="isFollow"
+                                        active-color="#13ce66"
+                                        inactive-color="#ff4949">
+                                    </el-switch>
+                                 </span>
+                                
+                                <!-- <el-tooltip class="item" effect="light" content="画面跟随" placement="top" >
+                                     <el-button icon="el-icon-video-pause" circle @click="fastForward(forward++)"></el-button>
+                                </el-tooltip> -->
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="areaBtn" @click="areaBtnClick">
@@ -74,24 +103,123 @@
                         </el-main>
                         <!-- 右侧隐藏区域 -->
                         <el-aside :width="operaWidth+'px'">
-                            <el-row style="width:100%">
+                           <div class="right-content">
+                               <div class="header">
+                                   <img  class="header-img" src="../../assets/air-super/header.png" alt="">
+                                   <div class="header-title">
+                                       飞防驾驶舱
+                                   </div>
+                               </div>
+                                <div class="nowtitle">
+                                    <div class="nowtime-header">
+                                        回放任务
+                                    </div>
+                                    <div class="nowtaskname">
+                                        <p class="nowtaskname-p">{{taskname}}</p>   
+                                    </div>
+                                </div>
+                               <div class="nowtime">
+                                    <div class="nowtime-header">
+                                        回放时间
+                                    </div>
+                                    <div class="time">
+                                        {{nowtime}}
+                                    </div>
+                                </div>
+                                <div class="speed-flow">
+                                    <el-row>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title ">
+                                                     <span>当前速度</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{nowspeed}}km/h
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title nowtime-header">
+                                                     <span>当前高度</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{nowheight}}km
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                                 <div class="speed-flow">
+                                    <el-row>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title ">
+                                                     <span>当前流量</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{nowflow}}m3/h
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title nowtime-header">
+                                                     <span>累计流量</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{sumflow}}m3/h
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                                <div class="speed-flow">
+                                    <el-row>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title ">
+                                                     <span>已飞行时长</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{sumtime}}/s
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title nowtime-header">
+                                                     <span>已喷洒时长</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{sumtimeflow}}/s
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                           </div>
+                         
+                            
+                            
+                            <!-- <el-row style="width:100%">
                                 <el-col :span="12">
-                                    <div ref="speedChart" style="height:200px;background-color:#ffffff;width:195px;"></div> 
+                                    <div ref="speedChart" style="height:200px;background-color:#ffffff;width:145px;"></div> 
                                 </el-col>
                                 <el-col :span="12">
-                                    <div ref="pressureChart" style="height:200px;background-color:#ffffff;width:195px;"></div> 
+                                    <div ref="pressureChart" style="height:200px;background-color:#ffffff;width:145px;"></div> 
                                 </el-col>
                             </el-row>
                             <el-row style="width:100%">
                                 <el-col :span="24">
-                                    <div ref="flowChart" style="height:200px;background-color:#ffffff;width:390px;"></div> 
+                                    <div ref="flowChart" style="height:200px;background-color:#ffffff;width:290px;"></div> 
                                 </el-col>
                             </el-row>
                             <el-row style="width:100%">
                                 <el-col :span="24">
-                                   <div ref="heightChart" style="height:200px;background-color:#ffffff;width:390px;"></div> 
+                                   <div ref="heightChart" style="height:200px;background-color:#ffffff;width:290px;"></div> 
                                 </el-col>
-                            </el-row>
+                            </el-row> -->
                         </el-aside>
                     </el-container>
                 </el-container>
@@ -162,11 +290,11 @@ export default class OperatingArea extends Vue {
     @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#382518"//行带颜色
-    @Provide() flightBeltOpacity:number = 0.5;//航道透明度
+    @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
+    @Provide() flightBeltOpacity:number = 0.3;//航道透明度
     @Provide() flightBeltWidth:number = 45;//航带宽度 米
-    @Provide() trackColor:string = "#CEFF00";//航迹颜色
-    @Provide() noFlowColor:string = "#C00000";//未喷洒农药时的轨迹颜色
+    @Provide() trackColor:string = "#FFFF00";//航迹颜色
+    @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
     @Provide() speedChart:any = null;//速度仪表盘对象
     @Provide() speedChartOption:any = null;//速度数据
@@ -192,12 +320,23 @@ export default class OperatingArea extends Vue {
  
     @Provide() tableData: any = null;
 
+    // 回放时间对应的数据
+    @Provide() nowtime:String = '----';
+    @Provide() nowspeed:String = '--';
+    @Provide() nowflow:String = '--';
+    @Provide() sumflow:String = '';
+    @Provide() nowheight:String = '--';
+    @Provide() sumtimeflow:number = 0;
+    @Provide() sumtime:number = 0;
+    @Provide() taskname:String = "";
+
      // 前端分页显示数据
     @Provide() totalPage:number= 1; // 统共页数，默认为1
     @Provide() currentPage:number= 1     //前页数 ，默认为1
     @Provide() pageSize:number= 100; // 每页显示数量
     @Provide() currentPageData:any =[]; //当前页显示内容
     @Provide() lngLatList:any = []; //选中点集合
+
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
@@ -222,6 +361,9 @@ export default class OperatingArea extends Vue {
     //清空地图覆盖物
     clearCover() {
         this.stop()
+        // if(this.taskTrack){
+        //     this.taskTrack.clear();
+        // }
         this.taskTrack = null;
         this.tMap.clearOverLays();
     }
@@ -254,7 +396,7 @@ export default class OperatingArea extends Vue {
         this.operaBtnOpen = !this.operaBtnOpen;
         if (this.operaBtnOpen) {
             //进行打开右侧作业区开关
-            while (this.operaWidth <= 400) {
+            while (this.operaWidth <= 300) {
                 this.operaWidth++;
             }
         } else {
@@ -285,14 +427,23 @@ export default class OperatingArea extends Vue {
                 return;
             }
             this.clearCover();
+            this.taskname = this.taskTjCell.currRecord.data.taskname; 
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
-            TMapUt.getOpera(oaid,this.tMap);//作业区
-            TMapUt.getOpera(hoaid,this.tMap);//航空识别区
-            TMapUt.getOperaBr(oaid,this.tMap);//避让区
-            TMapUt.makeRoute(route,"",this.tMap)//路线
-
+            let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
+            let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
+            let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
+            if(showarea == 1){
+                 TMapUt.getOpera(oaid,this.tMap);//作业区
+                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
+            }
+            if(showhkarea ==1){
+                 TMapUt.getOpera(hoaid,this.tMap);//航空识别区
+            }
+           if(showroot == 1){
+                TMapUt.makeRoute(route,"",this.tMap)//路线
+           }
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
             qe.page.pageSize = 50000;
@@ -319,6 +470,7 @@ export default class OperatingArea extends Vue {
                     let poin = new T.LngLat(v.longitude,v.latitude);
                     opt.Datas.push(poin);
                 }
+
                  // 前端分页
                 this.totalPage = Math.ceil(this.taskData.length / this.pageSize);
                 // // 计算得0时设置为1
@@ -346,8 +498,12 @@ export default class OperatingArea extends Vue {
         }
         let data = this.taskData[index-1];
         if(data){
+            
             let flow = data.flow;
             if(flow>0){//有流量去划线
+                // 有流量的点喷洒时长+1s
+                this.sumtimeflow = this.sumtimeflow + 1;
+
                 let lgt = new T.LngLat(data.longitude, data.latitude)
                 if(this.sprayBreak){//中断过需要从起一条线
                     let points = [];
@@ -378,7 +534,15 @@ export default class OperatingArea extends Vue {
             }else{
                 this.sprayBreak = true;
             }
+            this.nowtime = data.speedtime;
+            this.nowspeed = data.speed; 
+            this.nowflow = data.flow;
+            this.nowheight = data.height;
+            this.sumtime = this.sumtime + 1;
+            this.sumflow = data.sumfolw;
             let speed = data.speed;
+            
+
             this.speedChartOption.series[0].data[0].value = speed;
             this.speedChart.setOption(this.speedChartOption, true);
             //压强暂时没有
@@ -576,6 +740,9 @@ export default class OperatingArea extends Vue {
             yAxis: {
                 type: 'value',
                 boundaryGap: [0, '100%'],
+                nameTextStyle:{
+                    color:'#f9f9f9'
+                },
                 splitLine: {
                     show: false
                 }
@@ -752,6 +919,93 @@ export default class OperatingArea extends Vue {
     height: 30px;
     line-height: 30px;
     border: 1px solid #f6f6f6;
+    font-size: 14px;
+}
+.follow {
+    margin-left: 15px;
+    color: #20A0ff;
+    font-size: 14px;
+}
+.right-content {
+    height: 100%;
+    width: 100%;
+    background-color: #004981;
+}
+.header{
+    position: relative;
+}
+.header-img{
+    width: 100%;
+    height: 35px;
+}
+.header-title {
+    position: absolute;
+    top:5px;
+    left: 110px;
+    color:#f9f9f9;
+}
+.nowtitle {
+    width: 290px;
+    height: 150px;
+    margin: 0px auto;
+    background-image: url(../../assets/air-super/box.png);
+    background-size:100% 100%;
+    box-sizing: border-box;   
+    color: #f9f9f9;
+}
+// .nowtaskname{
+//     text-indent: 2px;
+//     line-height: 30px;
+// }
+.nowtaskname-p {
+    padding-left: 5px;
+    text-indent: 20px;
+    line-height: 30px;
+}
+.nowtime {
+    width: 290px;
+    height: 80px;
+    margin: 0px auto;
+    margin-top: 10px;
+    background-image: url(../../assets/air-super/box.png);
+    background-size:100% 100%;
+    box-sizing: border-box;   
+     color: #f9f9f9;
+}
+.nowtime-header {
+    width: 270px;
+    height: 25px;
+    line-height: 25px;
+    border-left: 5px solid #185BFF;
+    margin: 0px auto;
+    padding-left: 10px;
+    font-size: 14px;
+}
+.time {
+    height: 55px;
+    line-height: 55px;
+    text-align: center;
+    font-size: 20px;
+}
+.speed-flow{
+    margin-top: 5px;
+    padding: 5px;
+}
+.speed-content {
+    height: 80px;
+    // width: 140px;
+    background-image: url(../../assets/air-super/box.png);
+    background-size:100% 100%;
+    box-sizing: border-box;  
+    color: #f9f9f9;
+}
+.sp-title {
+    width: 130px;
+    height: 25px;
+    line-height: 25px;
+    border-left: 5px solid #185BFF;
+    margin: 0px auto;
+    padding-left: 10px;
     font-size: 14px;
 }
 </style>
