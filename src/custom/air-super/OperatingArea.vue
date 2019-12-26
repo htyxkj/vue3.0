@@ -485,7 +485,7 @@ export default class OperatingArea extends Vue {
       this.operaBrLine.open();
     }else if(item == 1){ //规划作业区  面
       let config = { showLabel: false,
-        color: "blue", weight: 2, opacity: 0.5,
+        color: "blue", weight: 1, opacity: 0.5,
         fillColor: "#FFFFFF", fillOpacity: 0.5
       };
       //创建标注工具对象
@@ -498,7 +498,7 @@ export default class OperatingArea extends Vue {
       this.operaPolygon.open();
     }else if(item == 3){//避让区规划 面
       let config = { showLabel: false,
-        color: "blue", weight: 2, opacity: 0.5,
+        color: "blue", weight: 1, opacity: 0.5,
         fillColor: "#FFFFFF", fillOpacity: 0.5
       };
       //创建标注工具对象
@@ -562,21 +562,22 @@ export default class OperatingArea extends Vue {
   makeOperaLableTXT(d1: any, t1: any) {
     if (d1) {
       var co = "";
-      co =
-        d1.id +
-        "<br/>" +
-        d1.name +
-        "<br/>" +
-        d1.township +
-        "<br/>" +
-        d1.address;
-      if (d1.area != 0) {
-        co += "<br/>面积：" + d1.area + "亩";
-      }
+      co =d1.id;
+      //   d1.id +
+      //   "<br/>" +
+      //   d1.name +
+      //   "<br/>" +
+      //   d1.township +
+      //   "<br/>" +
+      //   d1.address;
+      // if (d1.area != 0) {
+      //   co += "<br/>面积：" + d1.area + "亩";
+      // }
       var label = new T.Label({
         text: co,
         position: t1.center,
-        offset: new T.Point(-50, -50)
+        offset: new T.Point(0, 0),
+        fontsize :14
       });
       label.setBackgroundColor(null);
       return label;
@@ -601,7 +602,7 @@ export default class OperatingArea extends Vue {
       //创建面对象
       var polygon = new T.Polygon(points, {
         color: "blue",
-        weight: 3,
+        weight: 1,
         opacity: 0.5,
         fillColor: d1.color,
         fillOpacity: 0.5
@@ -872,7 +873,7 @@ export default class OperatingArea extends Vue {
     //创建面对象
     let editCover = new T.Polygon(parameter.currentLnglats, {
       color: "blue",
-      weight: 3,
+      weight: 1,
       opacity: 0.5,
       fillColor: '#FFFFFF',
       fillOpacity: 0.5
@@ -1156,7 +1157,7 @@ export default class OperatingArea extends Vue {
     //创建面对象
     let editCover = new T.Polygon(parameter.currentLnglats, {
       color: "blue",
-      weight: 3,
+      weight: 1,
       opacity: 0.5,
       fillColor: '#FFFFFF',
       fillOpacity: 0.5
@@ -1546,8 +1547,8 @@ export default class OperatingArea extends Vue {
                 //创建线对象
                 var line = new T.Polyline(regionLngLats, {
                     color: "blue",
-                    weight: 3,
-                    opacity: 1,
+                    weight: 2,
+                    opacity: 0.5,
                     lineStyle: "dashed"
                 });
                 //向地图上添加线
