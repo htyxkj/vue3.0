@@ -78,11 +78,11 @@ export default class TrackShow extends Vue {
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
     @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#00FF68"//行带颜色
-    @Provide() flightBeltOpacity:number = 0.5;//航道透明度
-    @Provide() flightBeltWidth:number = 45;//航带宽度 米
-    @Provide() trackColor:string = "#CEFF00";//航迹颜色
-    @Provide() noFlowColor:string = "#C00000";//没有喷洒农药时的轨迹颜色
+    @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
+    @Provide() flightBeltOpacity:number = 0.3;//航道透明度
+    @Provide() flightBeltWidth:number = 0;//航带宽度 米
+    @Provide() trackColor:string = "#FFFF00";//航迹颜色
+    @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
     @Provide() trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
 
@@ -127,10 +127,24 @@ export default class TrackShow extends Vue {
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
             this.trackType = this.taskTjCell.currRecord.data.type;//航迹类型
-            TMapUt.getOpera(oaid,this.tMap);//作业区
-            TMapUt.getOpera(hoaid,this.tMap);//航空识别区
-            TMapUt.getOperaBr(oaid,this.tMap);//避让区
-            TMapUt.makeRoute(route,"",this.tMap)//路线
+            let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
+            let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
+            let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
+            this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
+            if(showarea == 1){
+                 TMapUt.getOpera(oaid,this.tMap);//作业区
+                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
+            }
+            if(showhkarea ==1){
+                 TMapUt.getOpera(hoaid,this.tMap);//航空识别区
+            }
+           if(showroot == 1){
+                TMapUt.makeRoute(route,"",this.tMap)//路线
+           }
+            // TMapUt.getOpera(oaid,this.tMap);//作业区
+            // TMapUt.getOpera(hoaid,this.tMap);//航空识别区
+            // TMapUt.getOperaBr(oaid,this.tMap);//避让区
+            // TMapUt.makeRoute(route,"",this.tMap)//路线
 
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
