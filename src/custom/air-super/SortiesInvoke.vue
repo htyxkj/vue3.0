@@ -2,8 +2,8 @@
   <div class="sortquery"  v-loading="loading">
       <div class="nav">
           <el-button  icon="el-icon-search" size="mini" @click="getCoList">查询</el-button>
-          <el-button icon="iconfont icon-bip-save" size="mini" >保存</el-button>
-          <el-button icon="el-icon-full-screen" size="mini">合并</el-button>
+          <el-button icon="iconfont icon-bip-save" size="mini" @click="saveSorties">保存</el-button>
+          <el-button icon="el-icon-full-screen" size="mini" @click="mergeSorties">合并</el-button>
       </div>
       <div class="query">
           <el-row class="bip-lay">
@@ -22,23 +22,21 @@
                 align="center"
                 size="mini"
                 :height="style1"
-                ref="xTable1"
+                @select-all="selectChange"
+                @select-change="selectChange"
+                ref="SortiesTable"
                 :data="tableData">
-                <vxe-table-column field="id" title="主键" ></vxe-table-column> 
-                <vxe-table-column field="tkid" title="任务标识" ></vxe-table-column>
-                <vxe-table-column field="ssid" title="序号" ></vxe-table-column>
-                <vxe-table-column field="asid" title="飞机编号"  ></vxe-table-column>
-                <vxe-table-column field="usrcode" title="终端账户"  ></vxe-table-column>
-                <vxe-table-column field="asidscm" title="通航公司" ></vxe-table-column>
-                <vxe-table-column field="bgtime1" title="开始时间" width="60"></vxe-table-column>
-                <vxe-table-column field="edtime1" title="结束时间"  width="60"></vxe-table-column>
-                <vxe-table-column field="avgaltitude" title="平均海拔(m)" width="80" ></vxe-table-column>
-                 <vxe-table-column field="sumtime" title="喷洒时长" width="80" ></vxe-table-column>
-                <vxe-table-column field="avgspeed" title="平均航速(km、h)" width="60"></vxe-table-column>
-                <vxe-table-column field="summileage" title="喷洒里程(km)" width="60"></vxe-table-column>
-                <vxe-table-column field="sumarea" title="喷洒面积(亩)"  width="60"></vxe-table-column>
-                <vxe-table-column field="avgflow" title="平均流量(m3/h)(m)" width="80" ></vxe-table-column>
-                <vxe-table-column field="sumflow" title="总流量(m3)(m3/h)(m)" width="80" ></vxe-table-column>
+                <vxe-table-column type="checkbox" width="60"></vxe-table-column>
+                <vxe-table-column type="index" title="序号" width="60" ></vxe-table-column> >
+                <vxe-table-column field="statTime" title="开始时间"></vxe-table-column>
+                <vxe-table-column field="endTime" title="结束时间" ></vxe-table-column>
+                <vxe-table-column field="avgHigh" title="平均海拔(m)"></vxe-table-column>
+                <vxe-table-column field="sumTimeStr" title="喷洒时长" ></vxe-table-column>
+                <vxe-table-column field="avgSpeed" title="平均航速(km、h)"></vxe-table-column>
+                <vxe-table-column field="sumDis" title="喷洒里程(km)"></vxe-table-column>
+                <vxe-table-column field="sumArea" title="喷洒面积(亩)"  ></vxe-table-column>
+                <vxe-table-column field="avgFlow" title="平均流量(m3/h)(m)" ></vxe-table-column>
+                <vxe-table-column field="sumFlow" title="总流量(m3)(m3/h)(m)" ></vxe-table-column>
             </vxe-table>
         </div>
   </div>
@@ -66,6 +64,9 @@ export default class SortiesInvoke extends Vue {
     @Provide() tableData: Array<any> = [];
     @Provide() sortiesCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
     @Provide() loading:boolean = false;
+    @Provide() checkData:any=[];
+    @Provide() saveCell:CDataSet = new CDataSet("");
+    @Provide() delCell:CDataSet = new CDataSet("");
     async created() {
         if (this.height) {
             this.style1 = ""+ (this.height - 250);
@@ -73,13 +74,14 @@ export default class SortiesInvoke extends Vue {
         // 初始化条件查询区域
         this.sortiesCell = await this.getCell("WF0317TJ");
         this.sortiesCell.createRecord();
+        this.saveCell = await this.getCell("FW0320");
+        this.delCell = await this.getCell("FW0320DEL");
     }
     mounted() {
 
     }
     
     // ------------------------数据请求-----------------
-
     //  1.获取任务对应架次信息
     async getCoList() {
         try{
@@ -95,10 +97,112 @@ export default class SortiesInvoke extends Vue {
             }
             let data1 = qs.stringify(data);
             let res = await Vue.$axios.post("/SortiesServlet", data1);
-            console.log(res);
+            this.tableData = [];
+            if(res.data.id == 0){
+                for(var i=0;i<res.data.data.data.length;i++){
+                    let data1 = res.data.data.data[i];
+                    data1.rowID = (i+1);
+                    this.tableData.push(data1);
+                }
+            }
             this.loading = false;
         }catch(err){
             this.loading = false;
+        }
+    }
+    //架次合并
+    mergeSorties(){ 
+        if(!this.checkData || this.checkData.length ==0){
+            this.$notify.warning( "请勾选要合并的架次！");
+            return;
+        }
+        var flow:any=0,avgFlow:any=0,high:any=0,avgHigh:any=0,speed:any=0,avgSpeed:any='',endTime:any='',syl:any=0,getSYL:any='',rowID:any='',statTime:any='',sumArea:any=0,sumDis:any=0,sumFlow:any=0,sumPoints:any=0,sumTime:any=0,sumPoints:any=0;
+        let jcList = this.tableData//全部架次
+        var jc:any = this.checkData[0];//勾选架次
+
+        for(var i = 0; i<this.checkData.length;i++){
+            var _jcListOne =  this.checkData[i];
+            if(i>=1 && _jcListOne.rowID-this.checkData[i-1].rowID!=1){
+                this.$notify.warning( "请勾选连续架次！");
+                return;
+            } 
+            jcList[_jcListOne.rowID-1]=null;
+            if(i==this.checkData.length-1){
+                jc.endTime = _jcListOne.endTime; 
+            }
+            //平均海拔(m)
+            high += (parseFloat(_jcListOne.avgHigh)*parseFloat(_jcListOne.sumTime));
+            //喷洒时长
+            sumTime += parseFloat(_jcListOne.sumTime);
+            //(总航速) 用来计算平均航速
+            speed +=(parseFloat(_jcListOne.avgSpeed)*parseFloat(_jcListOne.sumTime));
+            //喷洒里程(km)
+            sumDis += parseFloat(_jcListOne.sumDis);
+            //喷洒面积(亩)
+            sumArea += parseFloat(_jcListOne.sumArea);
+            //每亩药量
+            syl += (parseFloat(_jcListOne.getSYL)*parseFloat(_jcListOne.sumArea));
+            //平均流量
+            flow +=(parseFloat(_jcListOne.avgFlow)*parseFloat(_jcListOne.sumTime));
+            //总流量
+            sumFlow += parseFloat(_jcListOne.sumFlow); 
+            //有效喷洒点
+            sumPoints += parseInt(_jcListOne.sumPoints);
+        }
+        avgHigh = high/sumTime;
+        avgSpeed = speed/sumTime
+        getSYL = syl/sumArea;
+        avgFlow = flow/sumTime
+        
+        jc.avgHigh=avgHigh.toFixed(4);
+        jc.sumTime = sumTime;
+        jc.avgSpeed = avgSpeed.toFixed(4);
+        jc.sumDis = sumDis.toFixed(4);
+        jc.sumArea = sumArea;
+        jc.getSYL = getSYL.toFixed(4);
+        jc.avgFlow = avgFlow.toFixed(4);
+        jc.sumFlow = sumFlow.toFixed(4);
+        jc.sumPoints = sumPoints;
+        var second:any =  parseInt(sumTime);
+        var hours =parseInt((second/3600)+"");
+        second =parseInt((second % 3600)+"");
+        var minutes =parseInt((second /60)+"");
+        second = parseInt((second % 60)+"");
+        
+        jc.sumTimeStr = hours+"时"+minutes+"分"+second+"秒";
+        this.tableData=[];
+        var _rowID = 1;
+        for(var j =0;j<=jcList.length;j++){
+            let _jc =null;
+            if(jc.rowID==j+1){
+                _jc=jc;
+            }else{
+                _jc = jcList[j];
+            }
+            if(_jc!=null){
+                _jc.rowID=_rowID
+                    this.tableData.push(_jc);
+                _rowID++;
+            }        
+        }
+        this.$notify.success("合并成功！")
+        let cc:any = this.$refs["SortiesTable"];
+        if(cc){
+            cc.refreshData();
+        }
+        console.log(this.tableData)
+    }
+    selectChange(data:any){
+        this.checkData = data.selection;
+    }
+    //保存架次
+    saveSorties(){
+        this.delCell.createRecord();
+        this.delCell.currRecord.data.tkid = "HNZMQ-XF-20190921-HNYX-B-7628-20003820008";
+        this.delCell.currRecord.c_state = 4
+        this.delCell.saveData();
+        for(var i=0;i<this.tableData.length;i++){
+            
         }
     }
     // 获取对象信息
