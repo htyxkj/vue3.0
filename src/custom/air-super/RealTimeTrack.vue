@@ -23,7 +23,131 @@
                         </el-main>
                         <!-- 右侧隐藏区域 -->
                         <el-aside :width="operaWidth+'px'">
-                            <el-row style="width:100%">
+                            <div class="right-content">
+                                <div class="header">
+                                   <img  class="header-img" src="../../assets/air-super/header.png" alt="">
+                                   <div class="header-title">
+                                       飞防驾驶舱
+                                   </div>
+                               </div>
+
+                                <div v-if="rightState">
+                                    <div class="nowtitle pointer" v-for="(item,index) in newTaskList" :key="index" @click="detailTask(item.sid)">
+                                        <div class="nowtime-header">
+                                            实时任务
+                                        </div>
+                                        <div class="nowtaskname">
+                                            <p class="nowtaskname-p">
+                                                {{item.taskname}}
+                                            </p>       
+                                        </div>
+                                    </div>
+                                    <!-- <p v-for="(item,index) in newTaskList" :key="index">
+                                        {{item.sid}}
+                                        {{item.taskname}}
+                                    </p> -->
+                                </div>
+                                <div v-else>
+                                    <div class="nowtitle">
+                                        <div class="nowtime-header">
+                                            当前任务
+                                        </div>
+                                        <div class="nowtaskname">
+                                            <p class="nowtaskname-p">{{taskname}}</p>   
+                                        </div>
+                                    </div>
+                                    <div class="nowtime">
+                                        <div class="nowtime-header">
+                                            当前时间
+                                        </div>
+                                        <div class="time">
+                                            {{nowtime}}
+                                        </div>
+                                    </div>
+                                    <div class="speed-flow">
+                                        <el-row>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title ">
+                                                        <span>当前速度</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{nowspeed}}km/h
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title nowtime-header">
+                                                        <span>当前高度</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{nowheight}}km
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </div>
+                                    <div class="speed-flow">
+                                        <el-row>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title ">
+                                                        <span>当前流量</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{nowflow}}m3/h
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title nowtime-header">
+                                                        <span>累计流量</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{sumflow}}m3/h
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </div>
+                                    <div class="speed-flow">
+                                        <el-row>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title ">
+                                                        <span>已飞行时长</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{sumtime}}/s
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title nowtime-header">
+                                                        <span>已喷洒时长</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{sumtimeflow}}/s
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </div>
+                                    <div class="nowtime">
+                                        <div class="nowtime-header">
+                                            喷洒面积
+                                        </div>
+                                        <div class="time">
+                                            {{sumareaFixed}}/亩
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- <el-row style="width:100%">
                                 <el-col :span="12">
                                     <div ref="speedChart" style="height:200px;background-color:#ffffff;width:195px;"></div> 
                                 </el-col>
@@ -40,7 +164,7 @@
                                 <el-col :span="24">
                                    <div ref="heightChart" style="height:200px;background-color:#ffffff;width:390px;"></div> 
                                 </el-col>
-                            </el-row>
+                            </el-row> -->
                         </el-aside>
                     </el-container>
                 </el-container>
@@ -106,11 +230,11 @@ export default class RealTimeTrack extends Vue {
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
     @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#382518"//行带颜色
-    @Provide() flightBeltOpacity:number = 0.5;//航道透明度
+    @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
+    @Provide() flightBeltOpacity:number = 0.3;//航道透明度
     @Provide() flightBeltWidth:number = 45;//航带宽度 米
-    @Provide() trackColor:string = "#CEFF00";//航迹颜色
-    @Provide() noFlowColor:string = "#C00000";//未喷洒农药时的轨迹颜色
+    @Provide() trackColor:string = "#FFFF00";//航迹颜色
+    @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
     @Provide() speedChart:any = null;//速度仪表盘对象
     @Provide() speedChartOption:any = null;//速度数据
@@ -128,7 +252,20 @@ export default class RealTimeTrack extends Vue {
 
     @Provide() operaWidth: number = 0; //右侧作业数据区宽度
     @Provide() operaBtnOpen: boolean = false; //右侧作业数据是否显示
- 
+
+    @Provide() rightState:Boolean = true; //右侧显示内容状态判断
+    @Provide() newTaskList:any = []; //当天任务集合
+    
+    // 实时时间对应的数据
+    @Provide() nowtime:String = '----';
+    @Provide() nowspeed:String = '--';
+    @Provide() nowflow:String = '--';
+    @Provide() sumflow:String = '';
+    @Provide() nowheight:String = '--';
+    @Provide() sumtimeflow:number = 0;
+    @Provide() sumtime:number = 0;
+    @Provide() taskname:String = "";
+    sumarea:number = 0;
 
     created() {
         if (this.height) {
@@ -138,7 +275,7 @@ export default class RealTimeTrack extends Vue {
     async mounted() {
         try{
             //初始化图表参数
-            this.initOptions();
+            // this.initOptions();
             if (this.$refs.TMap) {
                 let refT: any = this.$refs.TMap;
                 this.tMap = refT.getMap();
@@ -174,6 +311,7 @@ export default class RealTimeTrack extends Vue {
         let cc = await tools.getBipInsAidInfo("TKMSG", 210, qe);
         if(cc.data.id ==0){
             let values = cc.data.data.data.values;
+            this.newTaskList = cc.data.data.data.values;
             for(var i=0;i<values.length;i++){
                 let vl = values[i];
                 let tlid = await this.initNewTlid(vl.asid)
@@ -289,14 +427,22 @@ export default class RealTimeTrack extends Vue {
             this.tMap.panTo(d1.center, d1.zoom);
         }
     }
+    // 点击右侧任务跳转至详情页面
+    detailTask(tkid:String){
+        let data1 = {target:{key:tkid}}
+        this.ariClick(data1);
+    }
     /**
      * 点击单个飞机
      */
     ariClick(data:any){
+        this.rightState = false;
         this.clearCover();
         this.loading = true;
         let tkid = data.target.key;
         let task = this.taskData[tkid];
+        this.taskname = this.taskData[tkid].taskname;
+        this.flightBeltWidth = this.taskData[tkid].widcloth;
         let route = task.route
         let hoaid = task.hoaid;
         let oaid = task.oaid;
@@ -369,7 +515,7 @@ export default class RealTimeTrack extends Vue {
         if(this.taskPoint.length==0){
             setTimeout(this.drawPointLine, 1000)
             return;
-        }
+        }   
         let t1 = new Date().getTime();
         this.passOneNode(this.taskPoint[0]);
         if(this.taskPoint.length>1){
@@ -377,6 +523,7 @@ export default class RealTimeTrack extends Vue {
         }else{
             this.loadPlane(this.taskPoint[0],this.taskPoint[0]);
         }
+
         this.taskPoint = this.taskPoint.slice(1);
         let t2 = new Date().getTime();
         let t=1000;
@@ -399,8 +546,16 @@ export default class RealTimeTrack extends Vue {
         }
         if(data){
             let flow = data.speed;
+            this.nowtime = TMapUt.dateFormat(data.time*1000,"yyyy-MM-dd HH:mm:ss")
+            this.nowspeed = (data.gd_speed).toFixed(3);
+            this.nowflow = data.speed;
+            this.sumflow = (data.totalflow).toFixed(3);
+            this.nowheight = data.gd_altitude;
+            this.sumtime = this.sumtime+1;
             let lgt = new T.LngLat(data.gd_longitude, data.gd_latitude)
             if(flow>0){//有流量去划线
+                this.sumtimeflow = this.sumtimeflow + 1;
+                this.sumarea = (this.sumarea +  (this.flightBeltWidth  * data.speed /666.67));
                 if(this.sprayBreak){//中断过需要从起一条线
                     let points = [];
                     let zoom = this.tMap.getZoom();
@@ -444,8 +599,8 @@ export default class RealTimeTrack extends Vue {
                 this.sprayBreak = true;
             }
             let speed = data.gd_speed;
-            this.speedChartOption.series[0].data[0].value = data.gd_speed;
-            this.speedChart.setOption(this.speedChartOption, true);
+            // this.speedChartOption.series[0].data[0].value = data.gd_speed;
+            // this.speedChart.setOption(this.speedChartOption, true);
             //压强暂时没有
 
             //高度
@@ -457,11 +612,11 @@ export default class RealTimeTrack extends Vue {
                 this.heightChartData.shift();
             }
             this.heightChartData.push(hData);
-            this.heightChart.setOption({
-                series: [{
-                    data: this.heightChartData
-                }]
-            });
+            // this.heightChart.setOption({
+            //     series: [{
+            //         data: this.heightChartData
+            //     }]
+            // });
             //流量
             let fData = {
                 name:data.time,
@@ -471,11 +626,11 @@ export default class RealTimeTrack extends Vue {
                 this.flowChartData.shift();
             }
             this.flowChartData.push(fData);
-            this.flowChart.setOption({
-                series: [{
-                    data: this.flowChartData
-                }]
-            });
+            // this.flowChart.setOption({
+            //     series: [{
+            //         data: this.flowChartData
+            //     }]
+            // });
         }
     }
     /**
@@ -503,7 +658,7 @@ export default class RealTimeTrack extends Vue {
         this.operaBtnOpen = !this.operaBtnOpen;
         if (this.operaBtnOpen) {
             //进行打开右侧作业区开关
-            while (this.operaWidth <= 400) {
+            while (this.operaWidth <= 300) {
                 this.operaWidth++;
             }
         } else {
@@ -541,6 +696,7 @@ export default class RealTimeTrack extends Vue {
      */
     async refresh(){
         try{
+            this.rightState = true;
             this.clearCover();
             this.loading = true;
             this.plane = null;
@@ -594,120 +750,123 @@ export default class RealTimeTrack extends Vue {
     /**
      * 初始化右侧图表
      */
-    initOptions(){
-        this.speedChart = echarts.init(this.$refs.speedChart as HTMLCanvasElement); 
-        this.speedChartOption  = { series: [{
-            name: '飞行速度',
-            type: 'gauge',
-            axisLine: {
-                lineStyle: {
-                    width: 8 // 这个是修改宽度的属性
-                }
-            },splitLine:{
-                length:12
-            },
-            pointer:{
-                width:4
-            },
-            max: 220,
-            detail: {formatter:'{value}km/h',fontSize:12},
-            data: [{value: 0, name: '速度'}]}]};
-        this.speedChart.setOption(this.speedChartOption);  
+    // initOptions(){
+    //     this.speedChart = echarts.init(this.$refs.speedChart as HTMLCanvasElement); 
+    //     this.speedChartOption  = { series: [{
+    //         name: '飞行速度',
+    //         type: 'gauge',
+    //         axisLine: {
+    //             lineStyle: {
+    //                 width: 8 // 这个是修改宽度的属性
+    //             }
+    //         },splitLine:{
+    //             length:12
+    //         },
+    //         pointer:{
+    //             width:4
+    //         },
+    //         max: 220,
+    //         detail: {formatter:'{value}km/h',fontSize:12},
+    //         data: [{value: 0, name: '速度'}]}]};
+    //     this.speedChart.setOption(this.speedChartOption);  
 
-        this.pressureChart = echarts.init(this.$refs.pressureChart as HTMLCanvasElement); 
-        this.pressureChartOption  = { series: [{
-            name: '喷雾压强',
-            type: 'gauge', 
-           axisLine: {
-                lineStyle: {
-                    width: 8 // 这个是修改宽度的属性
-                }
-            },splitLine:{
-                length:12
-            },
-            pointer:{
-                width:4
-            },
-            detail: {formatter:'{value}Kpa',fontSize:12},
-            data: [{value: 0, name: 'Kpa'}]}]};
-        this.pressureChart.setOption(this.pressureChartOption);  
+    //     this.pressureChart = echarts.init(this.$refs.pressureChart as HTMLCanvasElement); 
+    //     this.pressureChartOption  = { series: [{
+    //         name: '喷雾压强',
+    //         type: 'gauge', 
+    //        axisLine: {
+    //             lineStyle: {
+    //                 width: 8 // 这个是修改宽度的属性
+    //             }
+    //         },splitLine:{
+    //             length:12
+    //         },
+    //         pointer:{
+    //             width:4
+    //         },
+    //         detail: {formatter:'{value}Kpa',fontSize:12},
+    //         data: [{value: 0, name: 'Kpa'}]}]};
+    //     this.pressureChart.setOption(this.pressureChartOption);  
 
-        let datanow = new Date();
+    //     let datanow = new Date();
 
-        this.heightChart = echarts.init(this.$refs.heightChart as HTMLCanvasElement); 
-        this.heightChartOption = {
-            title: {
-                text: '海拔高度'
-            },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
-                }
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [{
-                    name:datanow,
-                    value:[
-                        datanow,
-                        0
-                    ]}
-                ]
-            }]
-        };
-        this.heightChart.setOption(this.heightChartOption);  
+    //     this.heightChart = echarts.init(this.$refs.heightChart as HTMLCanvasElement); 
+    //     this.heightChartOption = {
+    //         title: {
+    //             text: '海拔高度'
+    //         },
+    //         xAxis: {
+    //             type: 'time',
+    //             splitLine: {
+    //                 show: false
+    //             }
+    //         },
+    //         yAxis: {
+    //             type: 'value',
+    //             boundaryGap: [0, '100%'],
+    //             splitLine: {
+    //                 show: false
+    //             }
+    //         },
+    //         series: [{
+    //             name: '模拟数据',
+    //             type: 'line',
+    //             showSymbol: false,
+    //             hoverAnimation: false,
+    //             data: [{
+    //                 name:datanow,
+    //                 value:[
+    //                     datanow,
+    //                     0
+    //                 ]}
+    //             ]
+    //         }]
+    //     };
+    //     this.heightChart.setOption(this.heightChartOption);  
 
-        this.flowChart = echarts.init(this.$refs.flowChart as HTMLCanvasElement); 
-        this.flowChartOption= {
-            title: {
-                text: '瞬时流量'
-            },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
-                }
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [{
-                    name:datanow,
-                    value:[
-                        datanow,
-                        0
-                    ]}
-                ]
-            }]
-        };
-        this.flowChart.setOption(this.flowChartOption);  
-    }
+    //     this.flowChart = echarts.init(this.$refs.flowChart as HTMLCanvasElement); 
+    //     this.flowChartOption= {
+    //         title: {
+    //             text: '瞬时流量'
+    //         },
+    //         xAxis: {
+    //             type: 'time',
+    //             splitLine: {
+    //                 show: false
+    //             }
+    //         },
+    //         yAxis: {
+    //             type: 'value',
+    //             boundaryGap: [0, '100%'],
+    //             splitLine: {
+    //                 show: false
+    //             }
+    //         },
+    //         series: [{
+    //             name: '模拟数据',
+    //             type: 'line',
+    //             showSymbol: false,
+    //             hoverAnimation: false,
+    //             data: [{
+    //                 name:datanow,
+    //                 value:[
+    //                     datanow,
+    //                     0
+    //                 ]}
+    //             ]
+    //         }]
+    //     };
+    //     this.flowChart.setOption(this.flowChartOption);  
+    // }
     mapChnage() {
         console.log("地图切换！");
     }
     @Watch("height")
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
+    }
+    get sumareaFixed(){
+        return this.sumarea.toFixed(3)
     }
 }
 </script>
@@ -820,6 +979,93 @@ export default class RealTimeTrack extends Vue {
     line-height: 30px;
     border: 1px solid #f6f6f6;
     font-size: 14px;
+}
+.right-content {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    // height: calc(100%) !important;
+    background-color: #004981;
+}
+.header{
+    position: relative;
+}
+.header-img{
+    width: 100%;
+    height: 35px;
+}
+.header-title {
+    position: absolute;
+    top:5px;
+    left: 110px;
+    color:#f9f9f9;
+}
+.nowtitle {
+    width: 290px;
+    height: 150px;
+    margin: 0px auto;
+    background-image: url(../../assets/air-super/box.png);
+    background-size:100% 100%;
+    box-sizing: border-box;   
+    color: #f9f9f9;
+}
+// .nowtaskname{
+//     text-indent: 2px;
+//     line-height: 30px;
+// }
+.nowtaskname-p {
+    padding-left: 5px;
+    text-indent: 20px;
+    line-height: 30px;
+}
+.nowtime {
+    width: 290px;
+    height: 80px;
+    margin: 0px auto;
+    margin-top: 10px;
+    background-image: url(../../assets/air-super/box.png);
+    background-size:100% 100%;
+    box-sizing: border-box;   
+     color: #f9f9f9;
+}
+.nowtime-header {
+    width: 270px;
+    height: 25px;
+    line-height: 25px;
+    border-left: 5px solid #185BFF;
+    margin: 0px auto;
+    padding-left: 10px;
+    font-size: 14px;
+}
+.time {
+    height: 55px;
+    line-height: 55px;
+    text-align: center;
+    font-size: 20px;
+}
+.speed-flow{
+    margin-top: 5px;
+    padding: 5px;
+}
+.speed-content {
+    height: 80px;
+    // width: 140px;
+    background-image: url(../../assets/air-super/box.png);
+    background-size:100% 100%;
+    box-sizing: border-box;  
+    color: #f9f9f9;
+}
+.sp-title {
+    width: 130px;
+    height: 25px;
+    line-height: 25px;
+    border-left: 5px solid #185BFF;
+    margin: 0px auto;
+    padding-left: 10px;
+    font-size: 14px;
+}
+.pointer {
+    cursor: pointer;
 }
 </style>
 <style lang="scss" >

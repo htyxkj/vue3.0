@@ -198,6 +198,14 @@
                                         </el-col>
                                     </el-row>
                                 </div>
+                                 <div class="nowtime">
+                                    <div class="nowtime-header">
+                                        喷洒面积
+                                    </div>
+                                    <div class="time">
+                                        {{sumareaFixed}}/亩
+                                    </div>
+                                </div>
                            </div>
                          
                             
@@ -292,7 +300,7 @@ export default class OperatingArea extends Vue {
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
     @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
     @Provide() flightBeltOpacity:number = 0.3;//航道透明度
-    @Provide() flightBeltWidth:number = 45;//航带宽度 米
+    @Provide() flightBeltWidth:number = 0;//航带宽度 米
     @Provide() trackColor:string = "#FFFF00";//航迹颜色
     @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
@@ -322,13 +330,14 @@ export default class OperatingArea extends Vue {
 
     // 回放时间对应的数据
     @Provide() nowtime:String = '----';
-    @Provide() nowspeed:String = '--';
-    @Provide() nowflow:String = '--';
-    @Provide() sumflow:String = '';
-    @Provide() nowheight:String = '--';
+    @Provide() nowspeed:Number = 0;
+    @Provide() nowflow:String = '0';
+    @Provide() sumflow:String = '0';
+    @Provide() nowheight:String = '0';
     @Provide() sumtimeflow:number = 0;
     @Provide() sumtime:number = 0;
     @Provide() taskname:String = "";
+    @Provide() sumarea:number = 0;
 
      // 前端分页显示数据
     @Provide() totalPage:number= 1; // 统共页数，默认为1
@@ -428,6 +437,7 @@ export default class OperatingArea extends Vue {
             }
             this.clearCover();
             this.taskname = this.taskTjCell.currRecord.data.taskname; 
+            this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
@@ -498,12 +508,19 @@ export default class OperatingArea extends Vue {
         }
         let data = this.taskData[index-1];
         if(data){
-            
+
+            this.nowtime = data.speedtime;
+            this.nowspeed = data.speed; 
+            this.nowflow = data.flow;
+            this.nowheight = data.height;
+            this.sumtime = this.sumtime + 1;
+            this.sumflow = data.sumfolw;
             let flow = data.flow;
+
             if(flow>0){//有流量去划线
                 // 有流量的点喷洒时长+1s
                 this.sumtimeflow = this.sumtimeflow + 1;
-
+                this.sumarea = (this.sumarea +  (this.flightBeltWidth  * data.speed /666.67));
                 let lgt = new T.LngLat(data.longitude, data.latitude)
                 if(this.sprayBreak){//中断过需要从起一条线
                     let points = [];
@@ -534,12 +551,7 @@ export default class OperatingArea extends Vue {
             }else{
                 this.sprayBreak = true;
             }
-            this.nowtime = data.speedtime;
-            this.nowspeed = data.speed; 
-            this.nowflow = data.flow;
-            this.nowheight = data.height;
-            this.sumtime = this.sumtime + 1;
-            this.sumflow = data.sumfolw;
+          
             let speed = data.speed;
             
 
@@ -802,6 +814,10 @@ export default class OperatingArea extends Vue {
         this.style = "height:" + (this.height - 50) + "px";
         this.style1 = "" + (this.height - 85) ;
     }
+
+    get sumareaFixed(){
+        return this.sumarea.toFixed(3)
+    }
 }
 </script>
 <style scoped lang="scss" >
@@ -929,6 +945,8 @@ export default class OperatingArea extends Vue {
 .right-content {
     height: 100%;
     width: 100%;
+    overflow-y: auto;
+    // height: calc(100%) !important;
     background-color: #004981;
 }
 .header{

@@ -29,21 +29,21 @@
                 :height="style1"
                 ref="xTable1"
                 :data="tableData">
-                <vxe-table-column field="id" title="主键" ></vxe-table-column> 
-                <vxe-table-column field="tkid" title="任务标识" ></vxe-table-column>
-                <vxe-table-column field="ssid" title="序号" ></vxe-table-column>
-                <vxe-table-column field="asid" title="飞机编号"  ></vxe-table-column>
-                <vxe-table-column field="usrcode" title="终端账户"  ></vxe-table-column>
-                <vxe-table-column field="asidscm" title="通航公司" ></vxe-table-column>
-                <vxe-table-column field="bgtime1" title="开始时间" width="60"></vxe-table-column>
-                <vxe-table-column field="edtime1" title="结束时间"  width="60"></vxe-table-column>
-                <vxe-table-column field="avgaltitude" title="平均海拔(m)" width="80" ></vxe-table-column>
-                 <vxe-table-column field="sumtime" title="喷洒时长" width="80" ></vxe-table-column>
-                <vxe-table-column field="avgspeed" title="平均航速(km、h)" width="60"></vxe-table-column>
-                <vxe-table-column field="summileage" title="喷洒里程(km)" width="60"></vxe-table-column>
-                <vxe-table-column field="sumarea" title="喷洒面积(亩)"  width="60"></vxe-table-column>
-                <vxe-table-column field="avgflow" title="平均流量(m3/h)(m)" width="80" ></vxe-table-column>
-                <vxe-table-column field="sumflow" title="总流量(m3)(m3/h)(m)" width="80" ></vxe-table-column>
+                <!-- <vxe-table-column field="id" title="主键" ></vxe-table-column> 
+                <vxe-table-column field="tkid" title="任务标识" ></vxe-table-column> -->
+                <vxe-table-column field="ssid" title="序号"  width="60"></vxe-table-column>
+                <vxe-table-column field="asid" title="飞机编号"  width="100"></vxe-table-column>
+                <vxe-table-column field="usrcode" title="终端账户" width="100" ></vxe-table-column>
+                <vxe-table-column field="asidscm" title="通航公司" width="150" ></vxe-table-column>
+                <vxe-table-column field="bgtime1" title="开始时间" width="100"></vxe-table-column>
+                <vxe-table-column field="edtime1" title="结束时间"  width="100"></vxe-table-column>
+                <vxe-table-column field="avgaltitude" title="平均海拔(m)" width="90" ></vxe-table-column>
+                 <vxe-table-column field="sumtime" title="喷洒时长" width="100" ></vxe-table-column>
+                <vxe-table-column field="avgspeed" title="平均航速(km/h)" width="120"></vxe-table-column>
+                <vxe-table-column field="summileage" title="喷洒里程(km)" width="100"></vxe-table-column>
+                <vxe-table-column field="sumarea" title="喷洒面积(亩)"  width="100"></vxe-table-column>
+                <vxe-table-column field="avgflow" title="平均流量(m3/h)" width="120" ></vxe-table-column>
+                <vxe-table-column field="sumflow" title="总流量(m3)" width="100" ></vxe-table-column>
             </vxe-table>
         </div>
   </div>
@@ -98,7 +98,13 @@ export default class followTimesLine extends Vue {
     qe.oprid = 13;
     let vv = await tools.query(qe);
     if (vv.data.id == 0) {
-      this.tableData = vv.data.data.data.data;  
+      let tableData = vv.data.data.data.data;  
+      console.log(this.tableData.length)
+      for (let index = 0; index < tableData.length; index++) {
+        this.tableData.push(tableData[index].data);
+      }
+      console.log(this.tableData)
+     
     }
     console.log(this.tableData)
   }
