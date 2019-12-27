@@ -180,7 +180,7 @@ export default class LayHeader extends Vue {
                 }
                 this.$bus.$emit('MyMsghange')
             }else{
-                this.$notify.success(info.count); 
+                this.$message(info.count)
             }
         }
         // console.log(frame);

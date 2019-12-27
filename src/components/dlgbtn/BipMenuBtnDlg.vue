@@ -16,6 +16,25 @@
                 <el-button type="primary" @click="sqlOk(true,0)">确 定</el-button>
             </span>  
         </el-dialog> 
+        <el-dialog :title="dlgDCell.ccells.desc" :close-on-click-modal="false" :visible.sync="showDCell" width="50%" append-to-body>
+            <el-row class="bip-lay">
+                <el-form @submit.native.prevent label-position="right" label-width="100px">
+                    <div v-for="(cel,index) in dlgDCell.ccells.cels" :key="'A'+index">
+                        <bip-comm-editor
+                            v-if="(cel.attr&0x400) <= 0 "
+                            :cell="cel"
+                            :bgrid="false"
+                            :cds="dlgDCell"
+                            :row="0"
+                        />
+                    </div>
+                </el-form>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showDCell = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="dlgDOk" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
         <template v-if="openCell">
             <el-dialog :title="Title" :visible.sync="openCell" append-to-body>
                 <div class="">
@@ -73,6 +92,9 @@ export default class BipMenuBtnDlg extends Vue {
     @Provide() openCell:boolean = false;//是否打开对象
     @Provide() cellKey:string = '';//B 打开对象的主键 字段
     @Provide() cellCds:CDataSet = new CDataSet('');
+
+    @Provide() dlgDCell: CDataSet = new CDataSet("");//D: 弹出对象
+    @Provide() showDCell:boolean =false;
     mounted() {
 
     }
@@ -210,26 +232,59 @@ export default class BipMenuBtnDlg extends Vue {
             //     })
             // }
         }else if(btn.dlgType == 'D'){
-
-            let b = JSON.stringify(this.btn);
-            let v = JSON.stringify(this.env);
-            let bok = this.checkNotNull(this.env.dsm);
-            if(!bok){
-                return ; 
-            }
-            this.$message.success("操作执行中。。。。。")
-            await tools.getDlgRunClass(v,b).then(res =>{
-                if(res){
-                    if(res.data.id == 0 ){
-                        this.$notify.success(res.data.message)
-                    }else if(res.data.id == -2){
-                        console.log(res);
-                    }else {
-                        this.$notify.error(res.data.message)
-                    }
+            let dlgCont = this.btn.dlgCont;
+            let cc = dlgCont.split(";")
+            if(cc.length<3){
+                let b = JSON.stringify(this.btn);
+                let v = JSON.stringify(this.env);
+                let bok = this.checkNotNull(this.env.dsm);
+                if(!bok){
+                    return ; 
                 }
-            })
+                this.$message.success("操作执行中。。。。。")
+                await tools.getDlgRunClass(v,b).then(res =>{
+                    if(res){
+                        if(res.data.id == 0 ){
+                            this.$notify.success(res.data.message)
+                        }else if(res.data.id == -2){
+                            console.log(res);
+                        }else {
+                            this.$notify.error(res.data.message)
+                        }
+                    }
+                })
+            }else{
+                let cellID = cc[2];
+                if(cellID){
+                    this.dlgDCell = await this.getCells(cellID);
+                    this.dlgDCell.createRecord();
+                    this.showDCell = true;
+                }
+            }
         }
+    }
+    async dlgDOk(){
+        this.showDCell = false;
+        let b = JSON.stringify(this.btn);
+        let env:any = this.env;
+        env["externalCell"] = this.dlgDCell
+        let v = JSON.stringify(env);
+        let bok = this.checkNotNull(env.dsm);
+        if(!bok){
+            return ; 
+        }
+        this.$message.success("操作执行中。。。。。")
+        await tools.getDlgRunClass(v,b).then(res =>{
+            if(res){
+                if(res.data.id == 0 ){
+                    this.$notify.success(res.data.message)
+                }else if(res.data.id == -2){
+                    console.log(res);
+                }else {
+                    this.$notify.error(res.data.message)
+                }
+            }
+        })
     }
     /**
      * sql弹出框确定
@@ -421,6 +476,17 @@ export default class BipMenuBtnDlg extends Vue {
         return isok;
     }
 
+    async getCells(cellid: string) {
+        let res = await tools.getCCellsParams(cellid);
+        let rtn: any = res.data;
+        if (rtn.id == 0) {
+        let kn: Array<Cells> = rtn.data.layCels;
+        let cells = kn;
+        return new CDataSet(cells[0]);
+        } else {
+        return new CDataSet("");
+        }
+    }
 
     /**
      * 获取某个对象的当前选中的内容
