@@ -646,12 +646,11 @@ export default class RealTimeTrack extends Vue {
         let curPos = new T.LngLat(lnglat1.gd_longitude, lnglat1.gd_latitude)
         let targetPos = new T.LngLat(lnglat2.gd_longitude, lnglat2.gd_latitude)
         this.rotate =  TMapUt.setRotation(curPos,targetPos,this.tMap);
-        if(this.rotate == 0 ){
-            this.rotate = 360
+        if(this.rotate!=0&&this.rotate!=360&&this.rotate!=-90){
+            let style = this.plane.Fr.style[TMapUt.CSS_TRANSFORM()];
+            this.plane.Fr.style[TMapUt.CSS_TRANSFORM()]= style+" rotate(" +this.rotate + "deg)";
+            this.plane.Fr.style["transform-origin"] = "50% 50%";
         }
-        let style = this.plane.Fr.style[TMapUt.CSS_TRANSFORM()];
-        this.plane.Fr.style[TMapUt.CSS_TRANSFORM()]= style+" rotate(" +this.rotate + "deg)";
-        this.plane.Fr.style["transform-origin"] = "50% 50%";
     }
     //右侧作业区开关
     async operaBtnClick() {

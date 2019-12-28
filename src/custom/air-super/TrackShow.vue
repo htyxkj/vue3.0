@@ -83,10 +83,12 @@ export default class TrackShow extends Vue {
     @Provide() flightBeltWidth:number = 0;//航带宽度 米
     @Provide() trackColor:string = "#FFFF00";//航迹颜色
     @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
+    @Provide() params:any = null;
 
     @Provide() trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
 
     async created() {
+        this.params = this.$route.params;
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
         }
@@ -99,6 +101,15 @@ export default class TrackShow extends Vue {
             this.tMap = refT.getMap();
             this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
         }
+        if(this.$route.params){
+            let params = this.$route.params;
+            let tkid = params.tkid;
+            let bgtime = params.bgtime;
+            let edtime = params.edtime;
+            if(tkid && bgtime && edtime){
+                this.sortiesTrack(tkid,bgtime,edtime)
+            }
+        } 
     }
     mapChnage() {
         console.log("地图切换！");
@@ -169,6 +180,41 @@ export default class TrackShow extends Vue {
             }
         } catch (error) {
             this.loading = !this.loading;
+        }
+    }
+    /**
+     * 绘制架次航带
+     * @param tkid:任务编码
+     * @param bgtime:开始时间
+     * @param edtime:结束时间
+     */
+    async sortiesTrack(tkid:any,bgtime:any,edtime:any){
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 1; 
+        let cont =" sid ='" +tkid +"'";
+        qe.cont = cont;
+        let vv = await tools.getBipInsAidInfo("TKMSG", 210, qe);
+        if(vv.data.id == 0){
+            let data = vv.data.data.data.values[0] 
+            if(data){
+                this.taskTjCell.createRecord()
+                this.taskTjCell.currRecord.data.sid = tkid;
+                this.taskTjCell.currRecord.data.bgtime = bgtime;
+                this.taskTjCell.currRecord.data.edtime = edtime;
+                this.taskTjCell.currRecord.data.taskname = data.taskname;
+                this.taskTjCell.currRecord.data.asid = data.asid;
+                this.taskTjCell.currRecord.data.tlid = data.tlid;
+                this.taskTjCell.currRecord.data.oaid = data.oaid;
+                this.taskTjCell.currRecord.data.hoaid = data.hoaid;
+                this.taskTjCell.currRecord.data.route = data.route;
+
+                console.log(this.taskTjCell)
+                this.getOneTask();
+            }
+        }else{
+            console.log(vv)
+            this.$notify.error("查询任务出错")
         }
     }
     /**
@@ -260,6 +306,19 @@ export default class TrackShow extends Vue {
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
     }
+    @Watch("$route")
+    getTrack(){
+        if(this.$route && this.$route.path =="/TrackShow"){
+            if(this.$route.params){
+                let params = this.$route.params;
+                let tkid = params.tkid;
+                let bgtime = params.bgtime;
+                let edtime = params.edtime;
+                this.sortiesTrack(tkid,bgtime,edtime)
+            } 
+        }
+    }
+
 }
 </script>
 <style scoped lang="scss" >

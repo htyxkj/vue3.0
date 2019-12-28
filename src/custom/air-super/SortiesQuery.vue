@@ -3,7 +3,7 @@
       <div class="nav">
           <el-button  icon="el-icon-search" size="mini" @click="selectCoList">查询</el-button>
           <el-button icon="iconfont icon-bip-save" size="mini" >保存</el-button>
-          <el-button icon="el-icon-full-screen" size="mini">全图</el-button>
+          <el-button icon="el-icon-full-screen" size="mini" @click="fullImage">全图</el-button>
       </div>
       <div class="query">
           <el-row class="bip-lay">
@@ -31,6 +31,11 @@
                 :data="tableData">
                 <!-- <vxe-table-column field="id" title="主键" ></vxe-table-column> 
                 <vxe-table-column field="tkid" title="任务标识" ></vxe-table-column> -->
+                <vxe-table-column title="操作" width="60">
+                    <template v-slot="{ row }">
+                        <i class="el-icon-picture-outline" @click="goToSortiesTrack(row.tkid,row.bgtime1,row.edtime1)"></i>
+                    </template>
+                </vxe-table-column>
                 <vxe-table-column field="ssid" title="序号"  width="60"></vxe-table-column>
                 <vxe-table-column field="asid" title="飞机编号"  width="100"></vxe-table-column>
                 <vxe-table-column field="usrcode" title="终端账户" width="100" ></vxe-table-column>
@@ -98,16 +103,35 @@ export default class followTimesLine extends Vue {
     qe.oprid = 13;
     let vv = await tools.query(qe);
     if (vv.data.id == 0) {
-      let tableData = vv.data.data.data.data;  
-      console.log(this.tableData.length)
-      for (let index = 0; index < tableData.length; index++) {
-        this.tableData.push(tableData[index].data);
+        console.log(vv)
+      let _tableData = vv.data.data.data.data;  
+      this.tableData = [];
+      for (let index = 0; index < _tableData.length; index++) {
+        this.tableData.push(_tableData[index].data);
       }
-      console.log(this.tableData)
-     
     }
-    console.log(this.tableData)
   }
+    /**
+     * 航迹全图
+     */
+    fullImage(){
+        let tkid = this.taskTjCell.currRecord.data.sid; 
+        if(tkid == "" || tkid == null){
+            this.$notify.error("请选择任务名称！");
+            return;
+        }
+        let bgtime = this.taskTjCell.currRecord.data.bgtime;
+        let edtime = this.taskTjCell.currRecord.data.edtime;
+        this.goToSortiesTrack(tkid,bgtime,edtime);
+    }
+    goToSortiesTrack(tkid:any,bgtime:any,edtime:any){
+        this.$router.push({
+            path:'/TrackShow',
+            name:'TrackShow',
+            params:{tkid:tkid,bgtime:bgtime,edtime:edtime},
+            query: {pmenuid:"F0313"},
+        })
+    }
   // 获取对象信息
   async getCell(cellid: string) {
     let res = await tools.getCCellsParams(cellid);

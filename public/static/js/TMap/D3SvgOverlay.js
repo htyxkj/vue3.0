@@ -71,7 +71,8 @@ T.D3Overlay = T.Overlay.extend({
 
     onRemove: function (map) {
         map.removeEventListener("zoomend", this._zoomChange, this);
-        this._rootGroup.remove();
+        // this._rootGroup.remove();
+        this._rootGroup = null;
         map.removeOverLay(this._svg)
     },
 

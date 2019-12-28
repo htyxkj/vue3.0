@@ -356,7 +356,8 @@ T.CarTrack.prototype = {
             var rotate = this.angle(
                 this.D3OverLayer.lineDatas[this.D3OverLayer.lineDatas.length - 2],
                 this.D3OverLayer.lineDatas[this.D3OverLayer.lineDatas.length - 1]);
-            this.carMarker.setRotate(rotate)
+            if(rotate!=0&&rotate!=360&&rotate!=-90)
+                this.carMarker.setRotate(rotate)
         } else {
             this.carMarker.setRotate(0)
         }

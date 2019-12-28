@@ -84,6 +84,8 @@
                                 </el-tooltip> -->
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
+                            <!-- 进度条 -->
+                            <progress-bar offsetParent="body" width="80%" class="progress" :pointNum="taskData.length" :percent="percent" @pbar-seek="seek"></progress-bar>
                             <a class="areaBtn" @click="areaBtnClick">
                                 <template v-if="areaBtnOpen">
                                     <i class="iconfont icon-bip-up"></i>
@@ -268,6 +270,7 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
+import ProgressBar from "@/components/progressBar/ProgressBar.vue"
 import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
@@ -275,7 +278,8 @@ import echarts from 'echarts';
 @Component({
     components: {
         tMap,
-        bMap
+        bMap,
+        ProgressBar
     }
 })
 export default class OperatingArea extends Vue {
@@ -326,7 +330,6 @@ export default class OperatingArea extends Vue {
     @Provide() operaWidth: number = 0; //右侧作业区宽度
     @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
  
-    @Provide() tableData: any = null;
 
     // 回放时间对应的数据
     @Provide() nowtime:String = '----';
@@ -346,6 +349,9 @@ export default class OperatingArea extends Vue {
     @Provide() currentPageData:any =[]; //当前页显示内容
     @Provide() lngLatList:any = []; //选中点集合
 
+    @Provide() percent:any = 0;//进度条当前百分比
+    @Provide() dragPoints:number =0;
+
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
@@ -361,7 +367,7 @@ export default class OperatingArea extends Vue {
             this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
         }
         //初始化图表参数
-        this.initOptions();
+        // this.initOptions();
     }
    
     mapChnage() {
@@ -370,9 +376,9 @@ export default class OperatingArea extends Vue {
     //清空地图覆盖物
     clearCover() {
         this.stop()
-        // if(this.taskTrack){
-        //     this.taskTrack.clear();
-        // }
+        if(this.taskTrack){
+            this.taskTrack.clear();
+        }
         this.taskTrack = null;
         this.tMap.clearOverLays();
     }
@@ -429,6 +435,10 @@ export default class OperatingArea extends Vue {
      * 查找飞防轨迹信息
      */
     async getOneTask() {
+        if(this.taskTrack != null){
+            this.taskTrack.clear();
+            this.taskTrack = null;
+        }
         try {
             let bok = TMapUt.checkNotNull(this.taskTjCell);
             if(bok.length>1){
@@ -473,7 +483,7 @@ export default class OperatingArea extends Vue {
                 this.taskData = values;
                 let opt:any = {interval: this.interval,dynamicLine: true,
                                 polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
-                                carstyle:{display:true, iconUrl:"http://211.144.37.205/air-super/inet/gimg/plane.png", width:42, height:30},
+                                carstyle:{display:true, iconUrl:require('@/assets/map/airfence/plane.png'), width:42, height:30},
                                 passOneNode:this.passOneNode}
                 for(var i=0;i<values.length;i++){
                     let v = values[i];
@@ -503,12 +513,13 @@ export default class OperatingArea extends Vue {
      * lnglat:LngLat, index:Number, length:Number
      */
     passOneNode(LngLat:any,index:any,length:any){
+        this.loading = false;
         if(this.isFollow){//画面跟随
             this.tMap.panTo(LngLat);
         }
-        let data = this.taskData[index-1];
+        let data = this.taskData[this.dragPoints+index-1];
+        this.percent = (index+this.dragPoints)/this.taskData.length *100;
         if(data){
-
             this.nowtime = data.speedtime;
             this.nowspeed = data.speed; 
             this.nowflow = data.flow;
@@ -516,7 +527,6 @@ export default class OperatingArea extends Vue {
             this.sumtime = this.sumtime + 1;
             this.sumflow = data.sumfolw;
             let flow = data.flow;
-
             if(flow>0){//有流量去划线
                 // 有流量的点喷洒时长+1s
                 this.sumtimeflow = this.sumtimeflow + 1;
@@ -555,38 +565,38 @@ export default class OperatingArea extends Vue {
             let speed = data.speed;
             
 
-            this.speedChartOption.series[0].data[0].value = speed;
-            this.speedChart.setOption(this.speedChartOption, true);
+            // this.speedChartOption.series[0].data[0].value = speed;
+            // this.speedChart.setOption(this.speedChartOption, true);
             //压强暂时没有
 
             //高度
-            let hData = {
-                name:data.speedtime1,
-                value:[data.speedtime,data.height],
-            };
-            if(this.heightChartData.length>=5){
-                this.heightChartData.shift();
-            }
-            this.heightChartData.push(hData);
-            this.heightChart.setOption({
-                series: [{
-                    data: this.heightChartData
-                }]
-            });
-            //流量
-            let fData = {
-                name:data.speedtime1,
-                value:[data.speedtime,data.flow],
-            };
-            if(this.flowChartData.length>=5){
-                this.flowChartData.shift();
-            }
-            this.flowChartData.push(fData);
-            this.flowChart.setOption({
-                series: [{
-                    data: this.flowChartData
-                }]
-            });
+            // let hData = {
+            //     name:data.speedtime1,
+            //     value:[data.speedtime,data.height],
+            // };
+            // if(this.heightChartData.length>=5){
+            //     this.heightChartData.shift();
+            // }
+            // this.heightChartData.push(hData);
+            // this.heightChart.setOption({
+            //     series: [{
+            //         data: this.heightChartData
+            //     }]
+            // });
+            // //流量
+            // let fData = {
+            //     name:data.speedtime1,
+            //     value:[data.speedtime,data.flow],
+            // };
+            // if(this.flowChartData.length>=5){
+            //     this.flowChartData.shift();
+            // }
+            // this.flowChartData.push(fData);
+            // this.flowChart.setOption({
+            //     series: [{
+            //         data: this.flowChartData
+            //     }]
+            // });
         }
         // this.taskData[index-1] = null;
         if(index >= length){//最后一点
@@ -693,6 +703,32 @@ export default class OperatingArea extends Vue {
                       that.tMap.removeOverLay(item.values);
                 }
              })
+        }
+    }
+    //点击进度条
+    seek(percent1:any){  
+        try{
+            this.loading = true;
+            this.sumtimeflow = 0;
+            this.sumtime = 0;
+            this.sumflow ='0';
+            this.clearCover()
+            let begin = parseInt((this.taskData.length*percent1/100)+"")
+            this.dragPoints = begin;
+            let values:any = this.taskData.slice(begin,this.taskData.length-1);
+            let opt:any = {interval: this.interval,dynamicLine: true,
+                                    polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
+                                    carstyle:{display:true, iconUrl:require('@/assets/map/airfence/plane.png'), width:42, height:30},
+                                    passOneNode:this.passOneNode}
+            for(var i=0;i<values.length;i++){
+                let v = values[i];
+                let poin = new T.LngLat(v.longitude,v.latitude);
+                opt.Datas.push(poin);
+            } 
+            this.taskTrack = new T.CarTrack(this.tMap,opt);
+            this.taskTrack.start();
+        }catch(err){
+            console.log(err)
         }
     }
     /**
@@ -821,6 +857,12 @@ export default class OperatingArea extends Vue {
 }
 </script>
 <style scoped lang="scss" >
+.progress{
+    position: absolute;
+    bottom: 1rem;
+    left: 6rem;
+    z-index: 999;
+}
 .myTab {
     height: 600px;
 }
