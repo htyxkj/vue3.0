@@ -2,7 +2,7 @@
   <div class="sortquery">
       <div class="nav">
           <el-button  icon="el-icon-search" size="mini" @click="selectCoList">查询</el-button>
-          <el-button icon="iconfont icon-bip-save" size="mini" >保存</el-button>
+          <el-button icon="iconfont icon-bip-save" size="mini" @click="saveAll">保存</el-button>
           <el-button icon="el-icon-full-screen" size="mini" @click="fullImage">全图</el-button>
       </div>
       <div class="query">
@@ -22,15 +22,68 @@
       </div>
 
       <div class="sortdata">
-            <vxe-table
+          <vxe-table
+                :height="style1"
+                border
+                resizable
+                size="small"
+                highlight-hover-row
+                show-all-overflow="tooltip"
+                show-header-overflow
+                highlight-current-row
+                class="vxe-table-element checkbox-table"
+                :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false}"
+                :data.sync="jcCell.cdata.data" 
+                remote-sort
+                :sort-config="{trigger: 'cell'}"
+                show-footer
+                row-id="id"
+                :optimized="true"
+                @edit-actived="rowActive"
+                @edit-closed="editClose"
+                :selectRow="jcCell.currRecord"
+                > 
+                <vxe-table-column title="操作" width="60">
+                    <template v-slot="{ row }">
+                        <i class="el-icon-picture-outline" @click="goToSortiesTrack(row.data.tkid,row.data.bgtime1,row.data.edtime1)"></i>
+                    </template>
+                </vxe-table-column>
+                <template v-for="(cel,index) in jcCell.ccells.cels">
+                    <vxe-table-column
+                        header-align="center"
+                        align="center" 
+                        :key="index"
+                        :field="cel.id" 
+                        :title="cel.labelString"
+                        show-header-overflow
+                        :edit-render="{name: 'default'}"
+                        show-overflow
+                        :disabled="(cel.attr&0x40)>0"
+                        v-if="(cel.attr & 0x400) == 0"
+                    >
+                        <template v-slot:edit="{row,rowIndex}">
+                            <bip-comm-editor  :cell="cel" :cds="jcCell" :row="rowIndex" :bgrid="true"/> 
+                        </template>
+                        <template v-slot="{row,rowIndex}">
+                            <bip-grid-info
+                                :cds="jcCell"
+                                :cell="cel"
+                                :row="rowIndex"
+                                :bgrid="true"
+                            ></bip-grid-info>
+                        </template>
+                    </vxe-table-column>
+                </template>
+            </vxe-table>
+            <!-- <vxe-table
                 border
                 align="center"
                 size="mini"
                 :height="style1"
                 ref="xTable1"
                 :data="tableData">
-                <!-- <vxe-table-column field="id" title="主键" ></vxe-table-column> 
-                <vxe-table-column field="tkid" title="任务标识" ></vxe-table-column> -->
+                <vxe-table-column field="id" title="主键" ></vxe-table-column> 
+                <vxe-table-column field="tkid" title="任务标识" ></vxe-table-column>
                 <vxe-table-column title="操作" width="60">
                     <template v-slot="{ row }">
                         <i class="el-icon-picture-outline" @click="goToSortiesTrack(row.tkid,row.bgtime1,row.edtime1)"></i>
@@ -49,7 +102,7 @@
                 <vxe-table-column field="sumarea" title="喷洒面积(亩)"  width="100"></vxe-table-column>
                 <vxe-table-column field="avgflow" title="平均流量(m3/h)" width="120" ></vxe-table-column>
                 <vxe-table-column field="sumflow" title="总流量(m3)" width="100" ></vxe-table-column>
-            </vxe-table>
+            </vxe-table> -->
         </div>
   </div>
 </template>
@@ -63,9 +116,10 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
+import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 @Component({
   components: {
-    
+    BipGridInfo
   }
 })
 export default class followTimesLine extends Vue {
@@ -74,8 +128,8 @@ export default class followTimesLine extends Vue {
     @Provide() page: any = { pageSize: 100, currPage: 1, total: 0 };
     @Provide() tableData: Array<any> = [];
     @Provide() taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
-  
-  async created() {
+    @Provide() jcCell:CDataSet = new CDataSet("");//架次对象
+    async created() {
         if (this.height) {
             this.style1 = ""+ (this.height - 250);
         }
@@ -83,6 +137,8 @@ export default class followTimesLine extends Vue {
         // 初始化条件查询区域
         this.taskTjCell = await this.getCell("FW0320TJ");
         this.taskTjCell.createRecord();
+        this.jcCell = await this.getCell("FW0320");
+        
     }
   mounted() {
 
@@ -103,14 +159,23 @@ export default class followTimesLine extends Vue {
     qe.oprid = 13;
     let vv = await tools.query(qe);
     if (vv.data.id == 0) {
-        console.log(vv)
-      let _tableData = vv.data.data.data.data;  
-      this.tableData = [];
-      for (let index = 0; index < _tableData.length; index++) {
-        this.tableData.push(_tableData[index].data);
-      }
+    //     console.log(vv)
+    //   let _tableData = vv.data.data.data.data;  
+      this.jcCell.cdata.data = vv.data.data.data.data;  
+    //   this.tableData = [];
+    //   for (let index = 0; index < _tableData.length; index++) {
+    //     this.tableData.push(_tableData[index].data);
+    //   }
     }
   }
+    rowActive(rowInfo: any, event: any) {
+        this.jcCell.currRecord = this.jcCell.getRecordAtIndex(rowInfo.rowIndex);
+        this.jcCell.index = rowInfo.rowIndex;
+    }
+
+    editClose(rowInfo: any, event: any) {
+        this.jcCell.currRecord = this.jcCell.getRecordAtIndex(rowInfo.rowIndex);
+    }
     /**
      * 航迹全图
      */
@@ -125,12 +190,24 @@ export default class followTimesLine extends Vue {
         this.goToSortiesTrack(tkid,bgtime,edtime);
     }
     goToSortiesTrack(tkid:any,bgtime:any,edtime:any){
+        console.log(tkid,bgtime,edtime)
         this.$router.push({
             path:'/TrackShow',
             name:'TrackShow',
             params:{tkid:tkid,bgtime:bgtime,edtime:edtime},
             query: {pmenuid:"F0313"},
         })
+    }
+    async saveAll(){
+        this.taskTjCell.currRecord.c_state = 2; 
+        this.taskTjCell.ds_sub=[];
+        this.taskTjCell.ds_sub.push(this.jcCell)
+        let restj = await this.taskTjCell.saveData();
+        if(restj.data.id == 0){ 
+            this.$notify.success("保存成功！")
+        }else{
+            this.$notify.error("保存失败！")
+        }
     }
   // 获取对象信息
   async getCell(cellid: string) {

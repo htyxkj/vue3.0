@@ -708,6 +708,9 @@ export default class OperatingArea extends Vue {
     //点击进度条
     seek(percent1:any){  
         try{
+            if(this.taskData.length<=0){
+                return;
+            }
             this.loading = true;
             this.sumtimeflow = 0;
             this.sumtime = 0;
