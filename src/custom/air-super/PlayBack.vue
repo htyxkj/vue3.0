@@ -274,6 +274,8 @@ import ProgressBar from "@/components/progressBar/ProgressBar.vue"
 import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
+import { GPSUtil } from "./class/GPSUtil";
+let Gps = GPSUtil.GPS;
 import echarts from 'echarts'; 
 @Component({
     components: {
@@ -495,7 +497,8 @@ export default class OperatingArea extends Vue {
                 this.haveFlow =[];
                 for(var i=0;i<values.length;i++){
                     let v = values[i];
-                    let poin = new T.LngLat(v.longitude,v.latitude);
+                    let lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                    let poin = new T.LngLat(lnglat[1],lnglat[0]);
                     opt.Datas.push(poin);
                     if(v.flow>0){
                         if(noFlow){
@@ -742,7 +745,8 @@ export default class OperatingArea extends Vue {
                                     passOneNode:this.passOneNode}
             for(var i=0;i<values.length;i++){
                 let v = values[i];
-                let poin = new T.LngLat(v.longitude,v.latitude);
+                let lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                let poin = new T.LngLat(lnglat[1],lnglat[0]); 
                 opt.Datas.push(poin);
             } 
             this.taskTrack = new T.CarTrack(this.tMap,opt);
