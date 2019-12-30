@@ -1,10 +1,15 @@
 <template>
-	<div class="progress-wrapper" :style="wrapStyle">
-        <div class="progress" @mousedown.stop="mousedownHandler" @mouseover.stop="mouseoverHandler"
-             @mousemove.stop="mousemoveHandler" @mouseup.stop="mouseupHandler" @mouseout.stop="mouseoutHandler" :style="pBarStyle">
-            <div class="left" :style="leftStyle">
-                <div class="ball" :style="ballStyle"></div>
+    <div>
+        <div class="progress-wrapper" :style="wrapStyle">
+            <div class="progress" @mousedown.stop="mousedownHandler" @mouseover.stop="mouseoverHandler"
+                @mousemove.stop="mousemoveHandler" @mouseup.stop="mouseupHandler" @mouseout.stop="mouseoutHandler" :style="pBarStyle">
+                <div class="left" :style="leftStyle">
+                    <div class="ball" :style="ballStyle"></div>
+                </div>
             </div>
+        </div>
+        <div style="width:10%;float: left;">
+            {{percent.toFixed(2)}}%
         </div>
     </div>
 </template>
@@ -20,8 +25,8 @@ export default class ProgressBar extends Vue {
     @Prop() ballBgc!:string;//背景色
     @Prop() height!:string;//高度
     @Prop() width!:string;//宽度
-    @Prop() percent!:number;//当前点数
-    @Prop() pointNum:number = 0;//总点数
+    @Prop() percent!:number;//当前点数%
+    @Prop() pointNum!:number;//总点数
     @Provide() wrapStyle: any = {width: this.width};
     @Provide() pBarStyle: any = {backgroundColor: "#ccc",height:this.height};
     @Provide() leftStyle: any = {width: this.percent + '%',backgroundColor: "greenyellow",height: this.height};
@@ -190,7 +195,7 @@ export default class ProgressBar extends Vue {
     .progress{
         width:100%;
         height:20px;
-        background-color: #ccc;
+        float: left;
         overflow: hidden;
         cursor: pointer;
         margin: 0px;

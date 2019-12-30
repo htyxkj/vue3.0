@@ -84,8 +84,8 @@
                                 </el-tooltip> -->
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
-                            <!-- 进度条 -->
-                            <progress-bar offsetParent="body" width="80%" class="progress" :pointNum="taskData.length" :percent="percent" @pbar-seek="seek"></progress-bar>
+                            <!-- 进度条 --> 
+                            <progress-bar class="progress" offsetParent="body" width="80%":pointNum="taskData.length>0?taskData.length:100" :percent="percent" @pbar-seek="seek"></progress-bar>
                             <a class="areaBtn" @click="areaBtnClick">
                                 <template v-if="areaBtnOpen">
                                     <i class="iconfont icon-bip-up"></i>
@@ -341,6 +341,7 @@ export default class OperatingArea extends Vue {
     @Provide() sumtime:number = 0;
     @Provide() taskname:String = "";
     @Provide() sumarea:number = 0;
+    @Provide() haveFlow:any=[];//有流量的节点
 
      // 前端分页显示数据
     @Provide() totalPage:number= 1; // 统共页数，默认为1
@@ -375,11 +376,14 @@ export default class OperatingArea extends Vue {
     }
     //清空地图覆盖物
     clearCover() {
+        this.sprayBreak = true;
         this.stop()
         if(this.taskTrack){
             this.taskTrack.clear();
         }
         this.taskTrack = null;
+        this.sprayLine0=[];//喷洒轨迹（农药范围）
+        this.sprayLine1=[];//喷洒轨迹（一像素的线）
         this.tMap.clearOverLays();
     }
     //左侧行政区开关
@@ -448,6 +452,8 @@ export default class OperatingArea extends Vue {
             this.clearCover();
             this.taskname = this.taskTjCell.currRecord.data.taskname; 
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
+            if(!this.flightBeltWidth)
+                this.flightBeltWidth=45;
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
@@ -485,12 +491,22 @@ export default class OperatingArea extends Vue {
                                 polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
                                 carstyle:{display:true, iconUrl:require('@/assets/map/airfence/plane.png'), width:42, height:30},
                                 passOneNode:this.passOneNode}
+                let noFlow  = true;
+                this.haveFlow =[];
                 for(var i=0;i<values.length;i++){
                     let v = values[i];
                     let poin = new T.LngLat(v.longitude,v.latitude);
                     opt.Datas.push(poin);
+                    if(v.flow>0){
+                        if(noFlow){
+                            v.cid = i;
+                            this.haveFlow.push(v);
+                        }
+                        noFlow = false;
+                    }else{
+                        noFlow = true;
+                    }
                 }
-
                  // 前端分页
                 this.totalPage = Math.ceil(this.taskData.length / this.pageSize);
                 // // 计算得0时设置为1
@@ -505,6 +521,7 @@ export default class OperatingArea extends Vue {
             }
             this.loading = !this.loading;
         } catch (error) {
+            console.log("查询回放记录出错！")
             this.loading = !this.loading;
         }
     }

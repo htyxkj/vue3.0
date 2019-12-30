@@ -200,13 +200,24 @@ export default class followTimesLine extends Vue {
     }
     async saveAll(){
         this.taskTjCell.currRecord.c_state = 2; 
-        this.taskTjCell.ds_sub=[];
-        this.taskTjCell.ds_sub.push(this.jcCell)
         let restj = await this.taskTjCell.saveData();
-        if(restj.data.id == 0){ 
-            this.$notify.success("保存成功！")
-        }else{
-            this.$notify.error("保存失败！")
+        var num = 0;
+        if(restj.data.id != 0){ 
+            this.$notify.error("全图保存失败！")
+            num++;
+        }
+        let datas = this.jcCell.cdata.data;
+        for(var i=0;i<datas.length;i++){
+            this.jcCell.currRecord = datas[i];
+            this.jcCell.currRecord.c_state =2;
+            let cc = await this.jcCell.saveData();
+            if(cc.data.id != 0){
+                this.$notify.error("第"+datas[i].data.ssid+"架次保存失败！")
+                num++;
+            }
+        }
+        if(num==0){
+            this.$notify.success("保存成功！");
         }
     }
   // 获取对象信息
