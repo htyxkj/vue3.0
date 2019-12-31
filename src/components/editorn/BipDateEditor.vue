@@ -122,7 +122,6 @@ export default class BipDateEditor extends Vue{
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
         this.model1 = this.model
-        console.log(this.model1)
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{

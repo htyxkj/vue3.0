@@ -21,7 +21,8 @@
                 class="vxe-table-element"
                 :data.sync="cds.cdata.data"
                 :optimized="true"
-                :edit-config="{key:'id',trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
+                :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
+                row-id="id"
                 resizable
                 @edit-actived="rowActive"
                 @edit-closed="editClose"
@@ -30,8 +31,9 @@
                 @select-all="selectAllEvent"
                 @cell-click="table_cell_click"
                 @select-change="selectChangeEvent"
+                :header-cell-style="headerCellStyle"
                 >
-                <vxe-table-column v-if="cds.ds_par" type="selection" width="40"></vxe-table-column>
+                <vxe-table-column v-if="cds.ds_par" type="checkbox" width="40"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
                     <template v-if="item.type == ''">
                         <vxe-table-column :key="index" header-align="center" align="center"
@@ -383,6 +385,16 @@ export default class LayCelVexTable extends Vue {
         }
     }
 
+    headerCellStyle(column:any){
+        let columnIndex = column.columnIndex;
+        let cel =this.groupCells[columnIndex-1];
+        if(cel){
+            cel =cel.cel;
+            if((cel.attr & 0x2) >0){
+                return { color: 'red' }
+            }
+        }
+    }
 
     async addRecord() {
         if(this.cds.currCanEdit()){
@@ -759,7 +771,6 @@ export default class LayCelVexTable extends Vue {
         this.datachange(obj_id);
     }
     datachange(obj_id:string =''){
-        console.log(obj_id)
         if(this.cds.ccells)
         if(obj_id == this.cds.ccells.obj_id){
             let cc:any = this.$refs[this.cds.ccells.obj_id];

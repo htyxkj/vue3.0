@@ -141,7 +141,6 @@ export default class BipCommEditor extends Vue{
         }else{
             //没有辅助，但是编辑器类型是下拉列表，需要处理参照信息
             let type = this.cell.type;
-            console.log(this.cell.editType)
             if(this.cell.editType === 1){
                 this.editorType = this.I_EDITOR_LIST
                 let str = this.cell.refValue
@@ -195,7 +194,6 @@ export default class BipCommEditor extends Vue{
      * 获取当前cell绑定的值
      */
     getModelValues(){
-        console.log("getModelValues")
         let crd:CRecord = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
         if(crd&&crd.data){
             this.model = crd.data[this.cell.id]

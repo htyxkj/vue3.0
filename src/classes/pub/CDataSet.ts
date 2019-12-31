@@ -174,7 +174,6 @@ export default class CDataSet {
    * @param _i 数据下标
    */
   currCanEdit(_i: number = -1) {
-    console.log("currCanEdit")
     //判断是否是临时改
     if(this.ceaPars){
       if(this.ccells.attr)
@@ -392,9 +391,9 @@ export default class CDataSet {
                   if(this.currRecord.id == currRecord.id){
                     currRecord = this.currRecord;
                   }
+                  this.currRecord.c_state |=2;
                 }
                 this.currRecord = currRecord;
-                this.currRecord.c_state |=2;
               }
             }
           }

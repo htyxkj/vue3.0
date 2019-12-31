@@ -10,9 +10,7 @@ export class BipLayout{
     compconfs:Array<BipLayConf>
     ccells:Cells[] = []
     constructor(_laystr:string,_cells?:Cells[]){
-        console.log("BipLayout")
         this.laystr = _laystr
-        console.log(_laystr)
         this.compconfs = new Array<BipLayConf>();
         if(this.laystr){
             //初始化界面组成

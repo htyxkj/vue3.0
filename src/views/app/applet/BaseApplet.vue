@@ -184,45 +184,7 @@ export default class BaseApplet extends Vue{
         }else if(cmd === "CHECK"){
             // tools.test();
         }else if(cmd=== "SUBMIT"){
-            if(this.dsm.opera){
-                if(this.dsm.isPosted()){
-                    //可以提交
-                    let crd = this.dsm.currRecord
-                    let params = {
-                        sid: crd.data[this.dsm.opera.pkfld],
-                        sbuid: crd.data[this.dsm.opera.buidfld],
-                        statefr: crd.data[this.dsm.opera.statefld],
-                        stateto: crd.data[this.dsm.opera.statefld],
-                        spuserId: ""
-                    }  
-                    this.cea = new CeaPars(params)
-                    this.fullscreenLoading = true
-                    tools.getCheckInfo(this.cea,33).then((res:any)=>{
-                        if(res.data.id==0){
-                            let data = res.data.data.info
-                            let work:any = this.$refs.work;
-                            let smakefld:string='';
-                            if(this.dsm.opera){
-                                if(this.dsm.opera.smakefld){
-                                    smakefld = crd.data[this.dsm.opera.smakefld];
-                                }
-                            }
-                            this.dsm.ceaPars = this.cea
-                            work.open(data,this.cea,smakefld);
-                        }
-                    }).catch(err=>{
-                        this.$notify.error(err)
-                    }).finally(()=>{
-                        this.fullscreenLoading = false
-                    });
-                }
-            }
-            if(this.dsm.isPosted()){
-                console.log('保存过了')
-            }else{
-                console.log('没保存')
-                this.$notify.warning("请先保存数据！");
-            }
+            this.submint();
         }else if(cmd === 'CHECKPROCESS'){
             let crd:any = this.dsm.currRecord.data;
             if(this.dsm.opera){
@@ -458,11 +420,10 @@ export default class BaseApplet extends Vue{
                     let data = res.data;
                     let vv:CData = data.data.data;
                     let cd :CData = this.initCData(vv)
-                    this.dsm.currRecord.subs = [cd];
-                    this.setSubData();
-                    this.$bus.$emit("datachange", qq.pcell);
+                    this.dsm.currRecord.subs[j] = cd;
                 }
             }
+            this.setSubData();
         }
     }
     
@@ -585,6 +546,7 @@ export default class BaseApplet extends Vue{
                         cds1.clear();
                         cds1.setCData(oneSubs)
                         cds1.page.total = vals.length||0
+                        this.$bus.$emit("datachange", cds1.p_cell);
                     }
                 }
             }
@@ -658,7 +620,6 @@ export default class BaseApplet extends Vue{
             this.fullscreenLoading = true;
             this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
                 this.fullscreenLoading = false;
-                console.log(res)
                 if (res.status == 200) {
                     let data = res.data;
                     if (data.id == 0) {
@@ -673,8 +634,7 @@ export default class BaseApplet extends Vue{
                         }else{
                             this.$message.warning(data.message);
                         }
-                        
-                        console.log(this.dsm.currRecord);
+                        this.submint();
                     }else{
 
                     }
@@ -690,6 +650,50 @@ export default class BaseApplet extends Vue{
                 this.dsm.currRecord.c_state & icl.R_EDITED
             );
             return;
+        }
+    }
+    /**
+     * 审批流提交
+     */
+    submint(){
+        if(this.dsm.opera){
+            if(this.dsm.isPosted()){
+                //可以提交
+                let crd = this.dsm.currRecord
+                let params = {
+                    sid: crd.data[this.dsm.opera.pkfld],
+                    sbuid: crd.data[this.dsm.opera.buidfld],
+                    statefr: crd.data[this.dsm.opera.statefld],
+                    stateto: crd.data[this.dsm.opera.statefld],
+                    spuserId: ""
+                }  
+                this.cea = new CeaPars(params)
+                this.fullscreenLoading = true
+                tools.getCheckInfo(this.cea,33).then((res:any)=>{
+                    if(res.data.id==0){
+                        let data = res.data.data.info
+                        let work:any = this.$refs.work;
+                        let smakefld:string='';
+                        if(this.dsm.opera){
+                            if(this.dsm.opera.smakefld){
+                                smakefld = crd.data[this.dsm.opera.smakefld];
+                            }
+                        }
+                        this.dsm.ceaPars = this.cea
+                        work.open(data,this.cea,smakefld);
+                    }
+                }).catch(err=>{
+                    this.$notify.error(err)
+                }).finally(()=>{
+                    this.fullscreenLoading = false
+                });
+            }
+        }
+        if(this.dsm.isPosted()){
+            console.log('保存过了')
+        }else{
+            console.log('没保存')
+            this.$notify.warning("请先保存数据！");
         }
     }
 
@@ -930,13 +934,11 @@ export default class BaseApplet extends Vue{
         this.qe.type = 0
         this.qe.page.pageSize = value
         this.qe.page.currPage = 1
-        console.log(this.qe)
         // if(this.oprid == 13)
         // this.qe.cont = JSON.stringify(this.dsm.cont);
         // else
         // this.qe.cont = this.dsm.cont;
         let vv = await this.findDataFromServe(this.qe);
-        console.log(vv,'服务器返回数据')
         if (vv != null) {
             this.qe.values = vv.data;
             this.qe.page = vv.page;

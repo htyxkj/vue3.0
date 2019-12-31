@@ -83,6 +83,7 @@ export default class BipListEditor extends Vue{
     }
 
     initOPtions(){
+        this.options = [];
         if(this.bipInsAid){
             this.cels = this.bipInsAid.cells.cels
             if(!this.cell.isReq){
@@ -152,6 +153,8 @@ export default class BipListEditor extends Vue{
             let str = this.model||''
             if(str.length>0){
                 this.model1 = str.split(';')||str.split(',')
+            }else{
+                this.model1=[];
             }
         }else{
             if(this.model!=this.model1){
