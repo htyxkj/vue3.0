@@ -32,7 +32,7 @@
         <div class="nav-tools">
           <span class="tools-li">
             <el-dropdown trigger="click" @command="toolClick" size="mini" split-button >
-              <span class="el-dropdown-link">工具</span>
+              <span class="el-dropdown-link">作业区工具</span>
               <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="1">作业区规划(面)</el-dropdown-item>
               <el-dropdown-item command="2">作业区规划(线)</el-dropdown-item>
@@ -562,7 +562,7 @@ export default class OperatingArea extends Vue {
   makeOperaLableTXT(d1: any, t1: any) {
     if (d1) {
       var co = "";
-      co =d1.id;
+      co =d1.id; 
       //   d1.id +
       //   "<br/>" +
       //   d1.name +
@@ -576,7 +576,7 @@ export default class OperatingArea extends Vue {
       var label = new T.Label({
         text: co,
         position: t1.center,
-        offset: new T.Point(0, 0),
+        offset: new T.Point(-30, 0),
         fontsize :14
       });
       if(d1.sbuid == 'F2005'){
@@ -1578,8 +1578,12 @@ export default class OperatingArea extends Vue {
               //坐标
               var lnglatArr = obj[i].lonlat.split(" ");
               var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-              zoomArr.push(lnglat);
+              zoomArr.push(lnglat); 
           })(i);
+      }
+      for(var i=0;i<zoomArr.length;i++){
+        let marker = new T.Marker(zoomArr[i]);// 创建标注
+        this.tMap.addOverLay(marker);             // 将标注添加到地图中
       }
       //显示地图的最佳级别
       this.tMap.setViewport(zoomArr);
