@@ -55,6 +55,7 @@
                 <el-dropdown-item command="1">标记四角坐标</el-dropdown-item>
                 <el-dropdown-item command="2">勾选四角坐标</el-dropdown-item>
                 <el-dropdown-item command="3">勾选新点</el-dropdown-item>
+                <el-dropdown-item command="4">保存识别区</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </span>
@@ -442,6 +443,7 @@ export default class OperatingArea extends Vue {
   @Provide() makeABCD:any={};//航空识别区四角标识
   @Provide() sbqPointABCD:any=[];//已勾选的识别区的四角坐标集合
   @Provide() checkedABCD:any = [];//新填识别区四角坐标
+  @Provide() sbqMarkerPoint:any = null;//识别区标注点对象
 
   @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
   @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
@@ -659,34 +661,60 @@ export default class OperatingArea extends Vue {
   aviationToolClick(item:any){
     let sbqData = [];
     if(item == 1 || item ==2){     
-      for(var i=0;i<this.checkOperaList.length;i++){
-        let k = this.checkOperaList[i];
-        let data = this.operaJSON[k]
-        if(data.sbuid =='F2005'){//航空识别区
-          sbqData.push(data);
+        for(var i=0;i<this.checkOperaList.length;i++){
+            let k = this.checkOperaList[i];
+            let data = this.operaJSON[k]
+            if(data.sbuid =='F2005'){//航空识别区
+            sbqData.push(data);
+            }
         }
-      }
-      if(sbqData.length<=0){
-        this.$notify.warning("请勾选航空识别区！")
-        return ;
-      }
+        if(sbqData.length<=0){
+            this.$notify.warning("请勾选航空识别区！")
+            return ;
+        }
     }
-    if(item ==1){
-      for(var k in this.makeABCD){
-        let data = this.makeABCD[k];
-        for(var i=0;i<data.length;i++){
-          this.tMap.removeOverLay(data[i])
+    if(item ==1){//显示四角标注
+        for(var k in this.makeABCD){
+            let data = this.makeABCD[k];
+            for(var i=0;i<data.length;i++){
+            this.tMap.removeOverLay(data[i])
+            }
         }
-      }
-      this.createABCD(sbqData)
-    }else if(item ==2){
-      this.sbqPointABCD = [];
-      this.checkedABCD = [];
-      this.aviationToolClick(1);
-      console.log(this.sbqPointABCD);
-      this.aviationDia = true;
-    }else if(item == 3){
-
+        this.createABCD(sbqData)
+    }else if(item ==2){//勾选标注点
+        this.sbqPointABCD = [];
+        this.checkedABCD = [];
+        this.aviationToolClick(1);
+        console.log(this.sbqPointABCD);
+        this.aviationDia = true;
+    }else if(item == 3){//添加新点
+        //创建标注工具对象
+        var icon = new T.Icon({
+            iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
+            iconSize: new T.Point(19, 27),
+            iconAnchor: new T.Point(10, 25)
+        });
+        this.sbqMarkerPoint = new T.MarkTool(this.tMap, { follow: true,icon:icon });
+        this.sbqMarkerPoint.addEventListener("mouseup",this.sbqMarkerPointToolEnd);
+        this.sbqMarkerPoint.close();
+        this.sbqMarkerPoint.open();
+    }else if(item==4){//保存识别区 
+        if(this.checkedABCD.length<=2){
+            this.$notify.warning("请勾选正确的航空识别区！")
+            return;
+        }
+        let boundary1 = "";
+        for (var i = 0; i < this.checkedABCD.length; i++) {
+        let point = this.checkedABCD[i];
+            boundary1 += point + ";";
+        }
+        boundary1 = boundary1.substring(0, boundary1.length - 1);
+        this.operaSaveCell.clear();
+        this.operaSaveCell.createRecord();
+        // this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
+        this.operaSaveCell.currRecord.data.boundary1 = boundary1;
+        this.operaSaveCell.currRecord.data.sbuid="F2005"
+        this.showSaveOperaDia = true;
     }
   }
   //创建航空识别区四角 标识
@@ -728,9 +756,27 @@ export default class OperatingArea extends Vue {
   selABCDOk(){
     this.aviationDia = false;
     for(var i=0;i<this.checkedABCD.length;i++){
-      let latlng = this.checkedABCD[i];
-      
+        let latlng = this.checkedABCD[i];
+        let point = latlng.split(",");
+                    //创建图片对象
+        var icon = new T.Icon({
+            iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
+            iconSize: new T.Point(19, 27),
+            iconAnchor: new T.Point(10, 25)
+        });
+        var marker = new T.Marker(new T.LngLat(point[0], point[1]),{icon:icon});
+        //向地图上添加标注
+        this.tMap.addOverLay(marker);
     }
+  }
+  /**
+   * 新点标注完成后
+   */
+  sbqMarkerPointToolEnd(parameter:any){
+        let editCover = parameter.currentMarker; 
+        let lnglat = parameter.currentLnglat;
+        let avoid = lnglat.getLng()+","+lnglat.getLat();
+        this.checkedABCD.push(avoid)
   }
 
 
