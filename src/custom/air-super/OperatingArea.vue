@@ -48,8 +48,19 @@
           <span class="tools-li">
               <el-button size="mini" icon="el-icon-search" @click="showOperaDia =!showOperaDia">查找</el-button>
           </span>  
+          <span class="tools-li">
+            <el-dropdown trigger="click" @command="aviationToolClick" size="mini" split-button >
+              <span class="el-dropdown-link">航空识别区工具</span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1">标记四角坐标</el-dropdown-item>
+                <el-dropdown-item command="2">勾选四角坐标</el-dropdown-item>
+                <el-dropdown-item command="3">勾选新点</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </span>
         </div>
       </el-main>
+      <!-- 右侧作业区 -->
       <el-aside :width="operaWidth+'px'">
         <div>
           <el-tabs v-model="activeName1" type="card">
@@ -313,6 +324,20 @@
         <el-button type="primary" @click="saveOperaBr" size="mini">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="航空识别区坐标勾选" :close-on-click-modal="false" :visible.sync="aviationDia" width="50%" class="bip-query">
+      <el-row class="bip-lay">
+        <el-checkbox-group v-model="checkedABCD">
+          <el-row v-for="(item,index) in sbqPointABCD" :key="index">
+              <el-row>{{item.id}}</el-row>
+              <el-checkbox v-for="p in item.point" :label="p.latlng" :key="p.latlng">{{p.name}}</el-checkbox>
+          </el-row>
+        </el-checkbox-group>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="aviationDia = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="selABCDOk" size="mini">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -381,9 +406,9 @@ export default class OperatingArea extends Vue {
   
   @Provide() checkOperaList: any = []; //作业区勾选数据
   @Provide() sbqCheckOperaList: any = []; //识别区勾选数据
-  @Provide() cCheckOperaList: any = []; //识别区勾选数据
-  @Provide() xCheckOperaList: any = []; //识别区勾选数据
-  @Provide() qCheckOperaList: any = []; //识别区勾选数据
+  @Provide() cCheckOperaList: any = []; //作业区春勾选数据
+  @Provide() xCheckOperaList: any = []; //作业区夏勾选数据
+  @Provide() qCheckOperaList: any = []; //作业区秋勾选数据
 
   @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 2000,total: 0}; //作业区查询分页数据
 
@@ -412,6 +437,11 @@ export default class OperatingArea extends Vue {
   @Provide() mapOpera: any = {}; //地图作业区覆盖集合
   @Provide() mapOperaTxt: any = {}; //地图作业区文字说明集合
 
+  @Provide() letter:any = ['A','B','C','D','E','F','G','H','I','G','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+  @Provide() aviationDia:boolean = false;//航空识别区坐标点勾选弹出框
+  @Provide() makeABCD:any={};//航空识别区四角标识
+  @Provide() sbqPointABCD:any=[];//已勾选的识别区的四角坐标集合
+  @Provide() checkedABCD:any = [];//新填识别区四角坐标
 
   @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
   @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
@@ -549,6 +579,13 @@ export default class OperatingArea extends Vue {
           if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
           if (this.mapOperaTxt[key])
             this.tMap.removeOverLay(this.mapOperaTxt[key]);
+          if(this.makeABCD[key]){
+            let data = this.makeABCD[key];
+            for(var i=0;i<data.length;i++){
+              this.tMap.removeOverLay(data[i])
+            }
+          }
+          delete this.makeABCD[key];
           delete this.mapOpera[key];
           delete this.mapOperaTxt[key];
           this.delAllBr(key);
@@ -614,6 +651,85 @@ export default class OperatingArea extends Vue {
       return [polygon, points];
     } else {
       return null;
+    }
+  }
+
+  /***************** 航空识别区 ****************/
+  //航空识别区工具
+  aviationToolClick(item:any){
+    let sbqData = [];
+    if(item == 1 || item ==2){     
+      for(var i=0;i<this.checkOperaList.length;i++){
+        let k = this.checkOperaList[i];
+        let data = this.operaJSON[k]
+        if(data.sbuid =='F2005'){//航空识别区
+          sbqData.push(data);
+        }
+      }
+      if(sbqData.length<=0){
+        this.$notify.warning("请勾选航空识别区！")
+        return ;
+      }
+    }
+    if(item ==1){
+      for(var k in this.makeABCD){
+        let data = this.makeABCD[k];
+        for(var i=0;i<data.length;i++){
+          this.tMap.removeOverLay(data[i])
+        }
+      }
+      this.createABCD(sbqData)
+    }else if(item ==2){
+      this.sbqPointABCD = [];
+      this.checkedABCD = [];
+      this.aviationToolClick(1);
+      console.log(this.sbqPointABCD);
+      this.aviationDia = true;
+    }else if(item == 3){
+
+    }
+  }
+  //创建航空识别区四角 标识
+  createABCD(data:any){
+    let abcdData = [];
+    for(var i=0;i<data.length;i++){
+      let d1 = data[i];
+      let id = d1.id;
+      let boundary1 = d1.boundary1;
+      if(boundary1){
+        let boundary = boundary1.split(";");
+        let abcd = [];
+        let _abcd:any = [];
+        for(var j=0;j<boundary.length;j++){
+          let atng = boundary[j].split(",");
+          var latlng = new T.LngLat(atng[0],atng[1]);
+          var label = new T.Label({
+            text: id+this.letter[j],
+            position:latlng,
+            offset: new T.Point(-30, 0),
+          });
+          label.setFontSize(16)
+          label.setBorderLine(0)
+          label.setBackgroundColor(null);
+          abcd.push(label)
+          this.tMap.addOverLay(label);
+
+          let point = {name:id+this.letter[j],latlng:boundary[j]}
+          _abcd.push(point);
+        }
+        this.makeABCD[d1.kid] = abcd;
+        let point4 = {id:id,point:_abcd}
+        abcdData.push(point4);
+      }
+    }
+    this.sbqPointABCD = abcdData;
+  }
+  //勾选完上一级作业区
+  selABCDOk(){
+    this.aviationDia = false;
+    for(var i=0;i<this.checkedABCD.length;i++){
+      let latlng = this.checkedABCD[i];
+      
     }
   }
 
