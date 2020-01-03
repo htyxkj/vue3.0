@@ -155,7 +155,7 @@ export namespace TMapUtils {
         // 添加自定义标注图片
         markpoint1(lngLat:string,tMap:any){
             var icon = new T.Icon({
-                iconUrl: require('@/assets/map/airfence/check.gif'),
+                iconUrl: require('@/assets/air-super/check.gif'),
                 iconSize: new T.Point(10, 10),
                 iconAnchor: new T.Point(5, 5)
             });
@@ -174,7 +174,7 @@ export namespace TMapUtils {
          * */        
         markRealTimeAir(lngLat:string,tMap:any,key:any,click:any){
             var icon = new T.Icon({
-                iconUrl: require('@/assets/map/airfence/plane.png'),
+                iconUrl: require('@/assets/air-super/plane.png'),
                 iconSize: new T.Point(40, 40),
                 iconAnchor: new T.Point(20, 20)
             });

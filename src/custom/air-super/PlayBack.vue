@@ -491,7 +491,7 @@ export default class OperatingArea extends Vue {
                 this.taskData = values;
                 let opt:any = {interval: this.interval,dynamicLine: true,
                                 polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
-                                carstyle:{display:true, iconUrl:require('@/assets/map/airfence/plane.png'), width:42, height:30},
+                                carstyle:{display:true, iconUrl:require('@/assets/air-super/plane.png'), width:42, height:30},
                                 passOneNode:this.passOneNode}
                 let noFlow  = true;
                 this.haveFlow =[];
@@ -499,6 +499,8 @@ export default class OperatingArea extends Vue {
                     let v = values[i];
                     let lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
                     let poin = new T.LngLat(lnglat[1],lnglat[0]);
+                    this.taskData[i].latitude = lnglat[0];
+                    this.taskData[i].longitude = lnglat[1];
                     opt.Datas.push(poin);
                     if(v.flow>0){
                         if(noFlow){
@@ -741,7 +743,7 @@ export default class OperatingArea extends Vue {
             let values:any = this.taskData.slice(begin,this.taskData.length-1);
             let opt:any = {interval: this.interval,dynamicLine: true,
                                     polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
-                                    carstyle:{display:true, iconUrl:require('@/assets/map/airfence/plane.png'), width:42, height:30},
+                                    carstyle:{display:true, iconUrl:require('@/assets/air-super/plane.png'), width:42, height:30},
                                     passOneNode:this.passOneNode}
             for(var i=0;i<values.length;i++){
                 let v = values[i];

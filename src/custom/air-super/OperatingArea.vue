@@ -55,6 +55,7 @@
                 <el-dropdown-item command="1">标记四角坐标</el-dropdown-item>
                 <el-dropdown-item command="2">勾选四角坐标</el-dropdown-item>
                 <el-dropdown-item command="3">勾选新点</el-dropdown-item>
+                <el-dropdown-item command="5">删除最后一点</el-dropdown-item>
                 <el-dropdown-item command="4">保存识别区</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -91,7 +92,7 @@
                                 <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                             </el-col>
                             <el-col :span="8">
-                              <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                              <el-button type="danger" @click="delOpera(item.data.kid,0,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                             </el-col>
                           </el-row>                   
                         </el-col>
@@ -129,7 +130,7 @@
                                     <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                  <el-button type="danger" @click="delOpera(item.data.kid,1,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
                                   <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
@@ -182,7 +183,7 @@
                                     <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                  <el-button type="danger" @click="delOpera(item.data.kid,2,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
                                   <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
@@ -235,7 +236,7 @@
                                     <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.kid)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                  <el-button type="danger" @click="delOpera(item.data.kid,3,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
                                   <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
@@ -284,7 +285,7 @@
       </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showOperaDia = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="getOpera" size="mini">确 定</el-button>
+        <el-button type="primary" @click="getOpera(null)" size="mini">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog title="新增作业区" :close-on-click-modal="false" :visible.sync="showSaveOperaDia" width="50%" class="bip-query">
@@ -337,6 +338,25 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="aviationDia = false" size="mini">取 消</el-button>
         <el-button type="primary" @click="selABCDOk" size="mini">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="新增航空识别区" :close-on-click-modal="false" :visible.sync="showSavesbqDia" width="50%" class="bip-query">
+      <el-row class="bip-lay">
+        <el-form @submit.native.prevent label-position="right" label-width="100px">
+          <div v-for="(cel,index) in sbqCell.ccells.cels" :key="'A'+index">
+            <bip-comm-editor
+              v-if="(cel.attr&0x400) <= 0 "
+              :cell="cel"
+              :bgrid="false"
+              :cds="sbqCell"
+              :row="0"
+            />
+          </div>
+        </el-form>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showSavesbqDia = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="saveSbq" size="mini">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -438,12 +458,16 @@ export default class OperatingArea extends Vue {
   @Provide() mapOpera: any = {}; //地图作业区覆盖集合
   @Provide() mapOperaTxt: any = {}; //地图作业区文字说明集合
 
+  @Provide() showSavesbqDia:boolean = false;
+  @Provide() sbqCell:CDataSet = new CDataSet("");//航空识别区对象
   @Provide() letter:any = ['A','B','C','D','E','F','G','H','I','G','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
   @Provide() aviationDia:boolean = false;//航空识别区坐标点勾选弹出框
   @Provide() makeABCD:any={};//航空识别区四角标识
   @Provide() sbqPointABCD:any=[];//已勾选的识别区的四角坐标集合
   @Provide() checkedABCD:any = [];//新填识别区四角坐标
+  @Provide() ckABCDCallout:any=[];//新增航空识别区地图标注点
   @Provide() sbqMarkerPoint:any = null;//识别区标注点对象
+
 
   @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
   @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
@@ -462,6 +486,7 @@ export default class OperatingArea extends Vue {
     this.operaTjCell.createRecord();
     this.operaSaveCell = await this.getCell("FW2015");//作业区
     this.operaBrCell = await this.getCell("F2015A");//避让点
+    this.sbqCell = await this.getCell("FW2015F");//航空识别区对象
   }
   mounted() {
     if (this.$refs.TMap) {
@@ -471,6 +496,9 @@ export default class OperatingArea extends Vue {
   }
   //清空地图覆盖物
   clearCover() {
+	this.checkedABCD = [];
+	this.sbqPointABCD = [];
+	this.checkedABCD = [];
     this.mapOpera = {};
     this.mapOperaBr = {};
     this.mapOperaTxt = {};
@@ -560,18 +588,20 @@ export default class OperatingArea extends Vue {
       if (!this.mapOpera[kid]) {
         //作业区
         let d1 = this.operaJSON[kid];
-        let cc:any = this.makeOpera(d1);
-        let polygon = cc[0];
-        let points = cc[1];
-        //向地图上添加面
-        this.tMap.addOverLay(polygon);
-        let t1 = this.tMap.getViewport(points);
-        this.tMap.panTo(t1.center, t1.zoom);
-        this.mapOpera[kid] = polygon;
-        let label = this.makeOperaLableTXT(d1, t1);
-        this.tMap.addOverLay(label);
-        this.mapOperaTxt[kid] = label;
-        this.makrAllBr(kid,null);
+        if(d1){
+          let cc:any = this.makeOpera(d1);
+          let polygon = cc[0];
+          let points = cc[1];
+          //向地图上添加面
+          this.tMap.addOverLay(polygon);
+          let t1 = this.tMap.getViewport(points);
+          this.tMap.panTo(t1.center, t1.zoom);
+          this.mapOpera[kid] = polygon;
+          let label = this.makeOperaLableTXT(d1, t1);
+          this.tMap.addOverLay(label);
+          this.mapOperaTxt[kid] = label;
+          this.makrAllBr(kid,null);
+        }
       }
     }
     for (let key in this.mapOpera) {
@@ -681,16 +711,19 @@ export default class OperatingArea extends Vue {
             }
         }
         this.createABCD(sbqData)
-    }else if(item ==2){//勾选标注点
+	}else if(item ==2){//勾选标注点
+		let data = this.ckABCDCallout;
+		for(var i=0;i<data.length;i++){
+			this.tMap.removeOverLay(data[i])
+		}
         this.sbqPointABCD = [];
         this.checkedABCD = [];
         this.aviationToolClick(1);
-        console.log(this.sbqPointABCD);
         this.aviationDia = true;
     }else if(item == 3){//添加新点
         //创建标注工具对象
         var icon = new T.Icon({
-            iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
+            iconUrl: require('@/assets/air-super/letter/'+this.letter[this.checkedABCD.length]+'.png'),
             iconSize: new T.Point(19, 27),
             iconAnchor: new T.Point(10, 25)
         });
@@ -699,22 +732,25 @@ export default class OperatingArea extends Vue {
         this.sbqMarkerPoint.close();
         this.sbqMarkerPoint.open();
     }else if(item==4){//保存识别区 
-        if(this.checkedABCD.length<=2){
-            this.$notify.warning("请勾选正确的航空识别区！")
-            return;
-        }
-        let boundary1 = "";
-        for (var i = 0; i < this.checkedABCD.length; i++) {
-        let point = this.checkedABCD[i];
-            boundary1 += point + ";";
-        }
-        boundary1 = boundary1.substring(0, boundary1.length - 1);
-        this.operaSaveCell.clear();
-        this.operaSaveCell.createRecord();
-        // this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
-        this.operaSaveCell.currRecord.data.boundary1 = boundary1;
-        this.operaSaveCell.currRecord.data.sbuid="F2005"
-        this.showSaveOperaDia = true;
+		if(this.checkedABCD.length<=2){
+			this.$notify.warning("请勾选正确的航空识别区！")
+			return;
+		}
+		let boundary1 = "";
+		for (var i = 0; i < this.checkedABCD.length; i++) {
+		let point = this.checkedABCD[i];
+			boundary1 += point + ";";
+		}
+		boundary1 = boundary1.substring(0, boundary1.length - 1);
+		this.sbqCell.clear();
+		this.sbqCell.createRecord();
+		// this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
+		this.sbqCell.currRecord.data.boundary1 = boundary1;
+		this.showSavesbqDia = true;
+	}else if(item ==5){//删除最后一点
+		this.tMap.removeOverLay(this.ckABCDCallout[this.ckABCDCallout.length-1]);
+		this.ckABCDCallout.splice(this.ckABCDCallout.length-1,1)
+		this.checkedABCD.splice(this.checkedABCD.length-1,1)
     }
   }
   //创建航空识别区四角 标识
@@ -758,13 +794,14 @@ export default class OperatingArea extends Vue {
     for(var i=0;i<this.checkedABCD.length;i++){
         let latlng = this.checkedABCD[i];
         let point = latlng.split(",");
-                    //创建图片对象
+        //创建图片对象
         var icon = new T.Icon({
-            iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
+            iconUrl: require('@/assets/air-super/letter/'+this.letter[i]+'.png'),
             iconSize: new T.Point(19, 27),
             iconAnchor: new T.Point(10, 25)
         });
         var marker = new T.Marker(new T.LngLat(point[0], point[1]),{icon:icon});
+        this.ckABCDCallout.push(marker)
         //向地图上添加标注
         this.tMap.addOverLay(marker);
     }
@@ -773,12 +810,41 @@ export default class OperatingArea extends Vue {
    * 新点标注完成后
    */
   sbqMarkerPointToolEnd(parameter:any){
-        let editCover = parameter.currentMarker; 
-        let lnglat = parameter.currentLnglat;
-        let avoid = lnglat.getLng()+","+lnglat.getLat();
-        this.checkedABCD.push(avoid)
+    let editCover = parameter.currentMarker; 
+    this.ckABCDCallout.push(editCover)
+    let lnglat = parameter.currentLnglat;
+    let avoid = lnglat.getLng()+","+lnglat.getLat();
+    this.checkedABCD.push(avoid)
   }
-
+  /**
+   * 保存识别区
+   */
+  async saveSbq(){
+    let bok = this.checkNotNull(this.sbqCell);
+    if (!bok) return;
+    let res: any = await this.sbqCell.saveData();
+    if (res.data && res.data.id == 0) {
+		let data = this.ckABCDCallout;
+		for(var i=0;i<data.length;i++){
+			this.tMap.removeOverLay(data[i])
+		}
+		this.ckABCDCallout=[];
+		this.checkedABCD =[];
+		this.sbqPointABCD=[];
+		let kid = res.data.data.kid;
+		
+		this.showSavesbqDia = false;
+		await this.getOpera(kid);
+		if (kid) {
+			this.checkOperaList.push(kid);
+			this.checkBoxChange(this.checkOperaList);
+		}
+		this.$notify.success("保存成功！");
+	} else {
+		this.showSavesbqDia = false;
+		this.$notify.error("保存失败！");
+    }
+  }
 
   /**************** 避让区 **************/
    //右侧避让区开关
@@ -1127,10 +1193,16 @@ export default class OperatingArea extends Vue {
 
   /**************** 作业区 **************/
   //查找作业区
-  async getOpera() {
+  async getOpera(kid:any) {
+    let tj = this.operaTjCell.currRecord.data;
+    if(kid){
+	  	tj.kid = kid
+	}else{
+		tj.kid = "";
+	}
     let qe: QueryEntity = new QueryEntity("FW2015", "FW2015TJ");
     qe.page = this.operaCellPage;
-    qe.cont = JSON.stringify(this.operaTjCell.currRecord.data);
+    qe.cont = JSON.stringify(tj);
     qe.oprid = 13;
     this.showOperaDia = false;
     this.operaBtnOpen = false;
@@ -1139,32 +1211,35 @@ export default class OperatingArea extends Vue {
       .queryData(qe)
       .then(res => {
         if (res.data.id == 0) {
-          this.operaData = res.data.data.data.data;
-          for (var i = 0; i < this.operaData.length; i++) {
-            let d1 = this.operaData[i].data;
-            this.showOperaBr(d1.kid);
-            this.operaJSON[d1.kid] = d1;
-          }
-          if(res.data.data.data.data.length == 0)
-            this.operaData = [];
-          this.operaSBQData = [];
-          this.operaCData = [];
-          this.operaXData = [];
-          this.operaQData = [];
-          for(var i=0;i<this.operaData.length;i++){
-            let dd = this.operaData[i];
-            if(dd.data.sbuid == 'F2005'){
-              this.operaSBQData.push(dd);
-            }else if(dd.data.sbuid == 'F2015'){
-              if(dd.data.season == 0){
-                this.operaCData.push(dd);
-              }else if(dd.data.season == 1){
-                this.operaXData.push(dd);
-              }else if(dd.data.season == 2){
-                this.operaQData.push(dd);
-              }
-            }
-          }
+			let values = res.data.data.data.data;
+			for (var i = 0; i < values.length; i++) {
+				let d1 = values[i].data;
+				this.showOperaBr(d1.kid);
+				this.operaJSON[d1.kid] = d1;
+			}
+			this.operaData = values;
+			if(values.length==0 && kid == null)
+			  	this.operaData = [];
+			if(kid == null){
+				this.operaSBQData = [];
+				this.operaCData = [];
+				this.operaXData = [];
+				this.operaQData = [];
+			}
+			for(var i=0;i<this.operaData.length;i++){
+				let dd = this.operaData[i];
+					if(dd.data.sbuid == 'F2005'){
+					this.operaSBQData.push(dd);
+				}else if(dd.data.sbuid == 'F2015'){
+					if(dd.data.season == 0){
+						this.operaCData.push(dd);
+					}else if(dd.data.season == 1){
+						this.operaXData.push(dd);
+					}else if(dd.data.season == 2){
+						this.operaQData.push(dd);
+					}
+				}
+			}
           
         }
         this.operaCellPage = res.data.data.data.page;
@@ -1177,13 +1252,6 @@ export default class OperatingArea extends Vue {
         this.$notify.error(err);
       });
   }
-  /**
-   * 作业区页数发生变化
-   */
-  pageChange(page: number) {
-    this.operaCellPage.currPage = page;
-    this.getOpera();
-  }
     /**
    * 保存新增作业区
    */
@@ -1192,8 +1260,8 @@ export default class OperatingArea extends Vue {
     if (!bok) return;
     let res: any = await this.operaSaveCell.saveData();
     if (res.data && res.data.id == 0) {
-      await this.getOpera();
       let kid = res.data.data.kid;
+      await this.getOpera(kid);
       if (kid) {
         if (this.mapOpera[this.editKid]){
           this.tMap.removeOverLay(this.mapOpera[this.editKid]);
@@ -1209,6 +1277,7 @@ export default class OperatingArea extends Vue {
       this.$notify.success("保存成功！");
       this.showSaveOperaDia = false;
     } else {
+      this.showSaveOperaDia = false;
       this.$notify.error("保存失败！");
     }
   }
@@ -1247,8 +1316,9 @@ export default class OperatingArea extends Vue {
   /**
    * 删除作业区
    * @param kid 作业区唯一码
+   * @param type  0识别区，1春，2夏，3秋
    */
-  delOpera(kid: any) {
+  delOpera(kid: any,type:any,index:any) {
     let d1 = this.operaJSON[kid];
     let co = "此操作将删除作业区：" + d1.name + "，是否继续？";
     this.operaSaveCell.clear();
@@ -1264,7 +1334,7 @@ export default class OperatingArea extends Vue {
           this.operaSaveCell.currRecord.data = d1;
           this.operaSaveCell.currRecord.c_state = 4;
         }
-        this.del();
+        this.del(type,index);
       })
       .catch(() => {
         this.$message({
@@ -1274,14 +1344,22 @@ export default class OperatingArea extends Vue {
       });
   }
   //进行删除
-  async del() {
+  async del(type:any,index:any) {
     let key = this.operaSaveCell.currRecord.data.kid;
     let res: any = await this.operaSaveCell.saveData();
     if (res.data && res.data.id == 0) {
-      if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
-      if (this.mapOperaTxt[key]) this.tMap.removeOverLay(this.mapOperaTxt[key]);
-      this.$notify.success("删除成功！");
-      this.getOpera();
+		if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
+		if (this.mapOperaTxt[key]) this.tMap.removeOverLay(this.mapOperaTxt[key]);
+		this.$notify.success("删除成功！");
+		if(type ==0){
+			this.operaSBQData.splice(index,1)
+		}else if(type ==1){
+			this.operaCData.splice(index,1)
+		}else if(type ==2){
+			this.operaXData.splice(index,1)
+		}else if(type ==3){
+			this.operaQData.splice(index,1)
+		}
     } else {
       this.$notify.error("删除失败！");
     }
@@ -1641,7 +1719,7 @@ export default class OperatingArea extends Vue {
         }
         orgcode = orgcode.substring(0,orgcode.length-1);
         this.operaTjCell.currRecord.data.sorg = orgcode;
-        this.getOpera()
+        this.getOpera(null)
       }else{
         // this.operaData=[];
         // this.clearCover();
@@ -1667,6 +1745,7 @@ export default class OperatingArea extends Vue {
       //创建搜索对象
       this.localsearch = new T.LocalSearch(this.tMap, config);
     }
+    this.localsearch.type = type;
     this.localsearch.search(address);
   }
   //搜索返回结果
@@ -1743,9 +1822,11 @@ export default class OperatingArea extends Vue {
               zoomArr.push(lnglat); 
           })(i);
       }
-      for(var i=0;i<zoomArr.length;i++){
-        let marker = new T.Marker(zoomArr[i]);// 创建标注
-        this.tMap.addOverLay(marker);             // 将标注添加到地图中
+      if(this.localsearch.type!=0){
+        for(var i=0;i<zoomArr.length;i++){
+          let marker = new T.Marker(zoomArr[i]);// 创建标注
+          this.tMap.addOverLay(marker);             // 将标注添加到地图中
+        }
       }
       //显示地图的最佳级别
       this.tMap.setViewport(zoomArr);
