@@ -33,6 +33,9 @@
             <template v-else-if="editorType == I_EDITOR_RTEXT">
                 <bip-rich-text-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-editor>
             </template>
+            <template v-else-if="editorType == I_EDITOR_CHECK">
+                check
+            </template>
             <template v-else>
                 <bip-input-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-editor>
             </template>   
@@ -77,6 +80,7 @@ export default class BipCommEditor extends Vue{
     @Provide() editorType:number = 0
     @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
     @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
+    @Provide() I_EDITOR_CHECK = ICL.I_EDITOR_CHECK 
     @Provide() I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
     // @Provide() I_EDITOR_DATE = ICL.I_EDITOR_DATE
     // @Provide() I_EDITOR_UPDOWN = ICL.I_EDITOR_UPDOWN
@@ -158,6 +162,8 @@ export default class BipCommEditor extends Vue{
                         this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
                     }
                 }
+            }else if(this.cell.editType == 3){//多选框
+                this.editorType = this.I_EDITOR_RTEXT
             }else if(this.cell.editType == 14){
                 this.editorType = ICL.I_EDITOR_SWITCH;
             }else if(this.cell.editType == 10){

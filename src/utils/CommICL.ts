@@ -54,7 +54,7 @@ export const CommICL = Object.assign({
     I_EDITOR_COMM:0,//普通输入框
     I_EDITOR_LIST:1,//下拉框
     I_EDITOR_DATE:2,//日期输入框
-    I_EDITOR_SELECT:3,//普通辅助输入框
+    I_EDITOR_CHECK:3,//普通辅助输入框
     I_EDITOR_UPDOWN:4,//上传下载输入框
     I_EDITOR_GDIC:5,//商品辅助输入
     I_EDITOR_NUM:6,//商品辅助输入

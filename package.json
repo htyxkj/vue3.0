@@ -9,6 +9,7 @@
   "dependencies": {
     "@types/echarts": "^4.1.9",
     "@types/stompjs": "^2.3.4",
+    "dom-to-image": "^2.6.0",
     "echarts": "^4.2.1",
     "element-ui": "^2.13.0",
     "moment": "^2.24.0",

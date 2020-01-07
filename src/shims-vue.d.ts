@@ -24,3 +24,7 @@ declare module 'wangeditor' {
   const wangeditor: any;
   export default wangeditor;
 }
+declare module 'dom-to-image'{
+  const dom_to_image:any;
+  export default dom_to_image;
+}

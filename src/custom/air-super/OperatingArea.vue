@@ -12,7 +12,9 @@
         </el-row>
       </el-aside>
       <el-main class="padding0" style="overflow: hidden;position: relative;">
-        <t-map ref="TMap" class="myTMap"></t-map>
+        <div style="width:100%;height:100%">
+          <t-map ref="TMap" class="myTMap"></t-map>
+        </div>
         <a class="areaBtn" @click="areaBtnClick">
           <template v-if="areaBtnOpen">
             <i class="iconfont icon-bip-up"></i>
@@ -60,6 +62,9 @@
               </el-dropdown-menu>
             </el-dropdown>
           </span>
+          <span class="tools-li">
+              <el-button size="mini" icon="el-icon-search" @click="Screenshot">截图</el-button>
+          </span>            
         </div>
       </el-main>
       <!-- 右侧作业区 -->
@@ -359,6 +364,9 @@
         <el-button type="primary" @click="saveSbq" size="mini">确 定</el-button>
       </span>
     </el-dialog>
+    <div id="TMap" style="width:20000px;height:15000px">
+      <div id="TMap1" style="width:20000px;height:15000px" ></div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -374,6 +382,7 @@ import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
 import {T} from "@/components/map/js/TMap";
 import { on } from 'cluster';
+import domtoimage from 'dom-to-image';
 @Component({
   components: {
     tMap,
@@ -493,6 +502,25 @@ export default class OperatingArea extends Vue {
       let refT: any = this.$refs.TMap;
       this.tMap = refT.getMap();
     }
+    let tt = new T.Map("TMap1",{projection:"EPSG:4326"});
+    tt.centerAndZoom(new T.LngLat(116.40969, 39.89945), 16);
+  }
+  Screenshot(){
+    console.log("报告")
+    domtoimage.toPng(document.getElementById('TMap'))
+    .then(function (dataUrl:any) {
+        var img = new Image();
+        img.src = dataUrl;
+        document.body.appendChild(img);
+    })
+    .catch(function (error:any) {
+      console.log("图片截取失败！");
+    });
+    // domtoimage.toBlob(document.getElementById('TMap1'),{height:5000,width:8000})
+    // .then(function (blob:any) {
+    //   let w:any =Window;
+    //     w.saveAs(blob, 'my-node.png');
+    // });
   }
   //清空地图覆盖物
   clearCover() {
@@ -711,47 +739,47 @@ export default class OperatingArea extends Vue {
             }
         }
         this.createABCD(sbqData)
-	}else if(item ==2){//勾选标注点
-		let data = this.ckABCDCallout;
-		for(var i=0;i<data.length;i++){
-			this.tMap.removeOverLay(data[i])
-		}
-        this.sbqPointABCD = [];
-        this.checkedABCD = [];
-        this.aviationToolClick(1);
-        this.aviationDia = true;
-    }else if(item == 3){//添加新点
-        //创建标注工具对象
-        var icon = new T.Icon({
-            iconUrl: require('@/assets/air-super/letter/'+this.letter[this.checkedABCD.length]+'.png'),
-            iconSize: new T.Point(19, 27),
-            iconAnchor: new T.Point(10, 25)
-        });
-        this.sbqMarkerPoint = new T.MarkTool(this.tMap, { follow: true,icon:icon });
-        this.sbqMarkerPoint.addEventListener("mouseup",this.sbqMarkerPointToolEnd);
-        this.sbqMarkerPoint.close();
-        this.sbqMarkerPoint.open();
-    }else if(item==4){//保存识别区 
-		if(this.checkedABCD.length<=2){
-			this.$notify.warning("请勾选正确的航空识别区！")
-			return;
-		}
-		let boundary1 = "";
-		for (var i = 0; i < this.checkedABCD.length; i++) {
-		let point = this.checkedABCD[i];
-			boundary1 += point + ";";
-		}
-		boundary1 = boundary1.substring(0, boundary1.length - 1);
-		this.sbqCell.clear();
-		this.sbqCell.createRecord();
-		// this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
-		this.sbqCell.currRecord.data.boundary1 = boundary1;
-		this.showSavesbqDia = true;
-	}else if(item ==5){//删除最后一点
-		this.tMap.removeOverLay(this.ckABCDCallout[this.ckABCDCallout.length-1]);
-		this.ckABCDCallout.splice(this.ckABCDCallout.length-1,1)
-		this.checkedABCD.splice(this.checkedABCD.length-1,1)
-    }
+    }else if(item ==2){//勾选标注点
+      let data = this.ckABCDCallout;
+      for(var i=0;i<data.length;i++){
+        this.tMap.removeOverLay(data[i])
+      }
+          this.sbqPointABCD = [];
+          this.checkedABCD = [];
+          this.aviationToolClick(1);
+          this.aviationDia = true;
+      }else if(item == 3){//添加新点
+          //创建标注工具对象
+          var icon = new T.Icon({
+              iconUrl: require('@/assets/air-super/letter/'+this.letter[this.checkedABCD.length]+'.png'),
+              iconSize: new T.Point(19, 27),
+              iconAnchor: new T.Point(10, 25)
+          });
+          this.sbqMarkerPoint = new T.MarkTool(this.tMap, { follow: true,icon:icon });
+          this.sbqMarkerPoint.addEventListener("mouseup",this.sbqMarkerPointToolEnd);
+          this.sbqMarkerPoint.close();
+          this.sbqMarkerPoint.open();
+      }else if(item==4){//保存识别区 
+      if(this.checkedABCD.length<=2){
+        this.$notify.warning("请勾选正确的航空识别区！")
+        return;
+      }
+      let boundary1 = "";
+      for (var i = 0; i < this.checkedABCD.length; i++) {
+      let point = this.checkedABCD[i];
+        boundary1 += point + ";";
+      }
+      boundary1 = boundary1.substring(0, boundary1.length - 1);
+      this.sbqCell.clear();
+      this.sbqCell.createRecord();
+      // this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
+      this.sbqCell.currRecord.data.boundary1 = boundary1;
+      this.showSavesbqDia = true;
+    }else if(item ==5){//删除最后一点
+      this.tMap.removeOverLay(this.ckABCDCallout[this.ckABCDCallout.length-1]);
+      this.ckABCDCallout.splice(this.ckABCDCallout.length-1,1)
+      this.checkedABCD.splice(this.checkedABCD.length-1,1)
+      }
   }
   //创建航空识别区四角 标识
   createABCD(data:any){
