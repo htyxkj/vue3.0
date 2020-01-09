@@ -364,8 +364,9 @@
         <el-button type="primary" @click="saveSbq" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <div id="TMap" style="width:20000px;height:15000px">
-      <div id="TMap1" style="width:20000px;height:15000px" ></div>
+    <div style="margin-top:20px">&nbsp;</div>
+    <div id="TMap" style="width:10000px;height:5500px;">
+      <div id="TMap1" style="width:10000px;height:5500px" ></div>
     </div>
   </div>
 </template>
@@ -405,7 +406,7 @@ export default class OperatingArea extends Vue {
   @Provide() qCheckAll:boolean =false;
   @Provide() qIsIndeterminate:boolean =true;
 
-
+  @Provide() TMap1: any = null;
   @Provide() tMap: any = null;
   @Provide() tZoom: number = 12;
   @Provide() loading:number = 0;
@@ -502,25 +503,84 @@ export default class OperatingArea extends Vue {
       let refT: any = this.$refs.TMap;
       this.tMap = refT.getMap();
     }
-    let tt = new T.Map("TMap1",{projection:"EPSG:4326"});
-    tt.centerAndZoom(new T.LngLat(116.40969, 39.89945), 16);
+    this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
+    this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 16);
   }
   Screenshot(){
-    console.log("报告")
-    domtoimage.toPng(document.getElementById('TMap'))
-    .then(function (dataUrl:any) {
-        var img = new Image();
-        img.src = dataUrl;
-        document.body.appendChild(img);
-    })
-    .catch(function (error:any) {
-      console.log("图片截取失败！");
-    });
-    // domtoimage.toBlob(document.getElementById('TMap1'),{height:5000,width:8000})
-    // .then(function (blob:any) {
-    //   let w:any =Window;
-    //     w.saveAs(blob, 'my-node.png');
-    // });
+    this.loading++;
+    try{
+    this.TMap1.clearOverLays();
+    let overLays = this.tMap.getOverlays();
+    let pointsArr:any =[];
+    for(var i=0;i<overLays.length;i++){
+      let onel = overLays[i];
+      let type = onel.getType();
+      // Label 类型为 1;
+      // Marker 类型为 2;
+      // InfoWindow类型为 3;
+      // Polyline 类型为 4;
+      // Polygon 类型为 5;
+      // Rectangle 类型为 6;
+      // Circle 类型为 8;
+      let newOL = null;
+      if(type ==1){//Table  文本标注
+        newOL = new T.Label({
+          text: onel.NP,
+          position: onel.getLngLat(),
+          offset: new T.Point(-30, 0),
+          fontsize :200
+        }); 
+        newOL.setBorderLine(0)
+        newOL.setBackgroundColor(null); 
+      }else if(type ==2){//Marker  图像标注
+
+      }else if(type ==3){
+
+      }else if(type ==4){
+        newOL = new T.Polyline(onel.getLngLats()	, {
+            color: onel.getColor(),
+            weight: onel.getWeight(),
+            opacity: onel.getOpacity()	,
+            lineStyle: onel.getLineStyle(),
+        });
+      }else if(type ==5){
+        //创建面对象
+        newOL = new T.Polygon(onel.getLngLats(), {
+          color: onel.getColor(),
+          weight: onel.getWeight(),
+          opacity: onel.getOpacity(),
+          fillColor: onel.getFillColor(),
+          fillOpacity: onel.getFillOpacity(),
+        });
+      }
+      if(onel.ht){
+        pointsArr = pointsArr.concat(onel.ht);
+      }  
+      this.TMap1.addOverLay(newOL);
+    }
+    // //显示最佳比例尺
+    this.TMap1.setViewport(pointsArr);
+    }catch(e){
+      this.loading--;
+      this.$notify.error("图片获取失败！");
+      return;
+    }
+    let _this = this;
+    setTimeout(() => {
+      domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
+        _this.TMap1.clearOverLays();
+        _this.loading--;
+        let blob = new Blob([data], {
+            type:
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+          });
+        var url = window.URL.createObjectURL(blob); 
+      　var a = document.createElement('a');
+      　a.href = url;
+      　a.download = 'my-node.png';
+      　a.click(); 
+      });
+    }, 15000);
   }
   //清空地图覆盖物
   clearCover() {
@@ -636,9 +696,12 @@ export default class OperatingArea extends Vue {
       let ka = key.split("_")[0];
       if (data.indexOf(ka) == -1) {
         if (ka.indexOf("non-") == -1 && ka.indexOf("copy-") == -1) {
-          if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
-          if (this.mapOperaTxt[key])
+          if (this.mapOpera[key]) {
+            this.tMap.removeOverLay(this.mapOpera[key]);
+          }
+          if (this.mapOperaTxt[key]){
             this.tMap.removeOverLay(this.mapOperaTxt[key]);
+          }
           if(this.makeABCD[key]){
             let data = this.makeABCD[key];
             for(var i=0;i<data.length;i++){
@@ -735,7 +798,7 @@ export default class OperatingArea extends Vue {
         for(var k in this.makeABCD){
             let data = this.makeABCD[k];
             for(var i=0;i<data.length;i++){
-            this.tMap.removeOverLay(data[i])
+              this.tMap.removeOverLay(data[i])
             }
         }
         this.createABCD(sbqData)
@@ -854,7 +917,7 @@ export default class OperatingArea extends Vue {
     if (res.data && res.data.id == 0) {
 		let data = this.ckABCDCallout;
 		for(var i=0;i<data.length;i++){
-			this.tMap.removeOverLay(data[i])
+      this.tMap.removeOverLay(data[i])
 		}
 		this.ckABCDCallout=[];
 		this.checkedABCD =[];
@@ -995,7 +1058,9 @@ export default class OperatingArea extends Vue {
       data.splice(indexBr,1);
       this.operaBrData[key.split("_")[0]] = data;
       this.showoperaBrData["BR"+index] = true;
-      if (this.mapOperaBr[key]) this.tMap.removeOverLay(this.mapOperaBr[key]);
+      if (this.mapOperaBr[key]) {
+        this.tMap.removeOverLay(this.mapOperaBr[key]);
+      }
       delete this.operaBrJSON[key]
       this.$notify.success("删除成功！");
       await this.showOperaBr(key.split("_")[0]);
@@ -1376,8 +1441,12 @@ export default class OperatingArea extends Vue {
     let key = this.operaSaveCell.currRecord.data.kid;
     let res: any = await this.operaSaveCell.saveData();
     if (res.data && res.data.id == 0) {
-		if (this.mapOpera[key]) this.tMap.removeOverLay(this.mapOpera[key]);
-		if (this.mapOperaTxt[key]) this.tMap.removeOverLay(this.mapOperaTxt[key]);
+		if (this.mapOpera[key]){
+      this.tMap.removeOverLay(this.mapOpera[key]);
+    }
+		if (this.mapOperaTxt[key]){
+      this.tMap.removeOverLay(this.mapOperaTxt[key]);
+    } 
 		this.$notify.success("删除成功！");
 		if(type ==0){
 			this.operaSBQData.splice(index,1)
