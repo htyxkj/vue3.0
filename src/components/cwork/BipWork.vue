@@ -19,14 +19,26 @@
         <template v-else>
             <template v-if="!isReview">
                 <el-row class="bip-work-title"><h3>审批人员</h3></el-row>
-                <el-row>  
-                    <el-col  v-for="user in chkInfos" :key="user.userName">{{user.userName}}</el-col>
-                </el-row>
+                <template v-if="chkInfos">
+                    <el-row v-if="chkInfos.currState.hq">
+                        <el-row>
+                            <template v-for="cnodes in chkInfos.currState.cnodes">
+                                <el-col v-for="user in cnodes.users" :key="user.userName">{{user.userName}}</el-col>
+                            </template>
+                            <template v-for="cnodes in chkInfos.currState.cnodes">
+                                <el-col v-for="user in cnodes.userssh" :key="user.userName">{{user.userName}}  √</el-col>
+                            </template>
+                        </el-row>
+                    </el-row>
+                    <el-row v-if="!chkInfos.currState.hq">
+                        <el-col  v-for="user in chkInfos.currState.users" :key="user.userName">{{user.userName}}</el-col>
+                    </el-row>
+                </template>
             </template>
             <template v-else>
                 <el-row class="bip-work-title"><h3>审批节点</h3></el-row>
                 <el-row class="bip-select-list">
-                        <el-select v-model="value" placeholder="请选择" size="small" @change="selectChange">
+                    <el-select v-model="stateId" placeholder="请选择" size="small" @change="selectChange">
                         <el-option
                         v-for="item in nodeList"
                         :key="item.stateId"
@@ -38,7 +50,10 @@
                 <el-row class="bip-work-title"><h3>审批人员</h3></el-row>
                 <el-row>  
                     <el-checkbox-group v-model="userListSelect">
-                        <el-checkbox v-for="user in userList" :key="user.userCode" :label="user.userCode">{{user.userName}}</el-checkbox>
+                        <template v-for="item in userList" >
+                            {{item.node}}
+                            <el-checkbox :disabled="item.hq" v-for="user in item.users" :key="user.userCode" :id="user.userCode" :label="user.userCode" :md-value="user.userCode">{{user.userName}}</el-checkbox>
+                        </template>
                     </el-checkbox-group>
                 </el-row>
             </template>
@@ -75,15 +90,14 @@ export default class BipWork extends Vue{
     @Provide() centerDialogVisible:boolean = false
     @Provide() loading:boolean = false
     @Provide() remark:string = '审批通过'
-    @Provide() value:string = ''
+    @Provide() stateId:string = ''//下一状态
     @Provide() bchked:boolean = true
-    @Provide() userList:any = []
-    @Provide() userListSelect:any = []
+    @Provide() userList:any = []//审批人列表
+    @Provide() userListSelect:any = []//审批人选中列表
     @Provide() nodeList :Array<any> = []
     @Provide() currState:string = ""
     @Provide() cea:CeaPars = new CeaPars({});
-    @Provide() chkInfos:Array<any> = []
-    @Provide() info:any=null;
+    @Provide() chkInfos:any = null;
     @Provide() isReview:boolean = false;//是否是当前节点审批人
     @Provide() canBack:boolean = false;//是否可以退回
     @Provide() canRetrial:boolean = false;//是否可以重新审核
@@ -91,51 +105,93 @@ export default class BipWork extends Vue{
     @Getter('user', { namespace: 'login' }) user?: User;//当前登录人
 
     open(info:any,cea:CeaPars,smakefld:String){ 
+        console.log("WorkOpen")
         this.smakefld = smakefld;
         this.canRetrial = false; 
-        this.info = info;
         this.isReview = false;
         this.canBack = false;
         this.centerDialogVisible = true
-        this.bchked = info.checked
-        this.currState = info.state
+        this.bchked = info.currState.checked
+        this.currState = info.currState.state
         this.nodeList = info.list
         this.cea = cea
-        this.chkInfos = info.chkInfos 
+        this.chkInfos = info 
+        if(!this.user){
+            return;
+        }
 
-        if (cea.statefr == "0" || cea.statefr == "1" || cea.statefr == "5") {
-            this.canRetrial = false;
-            if(this.user)
-            if(smakefld !='' && smakefld != this.user.userCode){
+        if (this.cea.statefr == "0" || this.cea.statefr == "1" || this.cea.statefr == "5") {
+            if (this.smakefld !== this.user.userCode && this.smakefld != undefined) {
                 this.$notify.error("只有制单人可以提交!");
                 this.centerDialogVisible = false
                 return;
             }
-        }
-
-
-        if(this.chkInfos){
-            this.chkInfos.forEach(item => { 
-                if(this.user)
-                if(item.userCode == this.user.userCode){
-                    this.isReview = true; 
-                    this.canRetrial = true;
-                    if(this.bchked)
-                        this.canBack = true;
+            if(this.chkInfos.list)
+                this.stateId = this.chkInfos.list[0].stateId
+        } else {
+            if(this.chkInfos.currState.hq){//会签
+                if(this.chkInfos.currState.cnodes.length <= 0){//没有人
+                    if (this.cea.statefr !== "6") {
+                        this.$notify.error("没有审批人!"); 
+                        return;
+                    }
                 }
-            });
+                this.stateId = this.chkInfos.list[0].stateId
+            }else{
+                if(!this.chkInfos.currState.users && !this.chkInfos.currState.userssh){
+                    if (this.cea.statefr !== "6") {
+                        this.$notify.error("没有审批人!"); 
+                        return;
+                    }
+                }
+                if(!this.chkInfos.list || this.chkInfos.list.length<=0){
+                    this.$notify.error("未找到下一审批节点!"); 
+                    return;
+                }else{
+                    this.stateId = this.chkInfos.list[0].stateId
+                    this.chkInfos.list.forEach((item:any) => {
+                        if(!item.users && item.stateId !='6'){
+                            this.$notify.error("节点："+item.stateName+" 未定义审批人！"); 
+                        }
+                    });
+                }
+            }
         }
         if(cea.statefr == "0" || cea.statefr == "1" || cea.statefr == "5"){
             this.isReview = true;
         }
+        let noCheck = false;
+        if(!this.chkInfos.currState.checked)
+            noCheck = true;
+        let noUser = false;
+        if(this.chkInfos.currState.cnodes){
+            this.chkInfos.currState.cnodes.forEach((node:any) => {
+                if(node.users)
+                node.users.forEach((user:any) =>{
+                    if(this.user){
+                        if(user.userCode == this.user.userCode){
+                            noUser = true;
+                        }
+                    }
+                })
+            });
+        }
+        if(this.chkInfos.currState.users){
+            this.chkInfos.currState.users.forEach((user:any) =>{
+                if(this.user){
+                    if(user.userCode == this.user.userCode){
+                        noUser = true;
+                    }
+                }
+            })
+        }
+        if(noUser && noCheck)
+            this.isReview = true;
         if(this.user && info.upUser)
         if((info.upUser.userCode == this.user.userCode && !this.bchked )|| cea.statefr =="6"){
             this.canBack = true;
         }
-
         if(this.nodeList&&this.nodeList.length>0){ 
-            this.value = this.nodeList[0].stateId
-            this.userList = this.nodeList[0].users
             this.initSelectUser()
         }
     }
@@ -145,41 +201,131 @@ export default class BipWork extends Vue{
     }
 
     initSelectUser(){
-        this.userListSelect = []
-        if(this.userList&&this.userList.length>0){
-            this.userListSelect[0] = this.userList[0].userCode
+        if (this.chkInfos) {
+            this.chkInfos.list.forEach((item:any) => {
+                if(item.stateId =='6')
+                    return;
+                if(item.stateId == this.stateId){
+                    if(item.hq){//会审 
+                        this.userList = [];
+                        this.userListSelect = [];
+                        if(item.cnodes){
+                            for(var j=0;j<item.cnodes.length;j++){
+                                let users = item.cnodes[j].users;
+                                for(var k=0;k<users.length;k++){
+                                    this.userListSelect.push(users[k].userCode)
+                                }
+                                let u = {node:null,users:[],hq:true}
+                                u.node = item.cnodes[j].stateName;
+                                u.users = item.cnodes[j].users;
+                                this.userList.push(u);
+                            }
+                        }
+                    }else{
+                        this.userList = [];
+                        this.userListSelect = []; 
+                        this.chkInfos.list.forEach((item:any) => {
+                            let u = {node:null,users:[],hq:false}
+                            let usrCode:any =[];
+                            let users:any =[];
+                            item.users.forEach((u:any)=>{
+                                if(usrCode.indexOf(u.userCode) == -1 ){
+                                    usrCode.push(u.userCode);
+                                    users.push(u);
+                                }
+                            })
+                            u.node = item.stateName;
+                            u.users = users;
+                            this.userList.push(u); 
+                        });
+                        if (this.userList.length == 1) { 
+                            for(var i=0;i<this.userList.length;i++){
+                                if(this.userList[i].users){
+                                    if(this.userListSelect[i] = this.userList[i].users[0]){
+                                        this.userListSelect[i] = this.userList[i].users[0].userCode;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
+        console.log("cds")
     }
 
     selectChange(value:any){
-        const i = this.nodeList.findIndex((item:any)=>{
-            return item.stateId == value
-        })
-        if(i>-1){
-            this.userList = this.nodeList[i].users
-            this.initSelectUser()
-        }
+        this.stateId = value;
+        this.initSelectUser();
     }
 
     //提交审核
     checkUp(){
         const ckuser = this.makeUU()
-        if(ckuser.length<=0 && this.value!="6"){
+        if(ckuser.length<=0 && this.stateId!="6"){
             this.$notify.error("没有审核人！");
             return ;
         }else{
-            this.cea.stateto = this.value;
+            let check =null;//下一审批节点
+            for(var i=0;i<this.chkInfos.list.length;i++){
+                let item = this.chkInfos.list[i];
+                if(item.stateId == this.stateId){
+                check = item;
+                break;
+                }
+            }
+            this.cea.stateto = this.stateId;
             this.cea.yjcontext = this.remark;
-            this.cea.tousr =ckuser;
+            this.cea.ckd = this.chkInfos.checked;
+            this.cea.tousr = this.makeUU();
+            if(check.hq){ //会审
+                let cnodes = check.cnodes;
+                let schk_mk = "";
+                for(var i=0;i<cnodes.length;i++){
+                    let node = cnodes[i];
+                    schk_mk+= node.stateId+","
+                    node.users.forEach((item:any) =>{
+                        schk_mk += item.userCode+","
+                    })
+                    schk_mk = schk_mk.substring(0,schk_mk.length-1);
+                    schk_mk +=";"
+                }
+                schk_mk = schk_mk.substring(0,schk_mk.length-1);
+                this.cea.schk_mk = schk_mk; 
+            }
+
+            //当前审批节点
+            let cuCheck = this.chkInfos.currState;
+            if(cuCheck.hq){//当前进行审批的节点是会签
+                cuCheck.cnodes.forEach((item:any)=>{
+                if(item.users){
+                    item.users.forEach((usr:any)=>{
+                        if(this.user){
+                            if(usr.userCode == this.user.userCode){
+                                this.cea.stateagr = item.stateId;
+                            }
+                        }
+                    })
+                }
+                })
+            }else{
+                this.cea.stateagr = cuCheck.stateId;
+            } 
+
             this.loading = true
             tools.getCheckInfo(this.cea,34).then(res=>{
-                let msg = this.bchked?"提交":"审核";
-                msg += '成功！';
-                this.$notify.success(msg);
-                this.$emit('checkOK',this.value)
-                this.centerDialogVisible = false
-                this.$bus.$emit('cell_edit')
+                if(res.data.id ==0){
+                    let msg = this.bchked?"提交":"审核";
+                    msg += '成功！';
+                    this.$notify.success(msg);
+                    this.$emit('checkOK',this.stateId)
+                    this.centerDialogVisible = false
+                    this.$bus.$emit('cell_edit')
+                }else{
+                    this.$notify.error(res.data.message)
+                }
             }).catch(err=>{
+                console.log("出错了！")
                 this.$notify.error(err)
             }).finally(()=>{
                 this.loading = false
@@ -200,32 +346,56 @@ export default class BipWork extends Vue{
 
     //提交退回
     async returnBack(){
-      if (this.info) {
+      if (this.chkInfos) {
         this.loading = true;
-        if (this.info.checked) {
-            this.cea.stateto = this.info.state;
-            this.cea.statefr = this.info.state;
+        let check = false;
+        if(this.chkInfos.currState.hq){//是回去 查询 当前人是否审批过
+            if(this.chkInfos.currState.cnodes){
+                this.chkInfos.currState.cnodes.forEach((nodes:any) => {
+                    if(nodes.userssh){
+                        nodes.userssh.forEach((user:any) => {
+                            if(this.user){
+                                if(user.userCode == this.user.userCode){
+                                    check = true;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+        if (this.chkInfos.currState.checked || check) {
+            this.cea.stateto = this.chkInfos.currState.stateId;
+            this.cea.statefr = this.chkInfos.currState.stateId;
             var id = 39;
-            if (this.info.state !== "6") {
+            if (this.chkInfos.currState.stateId !== "6") {
                 id = 40;
             } 
             tools.getCheckInfo(this.cea,id).then(res=>{
-                this.$notify.success('退回成功！')
-                this.$emit('checkOK',this.info.upState)
-                this.centerDialogVisible = false
+                if(res.data.id ==0){
+                    this.$notify.success('退回成功！')
+                    this.$emit('checkOK',this.chkInfos.upState)
+                    this.centerDialogVisible = false
+                }else{
+                    this.$notify.error(res.data.message)
+                }
             }).catch(err=>{
                 this.$notify.error(err)
             }).finally(()=>{
                 this.loading = false
             }) 
         } else {
-            this.cea.stateto = this.info.upState;
-            this.cea.statefr = this.info.state;
+            this.cea.stateto = this.chkInfos.upState;
+            this.cea.statefr = this.chkInfos.currState.stateId;
             var id = 39; 
             tools.getCheckInfo(this.cea,id).then(res=>{
-                this.$notify.success('退回成功！')
-                this.$emit('checkOK',this.info.upState)
-                this.centerDialogVisible = false
+                if(res.data.id ==0){
+                    this.$notify.success('退回成功！')
+                    this.$emit('checkOK',this.chkInfos.upState)
+                    this.centerDialogVisible = false
+                }else{
+                    this.$notify.error(res.data.message)
+                }
             }).catch(err=>{
                 this.$notify.error(err)
             }).finally(()=>{
@@ -236,14 +406,14 @@ export default class BipWork extends Vue{
     }
     //驳回
     overrule(){ 
-        this.cea.stateto = this.info.state;
+        this.cea.stateto = this.chkInfos.currState.stateId;
         this.cea.bup = "2";
         this.cea.tousr =this.smakefld; 
         var id=34;
         this.loading = true;
         tools.getCheckInfo(this.cea,id).then(res=>{
             this.$notify.success('驳回成功！')
-            this.$emit('checkOK',this.info.upState)
+            this.$emit('checkOK',this.chkInfos.upState)
             this.centerDialogVisible = false
         }).catch(err=>{
             this.$notify.error(err)

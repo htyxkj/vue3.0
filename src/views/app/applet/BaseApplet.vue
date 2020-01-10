@@ -636,7 +636,7 @@ export default class BaseApplet extends Vue{
                         }
                         this.submint();
                     }else{
-
+                        this.$message.warning(data.message);
                     }
                 } else {
                 }   
@@ -665,6 +665,7 @@ export default class BaseApplet extends Vue{
                     sbuid: crd.data[this.dsm.opera.buidfld],
                     statefr: crd.data[this.dsm.opera.statefld],
                     stateto: crd.data[this.dsm.opera.statefld],
+                    sorg:crd.data[this.dsm.opera.sorgfld],
                     spuserId: ""
                 }  
                 this.cea = new CeaPars(params)

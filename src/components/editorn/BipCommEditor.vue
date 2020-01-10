@@ -34,7 +34,10 @@
                 <bip-rich-text-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_CHECK">
-                check
+                <bip-check-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-check-editor>
+            </template>
+            <template v-else-if="editorType == I_EDITOR_RADIO">
+                <bip-radio-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-radio-editor>
             </template>
             <template v-else>
                 <bip-input-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-editor>
@@ -47,6 +50,8 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import { State, Action, Getter, Mutation } from "vuex-class";
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
+import BipCheckEditor from './BipCheckEditor.vue'
+import BipRadioEditor from './BipRadioEditor.vue'
 import BipInputEditor from './BipInputEditor.vue'
 import BipNumberEditor from './BipNumberEditor.vue'
 import BipListEditor from './BipListEditor.vue'
@@ -69,7 +74,7 @@ import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 import QueryEntity from '../../classes/search/QueryEntity';
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -82,12 +87,8 @@ export default class BipCommEditor extends Vue{
     @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
     @Provide() I_EDITOR_CHECK = ICL.I_EDITOR_CHECK 
     @Provide() I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
-    // @Provide() I_EDITOR_DATE = ICL.I_EDITOR_DATE
-    // @Provide() I_EDITOR_UPDOWN = ICL.I_EDITOR_UPDOWN
-    // @Provide() I_EDITOR_SELECT = ICL.I_EDITOR_SELECT
-    // @Provide() I_EDITOR_COMM = ICL.I_EDITOR_COMM
     @Provide() I_EDITOR_NUM = ICL.I_EDITOR_NUM
-    // @Provide() I_EDITOR_COPY = ICL.I_EDITOR_COPY
+    @Provide() I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
     @Provide() model:any = ''
     @Provide() bsearch:boolean = false
     @Provide() assit:boolean = false
@@ -145,25 +146,25 @@ export default class BipCommEditor extends Vue{
         }else{
             //没有辅助，但是编辑器类型是下拉列表，需要处理参照信息
             let type = this.cell.type;
-            if(this.cell.editType === 1){
+            if(this.cell.editType === 1){//List
+                console.log("List")
                 this.editorType = this.I_EDITOR_LIST
                 let str = this.cell.refValue
                 if(str){
-                    if(str.indexOf('$')>0){
-                        str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
-                        this.editName = str
-                        this.getInsAidInfoBy(str,true)
-                    }else if(str.indexOf('&')>0){
-                        str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
-                        this.editName = str
-                        await this.getInsAidInfoValues(str,false)
-
-                    }else{
-                        this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
-                    }
+                    await this.initInsAid(str);
                 }
             }else if(this.cell.editType == 3){//多选框
-                this.editorType = this.I_EDITOR_RTEXT
+                this.editorType = this.I_EDITOR_CHECK
+                let str = this.cell.refValue
+                if(str){
+                    await this.initInsAid(str);
+                }
+            }else if(this.cell.editType == 4){//单选框
+                this.editorType = this.I_EDITOR_RADIO
+                let str = this.cell.refValue
+                if(str){
+                    await this.initInsAid(str);
+                }
             }else if(this.cell.editType == 14){
                 this.editorType = ICL.I_EDITOR_SWITCH;
             }else if(this.cell.editType == 10){
@@ -171,16 +172,8 @@ export default class BipCommEditor extends Vue{
             }else if(type>=2&&type<12){
                 let str = this.cell.refValue
                 if(str){
-                    if(str.indexOf('$')>0){
-                        str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
-                        this.editName = str
-                        await this.getInsAidInfoBy(str,true)
-                    }else{
-                        str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
-                        this.editName = str
-                        await this.getInsAidInfoBy(str,false)
-                    }
-                        this.editorType = this.I_EDITOR_LIST
+                    await this.initInsAid(str);
+                    this.editorType = this.I_EDITOR_LIST
                 }else
                     this.editorType = this.I_EDITOR_NUM
             }
@@ -286,6 +279,22 @@ export default class BipCommEditor extends Vue{
         });
     }
 
+    async initInsAid(str:any){
+        if(str){
+            if(str.indexOf('$')>0){
+                str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
+                this.editName = str
+                this.getInsAidInfoBy(str,true)
+            }else if(str.indexOf('&')>0){
+                str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
+                this.editName = str
+                await this.getInsAidInfoValues(str,false)
+
+            }else{
+                this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
+            }
+        }
+    }
                             
     @Watch('model')
     modelChange(){

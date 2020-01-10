@@ -348,6 +348,21 @@ export default class Home extends Vue {
         for(var i=0; i<cc.length;i++){
           let data = cc[i].data;
           data.i = i;
+          if(data.w == null){
+            data.w=0
+          }
+          if(data.x == null){
+            data.x=0
+          }
+          if(data.y == null){
+            data.y=0
+          }
+          if(data.z == null){
+            data.z=0
+          }
+          if(data.h == null){
+            data.h=0
+          }
           this.layout.push(data)
           this.selection.push(data.sid);
         }
