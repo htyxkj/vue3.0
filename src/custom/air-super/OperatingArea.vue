@@ -509,57 +509,60 @@ export default class OperatingArea extends Vue {
   Screenshot(){
     this.loading++;
     try{
-    this.TMap1.clearOverLays();
-    let overLays = this.tMap.getOverlays();
-    let pointsArr:any =[];
-    for(var i=0;i<overLays.length;i++){
-      let onel = overLays[i];
-      let type = onel.getType();
-      // Label 类型为 1;
-      // Marker 类型为 2;
-      // InfoWindow类型为 3;
-      // Polyline 类型为 4;
-      // Polygon 类型为 5;
-      // Rectangle 类型为 6;
-      // Circle 类型为 8;
-      let newOL = null;
-      if(type ==1){//Table  文本标注
-        newOL = new T.Label({
-          text: onel.NP,
-          position: onel.getLngLat(),
-          offset: new T.Point(-30, 0),
-          fontsize :200
-        }); 
-        newOL.setBorderLine(0)
-        newOL.setBackgroundColor(null); 
-      }else if(type ==2){//Marker  图像标注
+      // let layers = this.tMap.getLayers();
+      let zx = this.tMap.getCenter();
+      this.TMap1.panTo(zx);
+      this.TMap1.clearOverLays();
+      let overLays = this.tMap.getOverlays();
+      let pointsArr:any =[];
+      for(var i=0;i<overLays.length;i++){
+        let onel = overLays[i];
+        let type = onel.getType();
+        // Label 类型为 1;
+        // Marker 类型为 2;
+        // InfoWindow类型为 3;
+        // Polyline 类型为 4;
+        // Polygon 类型为 5;
+        // Rectangle 类型为 6;
+        // Circle 类型为 8;
+        let newOL = null;
+        if(type ==1){//Table  文本标注
+          newOL = new T.Label({
+            text: onel.NP,
+            position: onel.getLngLat(),
+            offset: new T.Point(-30, 0),
+            fontsize :200
+          }); 
+          newOL.setBorderLine(0)
+          newOL.setBackgroundColor(null); 
+        }else if(type ==2){//Marker  图像标注
 
-      }else if(type ==3){
+        }else if(type ==3){
 
-      }else if(type ==4){
-        newOL = new T.Polyline(onel.getLngLats()	, {
+        }else if(type ==4){
+          newOL = new T.Polyline(onel.getLngLats()	, {
+              color: onel.getColor(),
+              weight: onel.getWeight(),
+              opacity: onel.getOpacity()	,
+              lineStyle: onel.getLineStyle(),
+          });
+        }else if(type ==5){
+          //创建面对象
+          newOL = new T.Polygon(onel.getLngLats(), {
             color: onel.getColor(),
             weight: onel.getWeight(),
-            opacity: onel.getOpacity()	,
-            lineStyle: onel.getLineStyle(),
-        });
-      }else if(type ==5){
-        //创建面对象
-        newOL = new T.Polygon(onel.getLngLats(), {
-          color: onel.getColor(),
-          weight: onel.getWeight(),
-          opacity: onel.getOpacity(),
-          fillColor: onel.getFillColor(),
-          fillOpacity: onel.getFillOpacity(),
-        });
+            opacity: onel.getOpacity(),
+            fillColor: onel.getFillColor(),
+            fillOpacity: onel.getFillOpacity(),
+          });
+        }
+        if(onel.ht){
+          pointsArr = pointsArr.concat(onel.ht);
+        }  
+        this.TMap1.addOverLay(newOL);
       }
-      if(onel.ht){
-        pointsArr = pointsArr.concat(onel.ht);
-      }  
-      this.TMap1.addOverLay(newOL);
-    }
-    // //显示最佳比例尺
-    this.TMap1.setViewport(pointsArr);
+      // //显示最佳比例尺
+      this.TMap1.setViewport(pointsArr);
     }catch(e){
       this.loading--;
       this.$notify.error("图片获取失败！");

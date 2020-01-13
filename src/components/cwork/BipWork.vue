@@ -406,15 +406,34 @@ export default class BipWork extends Vue{
     }
     //驳回
     overrule(){ 
-        this.cea.stateto = this.chkInfos.currState.stateId;
+        let cuCheck = this.chkInfos.currState;
+        if(cuCheck.hq){//当前进行审批的节点是会签
+            cuCheck.cnodes.forEach((item:any)=>{
+            if(item.users){
+                item.users.forEach((usr:any)=>{
+                    if(this.user){
+                        if(usr.userCode == this.user.userCode){
+                            this.cea.stateto = item.stateId;
+                        }
+                    }
+                })
+            }
+            })
+        }else{
+            this.cea.stateto = this.chkInfos.currState.stateId;
+        }
         this.cea.bup = "2";
         this.cea.tousr =this.smakefld; 
         var id=34;
         this.loading = true;
         tools.getCheckInfo(this.cea,id).then(res=>{
-            this.$notify.success('驳回成功！')
-            this.$emit('checkOK',this.chkInfos.upState)
-            this.centerDialogVisible = false
+            if(res.data.id==0){
+                this.$notify.success('驳回成功！')
+                this.$emit('checkOK',this.chkInfos.upState)
+                this.centerDialogVisible = false
+            }else{
+                this.$notify.error('驳回失败！')
+            }
         }).catch(err=>{
             this.$notify.error(err)
         }).finally(()=>{
