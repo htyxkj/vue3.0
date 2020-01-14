@@ -300,6 +300,7 @@ export default class RealTimeTrack extends Vue {
      * 查询正在今天的任务
      */
     async initTask(){
+        
         let res = await tools.getServerTime();
         let time:number = res.data.data.data.time;
         let date = TMapUt.dateFormat(time,"yyyy-MM-dd HH:mm:ss")
@@ -315,8 +316,8 @@ export default class RealTimeTrack extends Vue {
             for(var i=0;i<values.length;i++){
                 let vl = values[i];
                 let tlid = await this.initNewTlid(vl.asid)
-                // vl.tlid = tlid;
-                vl.tlid = "20003720032"
+                vl.tlid = tlid;
+                // vl.tlid = "20003720032"
                 this.taskData[vl.sid]= vl;
             }
         }
@@ -357,8 +358,8 @@ export default class RealTimeTrack extends Vue {
         let tlid = task.tlid;
         let res = await tools.getServerTime();
         let time:number = res.data.data.data.time;
-        this.maxTime = time - this.sleepTime;
-        this.maxTime = 1566597121;
+        this.maxTime = parseInt(''+(time - this.sleepTime)/1000);
+        // this.maxTime = 1566597121;
         let oneCont =[];
         let allCont = [];
         let cont = "";

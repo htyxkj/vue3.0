@@ -1,5 +1,7 @@
 <template>
   <div v-loading="loading">
+    
+    <a ref="download"   :href="downloadUrl" :download="downloadfilename">11</a>
     <el-container class="padding0" :style="style">
       <el-aside :width="areaWidth+'px'">
         <el-row>
@@ -55,7 +57,7 @@
               <span class="el-dropdown-link">航空识别区工具</span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="1">标记四角坐标</el-dropdown-item>
-                <el-dropdown-item command="2">勾选四角坐标</el-dropdown-item>
+                <!-- <el-dropdown-item command="2">勾选四角坐标</el-dropdown-item> -->
                 <el-dropdown-item command="3">勾选新点</el-dropdown-item>
                 <el-dropdown-item command="5">删除最后一点</el-dropdown-item>
                 <el-dropdown-item command="4">保存识别区</el-dropdown-item>
@@ -63,7 +65,8 @@
             </el-dropdown>
           </span>
           <span class="tools-li">
-              <el-button size="mini" icon="el-icon-search" @click="Screenshot">截图</el-button>
+            <!-- <el-button size="mini" icon="el-icon-search" @click="_showScreenshot">截图</el-button> -->
+            <el-button size="mini" icon="el-icon-search" @click="Screenshot">截图</el-button>
           </span>            
         </div>
       </el-main>
@@ -364,9 +367,37 @@
         <el-button type="primary" @click="saveSbq" size="mini">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="导出图片" :close-on-click-modal="false" :visible.sync="showScreenshot" width="50%" class="bip-query">
+      <el-row class="bip-lay">
+         <el-row type="flex"  justify="space-around">
+            <el-col :span="5">
+                <div class="chart" @click="mapImgType = 'vector'">
+                    <div class="grid-content bg-purple "> 地 图 </div>
+                    <img class="chart-img" src="@/assets/air-super/mapType/vector.png">
+                    <div class="chart-radio" v-if="mapImgType == 'vector'">
+                      <i class="el-icon-circle-check chart-radio-input"></i>
+                    </div> 
+                </div>
+            </el-col>
+              <el-col :span="5">
+                <div class="chart" @click="mapImgType = 'satellitepoi'">
+                    <div class="grid-content bg-purple "> 卫 星 </div>
+                    <img class="chart-img" src="@/assets/air-super/mapType/satellitepoi.png">
+                    <div class="chart-radio" v-if="mapImgType == 'satellitepoi'">
+                      <i class="el-icon-circle-check chart-radio-input"></i>
+                    </div> 
+                </div>
+            </el-col>
+        </el-row>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showScreenshot = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="Screenshot" size="mini">确 定</el-button>
+      </span>
+    </el-dialog>
     <div style="margin-top:20px">&nbsp;</div>
-    <div id="TMap" style="width:10000px;height:5500px;">
-      <div id="TMap1" style="width:10000px;height:5500px" ></div>
+    <div id="TMap" :style="tmap1Style">
+      <div id="TMap1" :style="tmap1Style" ></div>
     </div>
   </div>
 </template>
@@ -405,6 +436,10 @@ export default class OperatingArea extends Vue {
   @Provide() xIsIndeterminate:boolean =true;
   @Provide() qCheckAll:boolean =false;
   @Provide() qIsIndeterminate:boolean =true;
+
+  @Provide() tmap1Style:string ="width:10000px;height:5500px";
+  @Provide() downloadUrl:any = null;
+  @Provide() downloadfilename:any = null;
 
   @Provide() TMap1: any = null;
   @Provide() tMap: any = null;
@@ -486,6 +521,9 @@ export default class OperatingArea extends Vue {
   @Provide() editBrk:any = null;//当前正在进行保存的kid 已经弹出保存框了
   @Provide() checkkid:any = null;//当前页选中的作业区ID 在勾选避让区域时用到
 
+  @Provide() showScreenshot:boolean = false;//导出图片弹出框
+  @Provide() mapImgType:string ='vector';
+
   async created() {
     if (this.height) {
       this.style = "height:" + (this.height - 20) + "px";
@@ -504,15 +542,60 @@ export default class OperatingArea extends Vue {
       this.tMap = refT.getMap();
     }
     this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
-    this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 16);
+    this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 12);
   }
+  _showScreenshot(){
+    this.showScreenshot = true;
+  }
+  /**
+   * 导出图片
+   */
   Screenshot(){
+    this.showScreenshot = false;
     this.loading++;
+    // if(this.mapImgType =='vector'){
+    //   this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
+    //   this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 13);
+    //   // //创建对象
+    //   var ctrl = new T.Control.MapType([
+    //     {title: '地图',icon:'http://api.tianditu.gov.cn/v4.0/image/map/maptype/vector.png',
+    //       layer: TMAP_NORMAL_MAP
+    //     }
+    //   ]);
+    //   //添加控件
+    //   this.TMap1.addControl(ctrl);
+    // }else if(this.mapImgType =='satellitepoi'){
+    //   this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
+    //   this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945),13);
+    //   //创建对象
+    //   var ctrl = new T.Control.MapType([
+    //     {title: '卫星混合',icon:'http://api.tianditu.gov.cn/v4.0/image/map/maptype/satellitepoi.png',
+    //       layer: TMAP_HYBRID_MAP
+    //     }
+    //   ]);
+    //   //添加控件
+    //   this.TMap1.addControl(ctrl);
+    // }
+    let zx = this.tMap.getCenter();
+    this.TMap1.panTo(zx);
+    this.TMap1.clearOverLays();
+    this.makeImg();
+    // this.makeImgMap(zx,1000,500)
+  }
+  makeImgMap(zx:any,width:any,height:any){
+    this.tmap1Style = "width:"+width+'px;height:'+height+'px';
+    this.TMap1.checkResize()
+    this.TMap1.panTo(zx);
+    if(width>=10000){
+      this.makeImg();
+    }else{
+      setTimeout(() => {
+        this.makeImgMap(zx,width+1000,height+500)
+      },3000)
+    }
+  }
+  makeImg(){
     try{
-      // let layers = this.tMap.getLayers();
-      let zx = this.tMap.getCenter();
-      this.TMap1.panTo(zx);
-      this.TMap1.clearOverLays();
       let overLays = this.tMap.getOverlays();
       let pointsArr:any =[];
       for(var i=0;i<overLays.length;i++){
@@ -564,32 +647,79 @@ export default class OperatingArea extends Vue {
       // //显示最佳比例尺
       this.TMap1.setViewport(pointsArr);
     }catch(e){
+      console.log(e)
       this.loading--;
       this.$notify.error("图片获取失败！");
       return;
     }
     let _this = this;
     setTimeout(() => {
-      domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
-        _this.TMap1.clearOverLays();
-        _this.loading--;
-        let blob = new Blob([data], {
-            type:
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
-          });
-        var url = window.URL.createObjectURL(blob); 
-      　var a = document.createElement('a');
-      　a.href = url;
-      　a.download = 'my-node.png';
-      　a.click(); 
-      });
-    }, 15000);
+      try{
+        console.log("准备导出图片！")
+        domtoimage.toPng(document.getElementById('TMap'))
+        .then(function (dataUrl) {
+            let name = 'my-node.png'
+            _this.downloadUrl = dataUrl
+            _this.downloadfilename = name
+            var link = document.createElement('a');
+            link.download = 'my-image-name.png';
+            link.href = dataUrl;
+            link.setAttribute("download", "chart-download");
+            link.click();
+            setTimeout(() => {
+              _this.loading--;
+              _this.$refs.download.click()
+        
+            }, 200)
+        })
+        .catch(function (error:any) {
+          console.log(error)
+          _this.loading--;
+          _this.$notify.error("图片获取失败！");
+        });
+        // var node = document.getElementById('TMap');
+        // domtoimage.toPng(node)
+        // .then(function (dataUrl) {
+        //     // var img = new Image();
+        //     // img.src = dataUrl;
+        //     document.body.appendChild(img);
+        //     var link = document.createElement('a');
+        //     link.download = 'my-image-name.png';
+        //     link.href = dataUrl;
+        //     link.click();
+        // })
+        // .catch(function (error:any) {
+        //     console.error(error);
+        // });
+        // domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
+        //   // _this.TMap1.clearOverLays();
+        //   let blob = new Blob([data], {
+        //     type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+        //   });
+        //   var url = window.URL.createObjectURL(blob); 
+        // 　var a = document.createElement('a');
+        // 　a.href = url;
+        // 　a.download = 'my-node.png';
+        // 　a.click(); 
+        // _this.loading--;
+        // })
+        // .catch(function (error:any) {
+        //   console.log(error)
+        //   _this.loading--;
+        //   _this.$notify.error("图片获取失败！");
+        // });
+      }catch(e){
+        this.loading--;
+        this.$notify.error("图片获取失败！");
+        console.log(e);
+      }
+    }, 30000);
   }
   //清空地图覆盖物
   clearCover() {
-	this.checkedABCD = [];
-	this.sbqPointABCD = [];
-	this.checkedABCD = [];
+    this.checkedABCD = [];
+    this.sbqPointABCD = [];
+    this.checkedABCD = [];
     this.mapOpera = {};
     this.mapOperaBr = {};
     this.mapOperaTxt = {};
@@ -869,6 +999,7 @@ export default class OperatingArea extends Vue {
           label.setFontSize(16)
           label.setBorderLine(0)
           label.setBackgroundColor(null);
+          label.addEventListener("click",this.lableClick);
           abcd.push(label)
           this.tMap.addOverLay(label);
 
@@ -881,6 +1012,20 @@ export default class OperatingArea extends Vue {
       }
     }
     this.sbqPointABCD = abcdData;
+  }
+  lableClick(lable:any){
+    let lnglat = lable.lnglat;
+    let l = lnglat.lng+","+lnglat.lat;
+    this.checkedABCD.push(l);
+    var icon = new T.Icon({
+      iconUrl: require('@/assets/air-super/letter/'+this.letter[this.checkedABCD.length-1]+'.png'),
+      iconSize: new T.Point(19, 27),
+      iconAnchor: new T.Point(10, 25)
+    });
+    var marker = new T.Marker(lable.lnglat,{icon:icon});
+    this.ckABCDCallout.push(marker)
+    //向地图上添加标注
+    this.tMap.addOverLay(marker);
   }
   //勾选完上一级作业区
   selABCDOk(){
