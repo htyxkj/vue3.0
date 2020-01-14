@@ -1,7 +1,5 @@
 <template>
   <div v-loading="loading">
-    
-    <a ref="download"   :href="downloadUrl" :download="downloadfilename">11</a>
     <el-container class="padding0" :style="style">
       <el-aside :width="areaWidth+'px'">
         <el-row>
@@ -408,6 +406,8 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
+import { TMapUtils } from "./class/TMapUtils";
+let TMapUt = TMapUtils.TMapUt;
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
@@ -595,6 +595,7 @@ export default class OperatingArea extends Vue {
     }
   }
   makeImg(){
+    this.TMap1.checkResize();
     try{
       let overLays = this.tMap.getOverlays();
       let pointsArr:any =[];
@@ -647,72 +648,39 @@ export default class OperatingArea extends Vue {
       // //显示最佳比例尺
       this.TMap1.setViewport(pointsArr);
     }catch(e){
-      console.log(e)
-      this.loading--;
-      this.$notify.error("图片获取失败！");
-      return;
-    }
-    let _this = this;
-    setTimeout(() => {
-      try{
-        console.log("准备导出图片！")
-        domtoimage.toPng(document.getElementById('TMap'))
-        .then(function (dataUrl) {
-            let name = 'my-node.png'
-            _this.downloadUrl = dataUrl
-            _this.downloadfilename = name
-            var link = document.createElement('a');
-            link.download = 'my-image-name.png';
-            link.href = dataUrl;
-            link.setAttribute("download", "chart-download");
-            link.click();
-            setTimeout(() => {
-              _this.loading--;
-              _this.$refs.download.click()
-        
-            }, 200)
-        })
-        .catch(function (error:any) {
-          console.log(error)
-          _this.loading--;
-          _this.$notify.error("图片获取失败！");
-        });
-        // var node = document.getElementById('TMap');
-        // domtoimage.toPng(node)
-        // .then(function (dataUrl) {
-        //     // var img = new Image();
-        //     // img.src = dataUrl;
-        //     document.body.appendChild(img);
-        //     var link = document.createElement('a');
-        //     link.download = 'my-image-name.png';
-        //     link.href = dataUrl;
-        //     link.click();
-        // })
-        // .catch(function (error:any) {
-        //     console.error(error);
-        // });
-        // domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
-        //   // _this.TMap1.clearOverLays();
-        //   let blob = new Blob([data], {
-        //     type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
-        //   });
-        //   var url = window.URL.createObjectURL(blob); 
-        // 　var a = document.createElement('a');
-        // 　a.href = url;
-        // 　a.download = 'my-node.png';
-        // 　a.click(); 
-        // _this.loading--;
-        // })
-        // .catch(function (error:any) {
-        //   console.log(error)
-        //   _this.loading--;
-        //   _this.$notify.error("图片获取失败！");
-        // });
-      }catch(e){
+        console.log(e)
         this.loading--;
         this.$notify.error("图片获取失败！");
-        console.log(e);
-      }
+        return;
+    }
+    let  point = new T.Point(10,10);
+    this.TMap1.panBy(point);
+    let _this = this;
+    setTimeout(() => {
+        try{
+            console.log("准备导出图片！")
+            domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
+                let blob = new Blob([data], {
+                    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+                });
+                let date = TMapUt.dateFormat(new Date(),"yyyy-MM-dd_HH:mm:ss")
+                var url = window.URL.createObjectURL(blob); 
+    　          var a = document.createElement('a');
+    　          a.href = url;
+    　          a.download = date+'HKSBQ.png';
+    　          a.click(); 
+                _this.loading--;
+            })
+            .catch(function (error:any) {
+                console.log(error)
+                _this.loading--;
+                _this.$notify.error("图片获取失败！");
+            });
+        }catch(e){
+            this.loading--;
+            this.$notify.error("图片获取失败！");
+            console.log(e);
+        }
     }, 30000);
   }
   //清空地图覆盖物
