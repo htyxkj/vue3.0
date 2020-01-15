@@ -437,7 +437,7 @@ export default class OperatingArea extends Vue {
   @Provide() qCheckAll:boolean =false;
   @Provide() qIsIndeterminate:boolean =true;
 
-  @Provide() tmap1Style:string ="width:20000px;height:12000px";
+  @Provide() tmap1Style:string ="width:7000px;height:7000px";
   @Provide() downloadUrl:any = null;
   @Provide() downloadfilename:any = null;
 
@@ -551,8 +551,8 @@ export default class OperatingArea extends Vue {
    * 导出图片
    */
   Screenshot(){
-    this.showScreenshot = false;
     this.loading++;
+    this.showScreenshot = false;
     // if(this.mapImgType =='vector'){
     //   this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
     //   this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 13);
@@ -580,22 +580,21 @@ export default class OperatingArea extends Vue {
     this.TMap1.panTo(zx);
     this.TMap1.clearOverLays();
     this.makeImg();
-    // this.makeImgMap(zx,1000,500)
   }
   makeImgMap(zx:any,width:any,height:any){
     this.tmap1Style = "width:"+width+'px;height:'+height+'px';
     this.TMap1.checkResize()
     this.TMap1.panTo(zx);
-    if(width>=10000){
+    if(width>=20000){
       this.makeImg();
     }else{
       setTimeout(() => {
         this.makeImgMap(zx,width+1000,height+500)
-      },3000)
+      },20000)
     }
   }
   makeImg(){
-    // this.TMap1.checkResize();
+    this.TMap1.checkResize();
     try{
       let overLays = this.tMap.getOverlays();
       let pointsArr:any =[];
@@ -652,7 +651,7 @@ export default class OperatingArea extends Vue {
         this.TMap1.addOverLay(newOL);
       }
       // //显示最佳比例尺
-      // this.TMap1.setViewport(pointsArr);
+      this.TMap1.setViewport(pointsArr);
     }catch(e){
         console.log(e)
         this.loading--;
@@ -664,7 +663,16 @@ export default class OperatingArea extends Vue {
     let _this = this;
     setTimeout(() => {
         try{
-            console.log("准备导出图片！")
+            console.log("开始导出图片！")
+    //         domtoimage.toPng(document.getElementById('TMap'))
+    // .then(function (dataUrl:any) {
+    //     var img = new Image();
+    //     img.src = dataUrl;
+    //     document.body.appendChild(img);
+    // })
+    // .catch(function (error:any) {
+    //     console.error('oops, something went wrong!', error);
+    // });
             domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
                 let blob = new Blob([data], {
                     type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
@@ -688,7 +696,7 @@ export default class OperatingArea extends Vue {
             this.$notify.error("图片获取失败！");
             console.log(e);
         }
-    }, 30000);
+    }, 10000);
   }
   //清空地图覆盖物
   clearCover() {
