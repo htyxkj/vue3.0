@@ -437,7 +437,7 @@ export default class OperatingArea extends Vue {
   @Provide() qCheckAll:boolean =false;
   @Provide() qIsIndeterminate:boolean =true;
 
-  @Provide() tmap1Style:string ="width:10000px;height:5500px";
+  @Provide() tmap1Style:string ="width:20000px;height:12000px";
   @Provide() downloadUrl:any = null;
   @Provide() downloadfilename:any = null;
 
@@ -542,7 +542,7 @@ export default class OperatingArea extends Vue {
       this.tMap = refT.getMap();
     }
     this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
-    this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 12);
+    this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 14);
   }
   _showScreenshot(){
     this.showScreenshot = true;
@@ -595,7 +595,7 @@ export default class OperatingArea extends Vue {
     }
   }
   makeImg(){
-    this.TMap1.checkResize();
+    // this.TMap1.checkResize();
     try{
       let overLays = this.tMap.getOverlays();
       let pointsArr:any =[];
@@ -641,12 +641,18 @@ export default class OperatingArea extends Vue {
           });
         }
         if(onel.ht){
-          pointsArr = pointsArr.concat(onel.ht);
+          let ht = onel.ht[0];
+          if(ht instanceof Array){
+            ht = onel.ht[0]
+          }else{
+            ht = onel.ht
+          }
+          pointsArr = pointsArr.concat(ht);
         }  
         this.TMap1.addOverLay(newOL);
       }
       // //显示最佳比例尺
-      this.TMap1.setViewport(pointsArr);
+      // this.TMap1.setViewport(pointsArr);
     }catch(e){
         console.log(e)
         this.loading--;
@@ -675,6 +681,7 @@ export default class OperatingArea extends Vue {
                 console.log(error)
                 _this.loading--;
                 _this.$notify.error("图片获取失败！");
+                // _this.makeImg();
             });
         }catch(e){
             this.loading--;
@@ -2000,8 +2007,8 @@ export default class OperatingArea extends Vue {
                 }
                 //创建线对象
                 var line = new T.Polyline(regionLngLats, {
-                    color: "blue",
-                    weight: 2,
+                    color: "#FF0000",
+                    weight: 4,
                     opacity: 0.5,
                     lineStyle: "dashed"
                 });
