@@ -386,6 +386,8 @@ export default class OperatingArea extends Vue {
         this.taskTrack = null;
         this.sprayLine0=[];//喷洒轨迹（农药范围）
         this.sprayLine1=[];//喷洒轨迹（一像素的线）
+        this.dragPoints = 0;
+        this.percent = 0;
         this.tMap.clearOverLays();
     }
     //左侧行政区开关
@@ -747,8 +749,9 @@ export default class OperatingArea extends Vue {
                                     passOneNode:this.passOneNode}
             for(var i=0;i<values.length;i++){
                 let v = values[i];
-                let lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
-                let poin = new T.LngLat(lnglat[1],lnglat[0]); 
+                // let lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                // let poin = new T.LngLat(lnglat[1],lnglat[0]); 
+                let poin = new T.LngLat(v.longitude,v.latitude); 
                 opt.Datas.push(poin);
             } 
             this.taskTrack = new T.CarTrack(this.tMap,opt);
