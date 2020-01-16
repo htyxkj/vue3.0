@@ -85,7 +85,7 @@
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <!-- 进度条 --> 
-                            <progress-bar class="progress" offsetParent="body" width="80%":pointNum="taskData.length>0?taskData.length:100" :percent="percent" @pbar-seek="seek"></progress-bar>
+                            <progress-bar class="progress" offsetParent="body" width="80%" :pointNum="taskData.length>0?taskData.length:100" :percent="percent" @pbar-seek="seek"></progress-bar>
                             <a class="areaBtn" @click="areaBtnClick">
                                 <template v-if="areaBtnOpen">
                                     <i class="iconfont icon-bip-up"></i>

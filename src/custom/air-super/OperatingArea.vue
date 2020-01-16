@@ -658,45 +658,32 @@ export default class OperatingArea extends Vue {
         this.$notify.error("图片获取失败！");
         return;
     }
-    let  point = new T.Point(10,10);
-    this.TMap1.panBy(point);
-    let _this = this;
-    setTimeout(() => {
-        try{
-            console.log("开始导出图片！")
-    //         domtoimage.toPng(document.getElementById('TMap'))
-    // .then(function (dataUrl:any) {
-    //     var img = new Image();
-    //     img.src = dataUrl;
-    //     document.body.appendChild(img);
-    // })
-    // .catch(function (error:any) {
-    //     console.error('oops, something went wrong!', error);
-    // });
-            domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
-                let blob = new Blob([data], {
-                    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
-                });
-                let date = TMapUt.dateFormat(new Date(),"yyyy-MM-dd_HH:mm:ss")
-                var url = window.URL.createObjectURL(blob); 
-    　          var a = document.createElement('a');
-    　          a.href = url;
-    　          a.download = date+'HKSBQ.png';
-    　          a.click(); 
-                _this.loading--;
-            })
-            .catch(function (error:any) {
-                console.log(error)
-                _this.loading--;
-                _this.$notify.error("图片获取失败！");
-                // _this.makeImg();
+    let _this = this; 
+    try{
+        console.log("开始导出图片！")
+        domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
+            let blob = new Blob([data], {
+                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
             });
-        }catch(e){
-            this.loading--;
-            this.$notify.error("图片获取失败！");
-            console.log(e);
-        }
-    }, 10000);
+            let date = TMapUt.dateFormat(new Date(),"yyyy-MM-dd_HH:mm:ss")
+            var url = window.URL.createObjectURL(blob); 
+　          var a = document.createElement('a');
+　          a.href = url;
+　          a.download = date+'HKSBQ.png';
+　          a.click(); 
+            _this.loading--;
+        })
+        .catch(function (error:any) {
+            console.log(error)
+            _this.loading--;
+            _this.$notify.error("图片获取失败！");
+            // _this.makeImg();
+        });
+    }catch(e){
+        this.loading--;
+        this.$notify.error("图片获取失败！");
+        console.log(e);
+    } 
   }
   //清空地图覆盖物
   clearCover() {
