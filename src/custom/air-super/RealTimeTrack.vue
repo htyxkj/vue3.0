@@ -454,6 +454,7 @@ export default class RealTimeTrack extends Vue {
             TMapUt.getOpera(hoaid,this.tMap);
         }
         if(oaid){
+            TMapUt.getOperaRoute(oaid,this.tMap);
             TMapUt.getOpera(oaid,this.tMap);
             TMapUt.getOperaBr(oaid,this.tMap);
         }        

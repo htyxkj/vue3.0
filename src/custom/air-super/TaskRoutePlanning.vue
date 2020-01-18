@@ -35,16 +35,16 @@
                                         style="padding:5px; paddingLeft:10px; border-bottom: 1px solid #f1f1f1; margin-bottom: 5px;">
                                         <el-col :span="24">
                                             <el-row>
-                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.taskname}}</el-col>
+                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.id}}</el-col>
                                             </el-row>
                                              <el-row>
-                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.bgtime}}</el-col>
+                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.township}}</el-col>
                                                 <el-col :span="2">~</el-col>
                                                 
-                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.edtime}}</el-col>
+                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
                                             </el-row>
                                              <el-row>
-                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.asname}}</el-col>
+                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.address}}</el-col>
                                             </el-row>
                                         </el-col>
                                     </el-row>
@@ -72,7 +72,7 @@
                 <b-map style="width:100%;height:100%"></b-map>
             </el-tab-pane>
         </el-tabs>
-        <el-dialog v-if="taskTJCell" title="查找任务" :visible.sync="showTaskTJDia" width="50%" class="bip-query">
+        <el-dialog v-if="taskTJCell" title="查找作业区" :visible.sync="showTaskTJDia" width="50%" class="bip-query">
             <el-row class="bip-lay">
                 <el-form @submit.native.prevent label-position="right" label-width="100px">
                     <div v-for="(cel,index) in taskTJCell.ccells.cels" :key="'A'+index">
@@ -82,7 +82,7 @@
             </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showTaskTJDia = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="getTask" size="mini">确 定</el-button>
+                <el-button type="primary" @click="getOperarea" size="mini">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -132,8 +132,8 @@ export default class TaskRoutePlanning extends Vue {
         total: 0
     }; //作业区查询分页数据
 
-    @Provide() taskCellID: any = "F2018";
-    @Provide() taskTJCellID: any = "F2018ATJ";
+    @Provide() taskCellID: any = "XL2015";
+    @Provide() taskTJCellID: any = "XL2015TJ";
     @Provide() taskCell: any = null; //任务对象
     @Provide() taskTJCell: any = null; //任务条件对象
     @Provide() showTaskTJDia: boolean = false; //是否显示任务查找弹框
@@ -276,33 +276,36 @@ export default class TaskRoutePlanning extends Vue {
     }
     // 查看路线
     async routePlanningRech(index: any) {
+        console.log("查看路线!")
         let data = this.taskData[index].data
-        let oaid = data.oaid;
-        let hoaid = data.hoaid;
-
-        let points:any = await TMapUt.getOpera(oaid,this.tMap);
+        let avoid = data.id;//避让信息
+        let airid = data.airid;//航空识别区
+        TMapUt.getOperaBr(avoid,this.tMap);
+        TMapUt.getOpera(airid,this.tMap);
+        let points:any = await TMapUt.getOpera(data.id,this.tMap);
         if(points && points.length>0){
             let t1 = this.tMap.getViewport(points);
             this.tMap.panTo(t1.center, t1.zoom);
         }
-        TMapUt.getOperaBr(oaid,this.tMap);
-        TMapUt.getOpera(hoaid,this.tMap);
         let route = data.route;
         TMapUt.makeRoute(data.route,"",this.tMap)
     }
+    /**
+     * 规划线路
+     */
     async routePlanning0(index:any){
         let data = this.taskData[index].data
-        this.editTaskId = data.sid;
+        this.editTaskId = data.id;
         this.editTaskState = false;
-        let oaid = data.oaid;
-        let hoaid = data.hoaid;
-        TMapUt.getOperaBr(oaid,this.tMap);
-        let points:any = await TMapUt.getOpera(oaid,this.tMap);
+        let avoid = data.id;//避让信息
+        let airid = data.airid;//航空识别区
+        TMapUt.getOperaBr(avoid,this.tMap);
+        TMapUt.getOpera(airid,this.tMap);
+        let points:any = await TMapUt.getOpera(data.id,this.tMap);
         if(points && points.length>0){
             let t1 = this.tMap.getViewport(points);
             this.tMap.panTo(t1.center, t1.zoom);
         }
-        TMapUt.getOpera(hoaid,this.tMap);
         let route = data.route;
         if(route && route.length>1){//存在修改线路
             //创建线对象
@@ -322,7 +325,7 @@ export default class TaskRoutePlanning extends Vue {
     /**
      * 获取任务
      */
-    async getTask() {
+    async getOperarea() {
         let qe: QueryEntity = new QueryEntity(
             this.taskCellID,
             this.taskTJCellID
@@ -351,7 +354,7 @@ export default class TaskRoutePlanning extends Vue {
      */
     pageChange(page: number) {
         this.taskCellPage.currPage = page;
-        this.getTask();
+        this.getOperarea();
     }
     @Watch("height")
     heightChange() {

@@ -472,7 +472,10 @@ export default class OperatingArea extends Vue {
                  TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             }
            if(showroot == 1){
-                TMapUt.makeRoute(route,"",this.tMap)//路线
+                TMapUt.getOperaRoute(oaid,this.tMap);
+                if(route){
+                    TMapUt.makeRoute(route,"",this.tMap)//路线
+                }
            }
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;

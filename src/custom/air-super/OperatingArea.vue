@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div v-loading.fullscreen="loading" :body="true">
     <el-container class="padding0" :style="style">
       <el-aside :width="areaWidth+'px'">
         <el-row>
@@ -78,7 +78,7 @@
                 <el-row v-for="(item,index) in operaSBQData" :key="index">
                   <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                     <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
-                      <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                      <el-checkbox class="myOperatingAreaCheck" :label="item.data.id" :key="item.data.id"></el-checkbox>
                     </el-col>
                     <el-col :span="20" style="height:60px;">
                       <el-row>
@@ -92,13 +92,13 @@
                         <el-col :span="24" > 
                           <el-row style="textAlign:center;">
                             <el-col :span="8">
-                              <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                              <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
                             </el-col>
                             <el-col :span="8">
-                                <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                             </el-col>
                             <el-col :span="8">
-                              <el-button type="danger" @click="delOpera(item.data.kid,0,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                              <el-button type="danger" @click="delOpera(item.data.id,0,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                             </el-col>
                           </el-row>                   
                         </el-col>
@@ -116,7 +116,7 @@
                     <el-row v-for="(item,index) in operaCData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                         <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
-                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.id" :key="item.data.id"></el-checkbox>
                         </el-col>
                         <el-col :span="20">
                           <el-row>
@@ -130,13 +130,13 @@
                             <el-col :span="24" > 
                               <el-row style="textAlign:center;">
                                 <el-col :span="6">
-                                  <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                  <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                    <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.kid,1,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                  <el-button type="danger" @click="delOpera(item.data.id,1,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
                                   <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
@@ -148,7 +148,7 @@
                       </el-row>
                       <el-row style="font-size:14px;">
                         <template v-if="showoperaBrData['BR'+index]">
-                          <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                          <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
                             <el-col :span="4">&nbsp;</el-col>
                             <el-col :span="12">{{item.data.name}}</el-col>
                             <el-col :span="8">
@@ -169,7 +169,7 @@
                     <el-row v-for="(item,index) in operaXData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                         <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
-                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.id" :key="item.data.id"></el-checkbox>
                         </el-col>
                         <el-col :span="20">
                           <el-row>
@@ -183,13 +183,13 @@
                             <el-col :span="24" > 
                               <el-row style="textAlign:center;">
                                 <el-col :span="6">
-                                  <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                  <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                    <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.kid,2,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                  <el-button type="danger" @click="delOpera(item.data.id,2,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
                                   <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
@@ -201,7 +201,7 @@
                       </el-row>
                       <el-row style="font-size:14px;">
                         <template v-if="showoperaBrData['BR'+index]">
-                          <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                          <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
                             <el-col :span="4">&nbsp;</el-col>
                             <el-col :span="12">{{item.data.name}}</el-col>
                             <el-col :span="8">
@@ -222,7 +222,7 @@
                     <el-row v-for="(item,index) in operaQData" :key="index">
                       <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
                         <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
-                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.kid" :key="item.data.kid"></el-checkbox>
+                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.id" :key="item.data.id"></el-checkbox>
                         </el-col>
                         <el-col :span="20">
                           <el-row>
@@ -236,13 +236,13 @@
                             <el-col :span="24" > 
                               <el-row style="textAlign:center;">
                                 <el-col :span="6">
-                                  <el-button type="primary" @click="editOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                  <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button type="info" @click="copyOpera(item.data.kid)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                    <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.kid,3,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                  <el-button type="danger" @click="delOpera(item.data.id,3,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
                                   <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
@@ -254,7 +254,7 @@
                       </el-row>
                       <el-row style="font-size:14px;">
                         <template v-if="showoperaBrData['BR'+index]">
-                          <el-row v-for="(item,indexbr) in operaBrData[item.data.kid]" :key="indexbr">
+                          <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
                             <el-col :span="4">&nbsp;</el-col>
                             <el-col :span="12">{{item.data.name}}</el-col>
                             <el-col :span="8">
@@ -703,8 +703,8 @@ export default class OperatingArea extends Vue {
       let num =0;
       for(var i =0;i<this.operaData.length;i++){
         let d1 = this.operaData[i].data
-        if(this.checkOperaList.indexOf(d1.kid) !=-1){
-          this.checkkid = d1.kid;
+        if(this.checkOperaList.indexOf(d1.id) !=-1){
+          this.checkkid = d1.id;
           num++
         }
         if(num == 2)
@@ -774,11 +774,12 @@ export default class OperatingArea extends Vue {
    * 勾选发生变化
    */
   checkBoxChange(data: any) {
+    console.log(data)
     for (var i = 0; i < data.length; i++) {
-      let kid = data[i];
-      if (!this.mapOpera[kid]) {
+      let id = data[i];
+      if (!this.mapOpera[id]) {
         //作业区
-        let d1 = this.operaJSON[kid];
+        let d1 = this.operaJSON[id];
         if(d1){
           let cc:any = this.makeOpera(d1);
           let polygon = cc[0];
@@ -787,11 +788,11 @@ export default class OperatingArea extends Vue {
           this.tMap.addOverLay(polygon);
           let t1 = this.tMap.getViewport(points);
           this.tMap.panTo(t1.center, t1.zoom);
-          this.mapOpera[kid] = polygon;
+          this.mapOpera[id] = polygon;
           let label = this.makeOperaLableTXT(d1, t1);
           this.tMap.addOverLay(label);
-          this.mapOperaTxt[kid] = label;
-          this.makrAllBr(kid,null);
+          this.mapOperaTxt[id] = label;
+          this.makrAllBr(id,null);
         }
       }
     }
@@ -880,7 +881,7 @@ export default class OperatingArea extends Vue {
     }
   }
 
-  /***************** 航空识别区 ****************/
+/***************** 航空识别区 ****************/
   //航空识别区工具
   aviationToolClick(item:any){
     let sbqData = [];
@@ -976,7 +977,7 @@ export default class OperatingArea extends Vue {
           let point = {name:id+this.letter[j],latlng:boundary[j]}
           _abcd.push(point);
         }
-        this.makeABCD[d1.kid] = abcd;
+        this.makeABCD[d1.id] = abcd;
         let point4 = {id:id,point:_abcd}
         abcdData.push(point4);
       }
@@ -1040,12 +1041,12 @@ export default class OperatingArea extends Vue {
 		this.ckABCDCallout=[];
 		this.checkedABCD =[];
 		this.sbqPointABCD=[];
-		let kid = res.data.data.kid;
+		let id = res.data.data.id;
 		
 		this.showSavesbqDia = false;
-		await this.getOpera(kid);
-		if (kid) {
-			this.checkOperaList.push(kid);
+		await this.getOpera(id);
+		if (id) {
+			this.checkOperaList.push(id);
 			this.checkBoxChange(this.checkOperaList);
 		}
 		this.$notify.success("保存成功！");
@@ -1055,7 +1056,7 @@ export default class OperatingArea extends Vue {
     }
   }
 
-  /**************** 避让区 **************/
+/**************** 避让区 **************/
    //右侧避让区开关
   async operaBtnClick() {
     this.operaBtnOpen = !this.operaBtnOpen;
@@ -1087,18 +1088,18 @@ export default class OperatingArea extends Vue {
   /**
    * 查找避让区
    */
-  async showOperaBr(kid:string){
+  async showOperaBr(operid:string){
     let qe: QueryEntity = new QueryEntity("F2015A", "F2015A");
     qe.page = {currPage: 1,index: 0,pageSize: 20000,total: 0};
-    qe.cont = "{'oid':'"+kid+"'}";
+    qe.cont = "{'oid':'"+operid+"'}";
     qe.oprid = 13;
     await this.operaBrCell
       .queryData(qe)
       .then(res => {
         if (res.data.id == 0) {
-          this.operaBrData[kid] = res.data.data.data.data
-          for (var i = 0; i < this.operaBrData[kid].length; i++) {
-            let d1 = this.operaBrData[kid][i].data;
+          this.operaBrData[operid] = res.data.data.data.data
+          for (var i = 0; i < this.operaBrData[operid].length; i++) {
+            let d1 = this.operaBrData[operid][i].data;
             let k = d1.oid+"_"+d1.oaid
             this.operaBrJSON[k] = d1;
           }
@@ -1189,13 +1190,13 @@ export default class OperatingArea extends Vue {
   /**
    * 画单个作业区的全部避让区域
    */
-  makrAllBr(kid:any,koid:any){
-    if(this.operaBrData[kid]){
-      let br = this.operaBrData[kid]
+  makrAllBr(operid:any,koid:any){
+    if(this.operaBrData[operid]){
+      let br = this.operaBrData[operid]
       for(var j=0;j<br.length;j++){
         let br1 = br[j].data;
         let dbr1 ={boundary1: br1.avoid,color:br1.color}
-        let kk = kid+"_"+br1.oaid;
+        let kk = operid+"_"+br1.oaid;
         if(!koid || koid == kk){
           if(br1.type ==0){//点的
             //创建标注对象
@@ -1221,12 +1222,12 @@ export default class OperatingArea extends Vue {
   /**
    * 删除单个作业区的全部避让区域
    */
-  delAllBr(kid:any){
-    if(this.operaBrData[kid]){
-      let br = this.operaBrData[kid]
+  delAllBr(operid:any){
+    if(this.operaBrData[operid]){
+      let br = this.operaBrData[operid]
       for(var j=0;j<br.length;j++){
         let br1 = br[j].data;
-        let kk = kid+"_"+br1.oaid;
+        let kk = operid+"_"+br1.oaid;
         if(this.mapOperaBr[kk]){
           this.tMap.removeOverLay(this.mapOperaBr[kk]);
           delete this.mapOperaBr[kk];
@@ -1404,13 +1405,13 @@ export default class OperatingArea extends Vue {
 
   /**************** 作业区 **************/
   //查找作业区
-  async getOpera(kid:any) {
+  async getOpera(operid:any) {
     let tj = this.operaTjCell.currRecord.data;
-    if(kid){
-	  	tj.kid = kid
-	}else{
-		tj.kid = "";
-	}
+    if(operid){
+	  	tj.id = operid
+    }else{
+      tj.id = "";
+    }
     let qe: QueryEntity = new QueryEntity("FW2015", "FW2015TJ");
     qe.page = this.operaCellPage;
     qe.cont = JSON.stringify(tj);
@@ -1422,35 +1423,68 @@ export default class OperatingArea extends Vue {
       .queryData(qe)
       .then(res => {
         if (res.data.id == 0) {
-			let values = res.data.data.data.data;
-			for (var i = 0; i < values.length; i++) {
-				let d1 = values[i].data;
-				this.showOperaBr(d1.kid);
-				this.operaJSON[d1.kid] = d1;
-			}
-			this.operaData = values;
-			if(values.length==0 && kid == null)
-			  	this.operaData = [];
-			if(kid == null){
-				this.operaSBQData = [];
-				this.operaCData = [];
-				this.operaXData = [];
-				this.operaQData = [];
-			}
-			for(var i=0;i<this.operaData.length;i++){
-				let dd = this.operaData[i];
-					if(dd.data.sbuid == 'F2005'){
-					this.operaSBQData.push(dd);
-				}else if(dd.data.sbuid == 'F2015'){
-					if(dd.data.season == 0){
-						this.operaCData.push(dd);
-					}else if(dd.data.season == 1){
-						this.operaXData.push(dd);
-					}else if(dd.data.season == 2){
-						this.operaQData.push(dd);
-					}
-				}
-			}
+          let values = res.data.data.data.data;
+          for (var i = 0; i < values.length; i++) {
+            let d1 = values[i].data;
+            this.showOperaBr(d1.id);
+            this.operaJSON[d1.id] = d1;
+          }
+          this.operaData = values;
+          if(values.length==0 && operid == null)
+              this.operaData = [];
+          if(operid == null){
+            this.operaSBQData = [];
+            this.operaCData = [];
+            this.operaXData = [];
+            this.operaQData = [];
+          }
+          for(var i=0;i<this.operaData.length;i++){
+            let dd = this.operaData[i];
+              if(dd.data.sbuid == 'F2005'){
+              this.operaSBQData.push(dd);
+            }else if(dd.data.sbuid == 'F2015'){    
+              if(dd.data.season == 0){       
+                let _index0 = -1
+                for(var i=0;i<this.operaCData.length;i++){
+                  if(this.operaCData[i].data.id == dd.data.id){
+                    _index0=i;
+                    break;
+                  }
+                }
+                if(_index0>=0){
+                  this.operaCData[_index0] = dd;
+                }else{
+                  this.operaCData.push(dd);
+                }
+              }else if(dd.data.season == 1){
+                let _index1 = -1
+                for(var i=0;i<this.operaXData.length;i++){
+                  if(this.operaXData[i].data.id == dd.data.id){
+                    _index1=i;
+                    break;
+                  }
+                }
+                if(_index1>=0){
+                  this.operaXData[_index1] = dd;
+                }else{
+                  this.operaXData.push(dd);
+                }
+              }else if(dd.data.season == 2){ 
+                let _index2 = -1
+                for(var i=0;i<this.operaQData.length;i++){
+                  if(this.operaQData[i].data.id == dd.data.id){
+                    _index2=i;
+                    break;
+                  }
+                }
+                if(_index2>=0){
+                  this.operaQData[_index2] = dd;
+                }else{
+                  this.operaQData.push(dd);
+                }
+              }
+            }
+          }
           
         }
         this.operaCellPage = res.data.data.data.page;
@@ -1467,13 +1501,14 @@ export default class OperatingArea extends Vue {
    * 保存新增作业区
    */
   async saveOpera() {
+    console.log("保存作业区")
     let bok = this.checkNotNull(this.operaSaveCell);
     if (!bok) return;
     let res: any = await this.operaSaveCell.saveData();
     if (res.data && res.data.id == 0) {
-      let kid = res.data.data.kid;
-      await this.getOpera(kid);
-      if (kid) {
+      let operid = this.operaSaveCell.currRecord.data.id;
+      await this.getOpera(operid);
+      if (operid) {
         if (this.mapOpera[this.editKid]){
           this.tMap.removeOverLay(this.mapOpera[this.editKid]);
           delete this.mapOpera[this.editKid];
@@ -1482,29 +1517,29 @@ export default class OperatingArea extends Vue {
           this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
           delete this.mapOperaTxt[this.editKid];
         }
-        this.checkOperaList.push(kid);
+        this.checkOperaList.push(operid);
         this.checkBoxChange(this.checkOperaList);
       }
       this.$notify.success("保存成功！");
       this.showSaveOperaDia = false;
     } else {
-      this.showSaveOperaDia = false;
+      // this.showSaveOperaDia = false;
       this.$notify.error("保存失败！");
     }
   }
    /**
    * 编辑作业区  作业区唯一码
-   * @param kid 作业区唯一码
+   * @param operid 作业区唯一码
    */
-  editOpera(kid: any) {
-    let cover = this.mapOpera[kid];
+  editOpera(operid: any) {
+    let cover = this.mapOpera[operid];
     if (cover) {
       cover.removeEventListener("dblclick", this.coverDBClick);
       cover.addEventListener("dblclick", this.coverDBClick);
       cover.enableEdit();
-      cover.kid = kid;
+      cover.kid = operid;
     } else {
-      let d1 = this.operaJSON[kid];
+      let d1 = this.operaJSON[operid];
       let cc:any = this.makeOpera(d1);
       let polygon = cc[0];
       let points = cc[1];
@@ -1512,25 +1547,25 @@ export default class OperatingArea extends Vue {
       this.tMap.addOverLay(polygon);
       let t1 = this.tMap.getViewport(points);
       this.tMap.panTo(t1.center, t1.zoom);
-      this.mapOpera[kid] = polygon;
+      this.mapOpera[operid] = polygon;
       let label = this.makeOperaLableTXT(d1, t1);
       this.tMap.addOverLay(label);
-      this.mapOperaTxt[kid] = label;
+      this.mapOperaTxt[operid] = label;
       polygon.enableEdit();
-      polygon.kid = kid;
+      polygon.kid = operid;
       polygon.addEventListener("dblclick", this.coverDBClick);
     }
-    if (this.checkOperaList.indexOf(kid) == -1) {
-      this.checkOperaList.push(kid);
+    if (this.checkOperaList.indexOf(operid) == -1) {
+      this.checkOperaList.push(operid);
     }
   }
   /**
    * 删除作业区
-   * @param kid 作业区唯一码
+   * @param operid 作业区唯一码
    * @param type  0识别区，1春，2夏，3秋
    */
-  delOpera(kid: any,type:any,index:any) {
-    let d1 = this.operaJSON[kid];
+  delOpera(operid: any,type:any,index:any) {
+    let d1 = this.operaJSON[operid];
     let co = "此操作将删除作业区：" + d1.name + "，是否继续？";
     this.operaSaveCell.clear();
     this.operaSaveCell.createRecord();
@@ -1556,7 +1591,7 @@ export default class OperatingArea extends Vue {
   }
   //进行删除
   async del(type:any,index:any) {
-    let key = this.operaSaveCell.currRecord.data.kid;
+    let key = this.operaSaveCell.currRecord.data.id;
     let res: any = await this.operaSaveCell.saveData();
     if (res.data && res.data.id == 0) {
 		if (this.mapOpera[key]){
@@ -1581,14 +1616,14 @@ export default class OperatingArea extends Vue {
   }
     /**
    * 复制作业区  作业区唯一码
-   * @param kid 作业区唯一码
+   * @param operid 作业区唯一码
    */
-  copyOpera(kid: any){
-    if(this.checkOperaList.indexOf(kid) ==-1){
-      this.checkOperaList.push(kid);
+  copyOpera(operid: any){
+    if(this.checkOperaList.indexOf(operid) ==-1){
+      this.checkOperaList.push(operid);
     }
-    let d1 = this.operaJSON[kid];
-    kid = "copy-"+kid;
+    let d1 = this.operaJSON[operid];
+    operid = "copy-"+operid;
     let cc:any = this.makeOpera(d1);
     let polygon = cc[0];
     let points = cc[1];
@@ -1596,12 +1631,12 @@ export default class OperatingArea extends Vue {
     this.tMap.addOverLay(polygon);
     let t1 = this.tMap.getViewport(points);
     this.tMap.panTo(t1.center, t1.zoom);
-    this.mapOpera[kid] = polygon;
+    this.mapOpera[operid] = polygon;
     let label = this.makeOperaLableTXT(d1, t1);
     this.tMap.addOverLay(label);
-    this.mapOperaTxt[kid] = label;
+    this.mapOperaTxt[operid] = label;
     polygon.enableEdit();
-    polygon.kid = kid;
+    polygon.kid = operid;
     polygon.addEventListener("dblclick", this.coverDBClick);
   }
   /**
@@ -1672,14 +1707,14 @@ export default class OperatingArea extends Vue {
    */
   coverDBClick(data: any) {
     let target = data.target;
-    let kid = target.kid;
+    let operid = target.kid;
     this.editKid = target.kid;
     let points = target.getLngLats()[0];
-    let cover = this.mapOpera[kid];
-    if (kid) {
+    let cover = this.mapOpera[operid];
+    if (operid) {
       let iscopy:boolean = false;
-      if(kid.indexOf("copy-") !=-1){//是复制的图层
-        kid = kid.split("-")[1];
+      if(operid.indexOf("copy-") !=-1){//是复制的图层
+        operid = operid.split("-")[1];
         iscopy = true;
       }
       //创建标注工具对象 用来计算面积
@@ -1690,7 +1725,7 @@ export default class OperatingArea extends Vue {
         boundary1 += point.getLng() + "," + point.getLat() + ";";
       }
       boundary1 = boundary1.substring(0, boundary1.length - 1);
-      let d1 = this.operaJSON[kid];
+      let d1 = this.operaJSON[operid];
       this.operaSaveCell.clear();
       this.operaSaveCell.createRecord();
       let area = polygonTool.getArea(points);
@@ -1717,7 +1752,7 @@ export default class OperatingArea extends Vue {
     this.sbqCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaSBQData.length;i++){
-        this.sbqCheckOperaList.push(this.operaSBQData[i].data.kid)
+        this.sbqCheckOperaList.push(this.operaSBQData[i].data.id)
       }
     }
     this.sbqIsIndeterminate = false;
@@ -1733,7 +1768,7 @@ export default class OperatingArea extends Vue {
     this.cCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaCData.length;i++){
-        this.cCheckOperaList.push(this.operaCData[i].data.kid)
+        this.cCheckOperaList.push(this.operaCData[i].data.id)
       }
     }
     this.cIsIndeterminate = false;
@@ -1749,7 +1784,7 @@ export default class OperatingArea extends Vue {
     this.xCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaXData.length;i++){
-        this.xCheckOperaList.push(this.operaXData[i].data.kid)
+        this.xCheckOperaList.push(this.operaXData[i].data.id)
       }
     }
     this.xIsIndeterminate = false;
@@ -1765,7 +1800,7 @@ export default class OperatingArea extends Vue {
     this.qCheckOperaList = [];
     if(val){
       for(var i=0;i<this.operaQData.length;i++){
-        this.qCheckOperaList.push(this.operaQData[i].data.kid)
+        this.qCheckOperaList.push(this.operaQData[i].data.id)
       }
     }
     this.sbqIsIndeterminate = false;

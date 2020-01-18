@@ -134,6 +134,7 @@ export default class TrackShow extends Vue {
                 this.$notify.warning(bok);
                 return;
             }
+            console.log(this.taskTjCell.currRecord.data)
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
@@ -143,14 +144,17 @@ export default class TrackShow extends Vue {
             let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             if(showarea == 1){
-                 TMapUt.getOpera(oaid,this.tMap);//作业区
-                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
+                TMapUt.getOpera(oaid,this.tMap);//作业区
+                TMapUt.getOperaBr(oaid,this.tMap);//避让区
             }
             if(showhkarea ==1){
                  TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             }
            if(showroot == 1){
-                TMapUt.makeRoute(route,"",this.tMap)//路线
+                TMapUt.getOperaRoute(oaid,this.tMap);
+                if(route){
+                    TMapUt.makeRoute(route,"",this.tMap)//路线
+                }
            }
             // TMapUt.getOpera(oaid,this.tMap);//作业区
             // TMapUt.getOpera(hoaid,this.tMap);//航空识别区

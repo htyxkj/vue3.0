@@ -39,6 +39,9 @@
             <template v-else-if="editorType == I_EDITOR_RADIO">
                 <bip-radio-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-radio-editor>
             </template>
+            <template v-else-if="editorType == I_EDITOR_COLOR">
+                <bip-input-color-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-color-editor>
+            </template>
             <template v-else>
                 <bip-input-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-editor>
             </template>   
@@ -63,6 +66,7 @@ import BipQueryEditor from './BipQueryEditor.vue'
 import BipRichTextEditor from './BipRichTextEditor.vue'
 import BipTreeEditor from './BipTreeEditor.vue'
 import BipSwitchEditor from './BipSwitchEditor.vue'
+import BipInputColorEditor from './BipInputColorPickerEditor.vue'
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { BIPUtils } from '@/utils/BaseUtil'
@@ -74,7 +78,7 @@ import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 import QueryEntity from '../../classes/search/QueryEntity';
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor,BipInputColorEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -89,6 +93,7 @@ export default class BipCommEditor extends Vue{
     @Provide() I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
     @Provide() I_EDITOR_NUM = ICL.I_EDITOR_NUM
     @Provide() I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
+    @Provide() I_EDITOR_COLOR = ICL.I_EDITOR_COLOR
     @Provide() model:any = ''
     @Provide() bsearch:boolean = false
     @Provide() assit:boolean = false
@@ -167,6 +172,8 @@ export default class BipCommEditor extends Vue{
                 }
             }else if(this.cell.editType == 14){
                 this.editorType = ICL.I_EDITOR_SWITCH;
+            }else if(this.cell.editType == 15){
+                this.editorType = ICL.I_EDITOR_COLOR;
             }else if(this.cell.editType == 10){
                 this.editorType = this.I_EDITOR_RTEXT
             }else if(type>=2&&type<12){

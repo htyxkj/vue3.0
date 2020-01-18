@@ -76,6 +76,49 @@ export namespace TMapUtils {
             return points;
         }
         /**
+         * 获取航线规划线路 
+         * @param oaid 作业区
+         * @param tMap 地图对象
+         */
+        async getOperaRoute(oaid:any,tMap:any){
+            console.log(oaid)
+            let points:any = [];
+            if(oaid){
+                let aid = oaid.split(";")
+                for(var i=0;i<aid.length;i++){
+                    let cc = await this.getOperaRoute0(aid[i],tMap);
+                    points = points.concat(cc);
+                }
+            }
+            return points;
+        }
+        async getOperaRoute0(oaid:any,tMap:any){
+            let oneCont =[];
+            let allCont = [];
+            let cont = "";
+            let qCont = new QueryCont('id', oaid, 12);
+            qCont.setContrast(0);
+            oneCont.push(qCont);
+            if (oneCont.length != 0) {
+                allCont.push(oneCont);
+                cont = "~" + JSON.stringify(allCont);
+            }
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.page.pageSize = 400;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("ROUTEOPERA", 210, qe);
+            let points:any =[];
+            if(vv.data.id == 0){
+                let values = vv.data.data.data.values;
+                for(var i =0;i<values.length;i++){
+                    let vl = values[i];
+                    this.makeRoute(vl.route,'',tMap)
+                }
+            }
+            return points;
+        }
+        /**
          * 获取避让区域
          * @param oid 作业区编码
          * @param tMap 当前地图对象
