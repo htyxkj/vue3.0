@@ -117,9 +117,9 @@ export namespace BIPUtil {
      * @param pcellId  
      * @param buid 业务号
      */
-    saveData(record:any,pcellId:string,buid:string){
+    saveData(record:any,pcellId:string,buid:string,polnk:string=''){
         let param = tool.getSaveParams()
-        param = Object.assign(param, { pcell: pcellId,buid:buid, jsonstr: JSON.stringify(record) })
+        param = Object.assign(param, { pcell: pcellId,buid:buid, polnk:polnk, jsonstr: JSON.stringify(record) })
         return this.getFromServer(param);
     }
     /**

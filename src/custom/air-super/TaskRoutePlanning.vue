@@ -322,10 +322,14 @@ export default class TaskRoutePlanning extends Vue {
             this.lineTool.open()
         }
     }
+    getOperarea(){
+        this.taskCellPage.currPage = 1;
+        this.getOperarea0();
+    }
     /**
      * 获取任务
      */
-    async getOperarea() {
+    async getOperarea0() {
         let qe: QueryEntity = new QueryEntity(
             this.taskCellID,
             this.taskTJCellID
@@ -354,7 +358,7 @@ export default class TaskRoutePlanning extends Vue {
      */
     pageChange(page: number) {
         this.taskCellPage.currPage = page;
-        this.getOperarea();
+        this.getOperarea0();
     }
     @Watch("height")
     heightChange() {

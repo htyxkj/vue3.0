@@ -172,6 +172,11 @@ export default class CUnivSelect extends Vue {
         // let height= ses.offsetHeight;
         // console.log('ses height:'+height,he-height)
         if(!this.params || !this.params.method){ 
+            if(this.uriParams && this.uriParams.pbds){
+                if(this.uriParams.pbds.polnk){
+                    this.dsm.polnk = this.uriParams.pbds.polnk;
+                }
+            }
             this.initData(); 
         }else{
             this.pmenuid = this.$route.query.pmenuid+'';

@@ -48,6 +48,10 @@ export default class BipInputEditor extends Vue{
     dataChange(value:string|number){
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
+                //修改字段是主键
+                if((this.cell.attr & 0x1) >0 ){//是主键
+                    this.cds.makeOldPK();
+                }
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
                 // const key:string = this.cell.id

@@ -873,6 +873,11 @@ export default class BaseApplet extends Vue{
         if(!this.params || !this.params.method){
             this.dsm.createRecord();
             this.dsm.currRecord.c_state = 1
+            if(this.uriParams && this.uriParams.pbds){
+                if(this.uriParams.pbds.polnk){
+                    this.dsm.polnk = this.uriParams.pbds.polnk;
+                }
+            }
             if(this.uriParams && this.uriParams.pdata && this.uriParams.pdata.length>1){ 
                 this.oprid = 14;
                 this.dsm.cont = this.uriParams.pdata;

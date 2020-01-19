@@ -20,6 +20,7 @@ export default class CDataSet {
   ccells: Cells;
   cdata: CData;
   cont: any = null;
+  polnk:string = '';//外部引用账套
   index: number = -1;
   ds_sub: Array<CDataSet> = new Array<CDataSet>();
   ds_par: any = null;
@@ -638,7 +639,7 @@ export default class CDataSet {
       const cds_0 = this.ds_sub[i];
       this.currRecord.subs[i] = cds_0.cdata;
     }
-    return tools.saveData(this.currRecord, this.p_cell,buid);
+    return tools.saveData(this.currRecord, this.p_cell,buid,this.polnk);
   }
 
   /**
@@ -647,6 +648,7 @@ export default class CDataSet {
    */
   queryData(qe: QueryEntity) {
     qe.mcont = this.cont;
+    qe.polnk = this.polnk;
     return tools.query(qe);
   }
   queryRPTData(qe: QueryEntity) {
@@ -852,5 +854,18 @@ export default class CDataSet {
         return cd;
     } 
     return new CDataSet('')
+  }
+  //创建旧主键集合（主键值就行修改后执行）
+  makeOldPK(){
+    if((this.currRecord.c_state & 1) != 1){
+      if(this.currRecord.oldpk.length == 0){//旧主键是空 
+        for(var i=0;i<this.ccells.cels.length;i++){
+            let cel = this.ccells.cels[i];
+            if((cel.attr & 0x1) >0 ){//是主键
+                this.currRecord.oldpk.push(this.currRecord.data[cel.id]);
+            }
+        }
+      }
+    }
   }
 }
