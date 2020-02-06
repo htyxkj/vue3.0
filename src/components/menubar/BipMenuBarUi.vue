@@ -2,7 +2,7 @@
     <el-row class="menubar">
         <el-button-group v-if="mbs">
             <template  v-for="(btn,index) in mbs.menuList">
-                <el-button :key="index" v-if="btn.dlgType == '' || showDlg":size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                <el-button :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                     <template v-if="btn.hasIcon">
                         <template v-if="btn.icon&&btn.bIconleft">
                             <i :class="btn.icon"></i>{{btn.name}}

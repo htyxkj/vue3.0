@@ -63,6 +63,15 @@
             </el-dropdown>
           </span>
           <span class="tools-li">
+            <el-dropdown trigger="click" @command="liftToolClick" size="mini" split-button >
+              <span class="el-dropdown-link">起降点工具</span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1">起降点规划</el-dropdown-item>
+                <!-- <el-dropdown-item command="2">经纬度定位</el-dropdown-item> -->
+              </el-dropdown-menu>
+            </el-dropdown>
+          </span>
+          <span class="tools-li">
             <!-- <el-button size="mini" icon="el-icon-search" @click="_showScreenshot">截图</el-button> -->
             <el-button size="mini" icon="el-icon-search" @click="Screenshot">截图</el-button>
           </span>            
@@ -271,6 +280,40 @@
                 </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
+            <el-tab-pane label="起降点" name="third" :style="activeName1Style">
+              <el-checkbox :indeterminate="liftIsIndeterminate" v-model="liftCheckAll" @change="liftCheckAllChange">全选</el-checkbox>
+              <el-checkbox-group class="opera" v-model="checkLiftList" @change="liftCheckBoxChange">
+                <el-row v-for="(item,index) in liftData" :key="index">
+                  <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
+                    <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
+                      <el-checkbox class="myOperatingAreaCheck" :label="item.data.sid" :key="item.data.sid"></el-checkbox>
+                    </el-col>
+                    <el-col :span="20" style="height:80px;">
+                      <el-row>
+                        <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                        <el-col :span="24" style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;">{{item.data.name1}}</el-col>
+                        <el-col :span="24" style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;">{{item.data.place}}</el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="24" > 
+                          <el-row style="textAlign:center;">
+                            <el-col :span="8">
+                              <el-button type="primary" @click="editLift(item.data.sid)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                            </el-col>
+                            <el-col :span="8">
+                                <!-- <el-button type="info" @click="copyOpera(item.data.sid)" style="padding:2px; font-size:0.12rem;">复制</el-button> -->
+                            </el-col>
+                            <el-col :span="8">
+                              <el-button type="danger" @click="delLift(item.data.sid,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                            </el-col>
+                          </el-row>                   
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                  </el-row> 
+                </el-row>
+              </el-checkbox-group>
+            </el-tab-pane>
           </el-tabs>
         </div>
       </el-aside>
@@ -365,6 +408,41 @@
         <el-button type="primary" @click="saveSbq" size="mini">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="新增起降点" :close-on-click-modal="false" :visible.sync="showLiftDialog" width="50%" class="bip-query">
+      <el-row class="bip-lay">
+        <el-form @submit.native.prevent label-position="right" label-width="100px">
+          <div v-for="(cel,index) in liftCell.ccells.cels" :key="'A'+index">
+            <bip-comm-editor
+              v-if="(cel.attr&0x400) <= 0 "
+              :cell="cel"
+              :bgrid="false"
+              :cds="liftCell"
+              :row="0"
+            />
+          </div>
+        </el-form>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showLiftDialog = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="saveLift" size="mini">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="经纬度定位" :close-on-click-modal="false" :visible.sync="showPositionDialog" width="50%" class="bip-query">
+      <el-row class="bip-lay">
+        <el-form ref="form" label-width="80px">
+          <el-form-item label="经度">
+            <el-input v-model="positionLon"></el-input>
+          </el-form-item>
+          <el-form-item label="纬度">
+            <el-input v-model="positionLat"></el-input>
+          </el-form-item>
+        </el-form>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showPositionDialog = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="positionDo" size="mini">确 定</el-button>
+      </span>
+    </el-dialog>
     <el-dialog title="导出图片" :close-on-click-modal="false" :visible.sync="showScreenshot" width="50%" class="bip-query">
       <el-row class="bip-lay">
          <el-row type="flex"  justify="space-around">
@@ -428,8 +506,10 @@ export default class OperatingArea extends Vue {
   @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
   @Provide() activeName1: string = "first";
   @Provide() activeName2: string = "c";
-  @Provide() sbqCheckAll:boolean =false;
+  @Provide() sbqCheckAll:boolean =false;//识别区全选
+  @Provide() liftCheckAll:boolean = false;//起降点全选
   @Provide() sbqIsIndeterminate:boolean =true;
+  @Provide() liftIsIndeterminate:boolean = true;
   @Provide() cCheckAll:boolean =false;
   @Provide() cIsIndeterminate:boolean =true;
   @Provide() xCheckAll:boolean =false;
@@ -514,6 +594,18 @@ export default class OperatingArea extends Vue {
   @Provide() sbqMarkerPoint:any = null;//识别区标注点对象
 
 
+  @Provide() showLiftDialog:boolean = false;//是否显示新增起降点
+  @Provide() liftCell:CDataSet = new CDataSet("");//起降点对象
+  @Provide() liftLineTool:any=null;//天地图作业区 画线对象(起降点)
+  @Provide() liftData:any=[];//起降点数据集合
+  @Provide() liftJSON:any={};//起降点json格式数据集合
+  @Provide() checkLiftList:any=[];//起降点勾选集合
+  @Provide() mapLift:any={};//地图上的起降点集合
+  @Provide() showPositionDialog:boolean=false;//经纬度定位框
+  @Provide() positionLon:any = "";//经度
+  @Provide() positionLat:any = "";//纬度
+
+
   @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
   @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
   @Provide() editKid: any = null; //当前正在进行保存的kid 已经弹出保存框了
@@ -535,6 +627,7 @@ export default class OperatingArea extends Vue {
     this.operaSaveCell = await this.getCell("FW2015");//作业区
     this.operaBrCell = await this.getCell("F2015A");//避让点
     this.sbqCell = await this.getCell("FW2015F");//航空识别区对象
+    this.liftCell = await this.getCell("20200203");//起降点对象
   }
   mounted() {
     if (this.$refs.TMap) {
@@ -667,10 +760,10 @@ export default class OperatingArea extends Vue {
             });
             let date = TMapUt.dateFormat(new Date(),"yyyy-MM-dd_HH:mm:ss")
             var url = window.URL.createObjectURL(blob); 
-　          var a = document.createElement('a');
-　          a.href = url;
-　          a.download = date+'HKSBQ.png';
-　          a.click(); 
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = date+'HKSBQ.png';
+            a.click(); 
             _this.loading--;
         })
         .catch(function (error:any) {
@@ -694,6 +787,7 @@ export default class OperatingArea extends Vue {
     this.mapOperaBr = {};
     this.mapOperaTxt = {};
     this.checkOperaList = [];
+    this.checkLiftList = [];
     this.tMap.clearOverLays();
   }
   //工具下拉选中
@@ -844,7 +938,7 @@ export default class OperatingArea extends Vue {
         fontsize :14
       });
       if(d1.sbuid == 'F2005'){
-        label.setFontSize(16)
+        label.setFontSize(35)
       }
       label.setBorderLine(0)
       label.setBackgroundColor(null);
@@ -967,7 +1061,7 @@ export default class OperatingArea extends Vue {
             position:latlng,
             offset: new T.Point(-30, 0),
           });
-          label.setFontSize(16)
+          label.setFontSize(18)
           label.setBorderLine(0)
           label.setBackgroundColor(null);
           label.addEventListener("click",this.lableClick);
@@ -1034,27 +1128,33 @@ export default class OperatingArea extends Vue {
     if (!bok) return;
     let res: any = await this.sbqCell.saveData();
     if (res.data && res.data.id == 0) {
-		let data = this.ckABCDCallout;
-		for(var i=0;i<data.length;i++){
-      this.tMap.removeOverLay(data[i])
-		}
-		this.ckABCDCallout=[];
-		this.checkedABCD =[];
-		this.sbqPointABCD=[];
-		let id = res.data.data.id;
-		
-		this.showSavesbqDia = false;
-		await this.getOpera(id);
-		if (id) {
-			this.checkOperaList.push(id);
-			this.checkBoxChange(this.checkOperaList);
-		}
-		this.$notify.success("保存成功！");
-	} else {
-		this.showSavesbqDia = false;
-		this.$notify.error("保存失败！");
+      let data = this.ckABCDCallout;
+      for(var i=0;i<data.length;i++){
+        this.tMap.removeOverLay(data[i])
+      }
+      this.ckABCDCallout=[];
+      this.checkedABCD =[];
+      this.sbqPointABCD=[];
+      let id = res.data.data.id;
+      
+      this.showSavesbqDia = false;
+      await this.getOpera(id);
+      if (id) {
+        this.checkOperaList.push(id);
+        this.checkBoxChange(this.checkOperaList);
+      }
+      this.$notify.success("保存成功！");
+    } else {
+      this.showSavesbqDia = false;
+      this.$notify.error("保存失败！");
     }
   }
+/***************** 航空识别区END ****************/
+
+
+
+
+
 
 /**************** 避让区 **************/
    //右侧避让区开关
@@ -1391,21 +1491,346 @@ export default class OperatingArea extends Vue {
     this.operaBrCell.currRecord.data.avoid = avoid;
     this.showSaveOperaBrDia = true;
   }
-  /**************** END **************/
+/**************** END **************/
+
+
+
+/***************** 起降点 ********************/
+  //起降点工具选中
+  liftToolClick(item:any){
+    if(item == '1'){
+      // //创建标注工具对象
+      // if(!this.liftLineTool){
+      //   this.liftLineTool = new T.PolylineTool(this.tMap);        
+      //   this.liftLineTool.addEventListener("draw", this.liftLineToolEnd);
+      // }
+      // this.liftLineTool.close();
+      // this.liftLineTool.open();
+
+        //创建标注工具对象
+      var icon = new T.Icon({
+          iconUrl: require('@/assets/air-super/lift.png'),
+          iconSize: new T.Point(80, 80),
+          iconAnchor:new T.Point(40, 80),
+      });
+      this.liftLineTool = new T.MarkTool(this.tMap, { follow: true,icon:icon });
+      this.liftLineTool.addEventListener("mouseup",this.liftLineToolEnd);
+      this.liftLineTool.close();
+      this.liftLineTool.open();
+
+
+    }else if(item =='2'){
+      this.showPositionDialog = true;
+    }
+  }
+  //起降点勾选完成
+  /**
+   * 线绘制结束
+   * currentLnglats：用户当前绘制的折线的点坐标数组。
+   * currentDistance：用户当前绘制的折线的地理长度。
+   * currentPolyline：当前测距所画线的对象。
+   * allPolylines：返回所有工具绘制的线对象。
+   */
+  liftLineToolEnd(parameter:any){
+
+    let editCover = parameter.currentMarker;
+    let key = "non-" + new Date().getTime();
+    this.editBrk = key;
+    this.mapOperaBr[key] = editCover;
+    let lnglat = parameter.currentLnglat;
+    let north = lnglat.getLng()+","+lnglat.getLat(); 
+    editCover.kid = key;
+    this.editKid = key;
+    editCover.addEventListener("dblclick", this.liftDBClick);
+    this.mapLift[key] = editCover;
+    editCover.enableDragging();
+    this.liftCell.clear();
+    this.liftCell.createRecord();
+    this.liftCell.currRecord.data.north = north;
+    this.showLiftDialog = true;
+  }
+   /**
+   * 起降点双击
+   */
+  liftDBClick(data: any) {
+    let target = data.target;
+    let operid = target.kid;
+    this.editKid = target.kid;
+    let lnglat = data.lnglat;
+    let north = lnglat.getLng()+","+lnglat.getLat(); 
+    let cover = this.mapLift[operid];
+    if (operid) {
+      let d1 = this.liftJSON[operid];
+      this.liftCell.clear();
+      this.liftCell.createRecord();
+      if (d1 ) {
+        //存在进行修改
+        this.liftCell.currRecord.data = d1;
+        this.liftCell.currRecord.c_state = 2;
+      } else {
+        //新增
+        this.liftCell.currRecord.c_state = 1;
+      }
+      this.liftCell.currRecord.data.north = north;
+      this.showLiftDialog = true;
+    }
+  }
+  //保存起降点信息
+  async saveLift(){
+    console.log("保存起降点")
+    let bok = this.checkNotNull(this.liftCell);
+    if (!bok) return;
+    let res: any = await this.liftCell.saveData();
+    if (res.data && res.data.id == 0) {
+      let liftsid = this.liftCell.currRecord.data.sid;
+      if(res.data.data.sid && liftsid != res.data.data.sid)
+        liftsid = res.data.data.sid;
+      await this.getDropPoint(liftsid);
+      if (liftsid) {
+        if (this.mapLift[this.editKid]){
+          this.tMap.removeOverLay(this.mapLift[this.editKid]);
+          delete this.mapLift[this.editKid];
+        }
+        if(this.mapOperaTxt[this.editKid]){
+          this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
+          delete this.mapOperaTxt[this.editKid];
+        }        
+        if (this.checkLiftList.indexOf(liftsid) == -1) {
+          this.checkLiftList.push(liftsid);
+        }
+        this.liftCheckBoxChange(this.checkLiftList);
+      }
+      this.$notify.success("保存成功！");
+      this.showLiftDialog = false;
+    } else {
+      // this.showSaveOperaDia = false;
+      this.$notify.error("保存失败！");
+    }
+  }
+  //获取起降点
+  async getDropPoint(sid:any){
+    let tj = this.operaTjCell.currRecord.data;
+    let sorg = tj.sorg;
+    let iym = tj.iym;
+    let tjdate = {sorg:sorg,iym:iym,sid:sid};
+    let qe: QueryEntity = new QueryEntity("20200203", "20200203TJ");
+    qe.page = this.operaCellPage;
+    qe.cont = JSON.stringify(tjdate);
+    qe.oprid = 13;
+    await this.liftCell
+      .queryData(qe)
+      .then(res => { 
+        let values = res.data.data.data.data;
+        if(sid == null){
+          for (var i = 0; i < values.length; i++) {
+            let d1 = values[i].data;
+            this.liftJSON[d1.sid] = d1;
+          }
+          this.liftData = values;
+        }else{
+          let d1 = values[0].data;
+          if(!this.liftJSON[d1.sid]){
+            this.liftJSON[d1.sid] = d1;
+            this.liftData.push(values[0]);
+            this.checkLiftList.push(d1.sid)
+            this.liftCheckBoxChange(this.checkLiftList);
+          }
+        }
+      })
+  }
+  //编辑起降点
+  editLift(sid:any){
+    let cover = this.mapLift[sid];
+    if (cover) {
+      cover.removeEventListener("dblclick", this.liftDBClick);
+      cover.addEventListener("dblclick", this.liftDBClick);
+      cover.enableDragging();
+      cover.kid = sid;
+    } else {
+      let d1 = this.liftJSON[sid];
+      let liftData = this.makeLift(d1);
+      var polygon = liftData[0];
+      //向地图上添加面
+      this.tMap.addOverLay(polygon);
+      this.mapLift[sid] = polygon;
+      var label = liftData[1];
+      this.tMap.addOverLay(label);
+      this.mapOperaTxt[sid] = label;
+      polygon.enableDragging();
+      polygon.kid = sid;
+      polygon.addEventListener("dblclick", this.liftDBClick);
+    }
+    if (this.checkLiftList.indexOf(sid) == -1) {
+      this.checkLiftList.push(sid);
+    }
+  }
+  //删除起降点
+  delLift(sid: any,index:any){
+    let d1 = this.liftJSON[sid];
+    let co = "此操作将删除起降点：" + d1.name + "，是否继续？";
+    this.liftCell.clear();
+    this.liftCell.createRecord();
+    this.$confirm(co, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    })
+      .then(() => {
+        if (d1) {
+          //存在进行修改
+          this.liftCell.currRecord.data = d1;
+          this.liftCell.currRecord.c_state = 4;
+        }
+        this.delLiftDo(index);
+      })
+      .catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
+      });
+  }
+  //进行删除
+  async delLiftDo(index:any) {
+    let key = this.liftCell.currRecord.data.sid;
+    let res: any = await this.liftCell.saveData();
+    if (res.data && res.data.id == 0) {
+      if (this.mapLift[key]){
+        this.tMap.removeOverLay(this.mapLift[key]);
+        delete this.mapLift[key];
+      }
+      if (this.mapOperaTxt[key]){
+        this.tMap.removeOverLay(this.mapOperaTxt[key]);
+        delete this.mapOperaTxt[key];
+      } 
+		  this.$notify.success("删除成功！");
+			this.liftData.splice(index,1)
+    } else {
+      this.$notify.error("删除失败！");
+    }
+  }
+  //起降点全选勾选
+  liftCheckAllChange(val:any){
+    this.checkLiftList = [];
+    if(val){
+      for(var i=0;i<this.liftData.length;i++){
+        this.checkLiftList.push(this.liftData[i].data.sid)
+      }
+    }
+    this.liftIsIndeterminate = false;
+    this.liftCheckBoxChange(this.checkLiftList);
+  }
+  /**
+   * 勾选发生变化
+   */
+  liftCheckBoxChange(data: any) {
+    console.log(data)
+    for (var i = 0; i < data.length; i++) {
+      let id = data[i];
+      if (!this.mapLift[id]) {
+        //作业区
+        let d1 = this.liftJSON[id];
+        if(d1){
+          let liftData = this.makeLift(d1);
+          var polygon = liftData[0];
+          //向地图上添加面
+          this.tMap.addOverLay(polygon);
+          this.mapLift[id] = polygon;
+          var label = liftData[1];
+          this.tMap.addOverLay(label);
+          this.mapOperaTxt[id] = label;
+        }
+      }
+    }
+    for (let key in this.mapLift) {
+      let ka = key.split("_")[0];
+      if (data.indexOf(ka) == -1) {
+        if (ka.indexOf("non-") == -1 && ka.indexOf("copy-") == -1) {
+          if (this.mapLift[key]) {
+            this.tMap.removeOverLay(this.mapLift[key]);
+          }
+          if (this.mapOperaTxt[key]){
+            this.tMap.removeOverLay(this.mapOperaTxt[key]);
+          }
+          delete this.mapLift[key];
+          delete this.mapOperaTxt[key];
+        }
+      }
+    }
+  }
+  makeLift(d1:any){
+    let boundary1 = d1.north;
+    let boundary = boundary1.split(",");
+    //创建图片对象
+    var icon = new T.Icon({
+      iconUrl: require('@/assets/air-super/lift.png'),
+      // iconUrl: require('@/assets/air-super/letter/'+this.letter[0]+'.png'),
+      iconSize: new T.Point(80, 80),
+      iconAnchor:new T.Point(40, 80),
+    });
+    //向地图上添加自定义标注
+    let center = new T.LngLat(boundary[0], boundary[1]);
+    var marker = new T.Marker(center,{icon: icon});
+ 
+    let lng = this.doubleToDFM(boundary[0]) 
+
+    let lat = this.doubleToDFM(boundary[1])  
+    let text = "东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+d1.name;
+    this.tMap.panTo(center);
+    var label = new T.Label({
+      text: text,
+      position: center,
+      offset: new T.Point(-170, -120),
+    });
+    label.setBorderLine(0)
+    label.setFontSize(16)
+    label.setBackgroundColor(null);
+    return [marker,label]
+  }
+  //经纬度定位
+  positionDo(){
+    this.showPositionDialog = false;
+    let lon = this.positionLon;
+    if(lon.indexOf("°") !=-1){
+      lon = this.ChangeToDu(this.positionLon);
+    }
+    let lat = this.positionLat
+    if(lat.indexOf("°") !=-1){
+      lat = this.ChangeToDu(this.positionLat);
+    }
+    //创建标注对象
+    var marker = new T.Marker(new T.LngLat(lon, lat));
+    //向地图上添加标注
+    this.tMap.addOverLay(marker);
+  }
+  //度分秒转小数
+  ChangeToDu(data:any){
+		var d = data.substring(0,data.indexOf("°"))
+		var f = data.substring(data.indexOf("°")+1,data.indexOf("′"))
+		var m = data.substring(data.indexOf("′")+1,data.indexOf("″"))
+		var f:any = parseFloat(f) + parseFloat((m/60)+'');
+    var du = parseFloat((f/60)+'') + parseFloat(d);
+    return du;
+  }
+  doubleToDFM(value:any){
+    value = Math.abs(value);
+    var v1 = Math.floor(value);//度
+    var v2 = Math.floor((value - v1) * 60);//分
+    var v3 = Math.round((value - v1) * 3600 % 60);//秒
+    let data = v1 + '°' + v2 + '′' + v3 + '″'; 
+    return data;
+  }
+/***************** 起降点END ********************/
 
 
 
 
 
 
-
-
-
-
-
-  /**************** 作业区 **************/
+/**************** 作业区 **************/
   //查找作业区
   async getOpera(operid:any) {
+    this.getDropPoint(null)
     let tj = this.operaTjCell.currRecord.data;
     if(operid){
 	  	tj.id = operid
@@ -1422,6 +1847,7 @@ export default class OperatingArea extends Vue {
     await this.operaTjCell
       .queryData(qe)
       .then(res => {
+        console.log(res)
         if (res.data.id == 0) {
           let values = res.data.data.data.data;
           for (var i = 0; i < values.length; i++) {
@@ -1438,8 +1864,8 @@ export default class OperatingArea extends Vue {
             this.operaXData = [];
             this.operaQData = [];
           }
-          for(var i=0;i<this.operaData.length;i++){
-            let dd = this.operaData[i];
+          for(var k=0;k<this.operaData.length;k++){
+            let dd = this.operaData[k];
               if(dd.data.sbuid == 'F2005'){
               this.operaSBQData.push(dd);
             }else if(dd.data.sbuid == 'F2015'){    
@@ -1507,6 +1933,8 @@ export default class OperatingArea extends Vue {
     let res: any = await this.operaSaveCell.saveData();
     if (res.data && res.data.id == 0) {
       let operid = this.operaSaveCell.currRecord.data.id;
+      if(res.data.data.id && operid != res.data.data.id)
+        operid = res.data.data.id;
       await this.getOpera(operid);
       if (operid) {
         if (this.mapOpera[this.editKid]){
@@ -1809,13 +2237,13 @@ export default class OperatingArea extends Vue {
     this.checkOperaList = this.checkOperaList.concat(this.qCheckOperaList)
     this.checkBoxChange(this.checkOperaList);
   }
-  /**************** 地址定位 **************/  
+/**************** 作业区 **************/  
 
 
 
 
 
-  /**************** 左侧树状行政区 **************/
+/**************** 左侧树状行政区 **************/
   //左侧行政区开关
   async areaBtnClick() {
     this.areaBtnOpen = !this.areaBtnOpen;
@@ -1977,15 +2405,17 @@ export default class OperatingArea extends Vue {
     }
     for(var i=0;i<address.length;i++){
       let d = address[i].name
-      this.areaKv[d] = address[i].id;
-      if(!this.areaMap[address[i].id])
-        this.addresSel(d,0);
+      if(d.indexOf("北京") ==-1){
+        this.areaKv[d] = address[i].id;
+        if(!this.areaMap[address[i].id])
+          this.addresSel(d,0);
+      }
     }
   }
-  /*********** END *************/
+/*********** END *************/
 
 
-  /**************** 地址定位 **************/  
+/**************** 地址定位 **************/  
   async addresSel(address: string,type:number) {
     if (!this.localsearch) {
       var config = {
@@ -2082,7 +2512,7 @@ export default class OperatingArea extends Vue {
       this.tMap.setViewport(zoomArr);
     }
   }
-  /*********** END *************/
+/*********** END *************/
 
   async getCell(cellid: string) {
     let res = await tools.getCCellsParams(cellid);

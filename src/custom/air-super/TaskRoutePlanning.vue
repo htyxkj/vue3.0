@@ -50,10 +50,10 @@
                                     </el-row>
                                     <el-row style="textAlign:center; border-bottom: 1px solid #f1f1f1; height:30px;">
                                          <el-col :span="8">
-                                            <el-button type="primary" @click="routePlanningRech(index)" style="padding:2px; font-size:0.12rem;">查看路线</el-button>
+                                            <el-button type="primary" @click="routePlanningRech(index)" style="padding:2px; font-size:0.12rem;">航线查询</el-button>
                                         </el-col>
                                         <el-col :span="8">
-                                            <el-button type="success" @click="routePlanning(index)" style="padding:2px; font-size:0.12rem;">规划路线</el-button>
+                                            <el-button type="success" @click="routePlanning(index)" style="padding:2px; font-size:0.12rem;">航线规划</el-button>
                                         </el-col>
                                         <el-col :span="8">
                                             <el-button type="danger" @click="delPlanning(index)" style="padding:1px; font-size:0.12rem;">删除路线</el-button>   
@@ -141,6 +141,8 @@ export default class TaskRoutePlanning extends Vue {
     @Provide() editTaskId: any = null; //当前正在规划路线的任务编码
     @Provide() editTaskState: boolean = false; //当前任务规划路线是否保存
     @Provide() editTaskIndex:any=null;
+    @Provide() liftCell:any = null;//起降点对象
+    @Provide() liftMarker:any =[];
 
     async created() {
         if (this.height) {
@@ -149,6 +151,7 @@ export default class TaskRoutePlanning extends Vue {
         this.taskTJCell = await TMapUt.getCell(this.taskTJCellID); //任务条件对象
         this.taskTJCell.createRecord();
         this.taskCell = await TMapUt.getCell(this.taskCellID); //任务对象
+        this.liftCell = await TMapUt.getCell("20200203"); 
     }
     mounted() {
         if (this.$refs.TMap) {
@@ -325,6 +328,7 @@ export default class TaskRoutePlanning extends Vue {
     getOperarea(){
         this.taskCellPage.currPage = 1;
         this.getOperarea0();
+        this.getSorgLift();
     }
     /**
      * 获取任务
@@ -364,6 +368,68 @@ export default class TaskRoutePlanning extends Vue {
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
     }
+
+/****************************** 起降点数据 ************************************/
+    //获取区县年度 下的起降点
+    async getSorgLift(){
+        for (let i = 0; i < this.liftMarker.length; i++) {
+            const element = this.liftMarker[i];
+            this.tMap.removeOverLay(element);
+        }
+        this.liftMarker=[];
+        let tj = this.taskTJCell.currRecord.data;
+        let sorg = tj.sorg;
+        let iym = tj.iym;
+        let tjdate = {sorg:sorg,iym:iym};
+        let qe: QueryEntity = new QueryEntity("20200203", "20200203TJ");
+        qe.page =  {currPage: 1,index: 0,pageSize: 2000,total: 0};
+        qe.cont = JSON.stringify(tjdate);
+        qe.oprid = 13;
+        await this.liftCell.queryData(qe).then((res:any) => { 
+            let values = res.data.data.data.data;
+            for (let i = 0; i < values.length; i++) {
+                const element = values[i];
+                let boundary = element.data.north.split(",");
+                //创建图片对象
+                var icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/lift.png'),
+                    iconSize: new T.Point(80, 80),
+                    iconAnchor:new T.Point(40, 80),
+                });
+                //向地图上添加自定义标注
+                let center = new T.LngLat(boundary[0], boundary[1]);
+                var marker = new T.Marker(center,{icon: icon});
+                this.tMap.addOverLay(marker); 
+
+                let lng = this.doubleToDFM(boundary[0]) 
+                let lat = this.doubleToDFM(boundary[1])  
+                let text = "东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+ element.data.name;
+                this.tMap.panTo(center);
+                var label = new T.Label({
+                    text: text,
+                    position: center,
+                    offset: new T.Point(-170, -120),
+                });
+
+                label.setBorderLine(0)
+                label.setFontSize(14)
+                label.setBackgroundColor(null);
+                this.tMap.addOverLay(label);
+
+                this.liftMarker.push(label)
+                this.liftMarker.push(marker)
+            }
+        })
+    }
+    doubleToDFM(value:any){
+        value = Math.abs(value);
+        var v1 = Math.floor(value);//度
+        var v2 = Math.floor((value - v1) * 60);//分
+        var v3 = Math.round((value - v1) * 3600 % 60);//秒
+        let data = v1 + '°' + v2 + '′' + v3 + '″'; 
+        return data;
+    }
+/****************************** 起降点数据END *********************************/
 }
 </script>
 <style scoped lang="scss" >

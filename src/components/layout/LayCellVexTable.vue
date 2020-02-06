@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar v-if="isTable" :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -242,13 +242,15 @@
                                 </el-col>
                             </el-row>
                             <div style="text-align: end;padding-right:5px;">
-                                <div v-for="(item,index) in cardMenuList" :key="index">
-                                    <div v-if="item.cmd == 'DLG'">
-                                        <el-button :size="item.size" @click.native="invokecmd(item,rowIndex)" :disabled="!item.enable">
-                                            {{item.name}}
-                                        </el-button>
-                                    </div>
-                                </div>
+                                <el-row>
+                                    <el-col v-for="(item,index) in cardMenuList" :key="index" :span="4">
+                                        <template v-if="item.cmd == 'DLG'">
+                                            <el-button :size="item.size" @click.native="invokecmd(item,rowIndex)" :disabled="!item.enable">
+                                                {{item.name}}
+                                            </el-button>
+                                        </template>
+                                    </el-col>
+                                </el-row>
                             </div>
                         </div>
                     </Accordion>
@@ -342,7 +344,7 @@ export default class LayCelVexTable extends Vue {
     @Provide() celClickTime:number =0;
     @Provide() removeData :Array<CRecord> =[];
     @Provide() rowClass:any = {};
-    @Provide() isTable:boolean = true;
+    @Provide() isTable:boolean = false;
     @Provide() cardMenuList:any = []; 
     @Provide() addDrawer:boolean = false;//子表抽屉样式添加
     @Provide() lay: BipLayout = new BipLayout("");
@@ -754,6 +756,8 @@ export default class LayCelVexTable extends Vue {
         let pbds = this.env.uriParams.pbds;
         if(pbds.layout && pbds.layout == 'card'){
             this.isTable = false;
+        }else{
+            this.isTable = true;
         }
         this.datachangeBusID = this.$bus.$on('datachange',this.datachange)
         this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
@@ -1022,6 +1026,9 @@ export default class LayCelVexTable extends Vue {
             if(pbuid)
             if(pbuid == this.pbuid){
                 this.isTable = !this.isTable;
+            }
+            if(data.length ==3){
+                this.isTable =false;
             }
             this.cardMenuList = data[1].menuList
             console.log(this.cardMenuList);

@@ -192,6 +192,14 @@ export default class CUnivSelect extends Vue {
                 this.initShowChar = true;
             }
         }
+        let pbds = this.env.uriParams.pbds;
+        if(pbds.layout && pbds.layout == 'card'){
+            let mb:any = this.$refs['mb'];
+            if(mb){
+                mb.ReportTableShape();
+                this.$bus.$emit('ReportTableShape',[this.env.uriParams.pbuid,this.mbs,true])
+            }
+        }
 
     }
     initData(){
