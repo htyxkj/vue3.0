@@ -393,8 +393,8 @@ export default class TaskRoutePlanning extends Vue {
                 //创建图片对象
                 var icon = new T.Icon({
                     iconUrl: require('@/assets/air-super/lift.png'),
-                    iconSize: new T.Point(80, 80),
-                    iconAnchor:new T.Point(40, 80),
+                    iconSize: new T.Point(50, 50),
+                    iconAnchor:new T.Point(20, 50),
                 });
                 //向地图上添加自定义标注
                 let center = new T.LngLat(boundary[0], boundary[1]);
@@ -403,7 +403,7 @@ export default class TaskRoutePlanning extends Vue {
 
                 let lng = this.doubleToDFM(boundary[0]) 
                 let lat = this.doubleToDFM(boundary[1])  
-                let text = "东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+ element.data.name;
+                let text = "<div style='text-align: center;'>东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+element.data.name+"</div>";
                 this.tMap.panTo(center);
                 var label = new T.Label({
                     text: text,

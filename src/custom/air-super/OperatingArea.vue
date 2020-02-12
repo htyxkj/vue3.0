@@ -6,6 +6,11 @@
           <el-input style="width:180px" size="mini" placeholder="行政区名称如：北京" v-model="addressInput" class="input-with-select" >
             <el-button slot="append" size="mini" icon="el-icon-search" @click.native="addresSel(addressInput,1)" ></el-button>
           </el-input>
+          <el-input style="width:180px" size="small" placeholder="行政区边界颜色" v-model="cityColor" class="input-with-select" >
+            <template slot="append">
+              <el-color-picker size="mini"  v-model="cityColor"></el-color-picker>
+            </template>
+          </el-input>
         </el-row>
         <el-row>
           <el-tree :node-key="keyID" lazy :load="loadNode" :check-strictly="false" :props="defaultProps"  show-checkbox @check="handleCheckChange" :default-expanded-keys="expandedKeys" ></el-tree>
@@ -282,6 +287,7 @@
             </el-tab-pane>
             <el-tab-pane label="起降点" name="third" :style="activeName1Style">
               <el-checkbox :indeterminate="liftIsIndeterminate" v-model="liftCheckAll" @change="liftCheckAllChange">全选</el-checkbox>
+              <el-checkbox v-model="liftLableCheck" @change="liftLableChange">显示文字标注</el-checkbox>
               <el-checkbox-group class="opera" v-model="checkLiftList" @change="liftCheckBoxChange">
                 <el-row v-for="(item,index) in liftData" :key="index">
                   <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -506,8 +512,10 @@ export default class OperatingArea extends Vue {
   @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
   @Provide() activeName1: string = "first";
   @Provide() activeName2: string = "c";
+  @Provide() cityColor:string = "#FF0000";//行政区边线颜色
   @Provide() sbqCheckAll:boolean =false;//识别区全选
   @Provide() liftCheckAll:boolean = false;//起降点全选
+  @Provide() liftLableCheck:boolean = true;//起降点是否显示文字标识
   @Provide() sbqIsIndeterminate:boolean =true;
   @Provide() liftIsIndeterminate:boolean = true;
   @Provide() cCheckAll:boolean =false;
@@ -601,6 +609,7 @@ export default class OperatingArea extends Vue {
   @Provide() liftJSON:any={};//起降点json格式数据集合
   @Provide() checkLiftList:any=[];//起降点勾选集合
   @Provide() mapLift:any={};//地图上的起降点集合
+  @Provide() mapLiftTxt:any={};//地图上的起降点文字标识集合
   @Provide() showPositionDialog:boolean=false;//经纬度定位框
   @Provide() positionLon:any = "";//经度
   @Provide() positionLat:any = "";//纬度
@@ -712,7 +721,15 @@ export default class OperatingArea extends Vue {
           newOL.setBorderLine(0)
           newOL.setBackgroundColor(null); 
         }else if(type ==2){//Marker  图像标注
-
+          let url = onel.options.icon.getIconUrl()
+          //创建图片对象
+          var icon = new T.Icon({
+              iconUrl: url,
+              iconSize: new T.Point(50, 50),
+              iconAnchor:new T.Point(20, 50),
+          });
+          //向地图上添加自定义标注
+          newOL = new T.Marker(onel.or,{icon: icon});
         }else if(type ==3){
 
         }else if(type ==4){
@@ -740,8 +757,10 @@ export default class OperatingArea extends Vue {
             ht = onel.ht
           }
           pointsArr = pointsArr.concat(ht);
-        }  
-        this.TMap1.addOverLay(newOL);
+        }
+        if(newOL != null){
+          this.TMap1.addOverLay(newOL);
+        }
       }
       // //显示最佳比例尺
       this.TMap1.setViewport(pointsArr);
@@ -788,6 +807,8 @@ export default class OperatingArea extends Vue {
     this.mapOperaTxt = {};
     this.checkOperaList = [];
     this.checkLiftList = [];
+    this.mapLift={};//地图上的起降点集合
+    this.mapLiftTxt={};//地图上的起降点文字标识集合
     this.tMap.clearOverLays();
   }
   //工具下拉选中
@@ -1510,8 +1531,8 @@ export default class OperatingArea extends Vue {
         //创建标注工具对象
       var icon = new T.Icon({
           iconUrl: require('@/assets/air-super/lift.png'),
-          iconSize: new T.Point(80, 80),
-          iconAnchor:new T.Point(40, 80),
+          iconSize: new T.Point(50, 50),
+          iconAnchor:new T.Point(20, 50),
       });
       this.liftLineTool = new T.MarkTool(this.tMap, { follow: true,icon:icon });
       this.liftLineTool.addEventListener("mouseup",this.liftLineToolEnd);
@@ -1591,9 +1612,9 @@ export default class OperatingArea extends Vue {
           this.tMap.removeOverLay(this.mapLift[this.editKid]);
           delete this.mapLift[this.editKid];
         }
-        if(this.mapOperaTxt[this.editKid]){
-          this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
-          delete this.mapOperaTxt[this.editKid];
+        if(this.mapLiftTxt[this.editKid]){
+          this.tMap.removeOverLay(this.mapLiftTxt[this.editKid]);
+          delete this.mapLiftTxt[this.editKid];
         }        
         if (this.checkLiftList.indexOf(liftsid) == -1) {
           this.checkLiftList.push(liftsid);
@@ -1654,8 +1675,9 @@ export default class OperatingArea extends Vue {
       this.tMap.addOverLay(polygon);
       this.mapLift[sid] = polygon;
       var label = liftData[1];
-      this.tMap.addOverLay(label);
-      this.mapOperaTxt[sid] = label;
+      if(this.liftLableCheck)
+        this.tMap.addOverLay(label);
+      this.mapLiftTxt[sid] = label;
       polygon.enableDragging();
       polygon.kid = sid;
       polygon.addEventListener("dblclick", this.liftDBClick);
@@ -1699,9 +1721,9 @@ export default class OperatingArea extends Vue {
         this.tMap.removeOverLay(this.mapLift[key]);
         delete this.mapLift[key];
       }
-      if (this.mapOperaTxt[key]){
-        this.tMap.removeOverLay(this.mapOperaTxt[key]);
-        delete this.mapOperaTxt[key];
+      if (this.mapLiftTxt[key]){
+        this.tMap.removeOverLay(this.mapLiftTxt[key]);
+        delete this.mapLiftTxt[key];
       } 
 		  this.$notify.success("删除成功！");
 			this.liftData.splice(index,1)
@@ -1720,6 +1742,18 @@ export default class OperatingArea extends Vue {
     this.liftIsIndeterminate = false;
     this.liftCheckBoxChange(this.checkLiftList);
   }
+  //显示或隐藏文字标识
+  liftLableChange(val:any){
+    console.log(this.mapLiftTxt)
+  　for(var key in this.mapLiftTxt){
+      let lable = this.mapLiftTxt[key];
+      if(val){
+        this.tMap.addOverLay(lable);
+      }else{
+        this.tMap.removeOverLay(lable);
+      }
+　　}
+  }
   /**
    * 勾选发生变化
    */
@@ -1737,8 +1771,9 @@ export default class OperatingArea extends Vue {
           this.tMap.addOverLay(polygon);
           this.mapLift[id] = polygon;
           var label = liftData[1];
-          this.tMap.addOverLay(label);
-          this.mapOperaTxt[id] = label;
+          if(this.liftLableCheck)
+            this.tMap.addOverLay(label);
+          this.mapLiftTxt[id] = label;
         }
       }
     }
@@ -1749,11 +1784,11 @@ export default class OperatingArea extends Vue {
           if (this.mapLift[key]) {
             this.tMap.removeOverLay(this.mapLift[key]);
           }
-          if (this.mapOperaTxt[key]){
-            this.tMap.removeOverLay(this.mapOperaTxt[key]);
+          if (this.mapLiftTxt[key]){
+            this.tMap.removeOverLay(this.mapLiftTxt[key]);
           }
           delete this.mapLift[key];
-          delete this.mapOperaTxt[key];
+          delete this.mapLiftTxt[key];
         }
       }
     }
@@ -1765,8 +1800,8 @@ export default class OperatingArea extends Vue {
     var icon = new T.Icon({
       iconUrl: require('@/assets/air-super/lift.png'),
       // iconUrl: require('@/assets/air-super/letter/'+this.letter[0]+'.png'),
-      iconSize: new T.Point(80, 80),
-      iconAnchor:new T.Point(40, 80),
+      iconSize: new T.Point(50, 50),
+      iconAnchor:new T.Point(20, 50),
     });
     //向地图上添加自定义标注
     let center = new T.LngLat(boundary[0], boundary[1]);
@@ -1775,12 +1810,12 @@ export default class OperatingArea extends Vue {
     let lng = this.doubleToDFM(boundary[0]) 
 
     let lat = this.doubleToDFM(boundary[1])  
-    let text = "东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+d1.name;
+    let text = "<div style='text-align: center;'>东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+d1.name+"</div>";
     this.tMap.panTo(center);
     var label = new T.Label({
       text: text,
       position: center,
-      offset: new T.Point(-170, -120),
+      offset: new T.Point(-170, -90),
     });
     label.setBorderLine(0)
     label.setFontSize(16)
@@ -1928,6 +1963,7 @@ export default class OperatingArea extends Vue {
    */
   async saveOpera() {
     console.log("保存作业区")
+    this.loading++;
     let bok = this.checkNotNull(this.operaSaveCell);
     if (!bok) return;
     let res: any = await this.operaSaveCell.saveData();
@@ -1935,7 +1971,52 @@ export default class OperatingArea extends Vue {
       let operid = this.operaSaveCell.currRecord.data.id;
       if(res.data.data.id && operid != res.data.data.id)
         operid = res.data.data.id;
-      await this.getOpera(operid);
+      // await this.getOpera(operid);
+      let newDate = this.operaSaveCell.currRecord;
+      if(newDate.data.sbuid == 'F2005'){
+        this.operaSBQData.push(newDate);
+      }else if(newDate.data.sbuid == 'F2015'){    
+        if(newDate.data.season == 0){       
+          let _index0 = -1
+          for(var i=0;i<this.operaCData.length;i++){
+            if(this.operaCData[i].data.id == newDate.data.id){
+              _index0=i;
+              break;
+            }
+          }
+          if(_index0>=0){
+            this.operaCData[_index0] = newDate;
+          }else{
+            this.operaCData.push(newDate);
+          }
+        }else if(newDate.data.season == 1){
+          let _index1 = -1
+          for(var i=0;i<this.operaXData.length;i++){
+            if(this.operaXData[i].data.id == newDate.data.id){
+              _index1=i;
+              break;
+            }
+          }
+          if(_index1>=0){
+            this.operaXData[_index1] = newDate;
+          }else{
+            this.operaXData.push(newDate);
+          }
+        }else if(newDate.data.season == 2){ 
+          let _index2 = -1
+          for(var i=0;i<this.operaQData.length;i++){
+            if(this.operaQData[i].data.id == newDate.data.id){
+              _index2=i;
+              break;
+            }
+          }
+          if(_index2>=0){
+            this.operaQData[_index2] = newDate;
+          }else{
+            this.operaQData.push(newDate);
+          }
+        }
+      }
       if (operid) {
         if (this.mapOpera[this.editKid]){
           this.tMap.removeOverLay(this.mapOpera[this.editKid]);
@@ -1945,14 +2026,17 @@ export default class OperatingArea extends Vue {
           this.tMap.removeOverLay(this.mapOperaTxt[this.editKid]);
           delete this.mapOperaTxt[this.editKid];
         }
-        this.checkOperaList.push(operid);
+        if(this.checkOperaList.indexOf(operid) ==-1){
+          this.checkOperaList.push(operid);
+        }
         this.checkBoxChange(this.checkOperaList);
+        this.$notify.success("保存成功！");
+        this.showSaveOperaDia = false;
+        this.loading--;
       }
-      this.$notify.success("保存成功！");
-      this.showSaveOperaDia = false;
     } else {
-      // this.showSaveOperaDia = false;
       this.$notify.error("保存失败！");
+      this.loading--;
     }
   }
    /**
@@ -2134,6 +2218,7 @@ export default class OperatingArea extends Vue {
    * 作业区双击
    */
   coverDBClick(data: any) {
+    console.log("作业区双击")
     let target = data.target;
     let operid = target.kid;
     this.editKid = target.kid;
@@ -2467,9 +2552,9 @@ export default class OperatingArea extends Vue {
                 }
                 //创建线对象
                 var line = new T.Polyline(regionLngLats, {
-                    color: "#FF0000",
+                    color: this.cityColor,
                     weight: 4,
-                    opacity: 0.5,
+                    opacity: 1,
                     lineStyle: "dashed"
                 });
                 //向地图上添加线
@@ -2493,19 +2578,33 @@ export default class OperatingArea extends Vue {
     if (obj) {
       //坐标数组，设置最佳比例尺时会用到
       var zoomArr = [];
+      var lableTxt =[];
       for (var i = 0; i < obj.length; i++) {
           //闭包
           (function (i) {
-              //坐标
+              //坐标 
               var lnglatArr = obj[i].lonlat.split(" ");
               var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
               zoomArr.push(lnglat); 
+              let text = "<div style='text-align: center;'>"+obj[i].name+" <br/>"+obj[i].address+"</div>";
+              var lable = new T.Label({
+                text: text,
+                position: lnglat,
+                offset: new T.Point(-100, -90),
+              });
+              lable.setBorderLine(0)
+              lable.setFontSize(14)
+              lable.setBackgroundColor(null);
+              lableTxt.push(lable)
           })(i);
       }
       if(this.localsearch.type!=0){
         for(var i=0;i<zoomArr.length;i++){
           let marker = new T.Marker(zoomArr[i]);// 创建标注
           this.tMap.addOverLay(marker);             // 将标注添加到地图中
+        }
+        for(var i=0;i<lableTxt.length;i++){
+          this.tMap.addOverLay(lableTxt[i]);   
         }
       }
       //显示地图的最佳级别
