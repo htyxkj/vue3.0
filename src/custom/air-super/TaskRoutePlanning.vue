@@ -280,6 +280,7 @@ export default class TaskRoutePlanning extends Vue {
     // 查看路线
     async routePlanningRech(index: any) {
         console.log("查看路线!")
+        this.getSorgLift();
         let data = this.taskData[index].data
         let avoid = data.id;//避让信息
         let airid = data.airid;//航空识别区
@@ -297,6 +298,7 @@ export default class TaskRoutePlanning extends Vue {
      * 规划线路
      */
     async routePlanning0(index:any){
+        this.getSorgLift();
         let data = this.taskData[index].data
         this.editTaskId = data.id;
         this.editTaskState = false;
@@ -404,7 +406,7 @@ export default class TaskRoutePlanning extends Vue {
                 let lng = this.doubleToDFM(boundary[0]) 
                 let lat = this.doubleToDFM(boundary[1])  
                 let text = "<div style='text-align: center;'>东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+element.data.name+"</div>";
-                this.tMap.panTo(center);
+                // this.tMap.panTo(center);
                 var label = new T.Label({
                     text: text,
                     position: center,

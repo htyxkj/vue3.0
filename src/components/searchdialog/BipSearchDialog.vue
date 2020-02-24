@@ -30,7 +30,7 @@
                         </el-row>
                     </el-col>
                 </el-row>
-                <el-row v-for="(sitem,index) in searchValues" :key="index" style="margin-top:5px;padding: 0px 15px 0px 10px;">
+                <el-row v-for="(sitem,index) in searchValues" :key="index" style="margin-top:5px;padding: 0px 15px 5px 10px;">
                     <el-col :span="20">
                         <el-row type="flex" justify="state">
                             <el-form-item  :label="sitem.name">

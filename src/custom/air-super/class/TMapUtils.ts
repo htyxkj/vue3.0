@@ -15,6 +15,7 @@ export namespace TMapUtils {
          * @returns 线对象
          */
         async makeRoute(lngLat:string,color:string,tMap:any){
+            let editLine = null;
             if(lngLat && lngLat.length>1){
                 let points:any = [];
                 let boundary = lngLat.split(";");
@@ -25,11 +26,11 @@ export namespace TMapUtils {
                     }
                 }
                 //创建线对象
-                let editLine = new T.Polyline(points);
+                editLine = new T.Polyline(points);
                 //向地图上添加线
                 tMap.addOverLay(editLine); 
-                return editLine;
             }
+            return editLine;
         }
         /**
          * 获取作业区、航空区

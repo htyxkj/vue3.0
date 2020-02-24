@@ -18,21 +18,26 @@
         </template>
         <template v-else>
             <template v-if="!isReview">
-                <el-row class="bip-work-title"><h3>审批人员</h3></el-row>
-                <template v-if="chkInfos">
-                    <el-row v-if="chkInfos.currState.hq">
-                        <el-row>
-                            <template v-for="cnodes in chkInfos.currState.cnodes">
-                                <el-col v-for="user in cnodes.users" :key="user.userName">{{user.userName}}</el-col>
-                            </template>
-                            <template v-for="cnodes in chkInfos.currState.cnodes">
-                                <el-col v-for="user in cnodes.userssh" :key="user.userName">{{user.userName}}  √</el-col>
-                            </template>
+                <template v-if="this.cea && this.cea.statefr =='6'  && this.cea.stateto =='6' ">
+                    <el-row class="bip-work-title"><h4>执行</h4></el-row>
+                </template>
+                <template v-else>
+                    <el-row class="bip-work-title"><h3>审批人员</h3></el-row>
+                    <template v-if="chkInfos">
+                        <el-row v-if="chkInfos.currState.hq">
+                            <el-row>
+                                <template v-for="cnodes in chkInfos.currState.cnodes">
+                                    <el-col v-for="user in cnodes.users" :key="user.userName">{{user.userName}}</el-col>
+                                </template>
+                                <template v-for="cnodes in chkInfos.currState.cnodes">
+                                    <el-col v-for="user in cnodes.userssh" :key="user.userName">{{user.userName}}  √</el-col>
+                                </template>
+                            </el-row>
                         </el-row>
-                    </el-row>
-                    <el-row v-if="!chkInfos.currState.hq">
-                        <el-col  v-for="user in chkInfos.currState.users" :key="user.userName">{{user.userName}}</el-col>
-                    </el-row>
+                        <el-row v-if="!chkInfos.currState.hq">
+                            <el-col  v-for="user in chkInfos.currState.users" :key="user.userName">{{user.userName}}</el-col>
+                        </el-row>
+                    </template>
                 </template>
             </template>
             <template v-else>
@@ -131,7 +136,7 @@ export default class BipWork extends Vue{
         } else {
             if(this.chkInfos.currState.hq){//会签
                 if(this.chkInfos.currState.cnodes.length <= 0){//没有人
-                    if (this.cea.statefr !== "6") {
+                    if (this.cea.statefr+'' !== "6") {
                         this.$notify.error("没有审批人!"); 
                         return;
                     }
@@ -139,14 +144,16 @@ export default class BipWork extends Vue{
                 this.stateId = this.chkInfos.list[0].stateId
             }else{
                 if(!this.chkInfos.currState.users && !this.chkInfos.currState.userssh){
-                    if (this.cea.statefr !== "6") {
+                    if (this.cea.statefr+'' !== "6") {
                         this.$notify.error("没有审批人!"); 
                         return;
                     }
                 }
                 if(!this.chkInfos.list || this.chkInfos.list.length<=0){
-                    this.$notify.error("未找到下一审批节点!"); 
-                    return;
+                    if(this.cea.statefr+'' !== "6"){
+                        this.$notify.error("未找到下一审批节点!"); 
+                        return;
+                    }
                 }else{
                     this.stateId = this.chkInfos.list[0].stateId
                     this.chkInfos.list.forEach((item:any) => {

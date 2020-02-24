@@ -153,7 +153,7 @@
                                   <el-button type="danger" @click="delOpera(item.data.id,1,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                  <el-button type="danger" @click="showoperaBrCData['BR'+index] = ! showoperaBrCData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
                                 </el-col>
                               </el-row>                   
                             </el-col>
@@ -161,74 +161,72 @@
                         </el-col>
                       </el-row>
                       <el-row style="font-size:14px;">
-                        <template v-if="showoperaBrData['BR'+index]">
-                          <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
-                            <el-col :span="4">&nbsp;</el-col>
-                            <el-col :span="12">{{item.data.name}}</el-col>
-                            <el-col :span="8">
-                              <el-row type="flex" justify="end">
-                                <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
-                              </el-row>
-                            </el-col>
-                          </el-row>
+                        <template v-if="showoperaBrCData['BR'+index]">
+                            <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
+                                <el-col :span="4">&nbsp;</el-col>
+                                <el-col :span="12">{{item.data.name}}</el-col>
+                                <el-col :span="8">
+                                <el-row type="flex" justify="end">
+                                    <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                    <el-button type="text" @click="delOperaBr(item.data,indexbr,index,'C')" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                                </el-row>
+                                </el-col>
+                            </el-row>
                         </template>
                       </el-row>
                     </el-row>
                   </el-checkbox-group>
                 </el-tab-pane>
                 <el-tab-pane label="夏季" name="x" :style="activeName2Style">
-                  <el-checkbox :indeterminate="xIsIndeterminate" v-model="xCheckAll" @change="xCheckAllChange">全选</el-checkbox>
-                  <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
-                    <el-row v-for="(item,index) in operaXData" :key="index">
-                      <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
-                        <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
-                          <el-checkbox class="myOperatingAreaCheck" :label="item.data.id" :key="item.data.id"></el-checkbox>
-                        </el-col>
-                        <el-col :span="20">
-                          <el-row>
-                            <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
-                            <el-col
-                              :span="24"
-                              style="color: rgba(0,0,0,.54);font-size: .12rem;"
-                            >{{item.data.address}}</el-col>
-                          </el-row>
-                          <el-row>
-                            <el-col :span="24" > 
-                              <el-row style="textAlign:center;">
-                                <el-col :span="6">
-                                  <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                    <el-checkbox :indeterminate="xIsIndeterminate" v-model="xCheckAll" @change="xCheckAllChange">全选</el-checkbox>
+                    <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
+                        <el-row v-for="(item,index) in operaXData" :key="index">
+                            <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
+                                <el-col :span="4" style="height:60px;line-height:60px;text-align: center;">
+                                <el-checkbox class="myOperatingAreaCheck" :label="item.data.id" :key="item.data.id"></el-checkbox>
                                 </el-col>
-                                <el-col :span="6">
-                                    <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                <el-col :span="20">
+                                <el-row>
+                                    <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                                    <el-col :span="24" style="color: rgba(0,0,0,.54);font-size: .12rem;">{{item.data.address}}</el-col>
+                                </el-row>
+                                <el-row style="padding-top:6px">
+                                    <el-col :span="24" > 
+                                    <el-row style="textAlign:center;">
+                                        <el-col :span="6">
+                                        <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
+                                        </el-col>
+                                        <el-col :span="6">
+                                        <el-button type="danger" @click="delOpera(item.data.id,2,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
+                                        </el-col>
+                                        <el-col :span="6">
+                                        <el-button type="danger" @click="showoperaBrXData['BR'+index] = ! showoperaBrXData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                        </el-col>
+                                    </el-row>                   
+                                    </el-col>
+                                </el-row>
                                 </el-col>
-                                <el-col :span="6">
-                                  <el-button type="danger" @click="delOpera(item.data.id,2,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
-                                </el-col>
-                                <el-col :span="6">
-                                  <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
-                                </el-col>
-                              </el-row>                   
-                            </el-col>
-                          </el-row>
-                        </el-col>
-                      </el-row>
-                      <el-row style="font-size:14px;">
-                        <template v-if="showoperaBrData['BR'+index]">
-                          <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
-                            <el-col :span="4">&nbsp;</el-col>
-                            <el-col :span="12">{{item.data.name}}</el-col>
-                            <el-col :span="8">
-                              <el-row type="flex" justify="end">
-                                <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
-                              </el-row>
-                            </el-col>
-                          </el-row>
-                        </template>
-                      </el-row>
-                    </el-row>
-                  </el-checkbox-group>                  
+                            </el-row>  
+                            <el-row style="font-size:14px;"> 
+                                <template v-if="showoperaBrXData['BR'+index]">
+                                    <el-row v-if="operaBrData[item.data.id].length ==0">暂无避让信息</el-row>
+                                    <el-row v-for="(britem,indexbr) in operaBrData[item.data.id]" :key="indexbr">
+                                        <el-col :span="4">&nbsp;</el-col>
+                                        <el-col :span="12">{{britem.data.name}}</el-col>
+                                        <el-col :span="8">
+                                        <el-row type="flex" justify="end">
+                                            <el-button v-show="britem.data.type==1" type="text" @click="editOperaBr(britem.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                                            <el-button type="text" @click="delOperaBr(britem.data,indexbr,index,'X')" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                                        </el-row>
+                                        </el-col>
+                                    </el-row>
+                                </template>
+                            </el-row>
+                        </el-row>  
+                    </el-checkbox-group>  
                 </el-tab-pane>
                 <el-tab-pane label="秋季" name="q" :style="activeName2Style">
                   <el-checkbox :indeterminate="qIsIndeterminate" v-model="qCheckAll" @change="qCheckAllChange">全选</el-checkbox>
@@ -259,7 +257,7 @@
                                   <el-button type="danger" @click="delOpera(item.data.id,3,index)" style="padding:1px; font-size:0.12rem;">删除</el-button>   
                                 </el-col>
                                 <el-col :span="6">
-                                  <el-button type="danger" @click="showoperaBrData['BR'+index] = ! showoperaBrData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
+                                  <el-button type="danger" @click="showoperaBrQData['BR'+index] = ! showoperaBrQData['BR'+index]" style="padding:1px; font-size:0.12rem;">避让区</el-button>   
                                 </el-col>
                               </el-row>                   
                             </el-col>
@@ -267,14 +265,14 @@
                         </el-col>
                       </el-row>
                       <el-row style="font-size:14px;">
-                        <template v-if="showoperaBrData['BR'+index]">
+                        <template v-if="showoperaBrQData['BR'+index]">
                           <el-row v-for="(item,indexbr) in operaBrData[item.data.id]" :key="indexbr">
                             <el-col :span="4">&nbsp;</el-col>
                             <el-col :span="12">{{item.data.name}}</el-col>
                             <el-col :span="8">
                               <el-row type="flex" justify="end">
                                 <el-button v-show="item.data.type==1" type="text" @click="editOperaBr(item.data)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
-                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index)" style="padding:2px; font-size:0.12rem;">删除</el-button>
+                                <el-button type="text" @click="delOperaBr(item.data,indexbr,index,'Q')" style="padding:2px; font-size:0.12rem;">删除</el-button>
                               </el-row>
                             </el-col>
                           </el-row>
@@ -506,143 +504,144 @@ import domtoimage from 'dom-to-image';
   }
 })
 export default class OperatingArea extends Vue {
-  @State("bipComHeight", { namespace: "login" }) height!: number;
-  @Provide() style: string ="height:" + (this.height ? this.height - 20 : "400") + "px";
-  @Provide() activeName1Style:string ="height:" + (this.height ? this.height - 65 : "400") + "px;";
-  @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
-  @Provide() activeName1: string = "first";
-  @Provide() activeName2: string = "c";
-  @Provide() cityColor:string = "#FF0000";//行政区边线颜色
-  @Provide() sbqCheckAll:boolean =false;//识别区全选
-  @Provide() liftCheckAll:boolean = false;//起降点全选
-  @Provide() liftLableCheck:boolean = true;//起降点是否显示文字标识
-  @Provide() sbqIsIndeterminate:boolean =true;
-  @Provide() liftIsIndeterminate:boolean = true;
-  @Provide() cCheckAll:boolean =false;
-  @Provide() cIsIndeterminate:boolean =true;
-  @Provide() xCheckAll:boolean =false;
-  @Provide() xIsIndeterminate:boolean =true;
-  @Provide() qCheckAll:boolean =false;
-  @Provide() qIsIndeterminate:boolean =true;
+    @State("bipComHeight", { namespace: "login" }) height!: number;
+    @Provide() style: string ="height:" + (this.height ? this.height - 20 : "400") + "px";
+    @Provide() activeName1Style:string ="height:" + (this.height ? this.height - 65 : "400") + "px;";
+    @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
+    @Provide() activeName1: string = "first";
+    @Provide() activeName2: string = "c";
+    @Provide() cityColor:string = "#FF0000";//行政区边线颜色
+    @Provide() sbqCheckAll:boolean =false;//识别区全选
+    @Provide() liftCheckAll:boolean = false;//起降点全选
+    @Provide() liftLableCheck:boolean = true;//起降点是否显示文字标识
+    @Provide() sbqIsIndeterminate:boolean =true;
+    @Provide() liftIsIndeterminate:boolean = true;
+    @Provide() cCheckAll:boolean =false;
+    @Provide() cIsIndeterminate:boolean =true;
+    @Provide() xCheckAll:boolean =false;
+    @Provide() xIsIndeterminate:boolean =true;
+    @Provide() qCheckAll:boolean =false;
+    @Provide() qIsIndeterminate:boolean =true;
 
-  @Provide() tmap1Style:string ="width:7000px;height:7000px";
-  @Provide() downloadUrl:any = null;
-  @Provide() downloadfilename:any = null;
+    @Provide() tmap1Style:string ="width:7000px;height:7000px";
+    @Provide() downloadUrl:any = null;
+    @Provide() downloadfilename:any = null;
 
-  @Provide() TMap1: any = null;
-  @Provide() tMap: any = null;
-  @Provide() tZoom: number = 12;
-  @Provide() loading:number = 0;
-  @Provide() areaWidth: number = 0; //测边行政区宽度
-  @Provide() areaBtnOpen: boolean = false; //左侧行政区是否显示
-  @Provide() expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
-  @Provide() keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
-  @Provide() expandedLevel: any = -1; //默认展开级次数
-  @Provide() fatherID: any = "parid"; //树状结构上下级关系字段
-  @Provide() defaultProps: any = { label: "name", children: 'children', };
-  @Provide() treeData:any=[];
+    @Provide() TMap1: any = null;
+    @Provide() tMap: any = null;
+    @Provide() tZoom: number = 12;
+    @Provide() loading:number = 0;
+    @Provide() areaWidth: number = 0; //测边行政区宽度
+    @Provide() areaBtnOpen: boolean = false; //左侧行政区是否显示
+    @Provide() expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
+    @Provide() keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
+    @Provide() expandedLevel: any = -1; //默认展开级次数
+    @Provide() fatherID: any = "parid"; //树状结构上下级关系字段
+    @Provide() defaultProps: any = { label: "name", children: 'children', };
+    @Provide() treeData:any=[];
 
-  @Provide() operaWidth: number = 0; //右侧作业区宽度
-  @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
+    @Provide() operaWidth: number = 0; //右侧作业区宽度
+    @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
 
-  @Provide() localsearch: any = null; //地址搜索对象
-  @Provide() selCityLine: any = null; //搜索的地址边界线
-  @Provide() addressInput: any = null; //地址框
+    @Provide() localsearch: any = null; //地址搜索对象
+    @Provide() selCityLine: any = null; //搜索的地址边界线
+    @Provide() addressInput: any = null; //地址框
 
-  @Provide() showOperaDia: boolean = false; //是否显示作业区查找框
-  @Provide() operaTjCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
-  @Provide() operaData: any = []; //作业区数据    全部数据
-  @Provide() operaSBQData: any = []; //作业区数据 识别区
-  @Provide() operaCData: any = []; //作业区数据   春季
-  @Provide() operaXData: any = []; //作业区数据   夏季
-  @Provide() operaQData: any = []; //作业区数据   秋季
-  @Provide() operaJSON: any = {}; //k v 格式作业区
-  
-  @Provide() checkOperaList: any = []; //作业区勾选数据
-  @Provide() sbqCheckOperaList: any = []; //识别区勾选数据
-  @Provide() cCheckOperaList: any = []; //作业区春勾选数据
-  @Provide() xCheckOperaList: any = []; //作业区夏勾选数据
-  @Provide() qCheckOperaList: any = []; //作业区秋勾选数据
+    @Provide() showOperaDia: boolean = false; //是否显示作业区查找框
+    @Provide() operaTjCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
+    @Provide() operaData: any = []; //作业区数据    全部数据
+    @Provide() operaSBQData: any = []; //作业区数据 识别区
+    @Provide() operaCData: any = []; //作业区数据   春季
+    @Provide() operaXData: any = []; //作业区数据   夏季
+    @Provide() operaQData: any = []; //作业区数据   秋季
+    @Provide() operaJSON: any = {}; //k v 格式作业区
+    
+    @Provide() checkOperaList: any = []; //作业区勾选数据
+    @Provide() sbqCheckOperaList: any = []; //识别区勾选数据
+    @Provide() cCheckOperaList: any = []; //作业区春勾选数据
+    @Provide() xCheckOperaList: any = []; //作业区夏勾选数据
+    @Provide() qCheckOperaList: any = []; //作业区秋勾选数据
 
-  @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 2000,total: 0}; //作业区查询分页数据
+    @Provide() operaCellPage: any = {currPage: 1,index: 0,pageSize: 2000,total: 0}; //作业区查询分页数据
 
-  @Provide() operaPolygon:any=null;//天地图作业区 画面对象
-  @Provide() operaLine:any=null;//天地图作业区 画线对象
+    @Provide() operaPolygon:any=null;//天地图作业区 画面对象
+    @Provide() operaLine:any=null;//天地图作业区 画线对象
 
-  @Provide() areaKv:any={};//行政区域  值  key  集合
-  @Provide() areaMap:any={};//行政区域地图集合
+    @Provide() areaKv:any={};//行政区域  值  key  集合
+    @Provide() areaMap:any={};//行政区域地图集合
 
-  @Provide() operaBrPolygon:any=null;//天地图避让区 画面对象
-  @Provide() operaBrLine:any=null;//天地图避让区 画线对象
-  @Provide() operaBrMarker:any = null;//天地图避让区 画点对象
+    @Provide() operaBrPolygon:any=null;//天地图避让区 画面对象
+    @Provide() operaBrLine:any=null;//天地图避让区 画线对象
+    @Provide() operaBrMarker:any = null;//天地图避让区 画点对象
 
- 
-  @Provide() showoperaBrData:any ={'BR0':false,'BR1':false,'BR2':false,'BR3':false,'BR4':false,'BR5':false,'BR6':false,'BR7':false,'BR8':false,'BR9':false,'BR10':false,
-  'BR11':false,'BR12':false,'BR13':false,'BR14':false,'BR15':false,'BR16':false,'BR17':false,'BR18':false,'BR19':false,'BR20':false};//是否显示每一条作业区的避让点
+    @Provide() showoperaBrCData:any ={"BR0":false,"BR1":false,"BR2":false,"BR3":false,"BR4":false,"BR5":false,"BR6":false,"BR7":false,"BR8":false,"BR9":false,"BR10":false,"BR11":false,"BR12":false,"BR13":false,"BR14":false,"BR15":false,"BR16":false,"BR17":false,"BR18":false,"BR19":false,"BR20":false,"BR21":false,"BR22":false,"BR23":false,"BR24":false,"BR25":false,"BR26":false,"BR27":false,"BR28":false,"BR29":false,"BR30":false,"BR31":false,"BR32":false,"BR33":false,"BR34":false,"BR35":false,"BR36":false,"BR37":false,"BR38":false,"BR39":false,"BR40":false,"BR41":false,"BR42":false,"BR43":false,"BR44":false,"BR45":false,"BR46":false,"BR47":false,"BR48":false,"BR49":false,"BR50":false,"BR51":false,"BR52":false,"BR53":false,"BR54":false,"BR55":false,"BR56":false,"BR57":false,"BR58":false,"BR59":false,"BR60":false,"BR61":false,"BR62":false,"BR63":false,"BR64":false,"BR65":false,"BR66":false,"BR67":false,"BR68":false,"BR69":false,"BR70":false,"BR71":false,"BR72":false,"BR73":false,"BR74":false,"BR75":false,"BR76":false,"BR77":false,"BR78":false,"BR79":false,"BR80":false,"BR81":false,"BR82":false,"BR83":false,"BR84":false,"BR85":false,"BR86":false,"BR87":false,"BR88":false,"BR89":false,"BR90":false,"BR91":false,"BR92":false,"BR93":false,"BR94":false,"BR95":false,"BR96":false,"BR97":false,"BR98":false,"BR99":false,"BR100":false,"BR101":false,"BR102":false,"BR103":false,"BR104":false,"BR105":false,"BR106":false,"BR107":false,"BR108":false,"BR109":false,"BR110":false,"BR111":false,"BR112":false,"BR113":false,"BR114":false,"BR115":false,"BR116":false,"BR117":false,"BR118":false,"BR119":false,"BR120":false,"BR121":false,"BR122":false,"BR123":false,"BR124":false,"BR125":false,"BR126":false,"BR127":false,"BR128":false,"BR129":false,"BR130":false,"BR131":false,"BR132":false,"BR133":false,"BR134":false,"BR135":false,"BR136":false,"BR137":false,"BR138":false,"BR139":false,"BR140":false,"BR141":false,"BR142":false,"BR143":false,"BR144":false,"BR145":false,"BR146":false,"BR147":false,"BR148":false,"BR149":false,"BR150":false,"BR151":false,"BR152":false,"BR153":false,"BR154":false,"BR155":false,"BR156":false,"BR157":false,"BR158":false,"BR159":false,"BR160":false,"BR161":false,"BR162":false,"BR163":false,"BR164":false,"BR165":false,"BR166":false,"BR167":false,"BR168":false,"BR169":false,"BR170":false,"BR171":false,"BR172":false,"BR173":false,"BR174":false,"BR175":false,"BR176":false,"BR177":false,"BR178":false,"BR179":false,"BR180":false,"BR181":false,"BR182":false,"BR183":false,"BR184":false,"BR185":false,"BR186":false,"BR187":false,"BR188":false,"BR189":false,"BR190":false,"BR191":false,"BR192":false,"BR193":false,"BR194":false,"BR195":false,"BR196":false,"BR197":false,"BR198":false,"BR199":false,"BR200":false,"BR201":false,"BR202":false,"BR203":false,"BR204":false,"BR205":false,"BR206":false,"BR207":false,"BR208":false,"BR209":false,"BR210":false,"BR211":false,"BR212":false,"BR213":false,"BR214":false,"BR215":false,"BR216":false,"BR217":false,"BR218":false,"BR219":false,"BR220":false,"BR221":false,"BR222":false,"BR223":false,"BR224":false,"BR225":false,"BR226":false,"BR227":false,"BR228":false,"BR229":false,"BR230":false,"BR231":false,"BR232":false,"BR233":false,"BR234":false,"BR235":false,"BR236":false,"BR237":false,"BR238":false,"BR239":false,"BR240":false,"BR241":false,"BR242":false,"BR243":false,"BR244":false,"BR245":false,"BR246":false,"BR247":false,"BR248":false,"BR249":false,"BR250":false,"BR251":false,"BR252":false,"BR253":false,"BR254":false,"BR255":false,"BR256":false,"BR257":false,"BR258":false,"BR259":false,"BR260":false,"BR261":false,"BR262":false,"BR263":false,"BR264":false,"BR265":false,"BR266":false,"BR267":false,"BR268":false,"BR269":false,"BR270":false,"BR271":false,"BR272":false,"BR273":false,"BR274":false,"BR275":false,"BR276":false,"BR277":false,"BR278":false,"BR279":false,"BR280":false,"BR281":false,"BR282":false,"BR283":false,"BR284":false,"BR285":false,"BR286":false,"BR287":false,"BR288":false,"BR289":false,"BR290":false,"BR291":false,"BR292":false,"BR293":false,"BR294":false,"BR295":false,"BR296":false,"BR297":false,"BR298":false,"BR299":false,"BR300":false,"BR301":false,"BR302":false,"BR303":false,"BR304":false,"BR305":false,"BR306":false,"BR307":false,"BR308":false,"BR309":false,"BR310":false,"BR311":false,"BR312":false,"BR313":false,"BR314":false,"BR315":false,"BR316":false,"BR317":false,"BR318":false,"BR319":false,"BR320":false,"BR321":false,"BR322":false,"BR323":false,"BR324":false,"BR325":false,"BR326":false,"BR327":false,"BR328":false,"BR329":false,"BR330":false,"BR331":false,"BR332":false,"BR333":false,"BR334":false,"BR335":false,"BR336":false,"BR337":false,"BR338":false,"BR339":false,"BR340":false,"BR341":false,"BR342":false,"BR343":false,"BR344":false,"BR345":false,"BR346":false,"BR347":false,"BR348":false,"BR349":false,"BR350":false,"BR351":false,"BR352":false,"BR353":false,"BR354":false,"BR355":false,"BR356":false,"BR357":false,"BR358":false,"BR359":false,"BR360":false,"BR361":false,"BR362":false,"BR363":false,"BR364":false,"BR365":false,"BR366":false,"BR367":false,"BR368":false,"BR369":false,"BR370":false,"BR371":false,"BR372":false,"BR373":false,"BR374":false,"BR375":false,"BR376":false,"BR377":false,"BR378":false,"BR379":false,"BR380":false,"BR381":false,"BR382":false,"BR383":false,"BR384":false,"BR385":false,"BR386":false,"BR387":false,"BR388":false,"BR389":false,"BR390":false,"BR391":false,"BR392":false,"BR393":false,"BR394":false,"BR395":false,"BR396":false,"BR397":false,"BR398":false,"BR399":false,"BR400":false,"BR401":false,"BR402":false,"BR403":false,"BR404":false,"BR405":false,"BR406":false,"BR407":false,"BR408":false,"BR409":false,"BR410":false,"BR411":false,"BR412":false,"BR413":false,"BR414":false,"BR415":false,"BR416":false,"BR417":false,"BR418":false,"BR419":false,"BR420":false,"BR421":false,"BR422":false,"BR423":false,"BR424":false,"BR425":false,"BR426":false,"BR427":false,"BR428":false,"BR429":false,"BR430":false,"BR431":false,"BR432":false,"BR433":false,"BR434":false,"BR435":false,"BR436":false,"BR437":false,"BR438":false,"BR439":false,"BR440":false,"BR441":false,"BR442":false,"BR443":false,"BR444":false,"BR445":false,"BR446":false,"BR447":false,"BR448":false,"BR449":false,"BR450":false,"BR451":false,"BR452":false,"BR453":false,"BR454":false,"BR455":false,"BR456":false,"BR457":false,"BR458":false,"BR459":false,"BR460":false,"BR461":false,"BR462":false,"BR463":false,"BR464":false,"BR465":false,"BR466":false,"BR467":false,"BR468":false,"BR469":false,"BR470":false,"BR471":false,"BR472":false,"BR473":false,"BR474":false,"BR475":false,"BR476":false,"BR477":false,"BR478":false,"BR479":false,"BR480":false,"BR481":false,"BR482":false,"BR483":false,"BR484":false,"BR485":false,"BR486":false,"BR487":false,"BR488":false,"BR489":false,"BR490":false,"BR491":false,"BR492":false,"BR493":false,"BR494":false,"BR495":false,"BR496":false,"BR497":false,"BR498":false,"BR499":false}//是否显示作业区避让点集合
+    @Provide() showoperaBrXData:any ={"BR0":false,"BR1":false,"BR2":false,"BR3":false,"BR4":false,"BR5":false,"BR6":false,"BR7":false,"BR8":false,"BR9":false,"BR10":false,"BR11":false,"BR12":false,"BR13":false,"BR14":false,"BR15":false,"BR16":false,"BR17":false,"BR18":false,"BR19":false,"BR20":false,"BR21":false,"BR22":false,"BR23":false,"BR24":false,"BR25":false,"BR26":false,"BR27":false,"BR28":false,"BR29":false,"BR30":false,"BR31":false,"BR32":false,"BR33":false,"BR34":false,"BR35":false,"BR36":false,"BR37":false,"BR38":false,"BR39":false,"BR40":false,"BR41":false,"BR42":false,"BR43":false,"BR44":false,"BR45":false,"BR46":false,"BR47":false,"BR48":false,"BR49":false,"BR50":false,"BR51":false,"BR52":false,"BR53":false,"BR54":false,"BR55":false,"BR56":false,"BR57":false,"BR58":false,"BR59":false,"BR60":false,"BR61":false,"BR62":false,"BR63":false,"BR64":false,"BR65":false,"BR66":false,"BR67":false,"BR68":false,"BR69":false,"BR70":false,"BR71":false,"BR72":false,"BR73":false,"BR74":false,"BR75":false,"BR76":false,"BR77":false,"BR78":false,"BR79":false,"BR80":false,"BR81":false,"BR82":false,"BR83":false,"BR84":false,"BR85":false,"BR86":false,"BR87":false,"BR88":false,"BR89":false,"BR90":false,"BR91":false,"BR92":false,"BR93":false,"BR94":false,"BR95":false,"BR96":false,"BR97":false,"BR98":false,"BR99":false,"BR100":false,"BR101":false,"BR102":false,"BR103":false,"BR104":false,"BR105":false,"BR106":false,"BR107":false,"BR108":false,"BR109":false,"BR110":false,"BR111":false,"BR112":false,"BR113":false,"BR114":false,"BR115":false,"BR116":false,"BR117":false,"BR118":false,"BR119":false,"BR120":false,"BR121":false,"BR122":false,"BR123":false,"BR124":false,"BR125":false,"BR126":false,"BR127":false,"BR128":false,"BR129":false,"BR130":false,"BR131":false,"BR132":false,"BR133":false,"BR134":false,"BR135":false,"BR136":false,"BR137":false,"BR138":false,"BR139":false,"BR140":false,"BR141":false,"BR142":false,"BR143":false,"BR144":false,"BR145":false,"BR146":false,"BR147":false,"BR148":false,"BR149":false,"BR150":false,"BR151":false,"BR152":false,"BR153":false,"BR154":false,"BR155":false,"BR156":false,"BR157":false,"BR158":false,"BR159":false,"BR160":false,"BR161":false,"BR162":false,"BR163":false,"BR164":false,"BR165":false,"BR166":false,"BR167":false,"BR168":false,"BR169":false,"BR170":false,"BR171":false,"BR172":false,"BR173":false,"BR174":false,"BR175":false,"BR176":false,"BR177":false,"BR178":false,"BR179":false,"BR180":false,"BR181":false,"BR182":false,"BR183":false,"BR184":false,"BR185":false,"BR186":false,"BR187":false,"BR188":false,"BR189":false,"BR190":false,"BR191":false,"BR192":false,"BR193":false,"BR194":false,"BR195":false,"BR196":false,"BR197":false,"BR198":false,"BR199":false,"BR200":false,"BR201":false,"BR202":false,"BR203":false,"BR204":false,"BR205":false,"BR206":false,"BR207":false,"BR208":false,"BR209":false,"BR210":false,"BR211":false,"BR212":false,"BR213":false,"BR214":false,"BR215":false,"BR216":false,"BR217":false,"BR218":false,"BR219":false,"BR220":false,"BR221":false,"BR222":false,"BR223":false,"BR224":false,"BR225":false,"BR226":false,"BR227":false,"BR228":false,"BR229":false,"BR230":false,"BR231":false,"BR232":false,"BR233":false,"BR234":false,"BR235":false,"BR236":false,"BR237":false,"BR238":false,"BR239":false,"BR240":false,"BR241":false,"BR242":false,"BR243":false,"BR244":false,"BR245":false,"BR246":false,"BR247":false,"BR248":false,"BR249":false,"BR250":false,"BR251":false,"BR252":false,"BR253":false,"BR254":false,"BR255":false,"BR256":false,"BR257":false,"BR258":false,"BR259":false,"BR260":false,"BR261":false,"BR262":false,"BR263":false,"BR264":false,"BR265":false,"BR266":false,"BR267":false,"BR268":false,"BR269":false,"BR270":false,"BR271":false,"BR272":false,"BR273":false,"BR274":false,"BR275":false,"BR276":false,"BR277":false,"BR278":false,"BR279":false,"BR280":false,"BR281":false,"BR282":false,"BR283":false,"BR284":false,"BR285":false,"BR286":false,"BR287":false,"BR288":false,"BR289":false,"BR290":false,"BR291":false,"BR292":false,"BR293":false,"BR294":false,"BR295":false,"BR296":false,"BR297":false,"BR298":false,"BR299":false,"BR300":false,"BR301":false,"BR302":false,"BR303":false,"BR304":false,"BR305":false,"BR306":false,"BR307":false,"BR308":false,"BR309":false,"BR310":false,"BR311":false,"BR312":false,"BR313":false,"BR314":false,"BR315":false,"BR316":false,"BR317":false,"BR318":false,"BR319":false,"BR320":false,"BR321":false,"BR322":false,"BR323":false,"BR324":false,"BR325":false,"BR326":false,"BR327":false,"BR328":false,"BR329":false,"BR330":false,"BR331":false,"BR332":false,"BR333":false,"BR334":false,"BR335":false,"BR336":false,"BR337":false,"BR338":false,"BR339":false,"BR340":false,"BR341":false,"BR342":false,"BR343":false,"BR344":false,"BR345":false,"BR346":false,"BR347":false,"BR348":false,"BR349":false,"BR350":false,"BR351":false,"BR352":false,"BR353":false,"BR354":false,"BR355":false,"BR356":false,"BR357":false,"BR358":false,"BR359":false,"BR360":false,"BR361":false,"BR362":false,"BR363":false,"BR364":false,"BR365":false,"BR366":false,"BR367":false,"BR368":false,"BR369":false,"BR370":false,"BR371":false,"BR372":false,"BR373":false,"BR374":false,"BR375":false,"BR376":false,"BR377":false,"BR378":false,"BR379":false,"BR380":false,"BR381":false,"BR382":false,"BR383":false,"BR384":false,"BR385":false,"BR386":false,"BR387":false,"BR388":false,"BR389":false,"BR390":false,"BR391":false,"BR392":false,"BR393":false,"BR394":false,"BR395":false,"BR396":false,"BR397":false,"BR398":false,"BR399":false,"BR400":false,"BR401":false,"BR402":false,"BR403":false,"BR404":false,"BR405":false,"BR406":false,"BR407":false,"BR408":false,"BR409":false,"BR410":false,"BR411":false,"BR412":false,"BR413":false,"BR414":false,"BR415":false,"BR416":false,"BR417":false,"BR418":false,"BR419":false,"BR420":false,"BR421":false,"BR422":false,"BR423":false,"BR424":false,"BR425":false,"BR426":false,"BR427":false,"BR428":false,"BR429":false,"BR430":false,"BR431":false,"BR432":false,"BR433":false,"BR434":false,"BR435":false,"BR436":false,"BR437":false,"BR438":false,"BR439":false,"BR440":false,"BR441":false,"BR442":false,"BR443":false,"BR444":false,"BR445":false,"BR446":false,"BR447":false,"BR448":false,"BR449":false,"BR450":false,"BR451":false,"BR452":false,"BR453":false,"BR454":false,"BR455":false,"BR456":false,"BR457":false,"BR458":false,"BR459":false,"BR460":false,"BR461":false,"BR462":false,"BR463":false,"BR464":false,"BR465":false,"BR466":false,"BR467":false,"BR468":false,"BR469":false,"BR470":false,"BR471":false,"BR472":false,"BR473":false,"BR474":false,"BR475":false,"BR476":false,"BR477":false,"BR478":false,"BR479":false,"BR480":false,"BR481":false,"BR482":false,"BR483":false,"BR484":false,"BR485":false,"BR486":false,"BR487":false,"BR488":false,"BR489":false,"BR490":false,"BR491":false,"BR492":false,"BR493":false,"BR494":false,"BR495":false,"BR496":false,"BR497":false,"BR498":false,"BR499":false}//是否显示作业区避让点集合
+    @Provide() showoperaBrQData:any ={"BR0":false,"BR1":false,"BR2":false,"BR3":false,"BR4":false,"BR5":false,"BR6":false,"BR7":false,"BR8":false,"BR9":false,"BR10":false,"BR11":false,"BR12":false,"BR13":false,"BR14":false,"BR15":false,"BR16":false,"BR17":false,"BR18":false,"BR19":false,"BR20":false,"BR21":false,"BR22":false,"BR23":false,"BR24":false,"BR25":false,"BR26":false,"BR27":false,"BR28":false,"BR29":false,"BR30":false,"BR31":false,"BR32":false,"BR33":false,"BR34":false,"BR35":false,"BR36":false,"BR37":false,"BR38":false,"BR39":false,"BR40":false,"BR41":false,"BR42":false,"BR43":false,"BR44":false,"BR45":false,"BR46":false,"BR47":false,"BR48":false,"BR49":false,"BR50":false,"BR51":false,"BR52":false,"BR53":false,"BR54":false,"BR55":false,"BR56":false,"BR57":false,"BR58":false,"BR59":false,"BR60":false,"BR61":false,"BR62":false,"BR63":false,"BR64":false,"BR65":false,"BR66":false,"BR67":false,"BR68":false,"BR69":false,"BR70":false,"BR71":false,"BR72":false,"BR73":false,"BR74":false,"BR75":false,"BR76":false,"BR77":false,"BR78":false,"BR79":false,"BR80":false,"BR81":false,"BR82":false,"BR83":false,"BR84":false,"BR85":false,"BR86":false,"BR87":false,"BR88":false,"BR89":false,"BR90":false,"BR91":false,"BR92":false,"BR93":false,"BR94":false,"BR95":false,"BR96":false,"BR97":false,"BR98":false,"BR99":false,"BR100":false,"BR101":false,"BR102":false,"BR103":false,"BR104":false,"BR105":false,"BR106":false,"BR107":false,"BR108":false,"BR109":false,"BR110":false,"BR111":false,"BR112":false,"BR113":false,"BR114":false,"BR115":false,"BR116":false,"BR117":false,"BR118":false,"BR119":false,"BR120":false,"BR121":false,"BR122":false,"BR123":false,"BR124":false,"BR125":false,"BR126":false,"BR127":false,"BR128":false,"BR129":false,"BR130":false,"BR131":false,"BR132":false,"BR133":false,"BR134":false,"BR135":false,"BR136":false,"BR137":false,"BR138":false,"BR139":false,"BR140":false,"BR141":false,"BR142":false,"BR143":false,"BR144":false,"BR145":false,"BR146":false,"BR147":false,"BR148":false,"BR149":false,"BR150":false,"BR151":false,"BR152":false,"BR153":false,"BR154":false,"BR155":false,"BR156":false,"BR157":false,"BR158":false,"BR159":false,"BR160":false,"BR161":false,"BR162":false,"BR163":false,"BR164":false,"BR165":false,"BR166":false,"BR167":false,"BR168":false,"BR169":false,"BR170":false,"BR171":false,"BR172":false,"BR173":false,"BR174":false,"BR175":false,"BR176":false,"BR177":false,"BR178":false,"BR179":false,"BR180":false,"BR181":false,"BR182":false,"BR183":false,"BR184":false,"BR185":false,"BR186":false,"BR187":false,"BR188":false,"BR189":false,"BR190":false,"BR191":false,"BR192":false,"BR193":false,"BR194":false,"BR195":false,"BR196":false,"BR197":false,"BR198":false,"BR199":false,"BR200":false,"BR201":false,"BR202":false,"BR203":false,"BR204":false,"BR205":false,"BR206":false,"BR207":false,"BR208":false,"BR209":false,"BR210":false,"BR211":false,"BR212":false,"BR213":false,"BR214":false,"BR215":false,"BR216":false,"BR217":false,"BR218":false,"BR219":false,"BR220":false,"BR221":false,"BR222":false,"BR223":false,"BR224":false,"BR225":false,"BR226":false,"BR227":false,"BR228":false,"BR229":false,"BR230":false,"BR231":false,"BR232":false,"BR233":false,"BR234":false,"BR235":false,"BR236":false,"BR237":false,"BR238":false,"BR239":false,"BR240":false,"BR241":false,"BR242":false,"BR243":false,"BR244":false,"BR245":false,"BR246":false,"BR247":false,"BR248":false,"BR249":false,"BR250":false,"BR251":false,"BR252":false,"BR253":false,"BR254":false,"BR255":false,"BR256":false,"BR257":false,"BR258":false,"BR259":false,"BR260":false,"BR261":false,"BR262":false,"BR263":false,"BR264":false,"BR265":false,"BR266":false,"BR267":false,"BR268":false,"BR269":false,"BR270":false,"BR271":false,"BR272":false,"BR273":false,"BR274":false,"BR275":false,"BR276":false,"BR277":false,"BR278":false,"BR279":false,"BR280":false,"BR281":false,"BR282":false,"BR283":false,"BR284":false,"BR285":false,"BR286":false,"BR287":false,"BR288":false,"BR289":false,"BR290":false,"BR291":false,"BR292":false,"BR293":false,"BR294":false,"BR295":false,"BR296":false,"BR297":false,"BR298":false,"BR299":false,"BR300":false,"BR301":false,"BR302":false,"BR303":false,"BR304":false,"BR305":false,"BR306":false,"BR307":false,"BR308":false,"BR309":false,"BR310":false,"BR311":false,"BR312":false,"BR313":false,"BR314":false,"BR315":false,"BR316":false,"BR317":false,"BR318":false,"BR319":false,"BR320":false,"BR321":false,"BR322":false,"BR323":false,"BR324":false,"BR325":false,"BR326":false,"BR327":false,"BR328":false,"BR329":false,"BR330":false,"BR331":false,"BR332":false,"BR333":false,"BR334":false,"BR335":false,"BR336":false,"BR337":false,"BR338":false,"BR339":false,"BR340":false,"BR341":false,"BR342":false,"BR343":false,"BR344":false,"BR345":false,"BR346":false,"BR347":false,"BR348":false,"BR349":false,"BR350":false,"BR351":false,"BR352":false,"BR353":false,"BR354":false,"BR355":false,"BR356":false,"BR357":false,"BR358":false,"BR359":false,"BR360":false,"BR361":false,"BR362":false,"BR363":false,"BR364":false,"BR365":false,"BR366":false,"BR367":false,"BR368":false,"BR369":false,"BR370":false,"BR371":false,"BR372":false,"BR373":false,"BR374":false,"BR375":false,"BR376":false,"BR377":false,"BR378":false,"BR379":false,"BR380":false,"BR381":false,"BR382":false,"BR383":false,"BR384":false,"BR385":false,"BR386":false,"BR387":false,"BR388":false,"BR389":false,"BR390":false,"BR391":false,"BR392":false,"BR393":false,"BR394":false,"BR395":false,"BR396":false,"BR397":false,"BR398":false,"BR399":false,"BR400":false,"BR401":false,"BR402":false,"BR403":false,"BR404":false,"BR405":false,"BR406":false,"BR407":false,"BR408":false,"BR409":false,"BR410":false,"BR411":false,"BR412":false,"BR413":false,"BR414":false,"BR415":false,"BR416":false,"BR417":false,"BR418":false,"BR419":false,"BR420":false,"BR421":false,"BR422":false,"BR423":false,"BR424":false,"BR425":false,"BR426":false,"BR427":false,"BR428":false,"BR429":false,"BR430":false,"BR431":false,"BR432":false,"BR433":false,"BR434":false,"BR435":false,"BR436":false,"BR437":false,"BR438":false,"BR439":false,"BR440":false,"BR441":false,"BR442":false,"BR443":false,"BR444":false,"BR445":false,"BR446":false,"BR447":false,"BR448":false,"BR449":false,"BR450":false,"BR451":false,"BR452":false,"BR453":false,"BR454":false,"BR455":false,"BR456":false,"BR457":false,"BR458":false,"BR459":false,"BR460":false,"BR461":false,"BR462":false,"BR463":false,"BR464":false,"BR465":false,"BR466":false,"BR467":false,"BR468":false,"BR469":false,"BR470":false,"BR471":false,"BR472":false,"BR473":false,"BR474":false,"BR475":false,"BR476":false,"BR477":false,"BR478":false,"BR479":false,"BR480":false,"BR481":false,"BR482":false,"BR483":false,"BR484":false,"BR485":false,"BR486":false,"BR487":false,"BR488":false,"BR489":false,"BR490":false,"BR491":false,"BR492":false,"BR493":false,"BR494":false,"BR495":false,"BR496":false,"BR497":false,"BR498":false,"BR499":false}//是否显示作业区避让点集合
 
-  @Provide() operaBrData: any = {}; //避让区数据
-  @Provide() operaBrJSON: any = {}; //避让区数据每一条
-  @Provide() mapOperaBr: any = {}; //地图避让区覆盖集合
+    @Provide() operaBrData: any = {}; //避让区数据
+    @Provide() operaBrJSON: any = {}; //避让区数据每一条
+    @Provide() mapOperaBr: any = {}; //地图避让区覆盖集合
 
-  @Provide() operaBrCell:CDataSet = new CDataSet("");//避让点对象
-  @Provide() showSaveOperaBrDia:boolean =false;//是否显示新增避让点弹框
-
-
-  @Provide() mapOpera: any = {}; //地图作业区覆盖集合
-  @Provide() mapOperaTxt: any = {}; //地图作业区文字说明集合
-
-  @Provide() showSavesbqDia:boolean = false;
-  @Provide() sbqCell:CDataSet = new CDataSet("");//航空识别区对象
-  @Provide() letter:any = ['A','B','C','D','E','F','G','H','I','G','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-  @Provide() aviationDia:boolean = false;//航空识别区坐标点勾选弹出框
-  @Provide() makeABCD:any={};//航空识别区四角标识
-  @Provide() sbqPointABCD:any=[];//已勾选的识别区的四角坐标集合
-  @Provide() checkedABCD:any = [];//新填识别区四角坐标
-  @Provide() ckABCDCallout:any=[];//新增航空识别区地图标注点
-  @Provide() sbqMarkerPoint:any = null;//识别区标注点对象
+    @Provide() operaBrCell:CDataSet = new CDataSet("");//避让点对象
+    @Provide() showSaveOperaBrDia:boolean =false;//是否显示新增避让点弹框
 
 
-  @Provide() showLiftDialog:boolean = false;//是否显示新增起降点
-  @Provide() liftCell:CDataSet = new CDataSet("");//起降点对象
-  @Provide() liftLineTool:any=null;//天地图作业区 画线对象(起降点)
-  @Provide() liftData:any=[];//起降点数据集合
-  @Provide() liftJSON:any={};//起降点json格式数据集合
-  @Provide() checkLiftList:any=[];//起降点勾选集合
-  @Provide() mapLift:any={};//地图上的起降点集合
-  @Provide() mapLiftTxt:any={};//地图上的起降点文字标识集合
-  @Provide() showPositionDialog:boolean=false;//经纬度定位框
-  @Provide() positionLon:any = "";//经度
-  @Provide() positionLat:any = "";//纬度
+    @Provide() mapOpera: any = {}; //地图作业区覆盖集合
+    @Provide() mapOperaTxt: any = {}; //地图作业区文字说明集合
+
+    @Provide() showSavesbqDia:boolean = false;
+    @Provide() sbqCell:CDataSet = new CDataSet("");//航空识别区对象
+    @Provide() letter:any = ['A','B','C','D','E','F','G','H','I','G','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    @Provide() aviationDia:boolean = false;//航空识别区坐标点勾选弹出框
+    @Provide() makeABCD:any={};//航空识别区四角标识
+    @Provide() sbqPointABCD:any=[];//已勾选的识别区的四角坐标集合
+    @Provide() checkedABCD:any = [];//新填识别区四角坐标
+    @Provide() ckABCDCallout:any=[];//新增航空识别区地图标注点
+    @Provide() sbqMarkerPoint:any = null;//识别区标注点对象
 
 
-  @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
-  @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
-  @Provide() editKid: any = null; //当前正在进行保存的kid 已经弹出保存框了
+    @Provide() showLiftDialog:boolean = false;//是否显示新增起降点
+    @Provide() liftCell:CDataSet = new CDataSet("");//起降点对象
+    @Provide() liftLineTool:any=null;//天地图作业区 画线对象(起降点)
+    @Provide() liftData:any=[];//起降点数据集合
+    @Provide() liftJSON:any={};//起降点json格式数据集合
+    @Provide() checkLiftList:any=[];//起降点勾选集合
+    @Provide() mapLift:any={};//地图上的起降点集合
+    @Provide() mapLiftTxt:any={};//地图上的起降点文字标识集合
+    @Provide() showPositionDialog:boolean=false;//经纬度定位框
+    @Provide() positionLon:any = "";//经度
+    @Provide() positionLat:any = "";//纬度
 
-  @Provide() editBrk:any = null;//当前正在进行保存的kid 已经弹出保存框了
-  @Provide() checkkid:any = null;//当前页选中的作业区ID 在勾选避让区域时用到
 
-  @Provide() showScreenshot:boolean = false;//导出图片弹出框
-  @Provide() mapImgType:string ='vector';
+    @Provide() operaSaveCell: CDataSet = new CDataSet(""); //作业区对象（保存对象）
+    @Provide() showSaveOperaDia: boolean = false; //是否显示新增作业区弹框
+    @Provide() editKid: any = null; //当前正在进行保存的kid 已经弹出保存框了
 
-  async created() {
-    if (this.height) {
-      this.style = "height:" + (this.height - 20) + "px";
-      this.activeName1Style ="height:" + (this.height ? this.height - 65 : "400") + "px;";
-      this.activeName2Style ="height:" + (this.height ? this.height - 95 : "400") + "px";
+    @Provide() editBrk:any = null;//当前正在进行保存的kid 已经弹出保存框了
+    @Provide() checkkid:any = null;//当前页选中的作业区ID 在勾选避让区域时用到
+
+    @Provide() showScreenshot:boolean = false;//导出图片弹出框
+    @Provide() mapImgType:string ='vector';
+
+    async created() {
+        if (this.height) {
+            this.style = "height:" + (this.height - 20) + "px";
+            this.activeName1Style ="height:" + (this.height ? this.height - 65 : "400") + "px;";
+            this.activeName2Style ="height:" + (this.height ? this.height - 95 : "400") + "px";
+        }
+        this.operaTjCell = await this.getCell("FW2015TJ");//作业区查询条件
+        this.operaTjCell.createRecord();
+        this.operaSaveCell = await this.getCell("FW2015");//作业区
+        this.operaBrCell = await this.getCell("F2015A");//避让点
+        this.sbqCell = await this.getCell("FW2015F");//航空识别区对象
+        this.liftCell = await this.getCell("20200203");//起降点对象
     }
-    this.operaTjCell = await this.getCell("FW2015TJ");//作业区查询条件
-    this.operaTjCell.createRecord();
-    this.operaSaveCell = await this.getCell("FW2015");//作业区
-    this.operaBrCell = await this.getCell("F2015A");//避让点
-    this.sbqCell = await this.getCell("FW2015F");//航空识别区对象
-    this.liftCell = await this.getCell("20200203");//起降点对象
-  }
   mounted() {
     if (this.$refs.TMap) {
       let refT: any = this.$refs.TMap;
       this.tMap = refT.getMap();
     }
+    this.fifthRingRoad();
     this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
     this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 14);
   }
@@ -940,8 +939,11 @@ export default class OperatingArea extends Vue {
    */
   makeOperaLableTXT(d1: any, t1: any) {
     if (d1) {
-      var co = "";
-      co =d1.id; 
+        var co = "";
+        co =d1.name; 
+        if(d1.sbuid == 'F2005'){
+            co = d1.id;
+        }
       //   d1.id +
       //   "<br/>" +
       //   d1.name +
@@ -952,18 +954,18 @@ export default class OperatingArea extends Vue {
       // if (d1.area != 0) {
       //   co += "<br/>面积：" + d1.area + "亩";
       // }
-      var label = new T.Label({
-        text: co,
-        position: t1.center,
-        offset: new T.Point(-30, 0),
-        fontsize :14
-      });
-      if(d1.sbuid == 'F2005'){
-        label.setFontSize(35)
-      }
-      label.setBorderLine(0)
-      label.setBackgroundColor(null);
-      return label;
+        var label = new T.Label({
+            text: co,
+            position: t1.center,
+            offset: new T.Point(-30, 0),
+            fontsize :14
+        });
+        if(d1.sbuid == 'F2005'){
+            label.setFontSize(35)
+        }
+        label.setBorderLine(0)
+        label.setBackgroundColor(null);
+        return label;
     } else {
       return null;
     }
@@ -973,24 +975,34 @@ export default class OperatingArea extends Vue {
    */
   makeOpera(d1: any) {
     if (d1) {
-      let boundary1 = d1.boundary1;
-      let boundary = boundary1.split(";");
-      var points = [];
-      for (var j = 0; j < boundary.length; j++) {
-        let poin = boundary[j].split(",");
-        if (poin.length >= 2) {
-          points.push(new T.LngLat(poin[0], poin[1]));
+        let boundary1 = d1.boundary1;
+        let boundary = boundary1.split(";");
+        var points = [];
+        for (var j = 0; j < boundary.length; j++) {
+            let poin = boundary[j].split(",");
+            if (poin.length >= 2) {
+            points.push(new T.LngLat(poin[0], poin[1]));
+            }
         }
-      }
-      //创建面对象
-      var polygon = new T.Polygon(points, {
-        color: "blue",
-        weight: 1,
-        opacity: 0.5,
-        fillColor: d1.color,
-        fillOpacity: 0.5
-      });
-      return [polygon, points];
+         //创建面对象
+        var polygon = new T.Polygon(points, {
+            color: "blue",
+            weight: 1,
+            opacity: 0.5,
+            fillColor: d1.color,
+            fillOpacity: 0.5
+        });
+        if(d1.sbuid == 'F2005'){
+            //创建面对象
+            var polygon = new T.Polygon(points, {
+                color: "#000000",
+                weight: 4,
+                opacity: 1,
+                fillOpacity: 0
+            });
+        }
+       
+        return [polygon, points];
     } else {
       return null;
     }
@@ -1261,7 +1273,7 @@ export default class OperatingArea extends Vue {
     /**
    * 删除避让区
    */
-  delOperaBr(data:any,indexBr:any,index:any){
+  delOperaBr(data:any,indexBr:any,index:any,type:any){
     let k = data.oid+"_"+data.oaid;
     let d1 = this.operaBrJSON[k];
     let co = "此操作将删除避让区区：" + d1.name + "，是否继续？";
@@ -1278,7 +1290,7 @@ export default class OperatingArea extends Vue {
           this.operaBrCell.currRecord.data = d1;
           this.operaBrCell.currRecord.c_state = 4;
         }
-        this.delBr(k,indexBr,index);
+        this.delBr(k,indexBr,index,type);
       })
       .catch(() => {
         this.$message({
@@ -1290,20 +1302,32 @@ export default class OperatingArea extends Vue {
   /**
    * 进行删除避让区
    */
-  async delBr(key:string,indexBr:any,index:any){
+  async delBr(key:string,indexBr:any,index:any,type:any){
     let res: any = await this.operaBrCell.saveData();
     if (res.data && res.data.id == 0) {
-      this.showoperaBrData["BR"+index] = false;
-      let data = this.operaBrData[key.split("_")[0]];
-      data.splice(indexBr,1);
-      this.operaBrData[key.split("_")[0]] = data;
-      this.showoperaBrData["BR"+index] = true;
-      if (this.mapOperaBr[key]) {
-        this.tMap.removeOverLay(this.mapOperaBr[key]);
-      }
-      delete this.operaBrJSON[key]
-      this.$notify.success("删除成功！");
-      await this.showOperaBr(key.split("_")[0]);
+        if(type == 'C'){
+            this.showoperaBrCData['BR'+index] = false;
+        }else if(type == 'X'){
+            this.showoperaBrXData['BR'+index] = false;
+        }else if(type == 'Q'){
+            this.showoperaBrQData['BR'+index] = false;
+        }
+        let data = this.operaBrData[key.split("_")[0]];
+        data.splice(indexBr,1);
+        this.operaBrData[key.split("_")[0]] = data;
+        if(type == 'C'){
+            this.showoperaBrCData['BR'+index] = true;
+        }else if(type == 'X'){
+            this.showoperaBrXData['BR'+index] = true;
+        }else if(type == 'Q'){
+            this.showoperaBrQData['BR'+index] = true;
+        }
+        if (this.mapOperaBr[key]) {
+            this.tMap.removeOverLay(this.mapOperaBr[key]);
+        }
+        delete this.operaBrJSON[key]
+        this.$notify.success("删除成功！");
+        await this.showOperaBr(key.split("_")[0]);
     } else {
       this.$notify.error("删除失败！");
     }
@@ -1901,6 +1925,7 @@ export default class OperatingArea extends Vue {
           }
           for(var k=0;k<this.operaData.length;k++){
             let dd = this.operaData[k];
+            dd.showBr = 1;
               if(dd.data.sbuid == 'F2005'){
               this.operaSBQData.push(dd);
             }else if(dd.data.sbuid == 'F2015'){    
@@ -1917,6 +1942,7 @@ export default class OperatingArea extends Vue {
                 }else{
                   this.operaCData.push(dd);
                 }
+                this.showoperaBrCData[(this.operaCData.length-1)] = false
               }else if(dd.data.season == 1){
                 let _index1 = -1
                 for(var i=0;i<this.operaXData.length;i++){
@@ -1930,6 +1956,7 @@ export default class OperatingArea extends Vue {
                 }else{
                   this.operaXData.push(dd);
                 }
+                this.showoperaBrXData[(this.operaXData.length-1)] = false
               }else if(dd.data.season == 2){ 
                 let _index2 = -1
                 for(var i=0;i<this.operaQData.length;i++){
@@ -1943,6 +1970,7 @@ export default class OperatingArea extends Vue {
                 }else{
                   this.operaQData.push(dd);
                 }
+                this.showoperaBrQData[(this.operaQData.length-1)] = false
               }
             }
           }
@@ -2273,6 +2301,7 @@ export default class OperatingArea extends Vue {
     this.checkOperaList = this.checkOperaList.concat(this.xCheckOperaList)
     this.checkOperaList = this.checkOperaList.concat(this.qCheckOperaList)
     this.checkBoxChange(this.checkOperaList);
+    this.fifthRingRoad();
   }
   /** 
    * 作业区全选  春
@@ -2612,6 +2641,26 @@ export default class OperatingArea extends Vue {
     }
   }
 /*********** END *************/
+    /**
+     * 五环路
+     */
+    fifthRingRoad(){
+        let lnglat = "116.45031,40.01465;116.45349,40.01388;116.4725,40.01375;116.47575,40.01328;116.47939,40.01186;116.48154,40.0104;116.49197,39.99989;116.50353,39.98779;116.51729,39.97002;116.51922,39.96663;116.52519,39.95314;116.53056,39.94683;116.53408,39.94314;116.53622,39.93855;116.53812,39.90921;116.53962,39.90179;116.54211,39.88887;116.54274,39.88184;116.54304,39.87231;116.54209,39.86476;116.54239,39.86066;116.54372,39.8535;116.5436,39.85139;116.54317,39.84968;116.53849,39.84487;116.50634,39.82123;116.47497,39.80944;116.45794,39.79237;116.45343,39.78988;116.44749,39.78932;116.43329,39.78898;116.42689,39.78658;116.42058,39.7804;116.4162,39.76986;116.41263,39.7663;116.40731,39.76373;116.37682,39.75652;116.37334,39.75716;116.37128,39.75853;116.3698,39.76061;116.36902,39.76396;116.36696,39.77186;116.36478,39.77443;116.36061,39.77602;116.34152,39.77718;116.30119,39.78059;116.29647,39.77978;116.28849,39.77566;116.28377,39.77337;116.27913,39.77229;116.27334,39.77311;116.27055,39.77457;116.26695,39.77813;116.25995,39.7973;116.25939,39.80414;116.25755,39.80993;116.24218,39.82793;116.23539,39.83089;116.22999,39.83262;116.21587,39.84773;116.21431,39.85532;116.21011,39.86175;116.20278,39.8718;116.20183,39.87767;116.2041,39.88544;116.2054,39.89003;116.20488,39.89483;116.20524,39.91463;116.20609,39.93215;116.20593,39.9419;116.20923,39.94843;116.21471,39.97644;116.21513,39.98862;116.2165,39.9921;116.22097,39.99467;116.23461,39.99772;116.24069,40.00058;116.24502,40.00139;116.25803,40.00199;116.26202,40.00319;116.26515,40.00654;116.26751,40.00959;116.27077,40.01083;116.27734,40.01173;116.29152,40.01323;116.30288,40.01595;116.31876,40.01852;116.33026,40.02182;116.3467,40.02169;116.42959,40.02049;116.45031,40.01465";
+        let boundary = lnglat.split(";");
+        var points = [];
+        for (var j = 0; j < boundary.length; j++) {
+            let poin = boundary[j].split(",");
+            if (poin.length >= 2) {
+            points.push(new T.LngLat(poin[0], poin[1]));
+            }
+        }
+        var line = new T.Polyline(points);
+        line.setColor("#C00000");
+        line.setWeight(4);
+        line.setOpacity(1);
+        //向地图上添加线
+        this.tMap.addOverLay(line);
+    }
 
   async getCell(cellid: string) {
     let res = await tools.getCCellsParams(cellid);

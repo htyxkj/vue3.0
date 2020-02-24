@@ -10,6 +10,8 @@
                                 <el-button icon="el-icon-back" circle @click="refresh"></el-button>
                                 <!-- 刷新 -->
                                 <el-button icon="el-icon-refresh-left" circle @click="refresh"></el-button>
+                                <!-- 查找 -->
+                                <el-button icon="el-icon-search" circle @click="dialogShow = true"></el-button>
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="operaBtn" @click="operaBtnClick">
@@ -173,6 +175,29 @@
                 <b-map style="width:100%;height:100%"></b-map>
             </el-tab-pane>
         </el-tabs>
+        <el-dialog title="查询" :close-on-click-modal="false" :visible.sync="dialogShow" width="50%" class="bip-query">
+            <el-row class="bip-lay">
+                <el-form ref="form" label-width="80px">
+                    <el-form-item label="查询年份">
+                        <el-input v-model="conditionYera"></el-input>
+                    </el-form-item>
+                    <el-form-item label="查询内容">
+                        <el-checkbox-group v-model="checkList" style="padding-top: 10px;">
+                            <el-checkbox label="1">航空识别区</el-checkbox>
+                            <el-checkbox label="2">作业区</el-checkbox>
+                            <el-checkbox label="3">航线</el-checkbox>
+                            <el-checkbox label="4">避让点</el-checkbox>
+                            <el-checkbox label="5">起降点</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                </el-form>
+
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogShow = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="selData" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts">
@@ -201,6 +226,7 @@ import { tmpdir } from 'os';
     }
 })
 export default class RealTimeTrack extends Vue {
+    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @State("bipComHeight", { namespace: "login" }) height!: number;
     @Getter('user', { namespace: 'login' }) user?: User;
 
@@ -256,6 +282,14 @@ export default class RealTimeTrack extends Vue {
     @Provide() rightState:Boolean = true; //右侧显示内容状态判断
     @Provide() newTaskList:any = []; //当天任务集合
     
+    @Provide() dialogShow:boolean = false;
+    @Provide() conditionYera:any = new Date().getFullYear();
+    @Provide() checkList:any = [];
+    @Provide() operaCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
+    @Provide() liftCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
+    @Provide() operaBrCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
+    @Provide() allCover:any=[];
+
     // 实时时间对应的数据
     @Provide() nowtime:String = '----';
     @Provide() nowspeed:String = '--';
@@ -267,10 +301,13 @@ export default class RealTimeTrack extends Vue {
     @Provide() taskname:String = "";
     sumarea:number = 0;
 
-    created() {
+    async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
         }     
+        this.operaCell = await this.getCell("FW2015");//作业区查询条件
+        this.liftCell = await this.getCell("20200203");//作业区查询条件
+        this.operaBrCell = await this.getCell("F2015A");//避让点
     }
     async mounted() {
         try{
@@ -295,6 +332,7 @@ export default class RealTimeTrack extends Vue {
             this.loading = false;
             this.$notify.error("出错了！")
         }
+        this.initHeight();
     }
     /**
      * 查询正在今天的任务
@@ -748,6 +786,262 @@ export default class RealTimeTrack extends Vue {
     beforeDestroy(){
         this.clearCover();
     }
+    /** 显示航空识别区、作业区、起降点、避让点、航线 查询框 */
+    /** 查找数据 */
+    selData(){
+        for(var i=0;i<this.allCover.length;i++){
+            this.tMap.removeOverLay(this.allCover[i]);
+        }
+        this.allCover=[];
+        for(var i=0;i<this.checkList.length;i++){
+            if(this.checkList[i] == '1'){//航空识别区
+                this.getHKSBQ();
+            }else if(this.checkList[i] =='5'){//起降点
+                console.log("起降点")
+                this.getLift();
+            }
+        }
+        if(this.checkList.indexOf('2') !=-1 ||this.checkList.indexOf('3') !=-1 ||this.checkList.indexOf('4') !=-1 ){//作业区 航线 避让点
+            this.getHKZYQ();
+        }
+        this.dialogShow = false;
+    }
+    /**
+     * 获取航空识别区
+     */
+    async getHKSBQ(){    
+        let sorg ='';
+        if(this.user){
+            sorg = this.user.deptInfo.deptCode;
+        }
+        let qe: QueryEntity = new QueryEntity("FW2015", "FW2015TJ");
+        let tj={iym:this.conditionYera,sbuid:'F2005',sorg:sorg}
+        qe.page.currPage = 1;
+        qe.page.pageSize = 4000;
+        qe.cont = JSON.stringify(tj);
+        qe.oprid = 13;
+        await this.operaCell.queryData(qe)
+        .then((res:any) => {
+            console.log(res)
+            if(res.data.id ==0){
+                let data = res.data.data.data.data;
+                for(var i=0;i<data.length;i++){
+                    let onesbq = data[i]
+                    this.makeOpera(onesbq);
+                }
+            }
+        })
+        .catch((err:any) => {
+            
+        });
+    }
+    /**
+     * 获取航空作业区区
+     */
+    async getHKZYQ(){            
+        let sorg ='';
+        if(this.user){
+            sorg = this.user.deptInfo.deptCode;
+        }
+        let qe: QueryEntity = new QueryEntity("FW2015", "FW2015TJ");
+        let tj={iym:this.conditionYera,sbuid:'F2015',sorg:sorg}
+        qe.page.currPage = 1;
+        qe.page.pageSize = 4000;
+        qe.cont = JSON.stringify(tj);
+        qe.oprid = 13;
+        await this.operaCell.queryData(qe)
+        .then((res:any) => {
+            if(res.data.id ==0){
+                let data = res.data.data.data.data;
+                for(var i=0;i<data.length;i++){
+                    let onesbq = data[i]
+                    if(this.checkList.indexOf('2') !=-1){//作业区
+                        this.makeOpera(onesbq);
+                    }
+                    if(this.checkList.indexOf('3') !=-1){//航线
+                        if(onesbq.data.route){
+                            let points:any = [];
+                            let boundary = onesbq.data.route.split(";");
+                            for (var j = 0; j < boundary.length; j++) {
+                                let poin = boundary[j].split(",");
+                                if (poin.length >= 2) {
+                                points.push(new T.LngLat(poin[0], poin[1]));
+                                }
+                            }
+                            //创建线对象
+                            let editLine = new T.Polyline(points);
+                            //向地图上添加线
+                            this.tMap.addOverLay(editLine);
+                            this.allCover.push(editLine);
+                        }
+                    }
+                    if(this.checkList.indexOf('4') !=-1){//避让点
+                        let qe: QueryEntity = new QueryEntity("F2015A", "F2015A");
+                        qe.page = {currPage: 1,index: 0,pageSize: 20000,total: 0};
+                        qe.cont = "{'oid':'"+onesbq.data.id+"'}";
+                        qe.oprid = 13;
+                        this.operaBrCell.queryData(qe).then((res:any) => {
+                            if (res.data.id == 0) {
+                                if(res.data.data.data.data.length>0){
+                                    let Brdata = res.data.data.data.data;
+                                    for(var j=0;j<Brdata.length;j++){
+                                        let br1 = Brdata[j].data;
+                                        console.log(br1)
+                                        if(br1.type ==0){//点的
+                                            //创建标注对象
+                                            var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]));
+                                            //创建图片对象
+                                            var icon = new T.Icon({
+                                                iconUrl: require('@/assets/air-super/avoid.png'),
+                                                iconSize: new T.Point(50, 50),
+                                                iconAnchor:new T.Point(20, 50),
+                                            });
+                                            //向地图上添加自定义标注
+                                            let center =new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]);
+                                            var marker = new T.Marker(center,{icon: icon});
+                                            var markerInfoWin = new T.InfoWindow(br1.name);
+                                            marker.addEventListener("mouseover", function () {
+                                                marker.openInfoWindow(markerInfoWin);
+                                            });
+                                            this.tMap.addOverLay(marker);
+                                            this.allCover.push(marker);
+                                        }else{//面
+                                            let boundary = br1.avoid.split(";");
+                                            var points = [];
+                                            for (var j = 0; j < boundary.length; j++) {
+                                                let poin = boundary[j].split(",");
+                                                if (poin.length >= 2) {
+                                                points.push(new T.LngLat(poin[0], poin[1]));
+                                                }
+                                            }
+                                            //创建面对象
+                                            var polygon = new T.Polygon(points, {
+                                                color: "blue",
+                                                weight: 1,
+                                                opacity: 0.5,
+                                                fillColor: br1.color,
+                                                fillOpacity: 0.5
+                                            });
+                                            this.tMap.addOverLay(polygon);
+                                            this.allCover.push(polygon);
+                                            let t1 = this.tMap.getViewport(points);
+                                            let text = br1.name;
+                                            var label = new T.Label({
+                                                text: text,
+                                                position: t1.center,        
+                                                offset: new T.Point(-30, 0),
+                                            });
+                                            label.setBorderLine(0)
+                                            label.setFontSize(16)
+                                            label.setBackgroundColor(null);
+                                            this.tMap.addOverLay(label);
+                                            this.allCover.push(label);
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                        .catch((err:any) => {
+                            this.$notify.error(err);
+                        });
+                    }
+                }
+            }
+        })
+        .catch((err:any) => {
+            
+        });
+    }
+    /**
+     * 航空识别区 面文字   飞防作业区 面 文字
+     */
+    makeOpera(onesbq:any){
+        let boundary = onesbq.data.boundary1.split(";");
+        var points = [];
+        for (var j = 0; j < boundary.length; j++) {
+            let poin = boundary[j].split(",");
+            if (poin.length >= 2) {
+            points.push(new T.LngLat(poin[0], poin[1]));
+            }
+        }
+        //创建面对象
+        var polygon = new T.Polygon(points, {
+            color: "blue",
+            weight: 1,
+            opacity: 0.5,
+            fillColor: onesbq.data.color,
+            fillOpacity: 0.5
+        });
+        this.tMap.addOverLay(polygon);
+        this.allCover.push(polygon);
+        let t1 = this.tMap.getViewport(points);
+        let text = onesbq.data.id;
+        var label = new T.Label({
+            text: text,
+            position: t1.center,        
+            offset: new T.Point(-30, 0),
+        });
+        label.setBorderLine(0)
+        label.setFontSize(16)
+        label.setBackgroundColor(null);
+        this.tMap.addOverLay(label);
+        this.allCover.push(label);
+    }
+    /**
+     * 获取起降点
+     */
+    async getLift(){
+        let sorg ='';
+        if(this.user){
+            sorg = this.user.deptInfo.deptCode;
+        }
+        let tj={iym:this.conditionYera,sorg:sorg}
+        let qe: QueryEntity = new QueryEntity("20200203", "20200203TJ");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 4000;
+        qe.cont = JSON.stringify(tj);
+        qe.oprid = 13;
+        await this.liftCell.queryData(qe).then((res:any) => {  
+            if(res.data.id==0){
+                let liftD = res.data.data.data.data;
+                for(var i=0;i<liftD.length;i++){
+                    this.makeLift(liftD[i].data);                    
+                }
+            }
+        })
+    }
+    makeLift(d1:any){
+        let boundary1 = d1.north;
+        let boundary = boundary1.split(",");
+        //创建图片对象
+        var icon = new T.Icon({
+            iconUrl: require('@/assets/air-super/lift.png'),
+            iconSize: new T.Point(50, 50),
+            iconAnchor:new T.Point(20, 50),
+        });
+        //向地图上添加自定义标注
+        let center = new T.LngLat(boundary[0], boundary[1]);
+        var marker = new T.Marker(center,{icon: icon});
+    
+        let lng = this.doubleToDFM(boundary[0]) 
+        let lat = this.doubleToDFM(boundary[1])  
+        let text = "<div style='text-align: center;'>东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+d1.name+"</div>";
+         var markerInfoWin = new T.InfoWindow(text);
+        marker.addEventListener("mouseover", function () {
+            marker.openInfoWindow(markerInfoWin);
+        });
+        this.tMap.addOverLay(marker);
+        this.allCover.push(marker);
+    }
+    /** 小数转度分秒 */
+    doubleToDFM(value:any){
+        value = Math.abs(value);
+        var v1 = Math.floor(value);//度
+        var v2 = Math.floor((value - v1) * 60);//分
+        var v3 = Math.round((value - v1) * 3600 % 60);//秒
+        let data = v1 + '°' + v2 + '′' + v3 + '″'; 
+        return data;
+    }
     /**
      * 初始化右侧图表
      */
@@ -865,9 +1159,40 @@ export default class RealTimeTrack extends Vue {
     @Watch("height")
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
+        setTimeout(() => {
+            this.tMap.checkResize();  
+        }, 200);
     }
     get sumareaFixed(){
         return this.sumarea.toFixed(3)
+    }
+    async getCell(cellid: string) {
+        let res = await tools.getCCellsParams(cellid);
+        let rtn: any = res.data;
+        if (rtn.id == 0) {
+        let kn: Array<Cells> = rtn.data.layCels;
+        let cells = kn;
+        return new CDataSet(cells[0]);
+        } else {
+        return new CDataSet("");
+        }
+    }
+    initHeight(){
+        let height = document.documentElement.clientHeight
+        if(height>70){
+            height=height-94;
+        }
+        this.setBipHeight(height)
+        window.onresize = () => {
+            return (() => {
+                let height = document.documentElement.clientHeight
+                // console.log(this.height)
+                if(height>70){
+                    height=height-94;
+                }
+                this.setBipHeight(height)
+            })()
+        }
     }
 }
 </script>

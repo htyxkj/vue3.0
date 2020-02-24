@@ -14,6 +14,7 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+    //   component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),   
       meta: {
         keepAlive: true // 需要被缓存
       }

@@ -120,9 +120,13 @@ export default class LayHeader extends Vue {
         }
     };
     loginOut(){
-        if(this.client){
-            this.client.disconnect();
-            this.client = null;
+        try {
+            if(this.client){
+                this.client.disconnect();
+                this.client = null;
+            }
+        } catch (error) {
+            this.$emit('loginOut');
         }
         this.$emit('loginOut');
     }

@@ -146,7 +146,7 @@
                                                      <span>当前高度</span>
                                                  </div>
                                                  <div class="time">
-                                                     {{nowheight}}km
+                                                     {{nowheight}}m
                                                  </div>
                                              </div>
                                         </el-col>
@@ -160,7 +160,7 @@
                                                      <span>当前流量</span>
                                                  </div>
                                                  <div class="time">
-                                                     {{nowflow}}m3/h
+                                                     {{nowflow}}m³/h
                                                  </div>
                                              </div>
                                         </el-col>
@@ -170,7 +170,7 @@
                                                      <span>累计流量</span>
                                                  </div>
                                                  <div class="time">
-                                                     {{sumflow}}m3/h
+                                                     {{sumflow}}m³
                                                  </div>
                                              </div>
                                         </el-col>
@@ -200,13 +200,37 @@
                                         </el-col>
                                     </el-row>
                                 </div>
-                                 <div class="nowtime">
-                                    <div class="nowtime-header">
-                                        喷洒面积
-                                    </div>
-                                    <div class="time">
-                                        {{sumareaFixed}}/亩
-                                    </div>
+                                <div class="nowtime">
+                                    <div class="speed-content">
+                                            <div class="sp-title nowtime-header">
+                                            <span> 喷洒面积</span>
+                                            </div>
+                                            <div class="time">
+                                            {{sumareaFixed}}/亩
+                                            </div>
+                                        </div>
+                                     <!-- <el-row>
+                                        <el-col :span="12">
+                                             <div class="speed-content">
+                                                 <div class="sp-title ">
+                                                     <span>喷洒里程</span>
+                                                 </div>
+                                                 <div class="time">
+                                                     {{mileage}}/km
+                                                 </div>
+                                             </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div class="speed-content">
+                                                <div class="sp-title nowtime-header">
+                                                <span> 喷洒面积</span>
+                                                </div>
+                                                <div class="time">
+                                                {{sumareaFixed}}/亩
+                                                </div>
+                                            </div>
+                                        </el-col>
+                                    </el-row> -->
                                 </div>
                            </div>
                          
@@ -343,6 +367,7 @@ export default class OperatingArea extends Vue {
     @Provide() sumtime:number = 0;
     @Provide() taskname:String = "";
     @Provide() sumarea:number = 0;
+    @Provide() mileage:number = 0;//喷洒里程
     @Provide() haveFlow:any=[];//有流量的节点
 
      // 前端分页显示数据
@@ -525,6 +550,7 @@ export default class OperatingArea extends Vue {
 
                 this.taskTrack = new T.CarTrack(this.tMap,opt);
                 this.taskTrack.start();
+                this.tMap.setZoom(15)
                 // this.operaBtnOpen = false;
                 // this.operaBtnClick();
                
@@ -552,12 +578,19 @@ export default class OperatingArea extends Vue {
             this.nowflow = data.flow;
             this.nowheight = data.height;
             this.sumtime = this.sumtime + 1;
-            this.sumflow = data.sumfolw;
-            let flow = data.flow;
+            let flow = data.flow
+            if(flow<=0){
+                this.sumflow='0';
+                this.sumarea = 0;
+            }
+            this.sumflow = ((parseFloat(this.sumflow+'') + parseFloat((parseFloat(this.nowflow+'')/60/60)+'')).toFixed(3))+'';
+            
             if(flow>0){//有流量去划线
                 // 有流量的点喷洒时长+1s
                 this.sumtimeflow = this.sumtimeflow + 1;
-                this.sumarea = (this.sumarea +  (this.flightBeltWidth  * data.speed /666.67));
+                this.mileage = this.mileage+data.speed /3600
+                this.mileage = parseFloat(this.mileage.toFixed(4))
+                this.sumarea = (this.sumarea +  (this.flightBeltWidth  * data.speed *1000/3600 /666.67));
                 let lgt = new T.LngLat(data.longitude, data.latitude)
                 if(this.sprayBreak){//中断过需要从起一条线
                     let points = [];
@@ -741,7 +774,10 @@ export default class OperatingArea extends Vue {
             this.loading = true;
             this.sumtimeflow = 0;
             this.sumtime = 0;
+            this.sumarea = 0
             this.sumflow ='0';
+            this.forward=1;
+            this.mileage =0;
             this.clearCover()
             let begin = parseInt((this.taskData.length*percent1/100)+"")
             this.dragPoints = begin;
