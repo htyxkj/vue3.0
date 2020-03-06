@@ -17,7 +17,7 @@
         </el-row>
       </el-aside>
       <el-main class="padding0" style="overflow: hidden;position: relative;">
-        <div style="width:100%;height:100%">
+        <div id="OperaTMap" style="width:100%;height:100%">
           <t-map ref="TMap" class="myTMap"></t-map>
         </div>
         <a class="areaBtn" @click="areaBtnClick">
@@ -63,7 +63,8 @@
                 <!-- <el-dropdown-item command="2">勾选四角坐标</el-dropdown-item> -->
                 <el-dropdown-item command="3">勾选新点</el-dropdown-item>
                 <el-dropdown-item command="5">删除最后一点</el-dropdown-item>
-                <el-dropdown-item command="4">保存识别区</el-dropdown-item>
+                <el-dropdown-item command="4">保存新建识别区</el-dropdown-item>
+                <!-- <el-dropdown-item command="6">勾选识别区中心点</el-dropdown-item> -->
               </el-dropdown-menu>
             </el-dropdown>
           </span>
@@ -79,6 +80,9 @@
           <span class="tools-li">
             <!-- <el-button size="mini" icon="el-icon-search" @click="_showScreenshot">截图</el-button> -->
             <el-button size="mini" icon="el-icon-search" @click="Screenshot">截图</el-button>
+          </span> 
+          <span class="tools-li">
+            <el-button size="mini" icon="iconfont icon-bip-save" @click="PlanToReport">防治计划上报</el-button>
           </span>            
         </div>
       </el-main>
@@ -86,7 +90,7 @@
       <el-aside :width="operaWidth+'px'">
         <div>
           <el-tabs v-model="activeName1" type="card">
-            <el-tab-pane label="航空识别区" name="first" :style="activeName1Style">
+            <el-tab-pane label="作业区" name="first" :style="activeName1Style">
               <el-checkbox :indeterminate="sbqIsIndeterminate" v-model="sbqCheckAll" @change="sbqCheckAllChange">全选</el-checkbox>
               <el-checkbox-group class="opera" v-model="checkOperaList" @change="checkBoxChange">
                 <el-row v-for="(item,index) in operaSBQData" :key="index">
@@ -122,7 +126,7 @@
                 </el-row>
               </el-checkbox-group>
             </el-tab-pane>
-            <el-tab-pane label="飞防作业区" name="second">
+            <el-tab-pane label="架区" name="second">
               <el-tabs v-model="activeName2" type="card">
                 <el-tab-pane label="春季" name="c" :style="activeName2Style">
                   <el-checkbox :indeterminate="cIsIndeterminate" v-model="cCheckAll" @change="cCheckAllChange">全选</el-checkbox>
@@ -447,7 +451,7 @@
         <el-button type="primary" @click="positionDo" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="导出图片" :close-on-click-modal="false" :visible.sync="showScreenshot" width="50%" class="bip-query">
+    <!-- <el-dialog title="导出图片" :close-on-click-modal="false" :visible.sync="showScreenshot" width="50%" class="bip-query">
       <el-row class="bip-lay">
          <el-row type="flex"  justify="space-around">
             <el-col :span="5">
@@ -474,9 +478,9 @@
         <el-button @click="showScreenshot = false" size="mini">取 消</el-button>
         <el-button type="primary" @click="Screenshot" size="mini">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <div style="margin-top:20px">&nbsp;</div>
-    <div id="TMap" :style="tmap1Style">
+    <div id="SBQTMap" :style="tmap1Style">
       <div id="TMap1" :style="tmap1Style" ></div>
     </div>
   </div>
@@ -497,6 +501,7 @@ import bMap from "@/components/map/MyBaiMap.vue";
 import {T} from "@/components/map/js/TMap";
 import { on } from 'cluster';
 import domtoimage from 'dom-to-image';
+import { GlobalVariable } from '@/utils/ICL';
 @Component({
   components: {
     tMap,
@@ -510,7 +515,7 @@ export default class OperatingArea extends Vue {
     @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";
     @Provide() activeName1: string = "first";
     @Provide() activeName2: string = "c";
-    @Provide() cityColor:string = "#FF0000";//行政区边线颜色
+    @Provide() cityColor:string = "#001EFF";//行政区边线颜色
     @Provide() sbqCheckAll:boolean =false;//识别区全选
     @Provide() liftCheckAll:boolean = false;//起降点全选
     @Provide() liftLableCheck:boolean = true;//起降点是否显示文字标识
@@ -623,6 +628,8 @@ export default class OperatingArea extends Vue {
     @Provide() showScreenshot:boolean = false;//导出图片弹出框
     @Provide() mapImgType:string ='vector';
 
+    @Provide() planCell:CDataSet = new CDataSet("");//防治计划上报
+
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 20) + "px";
@@ -631,23 +638,26 @@ export default class OperatingArea extends Vue {
         }
         this.operaTjCell = await this.getCell("FW2015TJ");//作业区查询条件
         this.operaTjCell.createRecord();
-        this.operaSaveCell = await this.getCell("FW2015");//作业区
+        this.operaSaveCell = await this.getCell("F2045");//作业区
         this.operaBrCell = await this.getCell("F2015A");//避让点
-        this.sbqCell = await this.getCell("FW2015F");//航空识别区对象
+        this.sbqCell = await this.getCell("F2015");//航空识别区对象
         this.liftCell = await this.getCell("20200203");//起降点对象
+        this.planCell = await this.getCell("F2030");//防治计划上报对象
     }
   mounted() {
     if (this.$refs.TMap) {
       let refT: any = this.$refs.TMap;
       this.tMap = refT.getMap();
+      this.fifthRingRoad();
     }
-    this.fifthRingRoad();
+    
     this.TMap1 = new T.Map("TMap1",{projection:"EPSG:4326"});
     this.TMap1.centerAndZoom(new T.LngLat(116.40969, 39.89945), 14);
   }
-  _showScreenshot(){
-    this.showScreenshot = true;
-  }
+/************************** 航空识别区图片导出START **************************/
+    //   _showScreenshot(){
+    //     this.showScreenshot = true;
+    //   }
   /**
    * 导出图片
    */
@@ -682,18 +692,18 @@ export default class OperatingArea extends Vue {
     this.TMap1.clearOverLays();
     this.makeImg();
   }
-  makeImgMap(zx:any,width:any,height:any){
-    this.tmap1Style = "width:"+width+'px;height:'+height+'px';
-    this.TMap1.checkResize()
-    this.TMap1.panTo(zx);
-    if(width>=20000){
-      this.makeImg();
-    }else{
-      setTimeout(() => {
-        this.makeImgMap(zx,width+1000,height+500)
-      },20000)
-    }
-  }
+    //   makeImgMap(zx:any,width:any,height:any){
+    //     this.tmap1Style = "width:"+width+'px;height:'+height+'px';
+    //     this.TMap1.checkResize()
+    //     this.TMap1.panTo(zx);
+    //     if(width>=20000){
+    //       this.makeImg();
+    //     }else{
+    //       setTimeout(() => {
+    //         this.makeImgMap(zx,width+1000,height+500)
+    //       },20000)
+    //     }
+    //   }
   makeImg(){
     this.TMap1.checkResize();
     try{
@@ -711,21 +721,22 @@ export default class OperatingArea extends Vue {
         // Circle 类型为 8;
         let newOL = null;
         if(type ==1){//Table  文本标注
-          newOL = new T.Label({
-            text: onel.NP,
-            position: onel.getLngLat(),
-            offset: new T.Point(-30, 0),
-            fontsize :200
-          }); 
-          newOL.setBorderLine(0)
-          newOL.setBackgroundColor(null); 
+            let lgt = onel.getLngLat()
+            newOL = new T.Label({
+                text: onel.NP,
+                position: lgt,
+                offset: new T.Point(-55, 0),
+            }); 
+            newOL.setFontSize(55)
+            newOL.setBorderLine(0)
+            newOL.setBackgroundColor(null); 
         }else if(type ==2){//Marker  图像标注
           let url = onel.options.icon.getIconUrl()
           //创建图片对象
           var icon = new T.Icon({
-              iconUrl: url,
-              iconSize: new T.Point(50, 50),
-              iconAnchor:new T.Point(20, 50),
+                iconUrl: url,
+                iconSize: new T.Point(70, 70),
+                iconAnchor:new T.Point(35,70),
           });
           //向地图上添加自定义标注
           newOL = new T.Marker(onel.or,{icon: icon});
@@ -772,7 +783,7 @@ export default class OperatingArea extends Vue {
     let _this = this; 
     try{
         console.log("开始导出图片！")
-        domtoimage.toBlob(document.getElementById('TMap')).then(function (data:any) {
+        domtoimage.toBlob(document.getElementById('SBQTMap')).then(function (data:any) {
             let blob = new Blob([data], {
                 type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
             });
@@ -796,6 +807,9 @@ export default class OperatingArea extends Vue {
         console.log(e);
     } 
   }
+
+/************************** 航空识别区图片导出END **************************/
+
   //清空地图覆盖物
   clearCover() {
     this.checkedABCD = [];
@@ -809,6 +823,7 @@ export default class OperatingArea extends Vue {
     this.mapLift={};//地图上的起降点集合
     this.mapLiftTxt={};//地图上的起降点文字标识集合
     this.tMap.clearOverLays();
+    this.fifthRingRoad();
   }
   //工具下拉选中
   toolClick(item: any) {
@@ -877,7 +892,12 @@ export default class OperatingArea extends Vue {
     }else if(item == 5){//避让点规划
       //创建标注工具对象
       if(!this.operaBrMarker){
-        this.operaBrMarker = new T.MarkTool(this.tMap, { follow: true });
+        var icon = new T.Icon({
+            iconUrl: require('@/assets/air-super/avoid.png'),
+            iconSize: new T.Point(50, 50),
+            iconAnchor: new T.Point(25, 50)
+        });
+        this.operaBrMarker = new T.MarkTool(this.tMap, { follow: true ,icon:icon});
         this.operaBrMarker.addEventListener("mouseup",this.operaBrMarkerToolEnd);
       }
       this.operaBrMarker.close();
@@ -888,7 +908,6 @@ export default class OperatingArea extends Vue {
    * 勾选发生变化
    */
   checkBoxChange(data: any) {
-    console.log(data)
     for (var i = 0; i < data.length; i++) {
       let id = data[i];
       if (!this.mapOpera[id]) {
@@ -954,14 +973,19 @@ export default class OperatingArea extends Vue {
       // if (d1.area != 0) {
       //   co += "<br/>面积：" + d1.area + "亩";
       // }
+      let lgt =  t1.center;
+        if(d1.sbuid == 'F2005' && d1.startpoint){
+            let poin = d1.startpoint.split(",")
+            lgt = new T.LngLat(poin[0], poin[1])
+        }
         var label = new T.Label({
             text: co,
-            position: t1.center,
-            offset: new T.Point(-30, 0),
+            position: lgt,
+            offset: new T.Point(-35, 0),
             fontsize :14
         });
         if(d1.sbuid == 'F2005'){
-            label.setFontSize(35)
+            label.setFontSize(55)
         }
         label.setBorderLine(0)
         label.setBackgroundColor(null);
@@ -1009,72 +1033,72 @@ export default class OperatingArea extends Vue {
   }
 
 /***************** 航空识别区 ****************/
-  //航空识别区工具
-  aviationToolClick(item:any){
-    let sbqData = [];
-    if(item == 1 || item ==2){     
-        for(var i=0;i<this.checkOperaList.length;i++){
-            let k = this.checkOperaList[i];
-            let data = this.operaJSON[k]
-            if(data.sbuid =='F2005'){//航空识别区
-            sbqData.push(data);
+    //航空识别区工具
+    aviationToolClick(item:any){
+        let sbqData = [];
+        if(item == 1 || item ==2){     
+            for(var i=0;i<this.checkOperaList.length;i++){
+                let k = this.checkOperaList[i];
+                let data = this.operaJSON[k]
+                if(data.sbuid =='F2005'){//航空识别区
+                sbqData.push(data);
+                }
+            }
+            if(sbqData.length<=0){
+                this.$notify.warning("请勾选航空识别区！")
+                return ;
             }
         }
-        if(sbqData.length<=0){
-            this.$notify.warning("请勾选航空识别区！")
-            return ;
+        if(item ==1){//显示四角标注
+            for(var k in this.makeABCD){
+                let data = this.makeABCD[k];
+                for(var i=0;i<data.length;i++){
+                this.tMap.removeOverLay(data[i])
+                }
+            }
+            this.createABCD(sbqData)
+        }else if(item ==2){//勾选标注点
+            let data = this.ckABCDCallout;
+            for(var i=0;i<data.length;i++){
+                this.tMap.removeOverLay(data[i])
+            }
+            this.sbqPointABCD = [];
+            this.checkedABCD = [];
+            this.aviationToolClick(1);
+            this.aviationDia = true;
+        }else if(item == 3){//添加新点
+                //创建标注工具对象
+                var icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/letter/'+this.letter[this.checkedABCD.length]+'.png'),
+                    iconSize: new T.Point(19, 27),
+                    iconAnchor: new T.Point(10, 25)
+                });
+                this.sbqMarkerPoint = new T.MarkTool(this.tMap, { follow: true,icon:icon });
+                this.sbqMarkerPoint.addEventListener("mouseup",this.sbqMarkerPointToolEnd);
+                this.sbqMarkerPoint.close();
+                this.sbqMarkerPoint.open();
+        }else if(item==4){//保存识别区 
+            if(this.checkedABCD.length<=2){
+                this.$notify.warning("请勾选正确的航空识别区！")
+                return;
+            }
+            let boundary1 = "";
+            for (var i = 0; i < this.checkedABCD.length; i++) {
+            let point = this.checkedABCD[i];
+                boundary1 += point + ";";
+            }
+            boundary1 = boundary1.substring(0, boundary1.length - 1);
+            this.sbqCell.clear();
+            this.sbqCell.createRecord();
+            // this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
+            this.sbqCell.currRecord.data.boundary1 = boundary1;
+            this.showSavesbqDia = true;
+        }else if(item ==5){//删除最后一点
+            this.tMap.removeOverLay(this.ckABCDCallout[this.ckABCDCallout.length-1]);
+            this.ckABCDCallout.splice(this.ckABCDCallout.length-1,1)
+            this.checkedABCD.splice(this.checkedABCD.length-1,1)
         }
     }
-    if(item ==1){//显示四角标注
-        for(var k in this.makeABCD){
-            let data = this.makeABCD[k];
-            for(var i=0;i<data.length;i++){
-              this.tMap.removeOverLay(data[i])
-            }
-        }
-        this.createABCD(sbqData)
-    }else if(item ==2){//勾选标注点
-      let data = this.ckABCDCallout;
-      for(var i=0;i<data.length;i++){
-        this.tMap.removeOverLay(data[i])
-      }
-          this.sbqPointABCD = [];
-          this.checkedABCD = [];
-          this.aviationToolClick(1);
-          this.aviationDia = true;
-      }else if(item == 3){//添加新点
-          //创建标注工具对象
-          var icon = new T.Icon({
-              iconUrl: require('@/assets/air-super/letter/'+this.letter[this.checkedABCD.length]+'.png'),
-              iconSize: new T.Point(19, 27),
-              iconAnchor: new T.Point(10, 25)
-          });
-          this.sbqMarkerPoint = new T.MarkTool(this.tMap, { follow: true,icon:icon });
-          this.sbqMarkerPoint.addEventListener("mouseup",this.sbqMarkerPointToolEnd);
-          this.sbqMarkerPoint.close();
-          this.sbqMarkerPoint.open();
-      }else if(item==4){//保存识别区 
-      if(this.checkedABCD.length<=2){
-        this.$notify.warning("请勾选正确的航空识别区！")
-        return;
-      }
-      let boundary1 = "";
-      for (var i = 0; i < this.checkedABCD.length; i++) {
-      let point = this.checkedABCD[i];
-        boundary1 += point + ";";
-      }
-      boundary1 = boundary1.substring(0, boundary1.length - 1);
-      this.sbqCell.clear();
-      this.sbqCell.createRecord();
-      // this.operaSaveCell.currRecord.data.area = (parameter.currentArea / 666.66).toFixed(2);
-      this.sbqCell.currRecord.data.boundary1 = boundary1;
-      this.showSavesbqDia = true;
-    }else if(item ==5){//删除最后一点
-      this.tMap.removeOverLay(this.ckABCDCallout[this.ckABCDCallout.length-1]);
-      this.ckABCDCallout.splice(this.ckABCDCallout.length-1,1)
-      this.checkedABCD.splice(this.checkedABCD.length-1,1)
-      }
-  }
   //创建航空识别区四角 标识
   createABCD(data:any){
     let abcdData = [];
@@ -1345,7 +1369,12 @@ export default class OperatingArea extends Vue {
         if(!koid || koid == kk){
           if(br1.type ==0){//点的
             //创建标注对象
-            var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]));
+            var icon = new T.Icon({
+                iconUrl: require('@/assets/air-super/avoid.png'),
+                iconSize: new T.Point(50, 50),
+                iconAnchor: new T.Point(25, 50)
+            });
+            var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]),{icon:icon});
             if(this.mapOperaBr[kk]){
               this.tMap.removeOverLay(this.mapOperaBr[kk]);
             } 
@@ -1541,344 +1570,342 @@ export default class OperatingArea extends Vue {
 
 
 /***************** 起降点 ********************/
-  //起降点工具选中
-  liftToolClick(item:any){
-    if(item == '1'){
-      // //创建标注工具对象
-      // if(!this.liftLineTool){
-      //   this.liftLineTool = new T.PolylineTool(this.tMap);        
-      //   this.liftLineTool.addEventListener("draw", this.liftLineToolEnd);
-      // }
-      // this.liftLineTool.close();
-      // this.liftLineTool.open();
+    //起降点工具选中
+    liftToolClick(item:any){
+        if(item == '1'){
+        // //创建标注工具对象
+        // if(!this.liftLineTool){
+        //   this.liftLineTool = new T.PolylineTool(this.tMap);        
+        //   this.liftLineTool.addEventListener("draw", this.liftLineToolEnd);
+        // }
+        // this.liftLineTool.close();
+        // this.liftLineTool.open();
 
-        //创建标注工具对象
-      var icon = new T.Icon({
-          iconUrl: require('@/assets/air-super/lift.png'),
-          iconSize: new T.Point(50, 50),
-          iconAnchor:new T.Point(20, 50),
-      });
-      this.liftLineTool = new T.MarkTool(this.tMap, { follow: true,icon:icon });
-      this.liftLineTool.addEventListener("mouseup",this.liftLineToolEnd);
-      this.liftLineTool.close();
-      this.liftLineTool.open();
-
-
-    }else if(item =='2'){
-      this.showPositionDialog = true;
-    }
-  }
-  //起降点勾选完成
-  /**
-   * 线绘制结束
-   * currentLnglats：用户当前绘制的折线的点坐标数组。
-   * currentDistance：用户当前绘制的折线的地理长度。
-   * currentPolyline：当前测距所画线的对象。
-   * allPolylines：返回所有工具绘制的线对象。
-   */
-  liftLineToolEnd(parameter:any){
-
-    let editCover = parameter.currentMarker;
-    let key = "non-" + new Date().getTime();
-    this.editBrk = key;
-    this.mapOperaBr[key] = editCover;
-    let lnglat = parameter.currentLnglat;
-    let north = lnglat.getLng()+","+lnglat.getLat(); 
-    editCover.kid = key;
-    this.editKid = key;
-    editCover.addEventListener("dblclick", this.liftDBClick);
-    this.mapLift[key] = editCover;
-    editCover.enableDragging();
-    this.liftCell.clear();
-    this.liftCell.createRecord();
-    this.liftCell.currRecord.data.north = north;
-    this.showLiftDialog = true;
-  }
-   /**
-   * 起降点双击
-   */
-  liftDBClick(data: any) {
-    let target = data.target;
-    let operid = target.kid;
-    this.editKid = target.kid;
-    let lnglat = data.lnglat;
-    let north = lnglat.getLng()+","+lnglat.getLat(); 
-    let cover = this.mapLift[operid];
-    if (operid) {
-      let d1 = this.liftJSON[operid];
-      this.liftCell.clear();
-      this.liftCell.createRecord();
-      if (d1 ) {
-        //存在进行修改
-        this.liftCell.currRecord.data = d1;
-        this.liftCell.currRecord.c_state = 2;
-      } else {
-        //新增
-        this.liftCell.currRecord.c_state = 1;
-      }
-      this.liftCell.currRecord.data.north = north;
-      this.showLiftDialog = true;
-    }
-  }
-  //保存起降点信息
-  async saveLift(){
-    console.log("保存起降点")
-    let bok = this.checkNotNull(this.liftCell);
-    if (!bok) return;
-    let res: any = await this.liftCell.saveData();
-    if (res.data && res.data.id == 0) {
-      let liftsid = this.liftCell.currRecord.data.sid;
-      if(res.data.data.sid && liftsid != res.data.data.sid)
-        liftsid = res.data.data.sid;
-      await this.getDropPoint(liftsid);
-      if (liftsid) {
-        if (this.mapLift[this.editKid]){
-          this.tMap.removeOverLay(this.mapLift[this.editKid]);
-          delete this.mapLift[this.editKid];
-        }
-        if(this.mapLiftTxt[this.editKid]){
-          this.tMap.removeOverLay(this.mapLiftTxt[this.editKid]);
-          delete this.mapLiftTxt[this.editKid];
-        }        
-        if (this.checkLiftList.indexOf(liftsid) == -1) {
-          this.checkLiftList.push(liftsid);
-        }
-        this.liftCheckBoxChange(this.checkLiftList);
-      }
-      this.$notify.success("保存成功！");
-      this.showLiftDialog = false;
-    } else {
-      // this.showSaveOperaDia = false;
-      this.$notify.error("保存失败！");
-    }
-  }
-  //获取起降点
-  async getDropPoint(sid:any){
-    let tj = this.operaTjCell.currRecord.data;
-    let sorg = tj.sorg;
-    let iym = tj.iym;
-    let tjdate = {sorg:sorg,iym:iym,sid:sid};
-    let qe: QueryEntity = new QueryEntity("20200203", "20200203TJ");
-    qe.page = this.operaCellPage;
-    qe.cont = JSON.stringify(tjdate);
-    qe.oprid = 13;
-    await this.liftCell
-      .queryData(qe)
-      .then(res => { 
-        let values = res.data.data.data.data;
-        if(sid == null){
-          for (var i = 0; i < values.length; i++) {
-            let d1 = values[i].data;
-            this.liftJSON[d1.sid] = d1;
-          }
-          this.liftData = values;
-        }else{
-          let d1 = values[0].data;
-          if(!this.liftJSON[d1.sid]){
-            this.liftJSON[d1.sid] = d1;
-            this.liftData.push(values[0]);
-            this.checkLiftList.push(d1.sid)
-            this.liftCheckBoxChange(this.checkLiftList);
-          }
-        }
-      })
-  }
-  //编辑起降点
-  editLift(sid:any){
-    let cover = this.mapLift[sid];
-    if (cover) {
-      cover.removeEventListener("dblclick", this.liftDBClick);
-      cover.addEventListener("dblclick", this.liftDBClick);
-      cover.enableDragging();
-      cover.kid = sid;
-    } else {
-      let d1 = this.liftJSON[sid];
-      let liftData = this.makeLift(d1);
-      var polygon = liftData[0];
-      //向地图上添加面
-      this.tMap.addOverLay(polygon);
-      this.mapLift[sid] = polygon;
-      var label = liftData[1];
-      if(this.liftLableCheck)
-        this.tMap.addOverLay(label);
-      this.mapLiftTxt[sid] = label;
-      polygon.enableDragging();
-      polygon.kid = sid;
-      polygon.addEventListener("dblclick", this.liftDBClick);
-    }
-    if (this.checkLiftList.indexOf(sid) == -1) {
-      this.checkLiftList.push(sid);
-    }
-  }
-  //删除起降点
-  delLift(sid: any,index:any){
-    let d1 = this.liftJSON[sid];
-    let co = "此操作将删除起降点：" + d1.name + "，是否继续？";
-    this.liftCell.clear();
-    this.liftCell.createRecord();
-    this.$confirm(co, "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning"
-    })
-      .then(() => {
-        if (d1) {
-          //存在进行修改
-          this.liftCell.currRecord.data = d1;
-          this.liftCell.currRecord.c_state = 4;
-        }
-        this.delLiftDo(index);
-      })
-      .catch(() => {
-        this.$message({
-          type: "info",
-          message: "已取消删除"
+            //创建标注工具对象
+        var icon = new T.Icon({
+            iconUrl: require('@/assets/air-super/lift.png'),
+            iconSize: new T.Point(70, 70),
+            iconAnchor:new T.Point(35,70),
         });
-      });
-  }
-  //进行删除
-  async delLiftDo(index:any) {
-    let key = this.liftCell.currRecord.data.sid;
-    let res: any = await this.liftCell.saveData();
-    if (res.data && res.data.id == 0) {
-      if (this.mapLift[key]){
-        this.tMap.removeOverLay(this.mapLift[key]);
-        delete this.mapLift[key];
-      }
-      if (this.mapLiftTxt[key]){
-        this.tMap.removeOverLay(this.mapLiftTxt[key]);
-        delete this.mapLiftTxt[key];
-      } 
-		  this.$notify.success("删除成功！");
-			this.liftData.splice(index,1)
-    } else {
-      this.$notify.error("删除失败！");
-    }
-  }
-  //起降点全选勾选
-  liftCheckAllChange(val:any){
-    this.checkLiftList = [];
-    if(val){
-      for(var i=0;i<this.liftData.length;i++){
-        this.checkLiftList.push(this.liftData[i].data.sid)
-      }
-    }
-    this.liftIsIndeterminate = false;
-    this.liftCheckBoxChange(this.checkLiftList);
-  }
-  //显示或隐藏文字标识
-  liftLableChange(val:any){
-    console.log(this.mapLiftTxt)
-  　for(var key in this.mapLiftTxt){
-      let lable = this.mapLiftTxt[key];
-      if(val){
-        this.tMap.addOverLay(lable);
-      }else{
-        this.tMap.removeOverLay(lable);
-      }
-　　}
-  }
-  /**
-   * 勾选发生变化
-   */
-  liftCheckBoxChange(data: any) {
-    console.log(data)
-    for (var i = 0; i < data.length; i++) {
-      let id = data[i];
-      if (!this.mapLift[id]) {
-        //作业区
-        let d1 = this.liftJSON[id];
-        if(d1){
-          let liftData = this.makeLift(d1);
-          var polygon = liftData[0];
-          //向地图上添加面
-          this.tMap.addOverLay(polygon);
-          this.mapLift[id] = polygon;
-          var label = liftData[1];
-          if(this.liftLableCheck)
-            this.tMap.addOverLay(label);
-          this.mapLiftTxt[id] = label;
-        }
-      }
-    }
-    for (let key in this.mapLift) {
-      let ka = key.split("_")[0];
-      if (data.indexOf(ka) == -1) {
-        if (ka.indexOf("non-") == -1 && ka.indexOf("copy-") == -1) {
-          if (this.mapLift[key]) {
-            this.tMap.removeOverLay(this.mapLift[key]);
-          }
-          if (this.mapLiftTxt[key]){
-            this.tMap.removeOverLay(this.mapLiftTxt[key]);
-          }
-          delete this.mapLift[key];
-          delete this.mapLiftTxt[key];
-        }
-      }
-    }
-  }
-  makeLift(d1:any){
-    let boundary1 = d1.north;
-    let boundary = boundary1.split(",");
-    //创建图片对象
-    var icon = new T.Icon({
-      iconUrl: require('@/assets/air-super/lift.png'),
-      // iconUrl: require('@/assets/air-super/letter/'+this.letter[0]+'.png'),
-      iconSize: new T.Point(50, 50),
-      iconAnchor:new T.Point(20, 50),
-    });
-    //向地图上添加自定义标注
-    let center = new T.LngLat(boundary[0], boundary[1]);
-    var marker = new T.Marker(center,{icon: icon});
- 
-    let lng = this.doubleToDFM(boundary[0]) 
+        this.liftLineTool = new T.MarkTool(this.tMap, { follow: true,icon:icon });
+        this.liftLineTool.addEventListener("mouseup",this.liftLineToolEnd);
+        this.liftLineTool.close();
+        this.liftLineTool.open();
 
-    let lat = this.doubleToDFM(boundary[1])  
-    let text = "<div style='text-align: center;'>东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+d1.name+"</div>";
-    this.tMap.panTo(center);
-    var label = new T.Label({
-      text: text,
-      position: center,
-      offset: new T.Point(-170, -90),
-    });
-    label.setBorderLine(0)
-    label.setFontSize(16)
-    label.setBackgroundColor(null);
-    return [marker,label]
-  }
-  //经纬度定位
-  positionDo(){
-    this.showPositionDialog = false;
-    let lon = this.positionLon;
-    if(lon.indexOf("°") !=-1){
-      lon = this.ChangeToDu(this.positionLon);
+
+        }else if(item =='2'){
+        this.showPositionDialog = true;
+        }
     }
-    let lat = this.positionLat
-    if(lat.indexOf("°") !=-1){
-      lat = this.ChangeToDu(this.positionLat);
+    //起降点勾选完成
+    /**
+     * 线绘制结束
+     * currentLnglats：用户当前绘制的折线的点坐标数组。
+     * currentDistance：用户当前绘制的折线的地理长度。
+     * currentPolyline：当前测距所画线的对象。
+     * allPolylines：返回所有工具绘制的线对象。
+     */
+    liftLineToolEnd(parameter:any){
+
+        let editCover = parameter.currentMarker;
+        let key = "non-" + new Date().getTime();
+        this.editBrk = key;
+        this.mapOperaBr[key] = editCover;
+        let lnglat = parameter.currentLnglat;
+        let north = lnglat.getLng()+","+lnglat.getLat(); 
+        editCover.kid = key;
+        this.editKid = key;
+        editCover.addEventListener("dblclick", this.liftDBClick);
+        this.mapLift[key] = editCover;
+        editCover.enableDragging();
+        this.liftCell.clear();
+        this.liftCell.createRecord();
+        this.liftCell.currRecord.data.north = north;
+        this.showLiftDialog = true;
     }
-    //创建标注对象
-    var marker = new T.Marker(new T.LngLat(lon, lat));
-    //向地图上添加标注
-    this.tMap.addOverLay(marker);
-  }
-  //度分秒转小数
-  ChangeToDu(data:any){
-		var d = data.substring(0,data.indexOf("°"))
-		var f = data.substring(data.indexOf("°")+1,data.indexOf("′"))
-		var m = data.substring(data.indexOf("′")+1,data.indexOf("″"))
-		var f:any = parseFloat(f) + parseFloat((m/60)+'');
-    var du = parseFloat((f/60)+'') + parseFloat(d);
-    return du;
-  }
-  doubleToDFM(value:any){
-    value = Math.abs(value);
-    var v1 = Math.floor(value);//度
-    var v2 = Math.floor((value - v1) * 60);//分
-    var v3 = Math.round((value - v1) * 3600 % 60);//秒
-    let data = v1 + '°' + v2 + '′' + v3 + '″'; 
-    return data;
-  }
+    /**
+     * 起降点双击
+     */
+    liftDBClick(data: any) {
+        let target = data.target;
+        let operid = target.kid;
+        this.editKid = target.kid;
+        let lnglat = data.lnglat;
+        let north = lnglat.getLng()+","+lnglat.getLat(); 
+        let cover = this.mapLift[operid];
+        if (operid) {
+        let d1 = this.liftJSON[operid];
+        this.liftCell.clear();
+        this.liftCell.createRecord();
+        if (d1 ) {
+            //存在进行修改
+            this.liftCell.currRecord.data = d1;
+            this.liftCell.currRecord.c_state = 2;
+        } else {
+            //新增
+            this.liftCell.currRecord.c_state = 1;
+        }
+        this.liftCell.currRecord.data.north = north;
+        this.showLiftDialog = true;
+        }
+    }
+    //保存起降点信息
+    async saveLift(){
+        console.log("保存起降点")
+        let bok = this.checkNotNull(this.liftCell);
+        if (!bok) return;
+        let res: any = await this.liftCell.saveData();
+        if (res.data && res.data.id == 0) {
+        let liftsid = this.liftCell.currRecord.data.sid;
+        if(res.data.data.sid && liftsid != res.data.data.sid)
+            liftsid = res.data.data.sid;
+        await this.getDropPoint(liftsid);
+        if (liftsid) {
+            if (this.mapLift[this.editKid]){
+            this.tMap.removeOverLay(this.mapLift[this.editKid]);
+            delete this.mapLift[this.editKid];
+            }
+            if(this.mapLiftTxt[this.editKid]){
+            this.tMap.removeOverLay(this.mapLiftTxt[this.editKid]);
+            delete this.mapLiftTxt[this.editKid];
+            }        
+            if (this.checkLiftList.indexOf(liftsid) == -1) {
+            this.checkLiftList.push(liftsid);
+            }
+            this.liftCheckBoxChange(this.checkLiftList);
+        }
+        this.$notify.success("保存成功！");
+        this.showLiftDialog = false;
+        } else {
+        // this.showSaveOperaDia = false;
+        this.$notify.error("保存失败！");
+        }
+    }
+    //获取起降点
+    async getDropPoint(sid:any){
+        let tj = this.operaTjCell.currRecord.data;
+        let sorg = tj.sorg;
+        let iym = tj.iym;
+        let tjdate = {sorg:sorg,iym:iym,sid:sid};
+        let qe: QueryEntity = new QueryEntity("20200203", "20200203TJ");
+        qe.page = this.operaCellPage;
+        qe.cont = JSON.stringify(tjdate);
+        qe.oprid = 13;
+        await this.liftCell
+        .queryData(qe)
+        .then(res => { 
+            let values = res.data.data.data.data;
+            if(sid == null){
+            for (var i = 0; i < values.length; i++) {
+                let d1 = values[i].data;
+                this.liftJSON[d1.sid] = d1;
+            }
+            this.liftData = values;
+            }else{
+            let d1 = values[0].data;
+            if(!this.liftJSON[d1.sid]){
+                this.liftJSON[d1.sid] = d1;
+                this.liftData.push(values[0]);
+                this.checkLiftList.push(d1.sid)
+                this.liftCheckBoxChange(this.checkLiftList);
+            }
+            }
+        })
+    }
+    //编辑起降点
+    editLift(sid:any){
+        let cover = this.mapLift[sid];
+        if (cover) {
+        cover.removeEventListener("dblclick", this.liftDBClick);
+        cover.addEventListener("dblclick", this.liftDBClick);
+        cover.enableDragging();
+        cover.kid = sid;
+        } else {
+        let d1 = this.liftJSON[sid];
+        let liftData = this.makeLift(d1);
+        var polygon = liftData[0];
+        //向地图上添加面
+        this.tMap.addOverLay(polygon);
+        this.mapLift[sid] = polygon;
+        var label = liftData[1];
+        if(this.liftLableCheck)
+            this.tMap.addOverLay(label);
+        this.mapLiftTxt[sid] = label;
+        polygon.enableDragging();
+        polygon.kid = sid;
+        polygon.addEventListener("dblclick", this.liftDBClick);
+        }
+        if (this.checkLiftList.indexOf(sid) == -1) {
+        this.checkLiftList.push(sid);
+        }
+    }
+    //删除起降点
+    delLift(sid: any,index:any){
+        let d1 = this.liftJSON[sid];
+        let co = "此操作将删除起降点：" + d1.name + "，是否继续？";
+        this.liftCell.clear();
+        this.liftCell.createRecord();
+        this.$confirm(co, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+        })
+        .then(() => {
+            if (d1) {
+            //存在进行修改
+            this.liftCell.currRecord.data = d1;
+            this.liftCell.currRecord.c_state = 4;
+            }
+            this.delLiftDo(index);
+        })
+        .catch(() => {
+            this.$message({
+            type: "info",
+            message: "已取消删除"
+            });
+        });
+    }
+    //进行删除
+    async delLiftDo(index:any) {
+        let key = this.liftCell.currRecord.data.sid;
+        let res: any = await this.liftCell.saveData();
+        if (res.data && res.data.id == 0) {
+        if (this.mapLift[key]){
+            this.tMap.removeOverLay(this.mapLift[key]);
+            delete this.mapLift[key];
+        }
+        if (this.mapLiftTxt[key]){
+            this.tMap.removeOverLay(this.mapLiftTxt[key]);
+            delete this.mapLiftTxt[key];
+        } 
+            this.$notify.success("删除成功！");
+                this.liftData.splice(index,1)
+        } else {
+        this.$notify.error("删除失败！");
+        }
+    }
+    //起降点全选勾选
+    liftCheckAllChange(val:any){
+        this.checkLiftList = [];
+        if(val){
+        for(var i=0;i<this.liftData.length;i++){
+            this.checkLiftList.push(this.liftData[i].data.sid)
+        }
+        }
+        this.liftIsIndeterminate = false;
+        this.liftCheckBoxChange(this.checkLiftList);
+    }
+    //显示或隐藏文字标识
+    liftLableChange(val:any){
+    　  for(var key in this.mapLiftTxt){
+            let lable = this.mapLiftTxt[key];
+            if(val){
+                this.tMap.addOverLay(lable);
+            }else{
+                this.tMap.removeOverLay(lable);
+            }
+    　　}
+    }
+    /**
+     * 勾选发生变化
+     */
+    liftCheckBoxChange(data: any) {
+        for (var i = 0; i < data.length; i++) {
+        let id = data[i];
+        if (!this.mapLift[id]) {
+            //作业区
+            let d1 = this.liftJSON[id];
+            if(d1){
+            let liftData = this.makeLift(d1);
+            var polygon = liftData[0];
+            //向地图上添加面
+            this.tMap.addOverLay(polygon);
+            this.mapLift[id] = polygon;
+            var label = liftData[1];
+            if(this.liftLableCheck)
+                this.tMap.addOverLay(label);
+            this.mapLiftTxt[id] = label;
+            }
+        }
+        }
+        for (let key in this.mapLift) {
+        let ka = key.split("_")[0];
+        if (data.indexOf(ka) == -1) {
+            if (ka.indexOf("non-") == -1 && ka.indexOf("copy-") == -1) {
+            if (this.mapLift[key]) {
+                this.tMap.removeOverLay(this.mapLift[key]);
+            }
+            if (this.mapLiftTxt[key]){
+                this.tMap.removeOverLay(this.mapLiftTxt[key]);
+            }
+            delete this.mapLift[key];
+            delete this.mapLiftTxt[key];
+            }
+        }
+        }
+    }
+    makeLift(d1:any){
+        let boundary1 = d1.north;
+        let boundary = boundary1.split(",");
+        //创建图片对象
+        var icon = new T.Icon({
+            iconUrl: require('@/assets/air-super/lift.png'),
+            // iconUrl: require('@/assets/air-super/letter/'+this.letter[0]+'.png'),
+            iconSize: new T.Point(70, 70),
+            iconAnchor:new T.Point(35,70),
+        });
+        //向地图上添加自定义标注
+        let center = new T.LngLat(boundary[0], boundary[1]);
+        var marker = new T.Marker(center,{icon: icon});
+    
+        let lng = this.doubleToDFM(boundary[0]) 
+
+        let lat = this.doubleToDFM(boundary[1])  
+        let text = "<div style='text-align: center;'>东经(E):"+lng+"   北纬(N):"+lat+"<br/>"+d1.name+"</div>";
+        this.tMap.panTo(center);
+        var label = new T.Label({
+        text: text,
+        position: center,
+        offset: new T.Point(-170, -90),
+        });
+        label.setBorderLine(0)
+        label.setFontSize(16)
+        label.setBackgroundColor(null);
+        return [marker,label]
+    }
+    //经纬度定位
+    positionDo(){
+        this.showPositionDialog = false;
+        let lon = this.positionLon;
+        if(lon.indexOf("°") !=-1){
+        lon = this.ChangeToDu(this.positionLon);
+        }
+        let lat = this.positionLat
+        if(lat.indexOf("°") !=-1){
+        lat = this.ChangeToDu(this.positionLat);
+        }
+        //创建标注对象
+        var marker = new T.Marker(new T.LngLat(lon, lat));
+        //向地图上添加标注
+        this.tMap.addOverLay(marker);
+    }
+    //度分秒转小数
+    ChangeToDu(data:any){
+            var d = data.substring(0,data.indexOf("°"))
+            var f = data.substring(data.indexOf("°")+1,data.indexOf("′"))
+            var m = data.substring(data.indexOf("′")+1,data.indexOf("″"))
+            var f:any = parseFloat(f) + parseFloat((m/60)+'');
+        var du = parseFloat((f/60)+'') + parseFloat(d);
+        return du;
+    }
+    doubleToDFM(value:any){
+        value = Math.abs(value);
+        var v1 = Math.floor(value);//度
+        var v2 = Math.floor((value - v1) * 60);//分
+        var v3 = Math.round((value - v1) * 3600 % 60);//秒
+        let data = v1 + '°' + v2 + '′' + v3 + '″'; 
+        return data;
+    }
 /***************** 起降点END ********************/
 
 
@@ -1906,7 +1933,6 @@ export default class OperatingArea extends Vue {
     await this.operaTjCell
       .queryData(qe)
       .then(res => {
-        console.log(res)
         if (res.data.id == 0) {
           let values = res.data.data.data.data;
           for (var i = 0; i < values.length; i++) {
@@ -2358,289 +2384,292 @@ export default class OperatingArea extends Vue {
 
 
 /**************** 左侧树状行政区 **************/
-  //左侧行政区开关
-  async areaBtnClick() {
-    this.areaBtnOpen = !this.areaBtnOpen;
-    if (this.areaBtnOpen) {
-      //进行打开左侧行政区
-      while (this.areaWidth <= 200) {
-        this.areaWidth++;
-      }
-    } else {
-      //关闭左侧行政区
-      while (this.areaWidth > 0) {
-        this.areaWidth--;
-      }
-    }
-    if (!this.tMap) {
-      if (this.$refs.TMap) {
-        let refT: any = this.$refs.TMap;
-        this.tMap = refT.getMap();
+    //左侧行政区开关
+    async areaBtnClick() {
+        this.areaBtnOpen = !this.areaBtnOpen;
+        if (this.areaBtnOpen) {
+        //进行打开左侧行政区
+        while (this.areaWidth <= 200) {
+            this.areaWidth++;
+        }
+        } else {
+        //关闭左侧行政区
+        while (this.areaWidth > 0) {
+            this.areaWidth--;
+        }
+        }
+        if (!this.tMap) {
+        if (this.$refs.TMap) {
+            let refT: any = this.$refs.TMap;
+            this.tMap = refT.getMap();
+            setTimeout(() => {
+            this.tMap.checkResize();  
+            }, 200);        
+        }
+        } else {
         setTimeout(() => {
-          this.tMap.checkResize();  
-        }, 200);        
-      }
-    } else {
-      setTimeout(() => {
-        this.tMap.checkResize();  
-      }, 200);
-    }
-  }
-  /**
-   * 获取下一节点树状行政区
-   */
-  async loadNode(node: any, resolve: any) {
-    let cont = "";
-    let allCont = [];
-    let oneCont = [];
-    let v = null;
-    if (node.data) v = node.data[this.keyID];
-    if (node.level === 0) {
-      cont = "isnull(" + this.fatherID + ",'') = '' ";
-      //classes/search/QueryCont'; 有详细说明
-      let qCont = new QueryCont("isnull(" + this.fatherID + ",'')", "", 12);
-      qCont.setContrast(0);
-      oneCont.push(qCont);
-      if (oneCont.length != 0) {
-        allCont.push(oneCont);
-        cont = "~" + JSON.stringify(allCont);
-      }
-    } else {
-      //classes/search/QueryCont'; 有详细说明
-      let qCont = new QueryCont(this.fatherID, v, 12);
-      qCont.setContrast(0);
-      oneCont.push(qCont);
-      if (oneCont.length != 0) {
-        allCont.push(oneCont);
-        cont = "~" + JSON.stringify(allCont);
-      }
-    }
-    let data: any = await this.initTree(cont, v);
-    if (data) {
-      if (!Array.isArray(data)) {
-        data = [data];
-      }
-      if (this.expandedLevel > 0 && node.level + 1 <= this.expandedLevel) {
-        for (var i = 0; i < data.length; i++) {
-          let cc: any = data[i];
-          this.expandedKeys.push(cc[this.keyID]);
+            this.tMap.checkResize();  
+        }, 200);
         }
-      }
-      resolve(data);
-    } else {
-      resolve([]);
     }
-  }
-  /**
-   * 获取节点数据
-   */
-  async initTree(vl: any, v: any) {
-    let key = "city" + v;
-    if (v) {
-      let retVl = window.sessionStorage.getItem(key);
-      if (retVl) return JSON.parse(retVl);
-    }
-    let qe: QueryEntity = new QueryEntity("", "");
-    qe.page.currPage = 1;
-    qe.page.pageSize = 400;
-    qe.cont = vl;
-    let vv = await tools.getBipInsAidInfo("GETAREA", 210, qe);
-    if (vv.data.id == 0) {
-      let value = vv.data.data.data.values;
-      let retVl = [];
-      for (var i = 0; i < value.length; i++) {
-        retVl.push(value[i]);
-      }
-      if (v) {
-        window.sessionStorage.setItem(key, JSON.stringify(retVl));
-      }
-      return retVl;
-    } else {
-      return null;
-    }
-  }
-  handleCheckChange(data:any, data2:any) {
-    this.operaData = [];
-    this.operaCellPage.total=0;
-    let checkedNodes = data2.checkedNodes;
-    let checkedKeys =data2.checkedKeys;
-    for(var k in this.areaMap){
-      if(checkedKeys.indexOf(k) ==-1){
-        let area = this.areaMap[k]
-        for(var i=0;i<area.length;i++){
-            this.tMap.removeOverLay(area[i])
+    /**
+     * 获取下一节点树状行政区
+     */
+    async loadNode(node: any, resolve: any) {
+        let cont = "";
+        let allCont = [];
+        let oneCont = [];
+        let v = null;
+        if (node.data) v = node.data[this.keyID];
+        if (node.level === 0) {
+        cont = "isnull(" + this.fatherID + ",'') = '' ";
+        //classes/search/QueryCont'; 有详细说明
+        let qCont = new QueryCont("isnull(" + this.fatherID + ",'')", "", 12);
+        qCont.setContrast(0);
+        oneCont.push(qCont);
+        if (oneCont.length != 0) {
+            allCont.push(oneCont);
+            cont = "~" + JSON.stringify(allCont);
         }
-        delete this.areaMap[k];
-      }
-    }
-    if(checkedKeys.length>0){
-      let area = "";
-      for(var i=0;i<checkedKeys.length;i++){
-        area += checkedKeys[i]+";";
-      }
-      area = area.substring(0,area.length-1);
-      this.handleNodeClick(area,checkedNodes)
-    }
-  }
-  /**
-   * 节点点击事件
-   */
-  async handleNodeClick(data: any,address:any) {
-    //classes/search/QueryCont'; 有详细说明
-    let oneCont =[];
-    let allCont = [];
-    let cont = "";
-    let qCont = new QueryCont('area', data, 12);
-    qCont.setContrast(5);
-    oneCont.push(qCont);
-    if (oneCont.length != 0) {
-      allCont.push(oneCont);
-      cont = "~" + JSON.stringify(allCont);
-    }
-    let qe: QueryEntity = new QueryEntity("", "");
-    qe.page.currPage = 1;
-    qe.page.pageSize = 8000;
-    qe.cont = cont;
-    let vv = await tools.getBipInsAidInfo("SORG", 210, qe);
-    if(vv.data.id == 0){
-      let values = vv.data.data.data.values;
-      if(values.length>0){
-        let orgcode = "";
-        for(var i=0;i<values.length;i++){
-          orgcode +=values[i].orgcode+";"
+        } else {
+        //classes/search/QueryCont'; 有详细说明
+        let qCont = new QueryCont(this.fatherID, v, 12);
+        qCont.setContrast(0);
+        oneCont.push(qCont);
+        if (oneCont.length != 0) {
+            allCont.push(oneCont);
+            cont = "~" + JSON.stringify(allCont);
         }
-        orgcode = orgcode.substring(0,orgcode.length-1);
-        this.operaTjCell.currRecord.data.sorg = orgcode;
-        this.getOpera(null)
-      }else{
-        // this.operaData=[];
-        // this.clearCover();
-      }
+        }
+        let data: any = await this.initTree(cont, v);
+        if (data) {
+        if (!Array.isArray(data)) {
+            data = [data];
+        }
+        if (this.expandedLevel > 0 && node.level + 1 <= this.expandedLevel) {
+            for (var i = 0; i < data.length; i++) {
+            let cc: any = data[i];
+            this.expandedKeys.push(cc[this.keyID]);
+            }
+        }
+        resolve(data);
+        } else {
+        resolve([]);
+        }
     }
-    for(var i=0;i<address.length;i++){
-      let d = address[i].name
-      if(d.indexOf("北京") ==-1){
-        this.areaKv[d] = address[i].id;
-        if(!this.areaMap[address[i].id])
-          this.addresSel(d,0);
-      }
+    /**
+     * 获取节点数据
+     */
+    async initTree(vl: any, v: any) {
+        let key = "city" + v;
+        if (v) {
+        let retVl = window.sessionStorage.getItem(key);
+        if (retVl) return JSON.parse(retVl);
+        }
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 400;
+        qe.cont = vl;
+        let vv = await tools.getBipInsAidInfo("GETAREA", 210, qe);
+        if (vv.data.id == 0) {
+        let value = vv.data.data.data.values;
+        let retVl = [];
+        for (var i = 0; i < value.length; i++) {
+            retVl.push(value[i]);
+        }
+        if (v) {
+            window.sessionStorage.setItem(key, JSON.stringify(retVl));
+        }
+        return retVl;
+        } else {
+        return null;
+        }
     }
-  }
+    handleCheckChange(data:any, data2:any) {
+        this.operaData = [];
+        this.operaCellPage.total=0;
+        let checkedNodes = data2.checkedNodes;
+        let checkedKeys =data2.checkedKeys;
+        for(var k in this.areaMap){
+        if(checkedKeys.indexOf(k) ==-1){
+            let area = this.areaMap[k]
+            for(var i=0;i<area.length;i++){
+                this.tMap.removeOverLay(area[i])
+            }
+            delete this.areaMap[k];
+        }
+        }
+        if(checkedKeys.length>0){
+        let area = "";
+        for(var i=0;i<checkedKeys.length;i++){
+            area += checkedKeys[i]+";";
+        }
+        area = area.substring(0,area.length-1);
+        this.handleNodeClick(area,checkedNodes)
+        }
+    }
+    /**
+     * 节点点击事件
+     */
+    async handleNodeClick(data: any,address:any) {
+        //classes/search/QueryCont'; 有详细说明
+        // let oneCont =[];
+        // let allCont = [];
+        // let cont = "";
+        // let qCont = new QueryCont('area', data, 12);
+        // qCont.setContrast(5);
+        // oneCont.push(qCont);
+        // if (oneCont.length != 0) {
+        // allCont.push(oneCont);
+        // cont = "~" + JSON.stringify(allCont);
+        // }
+        // let qe: QueryEntity = new QueryEntity("", "");
+        // qe.page.currPage = 1;
+        // qe.page.pageSize = 8000;
+        // qe.cont = cont;
+        // let vv = await tools.getBipInsAidInfo("SORG", 210, qe);
+        // if(vv.data.id == 0){
+        //     let values = vv.data.data.data.values;
+        //     if(values.length>0){
+        //         let orgcode = "";
+        //         for(var i=0;i<values.length;i++){
+        //         orgcode +=values[i].orgcode+";"
+        //         }
+        //         orgcode = orgcode.substring(0,orgcode.length-1);
+        //         this.operaTjCell.currRecord.data.sorg = orgcode;
+        //         this.getOpera(null)
+        //     }else{
+        //         // this.operaData=[];
+        //         // this.clearCover();
+        //     }        
+        //     this.getOpera(null)
+        // }
+        for(var i=0;i<address.length;i++){
+            let d = address[i].name
+            if(d.indexOf("北京") ==-1){
+                this.areaKv[d] = address[i].id;
+                if(!this.areaMap[address[i].id])
+                this.addresSel(d,0);
+            }
+        }
+    }
 /*********** END *************/
 
 
 /**************** 地址定位 **************/  
-  async addresSel(address: string,type:number) {
-    if (!this.localsearch) {
-      var config = {
-        pageCapacity: 10, //每页显示的数量
-        onSearchComplete: this.localSearchResult //接收数据的回调函数
-      };
-      //创建搜索对象
-      this.localsearch = new T.LocalSearch(this.tMap, config);
+    async addresSel(address: string,type:number) {
+        if (!this.localsearch) {
+        var config = {
+            pageCapacity: 10, //每页显示的数量
+            onSearchComplete: this.localSearchResult //接收数据的回调函数
+        };
+        //创建搜索对象
+        this.localsearch = new T.LocalSearch(this.tMap, config);
+        }
+        this.localsearch.type = type;
+        this.localsearch.search(address);
     }
-    this.localsearch.type = type;
-    this.localsearch.search(address);
-  }
-  //搜索返回结果
-  localSearchResult(result: any) {
-    //根据返回类型解析搜索结果
-    switch (parseInt(result.getResultType())) {
-      case 1:
-        //解析点数据结果
-        this.pois(result.getPois());
-        break;
-      case 3:
-        //解析行政区划边界
-        this.area(result.getArea(),result.keyWord);
-        break;
+    //搜索返回结果
+    localSearchResult(result: any) {
+        //根据返回类型解析搜索结果
+        switch (parseInt(result.getResultType())) {
+        case 1:
+            //解析点数据结果
+            this.pois(result.getPois());
+            break;
+        case 3:
+            //解析行政区划边界
+            this.area(result.getArea(),result.keyWord);
+            break;
+        }
     }
-  }
-  //行政区
-  area(obj: any,keyWord:any) {
-    if (obj) {
-      let area = [];
-      if(obj.points){
+    //行政区
+    area(obj: any,keyWord:any) {
+        if (obj) {
+        let area = [];
+        if(obj.points){
+            //坐标数组，设置最佳比例尺时会用到
+                var pointsArr = [];
+                var points = obj.points;
+                let area1 = this.areaMap[this.areaKv[keyWord]]
+                if(area1){
+                    for(var i=0;i<area.length;i++){
+                        this.tMap.removeOverLay(area1[i])
+                    }
+                }
+                for (var i = 0; i < 1; i++) {
+                // for (var i = 0; i < points.length; i++) {
+                    var regionLngLats = [];
+                    var regionArr = points[i].region.split(",");
+                    for (var m = 0; m < regionArr.length; m++) {
+                        var lnglatArr = regionArr[m].split(" ");
+                        var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+                        regionLngLats.push(lnglat);
+                        pointsArr.push(lnglat);
+                    }
+                    //创建线对象
+                    var line = new T.Polyline(regionLngLats, {
+                        color: this.cityColor,
+                        weight: 4,
+                        opacity: 1,
+                    });
+                    //向地图上添加线
+                    this.tMap.addOverLay(line);
+                    area.push(line)
+                }
+                if(this.areaKv[keyWord]){
+                this.areaMap[this.areaKv[keyWord]] = area;
+                }
+                //显示最佳比例尺
+                this.tMap.setViewport(pointsArr);
+        }
+        if(obj.lonlat){
+            var regionArr = obj.lonlat.split(",");
+            this.tMap.panTo(new T.LngLat(regionArr[0], regionArr[1]));
+        }
+        }
+    }
+    //点
+    pois(obj:any) {
+        if (obj) {
         //坐标数组，设置最佳比例尺时会用到
-            var pointsArr = [];
-            var points = obj.points;
-            let area1 = this.areaMap[this.areaKv[keyWord]]
-            if(area1){
-                for(var i=0;i<area.length;i++){
-                    this.tMap.removeOverLay(area1[i])
-                }
-            }
-            for (var i = 0; i < points.length; i++) {
-                var regionLngLats = [];
-                var regionArr = points[i].region.split(",");
-                for (var m = 0; m < regionArr.length; m++) {
-                    var lnglatArr = regionArr[m].split(" ");
-                    var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-                    regionLngLats.push(lnglat);
-                    pointsArr.push(lnglat);
-                }
-                //创建线对象
-                var line = new T.Polyline(regionLngLats, {
-                    color: this.cityColor,
-                    weight: 4,
-                    opacity: 1,
-                    lineStyle: "dashed"
+        var zoomArr = [];
+        var lableTxt =[];
+        for (var i = 0; i < obj.length; i++) {
+            //闭包
+            (function (i) {
+                //坐标 
+                var lnglatArr = obj[i].lonlat.split(" ");
+                var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+                zoomArr.push(lnglat); 
+                let text = "<div style='text-align: center;'>"+obj[i].name+" <br/>"+obj[i].address+"</div>";
+                var lable = new T.Label({
+                    text: text,
+                    position: lnglat,
+                    offset: new T.Point(-100, -90),
                 });
-                //向地图上添加线
-                this.tMap.addOverLay(line);
-                area.push(line)
-            }
-            if(this.areaKv[keyWord]){
-              this.areaMap[this.areaKv[keyWord]] = area;
-            }
-            //显示最佳比例尺
-            this.tMap.setViewport(pointsArr);
-      }
-      if(obj.lonlat){
-        var regionArr = obj.lonlat.split(",");
-        this.tMap.panTo(new T.LngLat(regionArr[0], regionArr[1]));
-      }
-    }
-  }
-  //点
-  pois(obj:any) {
-    if (obj) {
-      //坐标数组，设置最佳比例尺时会用到
-      var zoomArr = [];
-      var lableTxt =[];
-      for (var i = 0; i < obj.length; i++) {
-          //闭包
-          (function (i) {
-              //坐标 
-              var lnglatArr = obj[i].lonlat.split(" ");
-              var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
-              zoomArr.push(lnglat); 
-              let text = "<div style='text-align: center;'>"+obj[i].name+" <br/>"+obj[i].address+"</div>";
-              var lable = new T.Label({
-                text: text,
-                position: lnglat,
-                offset: new T.Point(-100, -90),
-              });
-              lable.setBorderLine(0)
-              lable.setFontSize(14)
-              lable.setBackgroundColor(null);
-              lableTxt.push(lable)
-          })(i);
-      }
-      if(this.localsearch.type!=0){
-        for(var i=0;i<zoomArr.length;i++){
-          let marker = new T.Marker(zoomArr[i]);// 创建标注
-          this.tMap.addOverLay(marker);             // 将标注添加到地图中
+                lable.setBorderLine(0)
+                lable.setFontSize(14)
+                lable.setBackgroundColor(null);
+                lableTxt.push(lable)
+            })(i);
         }
-        for(var i=0;i<lableTxt.length;i++){
-          this.tMap.addOverLay(lableTxt[i]);   
+        if(this.localsearch.type!=0){
+            for(var i=0;i<zoomArr.length;i++){
+            let marker = new T.Marker(zoomArr[i]);// 创建标注
+            this.tMap.addOverLay(marker);             // 将标注添加到地图中
+            }
+            for(var i=0;i<lableTxt.length;i++){
+            this.tMap.addOverLay(lableTxt[i]);   
+            }
         }
-      }
-      //显示地图的最佳级别
-      this.tMap.setViewport(zoomArr);
+        //显示地图的最佳级别
+        this.tMap.setViewport(zoomArr);
+        }
     }
-  }
 /*********** END *************/
+    
+/******************* 五环路 ***************/    
     /**
      * 五环路
      */
@@ -2661,6 +2690,113 @@ export default class OperatingArea extends Vue {
         //向地图上添加线
         this.tMap.addOverLay(line);
     }
+/******************* 五环路END ***************/    
+
+/******************* 防治计划上报 ***************/    
+    PlanToReport(){
+        this.loading = 1;
+        this.planCell.createRecord();
+        let _this = this;
+        let operaid = "";
+        if(this.checkOperaList.length ==0){
+            this.$notify.warning("请勾选飞防作业区!");
+            return;
+        }
+        for(var i=0;i<this.checkOperaList.length;i++){
+            let id = this.checkOperaList[i];
+            let data = this.operaJSON[id]
+            if(data.sbuid== 'F2015'){
+                operaid+=id+";"
+            }
+        }
+        operaid = operaid.substring(0,operaid.length-1)
+        this.planCell.currRecord.data.oaid = operaid;
+        domtoimage.toBlob(document.getElementById('OperaTMap')).then(function (data:any) {
+            let blob:any = new Blob([data], {
+                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+            });
+            blob.lastModifiedDate =new Date();
+            blob.name = TMapUt.dateFormat(new Date(),"yyyyMMddHHmmss")+"Plan.png";
+            _this.planReportSave(blob);
+        })
+        .catch(function (error:any) {
+            _this.$notify.error("防治计划图片生成失败！");
+            console.log(error) 
+            _this.loading =0;
+        });
+    }
+    async planReportSave(file:any){
+        
+        let dfconfig:any = {
+            headers: {
+            'Content-Type': 'multipart/form-data'
+            },
+            params:{
+                snkey:JSON.parse(window.sessionStorage.getItem('snkey')+''),
+            }
+        }
+        this.planCell.currRecord.data.fj_name=file.name;
+        let name = file.name
+        let size = file.size
+        let succeed = 0;
+        let shardSize = 2 * 1024 * 1024,    //以2MB为一个分片
+        shardCount = Math.ceil(size / shardSize);  //总片数
+        let fkey = this.makePath();
+        for(let i = 0;i < shardCount;i++){
+            let start = i * shardSize,end = Math.min(size, start + shardSize);
+            let form = new FormData();
+            let config  = dfconfig;
+            config.params.name = name;
+            config.params.total = shardCount;//总片数
+            config.params.fkey = fkey;//当前是第几片
+            config.params.fid = 0;//当前是第几片
+            config.params.fjkey = this.planCell?this.planCell.ccells.obj_id:'aaa';
+            config.params.updid = '33';
+            form.append("index", i+'');
+            form.append("total",shardCount+'');
+            // form.append("fjroot",this.root?this.root:'');//fj_500301
+            form.append("fjroot","");
+            form.append("data", file.slice(start,end)); 
+
+            await this.$axios.post(GlobalVariable.API_UPD,form,config).then((res)=>{
+                if(res.data.id==-1){
+                    this.$notify.error("上传失败！");
+                }else{
+                    succeed++;
+                    if(res.data.id==0){
+                        let dir = res.data.data.fj_root;
+                        this.planCell.currRecord.data.fj_root=dir;
+                    }
+                }
+            });
+        } 
+        if(shardCount == succeed){
+            this.loading = 0;
+            let res = await this.planCell.saveData();
+            if(res.data.id ==0){
+                let sid = res.data.data.sid;
+                this.$router.push({
+                    path:'/layout',
+                    name:'layout',
+                    params:{method:"pkfld",pkfld:"sid",value:sid},
+                    query: {pbuid:"F2030",pmenuid:"M2030"},
+                })
+            }else{
+                this.$notify.error("防治计划上报失败！");
+            }
+        }else{
+            this.loading = 0;
+            this.$notify.error("防治计划上报失败！");
+        }
+    }
+    makePath(){
+        const key = 999;
+        let add1 = Math.floor(Math.random() * (key));
+        return add1;
+    }
+/******************* 防治计划上报END ***************/    
+
+
 
   async getCell(cellid: string) {
     let res = await tools.getCCellsParams(cellid);

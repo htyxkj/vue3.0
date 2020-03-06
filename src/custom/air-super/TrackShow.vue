@@ -318,8 +318,11 @@ export default class TrackShow extends Vue {
                 let tkid = params.tkid;
                 let bgtime = params.bgtime;
                 let edtime = params.edtime;
-                this.clearCover()
-                this.sortiesTrack(tkid,bgtime,edtime)
+                if(tkid && bgtime && edtime){
+                    this.clearCover()
+                    this.trackType = '2';
+                    this.sortiesTrack(tkid,bgtime,edtime)
+                }
             } 
         }
     }

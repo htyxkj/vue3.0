@@ -50,6 +50,7 @@
                 </span>   
             </el-dialog> 
         </template>
+        <bip-ygxz-dia ref="ygxz"></bip-ygxz-dia>
     </el-row>
 </template>
 <script lang="ts">
@@ -73,8 +74,10 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtils } from "@/utils/BaseUtil";
  import CRecord from '../../classes/pub/CRecord';
 let baseTool = BIPUtils.baseUtil;
+
+import BipYgxzDia from './BipYGXZDia.vue';
 @Component({
-    components: { }
+    components: {BipYgxzDia}
 })
 export default class BipMenuBtnDlg extends Vue { 
     @Provide() btn:any = ""; 
@@ -231,12 +234,19 @@ export default class BipMenuBtnDlg extends Vue {
             //         query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
             //     })
             // }
-        }else if(btn.dlgType == 'D'){
+        }else if(btn.dlgType == 'D'){ //调用后台程序 
             let dlgCont = this.btn.dlgCont;
             let cc = dlgCont.split(";")
-            if(cc.length<3){
+            if(cc.length<4){
                 let b = JSON.stringify(this.btn);
-                let v = JSON.stringify(this.env);
+                let _env = {
+                    uriParams:this.env.uriParams,
+                    cells:this.env.cells,
+                    dsm:this.env.dsm.currRecord,
+                    ds_cont:this.env.ds_cont,
+                    ds_ext:this.env.ds_ext
+                }
+                let v = JSON.stringify(_env);
                 let bok = this.checkNotNull(this.env.dsm);
                 if(!bok){
                     return ; 
@@ -244,6 +254,10 @@ export default class BipMenuBtnDlg extends Vue {
                 this.$message.success("操作执行中。。。。。")
                 await tools.getDlgRunClass(v,b).then(res =>{
                     if(res){
+                        console.log(res)
+                        if(cc[2] && cc[2] =='1'){
+                            this.$emit("selData")
+                        }
                         if(res.data.id == 0 ){
                             this.$notify.success(res.data.message)
                         }else if(res.data.id == -2){
@@ -260,6 +274,35 @@ export default class BipMenuBtnDlg extends Vue {
                     this.dlgDCell.createRecord();
                     this.showDCell = true;
                 }
+            }
+        }else if(btn.dlgType == 'E'){ //开支录入表员工按钮点击
+            const loading = this.$loading({
+                lock: true,
+                text: '拼命加载中',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            let dlgCont = this.btn.dlgCont;
+            let cc = dlgCont.split(";")
+            if(cc.length<3){
+                let b = JSON.stringify(this.btn);
+                let jsonv = {pbds:this.env.uriParams.pbds,data:this.env.dsm.currRecord}
+                let v = JSON.stringify(jsonv); 
+                await tools.getDlgRunClass(v,b).then(res =>{
+                    if(res.data.id==0){
+                        console.log(res)
+                        let values = res.data.data.values;
+                        let Refer = res.data.data.refer;
+                        let lbno = res.data.data.lbno;//页面上的类别
+                        let yymm = res.data.data.yymm;//页面上的日期
+                        let dia: any = this.$refs.ygxz;
+                        if (dia) dia.open(values,Refer,b,lbno,yymm,this.env);
+                        loading.close()
+                    }else{
+                        loading.close()
+                        this.$notify.error(res.data.message)
+                    }
+                })
             }
         }
     }

@@ -16,7 +16,7 @@
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
        <bip-work-process ref="work_process"></bip-work-process>
         <template>
-            <bip-menu-btn-dlg ref="bip_base_dlg"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
+            <bip-menu-btn-dlg ref="bip_base_dlg" @selData="refreshCurrent"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
             <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
         </template>
     </el-row>
@@ -430,6 +430,13 @@ export default class BaseApplet extends Vue{
     async searchfindData(bok: boolean, cont: any) {
         this.oprid = 13;
         await this.findData(bok, cont); 
+    }
+    /**
+     * 点击按钮执行后端程序后刷新当前单据
+     */
+    refreshCurrent(){
+        let cont = this.dsm.currRecord.data;
+        this.findData(true,cont);
     }
 //#endregion
 //#region 查询数据

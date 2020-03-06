@@ -4,6 +4,7 @@
           <el-button  icon="el-icon-search" size="mini" @click="selectCoList">查询</el-button>
           <el-button icon="iconfont icon-bip-save" size="mini" @click="saveAll">保存</el-button>
           <el-button icon="el-icon-full-screen" size="mini" @click="fullImage">全图</el-button>
+          <!-- <el-button icon="el-icon-picture-outline" size="mini" @click="makeWorlkImg">生成作业图片</el-button> -->
       </div>
       <div class="query">
           <el-row class="bip-lay">
@@ -60,6 +61,7 @@
                         show-overflow
                         :disabled="(cel.attr&0x40)>0"
                         v-if="(cel.attr & 0x400) == 0"
+                        min-width="100px"
                     >
                         <template v-slot:edit="{row,rowIndex}">
                             <bip-comm-editor  :cell="cel" :cds="jcCell" :row="rowIndex" :bgrid="true"/> 
@@ -104,6 +106,9 @@
                 <vxe-table-column field="sumflow" title="总流量(m3)" width="100" ></vxe-table-column>
             </vxe-table> -->
         </div>
+        <!-- <div id = "JCTMap">
+            <t-map ref="TMap" class="myTMap"></t-map> 
+        </div> -->
   </div>
 </template>
 
@@ -117,9 +122,14 @@ let tools = BIPUtil.ServApi;
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
+import tMap from "@/components/map/MyTianMap.vue";
+import { T } from "@/components/map/js/TMap";
+import { TMapUtils } from "./class/TMapUtils";
+let TMapUt = TMapUtils.TMapUt;
+import domtoimage from 'dom-to-image';
 @Component({
   components: {
-    BipGridInfo
+    BipGridInfo,tMap,
   }
 })
 export default class followTimesLine extends Vue {
@@ -129,6 +139,21 @@ export default class followTimesLine extends Vue {
     @Provide() tableData: Array<any> = [];
     @Provide() taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
     @Provide() jcCell:CDataSet = new CDataSet("");//架次对象
+
+    // @Provide() tMap: any = null;
+    // @Provide() tZoom: number = 12;
+
+    // @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
+    // @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
+    // @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
+    // @Provide() sprayBreak:boolean = true;//喷洒是否中断
+    // @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
+    // @Provide() flightBeltOpacity:number = 0.3;//航道透明度
+    // @Provide() flightBeltWidth:number = 0;//航带宽度 米
+    // @Provide() trackColor:string = "#FFFF00";//航迹颜色
+    // @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
+    // @Provide() showMapD:boolean = false;//是否显示地图弹窗
+
     async created() {
         if (this.height) {
             this.style1 = ""+ (this.height - 250);
@@ -141,7 +166,11 @@ export default class followTimesLine extends Vue {
         
     }
   mounted() {
-
+//     if (this.$refs.TMap) {
+//         let refT: any = this.$refs.TMap;
+//         this.tMap = refT.getMap();
+//         // this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
+//     }
   }
  
   // ------------------------数据请求-----------------
@@ -190,12 +219,11 @@ export default class followTimesLine extends Vue {
         this.goToSortiesTrack(tkid,bgtime,edtime);
     }
     goToSortiesTrack(tkid:any,bgtime:any,edtime:any){
-        console.log(tkid,bgtime,edtime)
         this.$router.push({
             path:'/TrackShow',
             name:'TrackShow',
             params:{tkid:tkid,bgtime:bgtime,edtime:edtime},
-            query: {pmenuid:"F0313"},
+            query: {pmenuid:"M0313"},
         })
     }
     async saveAll(){
@@ -220,27 +248,169 @@ export default class followTimesLine extends Vue {
             this.$notify.success("保存成功！");
         }
     }
-  // 获取对象信息
-  async getCell(cellid: string) {
-    let res = await tools.getCCellsParams(cellid);
-    let rtn: any = res.data;
-    if (rtn.id == 0) {
-      let kn: Array<Cells> = rtn.data.layCels;
-      let cells = kn;
-      return new CDataSet(cells[0]);
-    } else {
-      return new CDataSet("");
+    // 获取对象信息
+    async getCell(cellid: string) {
+        let res = await tools.getCCellsParams(cellid);
+        let rtn: any = res.data;
+        if (rtn.id == 0) {
+        let kn: Array<Cells> = rtn.data.layCels;
+        let cells = kn;
+        return new CDataSet(cells[0]);
+        } else {
+        return new CDataSet("");
+        }
     }
-  }
-
+/******************** 生成作业图片 *********************/
+    // /**
+    //  * 生成飞防作业图片
+    //  */
+    // async makeWorlkImg(){
+    //     this.$notify.error("功能开发中，敬请期待！");
+    //     // this.showMapD = true;
+    //     let taskAll = this.taskTjCell.currRecord.data
+    //     if(taskAll.sid && taskAll.bgtime && taskAll.edtime){
+    //         await this.getOneTask(taskAll.sid,taskAll.bgtime,taskAll.edtime);
+    //     }
+    //     let jcCdata = this.jcCell.cdata.data;
+    //     for(var i=0;i<jcCdata.length;i++){
+    //         let jcdata = jcCdata[i].data;
+    //         if(jcdata.tkid && jcdata.bgtime1 && jcdata.edtime1){
+    //             await this.getOneTask(jcdata.tkid,jcdata.bgtime1,jcdata.edtime1);
+    //         }
+    //     }
+    // }
+    // /**
+    //  * 重新飞防轨迹信息
+    //  */
+    // async getOneTask(tkid:any,bgtime:any,edtime:any){
+    //     let qe: QueryEntity = new QueryEntity("", "");
+    //         qe.page.currPage = 1;
+    //         qe.page.pageSize = 50000;
+    //         let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+    //         qe.cont = cont;
+    //         let t1 = new Date().getTime();
+    //         let cc = await tools.getBipInsAidInfo("CORRD", 210, qe);
+    //         let t2 = new Date().getTime();
+    //         console.log("用时（秒）" + (t2 - t1) / 1000);
+    //         if (cc.data.id == 0) {
+    //             let values = cc.data.data.data.values;
+    //             await this.drawTrack(values)
+    //         }
+    // }
+    // /**
+    //  * 绘制 航带 航迹 
+    //  */
+    // drawTrack(values:any){
+    //     this.tMap.clearOverLays();
+    //     let po = [];
+    //     for(var i=0;i<values.length;i++){
+    //         let data = values[i];
+    //         if(data && data.longitude!=0 && data.latitude !=0){
+    //             let flow = data.flow;
+    //             let lgt = new T.LngLat(data.longitude, data.latitude)
+    //             po.push(lgt);
+    //         }
+    //     }
+    //     let t1 = this.tMap.getViewport(po);
+    //     this.tMap.panTo(t1.center, t1.zoom);
+    //     for(var i=0;i<values.length;i++){
+    //         let data = values[i];
+    //         if(data && data.longitude!=0 && data.latitude !=0){
+    //             let flow = data.flow;
+    //             let lgt = new T.LngLat(data.longitude, data.latitude)
+    //             if(flow>0){//有流量去划线
+    //                 if(this.sprayBreak){//中断过需要从起一条线
+    //                     let points = [];
+    //                     let zoom = this.tMap.getZoom();
+    //                     let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
+    //                     let opts0 = {color:this.flightBeltColor,weight:cc*this.flightBeltWidth,opacity:this.flightBeltOpacity};
+    //                     points.push(lgt);
+    //                     var newLine0 = new T.Polyline(points,opts0);
+    //                     this.tMap.addOverLay(newLine0);
+    //                     this.sprayLine0.push(newLine0)
+    //                     let opts1 = {color:this.trackColor,weight:1,opacity:1};
+    //                     var newLine1 = new T.Polyline(points,opts1);
+    //                     this.tMap.addOverLay(newLine1);     
+    //                     this.sprayLine1.push(newLine1)
+    //                 }else{//没有中断需要在最后一条线追加点 或重画最后一条线
+    //                     let line0 = this.sprayLine0[this.sprayLine0.length-1];
+    //                     let points0 = line0.getLngLats();
+    //                     points0.push(lgt);
+    //                     line0.setLngLats(points0)
+    //                     let line1 = this.sprayLine1[this.sprayLine1.length-1];
+    //                     let points1 = line1.getLngLats();
+    //                     points1.push(lgt);
+    //                     line1.setLngLats(points1)
+    //                 }
+    //                 this.sprayBreak = false;
+    //             }else{
+    //                 if(this.sprayBreak && this.sprayLine2.length>0){
+    //                     let line2 = this.sprayLine2[this.sprayLine2.length-1];
+    //                     let points2 = line2.getLngLats();
+    //                     points2.push(lgt);
+    //                     line2.setLngLats(points2)
+    //                 }else{
+    //                     let opts2 = {color:this.noFlowColor,weight:1,opacity:1};
+    //                     let points = [];
+    //                     points.push(lgt);
+    //                     var newLine2 = new T.Polyline(points,opts2);
+    //                     this.tMap.addOverLay(newLine2);     
+    //                     this.sprayLine2.push(newLine2)
+    //                 }
+    //                 this.sprayBreak = true;
+    //             }
+    //         }
+    //     }
+    //     this.Screenshot();
+    // }
+    // /**
+    //  * 地图缩放结束
+    //  */
+    // zoomend(){
+    //     let zoom = this.tMap.getZoom();
+    //     let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
+    //     let opts0 = {color:this.flightBeltColor,weight:cc*this.flightBeltWidth,opacity:this.flightBeltOpacity};
+    //     //重新画 农药喷洒范围
+    //     for(var i=0;i<this.sprayLine0.length;i++){
+    //         let line = this.sprayLine0[i];
+    //         let points = line.getLngLats();
+    //         var newLine = new T.Polyline(points,opts0);
+    //         this.tMap.addOverLay(newLine);
+    //         this.sprayLine0[i] = newLine;
+    //         this.tMap.removeOverLay(line);
+    //     }
+    //     this.Screenshot();
+    // }
+    // Screenshot(){
+    //     console.log("开始截图")
+    //     domtoimage.toBlob(document.getElementById('JCTMap')).then(function (data:any) {
+    //         let blob = new Blob([data], {
+    //             type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+    //         });
+    //         let date = TMapUt.dateFormat(new Date(),"yyyy-MM-dd_HH:mm:ss")
+    //         var url = window.URL.createObjectURL(blob); 
+    //         var a = document.createElement('a');
+    //         a.href = url;
+    //         a.download = date+'HKSBQ.png';
+    //         a.click(); 
+    //     })
+    //     .catch(function (error:any) {
+    //         console.log(error)
+    //     });
+    // }
+/******************** 生成作业图片END *********************/
    @Watch("height")
     heightChange() {
         this.style1 = "" + (this.height - 250) ;
     }
 }
 </script>
-
-<style>
+<style scoped>
+.myTMap{
+    height: 902px;
+    width: 1920px;
+    outline: none;
+}
 .nav {
     padding-bottom: 10px;
     background-color: #f9f9f9;

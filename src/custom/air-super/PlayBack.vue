@@ -380,6 +380,8 @@ export default class OperatingArea extends Vue {
     @Provide() percent:any = 0;//进度条当前百分比
     @Provide() dragPoints:number =0;
 
+    @Provide() warn:any={};//飞行预警参数
+
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
@@ -394,6 +396,7 @@ export default class OperatingArea extends Vue {
             this.tMap = refT.getMap();
             this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
         }
+        this.initWarn();
         //初始化图表参数
         // this.initOptions();
     }
@@ -618,6 +621,32 @@ export default class OperatingArea extends Vue {
                     line1.setLngLats(points1)
                 }
                 this.sprayBreak = false;
+                
+                let msg = "";
+                //预警信息
+                console.log(flow)
+                if(flow>this.warn.maxflow){//流量异常
+                    msg = "瞬时流量异常("+flow+"),超出预警值("+this.warn.maxflow+")<br/>"
+                }
+                console.log(data.speed)
+                if(data.speed>this.warn.maxspeed){//速度异常
+                    msg += "飞行速度异常("+data.speed+"),超出预警值("+this.warn.maxspeed+")<br/>"
+                }
+                if(msg != ""){
+                    //创建图片对象
+                    var icon = new T.Icon({
+                        iconUrl: require('@/assets/air-super/avoid.png'),
+                        iconSize: new T.Point(20, 20),
+                        iconAnchor:new T.Point(10, 20),
+                    });
+                    //向地图上添加自定义标注
+                    var marker = new T.Marker(LngLat, {icon: icon});
+                    var markerInfoWin = new T.InfoWindow(msg);
+                    marker.addEventListener("click", function () {
+                        marker.openInfoWindow(markerInfoWin);
+                    });// 将标注添加到地图中
+                    this.tMap.addOverLay(marker)
+                }
             }else{
                 this.sprayBreak = true;
             }
@@ -750,7 +779,7 @@ export default class OperatingArea extends Vue {
         this.getCurrentPageData();  
     }
     // 页面勾选数据点
-   selectChangeEvent ({ checked, row }:any) {
+    selectChangeEvent ({ checked, row }:any) {
         if(checked ){
             let lngLat = row.longitude +","+ row.latitude;
             let lngLat_bak= TMapUt.markpoint1(lngLat,this.tMap);
@@ -797,6 +826,19 @@ export default class OperatingArea extends Vue {
             this.taskTrack.start();
         }catch(err){
             console.log(err)
+        }
+    }
+    /**
+     * 初始化飞行预警参数
+     */
+    async initWarn(){
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 1;
+        let res = await tools.getBipInsAidInfo("GETWARN", 210, qe);
+        if(res.data.id ==0){
+            this.warn = res.data.data.data.values[0]
+            console.log(this.warn);
         }
     }
     /**
