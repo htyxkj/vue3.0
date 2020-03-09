@@ -300,6 +300,9 @@ export default class RealTimeTrack extends Vue {
     @Provide() sumtime:number = 0;
     @Provide() taskname:String = "";
     sumarea:number = 0;
+    //当前任务起降点
+    @Provide() takeoff:any = null;//起降点
+    @Provide() takeoffRange:any = 50;//起降点范围
 
     async created() {
         if (this.height) {
@@ -485,6 +488,8 @@ export default class RealTimeTrack extends Vue {
         let route = task.route
         let hoaid = task.hoaid;
         let oaid = task.oaid;
+        let takeoff = task.takeoff;
+        this.initTakeoff(takeoff);
         if(route){
             TMapUt.makeRoute(route,"",this.tMap);
         }
@@ -593,6 +598,14 @@ export default class RealTimeTrack extends Vue {
             this.nowheight = data.gd_altitude;
             this.sumtime = this.sumtime+1;
             let lgt = new T.LngLat(data.gd_longitude, data.gd_latitude)
+            if(this.takeoff){
+                let jl = this.tMap.getDistance(this.takeoff,lgt);
+                if(jl<=this.takeoffRange){
+                    this.sumflow='0';
+                    this.sumarea = 0;
+                }
+            }
+
             if(flow>0){//有流量去划线
                 this.sumtimeflow = this.sumtimeflow + 1;
                 this.sumarea = (this.sumarea +  (this.flightBeltWidth  * data.speed /666.67));
@@ -822,7 +835,6 @@ export default class RealTimeTrack extends Vue {
         qe.oprid = 13;
         await this.operaCell.queryData(qe)
         .then((res:any) => {
-            console.log(res)
             if(res.data.id ==0){
                 let data = res.data.data.data.data;
                 for(var i=0;i<data.length;i++){
@@ -886,7 +898,6 @@ export default class RealTimeTrack extends Vue {
                                     let Brdata = res.data.data.data.data;
                                     for(var j=0;j<Brdata.length;j++){
                                         let br1 = Brdata[j].data;
-                                        console.log(br1)
                                         if(br1.type ==0){//点的
                                             //创建标注对象
                                             var marker = new T.Marker(new T.LngLat(br1.avoid.split(",")[0], br1.avoid.split(",")[1]));
@@ -1041,6 +1052,46 @@ export default class RealTimeTrack extends Vue {
         var v3 = Math.round((value - v1) * 3600 % 60);//秒
         let data = v1 + '°' + v2 + '′' + v3 + '″'; 
         return data;
+    }
+
+    /**
+     * 初始化单个任务起降点信息
+     */
+    async initTakeoff(sid:any){
+        if(sid){
+            let oneCont =[];
+            let allCont = [];
+            let cont = "";
+            let qCont = new QueryCont('sid', sid, 12);
+            qCont.setContrast(0);
+            oneCont.push(qCont);
+            if (oneCont.length != 0) {
+            allCont.push(oneCont);
+                cont = "~" + JSON.stringify(allCont);
+            }
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.page.pageSize = 1;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("TAKEOFF", 210, qe);
+            if(vv.data.id ==0){
+                let takoff = vv.data.data.data.values[0];
+                let north = takoff.north 
+                if(takoff.range)
+                    this.takeoffRange = takoff.range 
+                let boundary = north.split(",");
+                //创建图片对象
+                var icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/lift.png'), 
+                    iconSize: new T.Point(70, 70),
+                    iconAnchor:new T.Point(35,70),
+                });
+                //向地图上添加自定义标注
+                this.takeoff = new T.LngLat(boundary[0], boundary[1]);
+                var marker = new T.Marker(this.takeoff,{icon: icon});
+                this.tMap.addOverLay(marker);
+            }
+        }
     }
     /**
      * 初始化右侧图表

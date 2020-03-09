@@ -154,6 +154,8 @@ export namespace TMapUtils {
                     let vl = values[i];
                     if(vl.type ==1){
                         this.markSurface(vl.avoid,vl.color,tMap)
+                    }else if(vl.type ==2){
+                        this.markCircle(vl.avoid,vl.color,vl.radius,tMap);
                     }else{
                         this.markpoint(vl.avoid,tMap)
                     }
@@ -196,7 +198,24 @@ export namespace TMapUtils {
             //向地图上添加标注
             tMap.addOverLay(marker);
         }
-        // 添加自定义标注图片
+        /**
+         * 
+         * @param lngLat 经纬度
+         * @param color 颜色
+         * @param radius 半径
+         * @param tMap 地图
+         */
+        markCircle(lngLat:string,color:string,radius:any,tMap:any){
+            radius = parseFloat(radius+'')
+            var circle = new T.Circle(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), radius,{color:"blue",weight:1,opacity:0.7,fillColor:color,fillOpacity:0.5,lineStyle:"solid"});
+            //向地图上添加圆
+            tMap.addOverLay(circle); 
+        }
+        /**
+         * 添加自定义标注图片
+         * @param lngLat 
+         * @param tMap 
+         */
         markpoint1(lngLat:string,tMap:any){
             var icon = new T.Icon({
                 iconUrl: require('@/assets/air-super/check.gif'),

@@ -389,7 +389,10 @@ export default class LayCelVexTable extends Vue {
 
     headerCellStyle(column:any){
         let columnIndex = column.columnIndex;
-        let cel =this.groupCells[columnIndex-1];
+        if(this.cds.ds_par){
+            columnIndex--;
+        }
+        let cel =this.groupCells[columnIndex];
         if(cel){
             cel =cel.cel;
             if((cel.attr & 0x2) >0){

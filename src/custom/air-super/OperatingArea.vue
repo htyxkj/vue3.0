@@ -45,6 +45,7 @@
               <el-dropdown-item command="2">作业区规划(线)</el-dropdown-item>
               <el-dropdown-item command="3">避让区规划(面)</el-dropdown-item>
               <el-dropdown-item command="4">避让区规划(线)</el-dropdown-item>
+              <el-dropdown-item command="6">避让区规划(圆)</el-dropdown-item>
               <el-dropdown-item command="5">避让点</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -578,6 +579,8 @@ export default class OperatingArea extends Vue {
     @Provide() operaBrPolygon:any=null;//天地图避让区 画面对象
     @Provide() operaBrLine:any=null;//天地图避让区 画线对象
     @Provide() operaBrMarker:any = null;//天地图避让区 画点对象
+    @Provide() operaBrCircle:any = null;//天地图避让区 画园对象
+
 
     @Provide() showoperaBrCData:any ={"BR0":false,"BR1":false,"BR2":false,"BR3":false,"BR4":false,"BR5":false,"BR6":false,"BR7":false,"BR8":false,"BR9":false,"BR10":false,"BR11":false,"BR12":false,"BR13":false,"BR14":false,"BR15":false,"BR16":false,"BR17":false,"BR18":false,"BR19":false,"BR20":false,"BR21":false,"BR22":false,"BR23":false,"BR24":false,"BR25":false,"BR26":false,"BR27":false,"BR28":false,"BR29":false,"BR30":false,"BR31":false,"BR32":false,"BR33":false,"BR34":false,"BR35":false,"BR36":false,"BR37":false,"BR38":false,"BR39":false,"BR40":false,"BR41":false,"BR42":false,"BR43":false,"BR44":false,"BR45":false,"BR46":false,"BR47":false,"BR48":false,"BR49":false,"BR50":false,"BR51":false,"BR52":false,"BR53":false,"BR54":false,"BR55":false,"BR56":false,"BR57":false,"BR58":false,"BR59":false,"BR60":false,"BR61":false,"BR62":false,"BR63":false,"BR64":false,"BR65":false,"BR66":false,"BR67":false,"BR68":false,"BR69":false,"BR70":false,"BR71":false,"BR72":false,"BR73":false,"BR74":false,"BR75":false,"BR76":false,"BR77":false,"BR78":false,"BR79":false,"BR80":false,"BR81":false,"BR82":false,"BR83":false,"BR84":false,"BR85":false,"BR86":false,"BR87":false,"BR88":false,"BR89":false,"BR90":false,"BR91":false,"BR92":false,"BR93":false,"BR94":false,"BR95":false,"BR96":false,"BR97":false,"BR98":false,"BR99":false,"BR100":false,"BR101":false,"BR102":false,"BR103":false,"BR104":false,"BR105":false,"BR106":false,"BR107":false,"BR108":false,"BR109":false,"BR110":false,"BR111":false,"BR112":false,"BR113":false,"BR114":false,"BR115":false,"BR116":false,"BR117":false,"BR118":false,"BR119":false,"BR120":false,"BR121":false,"BR122":false,"BR123":false,"BR124":false,"BR125":false,"BR126":false,"BR127":false,"BR128":false,"BR129":false,"BR130":false,"BR131":false,"BR132":false,"BR133":false,"BR134":false,"BR135":false,"BR136":false,"BR137":false,"BR138":false,"BR139":false,"BR140":false,"BR141":false,"BR142":false,"BR143":false,"BR144":false,"BR145":false,"BR146":false,"BR147":false,"BR148":false,"BR149":false,"BR150":false,"BR151":false,"BR152":false,"BR153":false,"BR154":false,"BR155":false,"BR156":false,"BR157":false,"BR158":false,"BR159":false,"BR160":false,"BR161":false,"BR162":false,"BR163":false,"BR164":false,"BR165":false,"BR166":false,"BR167":false,"BR168":false,"BR169":false,"BR170":false,"BR171":false,"BR172":false,"BR173":false,"BR174":false,"BR175":false,"BR176":false,"BR177":false,"BR178":false,"BR179":false,"BR180":false,"BR181":false,"BR182":false,"BR183":false,"BR184":false,"BR185":false,"BR186":false,"BR187":false,"BR188":false,"BR189":false,"BR190":false,"BR191":false,"BR192":false,"BR193":false,"BR194":false,"BR195":false,"BR196":false,"BR197":false,"BR198":false,"BR199":false,"BR200":false,"BR201":false,"BR202":false,"BR203":false,"BR204":false,"BR205":false,"BR206":false,"BR207":false,"BR208":false,"BR209":false,"BR210":false,"BR211":false,"BR212":false,"BR213":false,"BR214":false,"BR215":false,"BR216":false,"BR217":false,"BR218":false,"BR219":false,"BR220":false,"BR221":false,"BR222":false,"BR223":false,"BR224":false,"BR225":false,"BR226":false,"BR227":false,"BR228":false,"BR229":false,"BR230":false,"BR231":false,"BR232":false,"BR233":false,"BR234":false,"BR235":false,"BR236":false,"BR237":false,"BR238":false,"BR239":false,"BR240":false,"BR241":false,"BR242":false,"BR243":false,"BR244":false,"BR245":false,"BR246":false,"BR247":false,"BR248":false,"BR249":false,"BR250":false,"BR251":false,"BR252":false,"BR253":false,"BR254":false,"BR255":false,"BR256":false,"BR257":false,"BR258":false,"BR259":false,"BR260":false,"BR261":false,"BR262":false,"BR263":false,"BR264":false,"BR265":false,"BR266":false,"BR267":false,"BR268":false,"BR269":false,"BR270":false,"BR271":false,"BR272":false,"BR273":false,"BR274":false,"BR275":false,"BR276":false,"BR277":false,"BR278":false,"BR279":false,"BR280":false,"BR281":false,"BR282":false,"BR283":false,"BR284":false,"BR285":false,"BR286":false,"BR287":false,"BR288":false,"BR289":false,"BR290":false,"BR291":false,"BR292":false,"BR293":false,"BR294":false,"BR295":false,"BR296":false,"BR297":false,"BR298":false,"BR299":false,"BR300":false,"BR301":false,"BR302":false,"BR303":false,"BR304":false,"BR305":false,"BR306":false,"BR307":false,"BR308":false,"BR309":false,"BR310":false,"BR311":false,"BR312":false,"BR313":false,"BR314":false,"BR315":false,"BR316":false,"BR317":false,"BR318":false,"BR319":false,"BR320":false,"BR321":false,"BR322":false,"BR323":false,"BR324":false,"BR325":false,"BR326":false,"BR327":false,"BR328":false,"BR329":false,"BR330":false,"BR331":false,"BR332":false,"BR333":false,"BR334":false,"BR335":false,"BR336":false,"BR337":false,"BR338":false,"BR339":false,"BR340":false,"BR341":false,"BR342":false,"BR343":false,"BR344":false,"BR345":false,"BR346":false,"BR347":false,"BR348":false,"BR349":false,"BR350":false,"BR351":false,"BR352":false,"BR353":false,"BR354":false,"BR355":false,"BR356":false,"BR357":false,"BR358":false,"BR359":false,"BR360":false,"BR361":false,"BR362":false,"BR363":false,"BR364":false,"BR365":false,"BR366":false,"BR367":false,"BR368":false,"BR369":false,"BR370":false,"BR371":false,"BR372":false,"BR373":false,"BR374":false,"BR375":false,"BR376":false,"BR377":false,"BR378":false,"BR379":false,"BR380":false,"BR381":false,"BR382":false,"BR383":false,"BR384":false,"BR385":false,"BR386":false,"BR387":false,"BR388":false,"BR389":false,"BR390":false,"BR391":false,"BR392":false,"BR393":false,"BR394":false,"BR395":false,"BR396":false,"BR397":false,"BR398":false,"BR399":false,"BR400":false,"BR401":false,"BR402":false,"BR403":false,"BR404":false,"BR405":false,"BR406":false,"BR407":false,"BR408":false,"BR409":false,"BR410":false,"BR411":false,"BR412":false,"BR413":false,"BR414":false,"BR415":false,"BR416":false,"BR417":false,"BR418":false,"BR419":false,"BR420":false,"BR421":false,"BR422":false,"BR423":false,"BR424":false,"BR425":false,"BR426":false,"BR427":false,"BR428":false,"BR429":false,"BR430":false,"BR431":false,"BR432":false,"BR433":false,"BR434":false,"BR435":false,"BR436":false,"BR437":false,"BR438":false,"BR439":false,"BR440":false,"BR441":false,"BR442":false,"BR443":false,"BR444":false,"BR445":false,"BR446":false,"BR447":false,"BR448":false,"BR449":false,"BR450":false,"BR451":false,"BR452":false,"BR453":false,"BR454":false,"BR455":false,"BR456":false,"BR457":false,"BR458":false,"BR459":false,"BR460":false,"BR461":false,"BR462":false,"BR463":false,"BR464":false,"BR465":false,"BR466":false,"BR467":false,"BR468":false,"BR469":false,"BR470":false,"BR471":false,"BR472":false,"BR473":false,"BR474":false,"BR475":false,"BR476":false,"BR477":false,"BR478":false,"BR479":false,"BR480":false,"BR481":false,"BR482":false,"BR483":false,"BR484":false,"BR485":false,"BR486":false,"BR487":false,"BR488":false,"BR489":false,"BR490":false,"BR491":false,"BR492":false,"BR493":false,"BR494":false,"BR495":false,"BR496":false,"BR497":false,"BR498":false,"BR499":false}//是否显示作业区避让点集合
     @Provide() showoperaBrXData:any ={"BR0":false,"BR1":false,"BR2":false,"BR3":false,"BR4":false,"BR5":false,"BR6":false,"BR7":false,"BR8":false,"BR9":false,"BR10":false,"BR11":false,"BR12":false,"BR13":false,"BR14":false,"BR15":false,"BR16":false,"BR17":false,"BR18":false,"BR19":false,"BR20":false,"BR21":false,"BR22":false,"BR23":false,"BR24":false,"BR25":false,"BR26":false,"BR27":false,"BR28":false,"BR29":false,"BR30":false,"BR31":false,"BR32":false,"BR33":false,"BR34":false,"BR35":false,"BR36":false,"BR37":false,"BR38":false,"BR39":false,"BR40":false,"BR41":false,"BR42":false,"BR43":false,"BR44":false,"BR45":false,"BR46":false,"BR47":false,"BR48":false,"BR49":false,"BR50":false,"BR51":false,"BR52":false,"BR53":false,"BR54":false,"BR55":false,"BR56":false,"BR57":false,"BR58":false,"BR59":false,"BR60":false,"BR61":false,"BR62":false,"BR63":false,"BR64":false,"BR65":false,"BR66":false,"BR67":false,"BR68":false,"BR69":false,"BR70":false,"BR71":false,"BR72":false,"BR73":false,"BR74":false,"BR75":false,"BR76":false,"BR77":false,"BR78":false,"BR79":false,"BR80":false,"BR81":false,"BR82":false,"BR83":false,"BR84":false,"BR85":false,"BR86":false,"BR87":false,"BR88":false,"BR89":false,"BR90":false,"BR91":false,"BR92":false,"BR93":false,"BR94":false,"BR95":false,"BR96":false,"BR97":false,"BR98":false,"BR99":false,"BR100":false,"BR101":false,"BR102":false,"BR103":false,"BR104":false,"BR105":false,"BR106":false,"BR107":false,"BR108":false,"BR109":false,"BR110":false,"BR111":false,"BR112":false,"BR113":false,"BR114":false,"BR115":false,"BR116":false,"BR117":false,"BR118":false,"BR119":false,"BR120":false,"BR121":false,"BR122":false,"BR123":false,"BR124":false,"BR125":false,"BR126":false,"BR127":false,"BR128":false,"BR129":false,"BR130":false,"BR131":false,"BR132":false,"BR133":false,"BR134":false,"BR135":false,"BR136":false,"BR137":false,"BR138":false,"BR139":false,"BR140":false,"BR141":false,"BR142":false,"BR143":false,"BR144":false,"BR145":false,"BR146":false,"BR147":false,"BR148":false,"BR149":false,"BR150":false,"BR151":false,"BR152":false,"BR153":false,"BR154":false,"BR155":false,"BR156":false,"BR157":false,"BR158":false,"BR159":false,"BR160":false,"BR161":false,"BR162":false,"BR163":false,"BR164":false,"BR165":false,"BR166":false,"BR167":false,"BR168":false,"BR169":false,"BR170":false,"BR171":false,"BR172":false,"BR173":false,"BR174":false,"BR175":false,"BR176":false,"BR177":false,"BR178":false,"BR179":false,"BR180":false,"BR181":false,"BR182":false,"BR183":false,"BR184":false,"BR185":false,"BR186":false,"BR187":false,"BR188":false,"BR189":false,"BR190":false,"BR191":false,"BR192":false,"BR193":false,"BR194":false,"BR195":false,"BR196":false,"BR197":false,"BR198":false,"BR199":false,"BR200":false,"BR201":false,"BR202":false,"BR203":false,"BR204":false,"BR205":false,"BR206":false,"BR207":false,"BR208":false,"BR209":false,"BR210":false,"BR211":false,"BR212":false,"BR213":false,"BR214":false,"BR215":false,"BR216":false,"BR217":false,"BR218":false,"BR219":false,"BR220":false,"BR221":false,"BR222":false,"BR223":false,"BR224":false,"BR225":false,"BR226":false,"BR227":false,"BR228":false,"BR229":false,"BR230":false,"BR231":false,"BR232":false,"BR233":false,"BR234":false,"BR235":false,"BR236":false,"BR237":false,"BR238":false,"BR239":false,"BR240":false,"BR241":false,"BR242":false,"BR243":false,"BR244":false,"BR245":false,"BR246":false,"BR247":false,"BR248":false,"BR249":false,"BR250":false,"BR251":false,"BR252":false,"BR253":false,"BR254":false,"BR255":false,"BR256":false,"BR257":false,"BR258":false,"BR259":false,"BR260":false,"BR261":false,"BR262":false,"BR263":false,"BR264":false,"BR265":false,"BR266":false,"BR267":false,"BR268":false,"BR269":false,"BR270":false,"BR271":false,"BR272":false,"BR273":false,"BR274":false,"BR275":false,"BR276":false,"BR277":false,"BR278":false,"BR279":false,"BR280":false,"BR281":false,"BR282":false,"BR283":false,"BR284":false,"BR285":false,"BR286":false,"BR287":false,"BR288":false,"BR289":false,"BR290":false,"BR291":false,"BR292":false,"BR293":false,"BR294":false,"BR295":false,"BR296":false,"BR297":false,"BR298":false,"BR299":false,"BR300":false,"BR301":false,"BR302":false,"BR303":false,"BR304":false,"BR305":false,"BR306":false,"BR307":false,"BR308":false,"BR309":false,"BR310":false,"BR311":false,"BR312":false,"BR313":false,"BR314":false,"BR315":false,"BR316":false,"BR317":false,"BR318":false,"BR319":false,"BR320":false,"BR321":false,"BR322":false,"BR323":false,"BR324":false,"BR325":false,"BR326":false,"BR327":false,"BR328":false,"BR329":false,"BR330":false,"BR331":false,"BR332":false,"BR333":false,"BR334":false,"BR335":false,"BR336":false,"BR337":false,"BR338":false,"BR339":false,"BR340":false,"BR341":false,"BR342":false,"BR343":false,"BR344":false,"BR345":false,"BR346":false,"BR347":false,"BR348":false,"BR349":false,"BR350":false,"BR351":false,"BR352":false,"BR353":false,"BR354":false,"BR355":false,"BR356":false,"BR357":false,"BR358":false,"BR359":false,"BR360":false,"BR361":false,"BR362":false,"BR363":false,"BR364":false,"BR365":false,"BR366":false,"BR367":false,"BR368":false,"BR369":false,"BR370":false,"BR371":false,"BR372":false,"BR373":false,"BR374":false,"BR375":false,"BR376":false,"BR377":false,"BR378":false,"BR379":false,"BR380":false,"BR381":false,"BR382":false,"BR383":false,"BR384":false,"BR385":false,"BR386":false,"BR387":false,"BR388":false,"BR389":false,"BR390":false,"BR391":false,"BR392":false,"BR393":false,"BR394":false,"BR395":false,"BR396":false,"BR397":false,"BR398":false,"BR399":false,"BR400":false,"BR401":false,"BR402":false,"BR403":false,"BR404":false,"BR405":false,"BR406":false,"BR407":false,"BR408":false,"BR409":false,"BR410":false,"BR411":false,"BR412":false,"BR413":false,"BR414":false,"BR415":false,"BR416":false,"BR417":false,"BR418":false,"BR419":false,"BR420":false,"BR421":false,"BR422":false,"BR423":false,"BR424":false,"BR425":false,"BR426":false,"BR427":false,"BR428":false,"BR429":false,"BR430":false,"BR431":false,"BR432":false,"BR433":false,"BR434":false,"BR435":false,"BR436":false,"BR437":false,"BR438":false,"BR439":false,"BR440":false,"BR441":false,"BR442":false,"BR443":false,"BR444":false,"BR445":false,"BR446":false,"BR447":false,"BR448":false,"BR449":false,"BR450":false,"BR451":false,"BR452":false,"BR453":false,"BR454":false,"BR455":false,"BR456":false,"BR457":false,"BR458":false,"BR459":false,"BR460":false,"BR461":false,"BR462":false,"BR463":false,"BR464":false,"BR465":false,"BR466":false,"BR467":false,"BR468":false,"BR469":false,"BR470":false,"BR471":false,"BR472":false,"BR473":false,"BR474":false,"BR475":false,"BR476":false,"BR477":false,"BR478":false,"BR479":false,"BR480":false,"BR481":false,"BR482":false,"BR483":false,"BR484":false,"BR485":false,"BR486":false,"BR487":false,"BR488":false,"BR489":false,"BR490":false,"BR491":false,"BR492":false,"BR493":false,"BR494":false,"BR495":false,"BR496":false,"BR497":false,"BR498":false,"BR499":false}//是否显示作业区避让点集合
@@ -827,7 +830,7 @@ export default class OperatingArea extends Vue {
   }
   //工具下拉选中
   toolClick(item: any) {
-    if(item == 3 || item == 4 || item ==5){//画避让区域
+    if(item == 3 || item == 4 || item ==5 || item ==6){//画避让区域
       //判断一下是否只勾选了一个作业区
       let num =0;
       for(var i =0;i<this.operaData.length;i++){
@@ -902,6 +905,13 @@ export default class OperatingArea extends Vue {
       }
       this.operaBrMarker.close();
       this.operaBrMarker.open();
+    }else if(item ==6){//避让点  圆圈
+        if(!this.operaBrCircle){
+            this.operaBrCircle = new T.CircleTool(this.tMap ,{ color: "blue", weight:1, opacity: 0.5, fillColor: "#FFFFFF", fillOpacity: 0.5});
+            this.operaBrCircle.addEventListener("drawend", this.operaBrCircleToolEnd);
+        }
+        this.operaBrCircle.close();
+        this.operaBrCircle.open();
     }
   }
   /**
@@ -1381,13 +1391,25 @@ export default class OperatingArea extends Vue {
             //向地图上添加标注
             this.tMap.addOverLay(marker);
             this.mapOperaBr[kk] = marker;
-          }else{//面
+          }else if(br1.type ==1){//面
             let ccbr:any = this.makeOpera(dbr1);
             if(this.mapOperaBr[kk]){
               this.tMap.removeOverLay(this.mapOperaBr[kk]);
             }
             this.tMap.addOverLay(ccbr[0]);
             this.mapOperaBr[kk] = ccbr[0];
+          }else if(br1.type ==2){//圆圈
+            console.log(br1)
+            if(this.mapOperaBr[kk]){
+              this.tMap.removeOverLay(this.mapOperaBr[kk]);
+            }
+            let latlng = br1.avoid.split(",");
+            // 定义该矩形的显示区域
+            let radius = parseFloat(br1.radius+'')
+            var circle = new T.Circle(new T.LngLat(latlng[0], latlng[1]), radius,{color:"blue",weight:1,opacity:0.7,fillColor:br1.color,fillOpacity:0.5,lineStyle:"solid"});
+            //向地图上添加圆
+            this.tMap.addOverLay(circle); 
+            this.mapOperaBr[kk] = circle;
           }
         }
       }
@@ -1563,6 +1585,30 @@ export default class OperatingArea extends Vue {
     this.operaBrCell.currRecord.data.oid = this.checkkid;
     this.operaBrCell.currRecord.data.type = 0;
     this.operaBrCell.currRecord.data.avoid = avoid;
+    this.showSaveOperaBrDia = true;
+  }
+  /**
+   * 用户完成绘制圆时触发。
+   * 参数说明：
+   * currentCenter：中心点的地理坐标。
+   * currentRadius：半径，单位为米。
+   * currentCircle：用户最后绘制的圆对象。
+   * allCircles:用户所有绘制的圆对象。
+   */
+  operaBrCircleToolEnd(parameter:any){
+    let editCover = parameter.currentCircle;
+    let key = "non-" + new Date().getTime();
+    this.editBrk = key;
+    this.mapOperaBr[key] = editCover;
+    let radius = parameter.currentRadius;
+    let lnglat = parameter.currentCenter;
+    let avoid = lnglat.getLng()+","+lnglat.getLat();
+    this.operaBrCell.clear()
+    this.operaBrCell.createRecord();
+    this.operaBrCell.currRecord.data.oid = this.checkkid;
+    this.operaBrCell.currRecord.data.type = 2;
+    this.operaBrCell.currRecord.data.avoid = avoid;
+    this.operaBrCell.currRecord.data.radius = radius;
     this.showSaveOperaBrDia = true;
   }
 /**************** END **************/
@@ -2281,7 +2327,7 @@ export default class OperatingArea extends Vue {
     if (operid) {
       let iscopy:boolean = false;
       if(operid.indexOf("copy-") !=-1){//是复制的图层
-        operid = operid.split("-")[1];
+        operid = operid.replace("copy-",'');
         iscopy = true;
       }
       //创建标注工具对象 用来计算面积
@@ -2302,7 +2348,9 @@ export default class OperatingArea extends Vue {
         this.operaSaveCell.currRecord.c_state = 2;
       } else {
         if(iscopy){
-          this.operaSaveCell.currRecord.data = d1;
+            let id = this.operaSaveCell.currRecord.data.id
+            this.operaSaveCell.currRecord.data = d1;
+            this.operaSaveCell.currRecord.data.id = id;
         }
         //新增
         this.operaSaveCell.currRecord.c_state = 1;

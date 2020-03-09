@@ -382,6 +382,10 @@ export default class OperatingArea extends Vue {
 
     @Provide() warn:any={};//飞行预警参数
 
+    //起降点信息
+    @Provide() takeoff:any = null;//起降点
+    @Provide() takeoffRange:any = 50;//起降点范围
+
     async created() {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
@@ -492,6 +496,9 @@ export default class OperatingArea extends Vue {
             let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
             let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
             let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
+            let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
+            this.initTakeoff(takeoff);
+
             if(showarea == 1){
                  TMapUt.getOpera(oaid,this.tMap);//作业区
                  TMapUt.getOperaBr(oaid,this.tMap);//避让区
@@ -582,9 +589,12 @@ export default class OperatingArea extends Vue {
             this.nowheight = data.height;
             this.sumtime = this.sumtime + 1;
             let flow = data.flow
-            if(flow<=0){
-                this.sumflow='0';
-                this.sumarea = 0;
+            if(this.takeoff){
+                let jl = this.tMap.getDistance(this.takeoff,LngLat);
+                if(jl<=this.takeoffRange){
+                    this.sumflow='0';
+                    this.sumarea = 0;
+                }
             }
             this.sumflow = ((parseFloat(this.sumflow+'') + parseFloat((parseFloat(this.nowflow+'')/60/60)+'')).toFixed(3))+'';
             
@@ -624,11 +634,9 @@ export default class OperatingArea extends Vue {
                 
                 let msg = "";
                 //预警信息
-                console.log(flow)
                 if(flow>this.warn.maxflow){//流量异常
                     msg = "瞬时流量异常("+flow+"),超出预警值("+this.warn.maxflow+")<br/>"
                 }
-                console.log(data.speed)
                 if(data.speed>this.warn.maxspeed){//速度异常
                     msg += "飞行速度异常("+data.speed+"),超出预警值("+this.warn.maxspeed+")<br/>"
                 }
@@ -824,6 +832,17 @@ export default class OperatingArea extends Vue {
             } 
             this.taskTrack = new T.CarTrack(this.tMap,opt);
             this.taskTrack.start();
+            
+            if(this.takeoff){
+                var icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/lift.png'), 
+                    iconSize: new T.Point(70, 70),
+                    iconAnchor:new T.Point(35,70),
+                });
+                //向地图上添加自定义标注
+                var marker = new T.Marker(this.takeoff,{icon: icon});
+                this.tMap.addOverLay(marker);
+            }
         }catch(err){
             console.log(err)
         }
@@ -839,6 +858,45 @@ export default class OperatingArea extends Vue {
         if(res.data.id ==0){
             this.warn = res.data.data.data.values[0]
             console.log(this.warn);
+        }
+    }
+    /**
+     * 初始化起降点信息
+     */
+    async initTakeoff(sid:any){
+        if(sid){
+            let oneCont =[];
+            let allCont = [];
+            let cont = "";
+            let qCont = new QueryCont('sid', sid, 12);
+            qCont.setContrast(0);
+            oneCont.push(qCont);
+            if (oneCont.length != 0) {
+            allCont.push(oneCont);
+                cont = "~" + JSON.stringify(allCont);
+            }
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.page.pageSize = 1;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("TAKEOFF", 210, qe);
+            if(vv.data.id ==0){
+                let takoff = vv.data.data.data.values[0];
+                let north = takoff.north 
+                if(takoff.range)
+                    this.takeoffRange = takoff.range 
+                let boundary = north.split(",");
+                //创建图片对象
+                var icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/lift.png'), 
+                    iconSize: new T.Point(70, 70),
+                    iconAnchor:new T.Point(35,70),
+                });
+                //向地图上添加自定义标注
+                this.takeoff = new T.LngLat(boundary[0], boundary[1]);
+                var marker = new T.Marker(this.takeoff,{icon: icon});
+                this.tMap.addOverLay(marker);
+            }
         }
     }
     /**

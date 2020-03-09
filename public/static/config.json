@@ -1,6 +1,6 @@
 {
-    "dbid": "143",
-    "ApiUrl": "http://127.0.0.1:9999/jd",
+    "dbid": "01",
+    "ApiUrl": "http://www.juminfuwu.cn:88/bip-amb/",
     "MQTT_SERVICE": "ws://211.144.37.205:15674/ws",
     "MQTT_USERNAME": "bipmq",
     "MQTT_PASSWORD": "bipmq",

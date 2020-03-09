@@ -278,7 +278,7 @@ export default class CDataSet {
                             this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
                           }
                           vl = this.scriptProc.execute(scstr, "", col);
-                          if(vl.isNaN || vl == 'NaN')
+                          if(vl && (vl.isNaN || vl == 'NaN'))
                             vl = 0;
                         }
                         if (vl instanceof Array) {
@@ -335,7 +335,7 @@ export default class CDataSet {
                 this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
               }
               vl = this.scriptProc.execute(scstr, "", col);
-              if(vl.isNaN || vl == 'NaN')
+              if(vl && (vl.isNaN || vl == 'NaN'))
                 vl = 0;
             }
             if (vl instanceof Array) {

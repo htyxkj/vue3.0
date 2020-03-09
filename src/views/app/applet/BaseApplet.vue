@@ -47,6 +47,7 @@ import BipWorkProcess from '@/components/cwork/BipWorkProcess.vue';
 import { stringify } from 'querystring';
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
+import { clear } from 'xe-utils/methods';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
@@ -104,6 +105,7 @@ export default class BaseApplet extends Vue{
                 }
             }
             this.setListMenuName();
+            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
         } else if (cmd === "SAVE") {
             await this.saveData();
         } else if (cmd === "FIND") {
@@ -448,6 +450,12 @@ export default class BaseApplet extends Vue{
     async findData(bok: boolean, cont: any) {
         console.log("单据查询！")
         // console.log(bok,cont,this.dsm.ccells.obj_id)
+        this.dsm.clear();
+        if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
+            for(var i=0;i<this.dsm.ds_sub.length;i++){
+                this.dsm.ds_sub[i].clear();
+            } 
+        }
         if (!bok) {
             return;
         }
@@ -641,7 +649,11 @@ export default class BaseApplet extends Vue{
                         }else{
                             this.$message.warning(data.message);
                         }
-                        this.submint();
+                        if(this.uriParams){
+                            if((this.uriParams.pattr & CommICL.B_IWORKEA)>0){
+                                this.submint();
+                            }
+                        }
                     }else{
                         this.$message.warning(data.message);
                     }
