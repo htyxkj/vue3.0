@@ -186,11 +186,11 @@ export default class SortiesInvoke extends Vue {
             }        
         }
         this.$notify.success("合并成功！")
-        let cc:any = this.$refs["SortiesTable"];
-        if(cc){
-            cc.refreshData();
-        }
-        console.log(this.tableData)
+        // let cc:any = this.$refs["SortiesTable"];
+        // if(cc){
+        //     cc.refreshData();
+        // }
+        // console.log(this.tableData)
     }
     selectChange(data:any){
         this.checkData = data.selection;

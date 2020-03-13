@@ -111,7 +111,7 @@
                         <el-col :span="24" > 
                           <el-row style="textAlign:center;">
                             <el-col :span="8">
-                              <el-button type="primary" @click="editOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
+                              <el-button type="primary" @click="editOperaSbq(item.data.id)" style="padding:2px; font-size:0.12rem;">编辑</el-button>
                             </el-col>
                             <el-col :span="8">
                                 <el-button type="info" @click="copyOpera(item.data.id)" style="padding:2px; font-size:0.12rem;">复制</el-button>
@@ -346,7 +346,7 @@
         <el-button type="primary" @click="getOpera(null)" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="新增作业区" :close-on-click-modal="false" :visible.sync="showSaveOperaDia" width="50%" class="bip-query">
+    <el-dialog title="新增/修改 架区" :close-on-click-modal="false" :visible.sync="showSaveOperaDia" width="50%" class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in operaSaveCell.ccells.cels" :key="'A'+index">
@@ -384,7 +384,7 @@
         <el-button type="primary" @click="saveOperaBr" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="航空识别区坐标勾选" :close-on-click-modal="false" :visible.sync="aviationDia" width="50%" class="bip-query">
+    <el-dialog title="作业区坐标勾选" :close-on-click-modal="false" :visible.sync="aviationDia" width="50%" class="bip-query">
       <el-row class="bip-lay">
         <el-checkbox-group v-model="checkedABCD">
           <el-row v-for="(item,index) in sbqPointABCD" :key="index">
@@ -398,7 +398,7 @@
         <el-button type="primary" @click="selABCDOk" size="mini">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="新增航空识别区" :close-on-click-modal="false" :visible.sync="showSavesbqDia" width="50%" class="bip-query">
+    <el-dialog title="新增作业区" :close-on-click-modal="false" :visible.sync="showSavesbqDia" width="50%" class="bip-query">
       <el-row class="bip-lay">
         <el-form @submit.native.prevent label-position="right" label-width="100px">
           <div v-for="(cel,index) in sbqCell.ccells.cels" :key="'A'+index">
@@ -980,9 +980,9 @@ export default class OperatingArea extends Vue {
       //   d1.township +
       //   "<br/>" +
       //   d1.address;
-      // if (d1.area != 0) {
-      //   co += "<br/>面积：" + d1.area + "亩";
-      // }
+      if (d1.area != 0 && d1.sbuid != 'F2005') {
+        co += "<br/>面积：" + d1.area + "亩";
+      }
       let lgt =  t1.center;
         if(d1.sbuid == 'F2005' && d1.startpoint){
             let poin = d1.startpoint.split(",")
@@ -1214,6 +1214,81 @@ export default class OperatingArea extends Vue {
     } else {
       this.showSavesbqDia = false;
       this.$notify.error("保存失败！");
+    }
+  }
+  //边界航空识别区
+  editOperaSbq(operid: any){
+    let cover = this.mapOpera[operid];
+    if (cover) {
+      cover.removeEventListener("dblclick", this.sbqcoverDBClick);
+      cover.addEventListener("dblclick", this.sbqcoverDBClick);
+      cover.enableEdit();
+      cover.kid = operid;
+    } else {
+      let d1 = this.operaJSON[operid];
+      let cc:any = this.makeOpera(d1);
+      let polygon = cc[0];
+      let points = cc[1];
+      //向地图上添加面
+      this.tMap.addOverLay(polygon);
+      let t1 = this.tMap.getViewport(points);
+      this.tMap.panTo(t1.center, t1.zoom);
+      this.mapOpera[operid] = polygon;
+      let label = this.makeOperaLableTXT(d1, t1);
+      this.tMap.addOverLay(label);
+      this.mapOperaTxt[operid] = label;
+      polygon.enableEdit();
+      polygon.kid = operid;
+      polygon.addEventListener("dblclick", this.sbqcoverDBClick);
+    }
+    if (this.checkOperaList.indexOf(operid) == -1) {
+      this.checkOperaList.push(operid);
+    }
+  }
+    /**
+   * 作业区双击
+   */
+  sbqcoverDBClick(data: any) {
+    console.log("作业区双击")
+    let target = data.target;
+    let operid = target.kid;
+    this.editKid = target.kid;
+    let points = target.getLngLats()[0];
+    let cover = this.mapOpera[operid];
+    if (operid) {
+      let iscopy:boolean = false;
+      if(operid.indexOf("copy-") !=-1){//是复制的图层
+        operid = operid.replace("copy-",'');
+        iscopy = true;
+      }
+      //创建标注工具对象 用来计算面积
+      let polygonTool = new T.PolygonTool(this.tMap);
+      let boundary1 = "";
+      for (var i = 0; i < points.length; i++) {
+        let point = points[i];
+        boundary1 += point.getLng() + "," + point.getLat() + ";";
+      }
+      boundary1 = boundary1.substring(0, boundary1.length - 1);
+      let d1 = this.operaJSON[operid];
+      this.sbqCell.clear();
+      this.sbqCell.createRecord();
+      let area = polygonTool.getArea(points);
+      if (d1 && iscopy == false) {
+        //存在进行修改
+        this.sbqCell.currRecord.data = d1;
+        this.sbqCell.currRecord.c_state = 2;
+      } else {
+        if(iscopy){
+            let id = this.sbqCell.currRecord.data.id
+            this.sbqCell.currRecord.data = d1;
+            this.sbqCell.currRecord.data.id = id;
+        }
+        //新增
+        this.sbqCell.currRecord.c_state = 1;
+      }
+      this.sbqCell.currRecord.data.area = (area / 666.66).toFixed(2);
+      this.sbqCell.currRecord.data.boundary1 = boundary1;
+      this.showSavesbqDia = true;
     }
   }
 /***************** 航空识别区END ****************/
@@ -2073,13 +2148,71 @@ export default class OperatingArea extends Vue {
         operid = res.data.data.id;
       // await this.getOpera(operid);
       let newDate = this.operaSaveCell.currRecord;
+      let newID = newDate.data.id
+      if(newDate.oldpk && newDate.oldpk.length>0){
+        let oldID = newDate.oldpk[0];
+        if(this.checkOperaList.indexOf(oldID) !=-1){
+            this.checkOperaList.splice(this.checkOperaList.indexOf(oldID),1)
+        }
+        if(newDate.data.season == 0){
+            for(var i=0;i<this.operaCData.length;i++){
+                if(this.operaCData[i].data.id == oldID){
+                    this.operaCData.splice(i,1)
+                    break;
+                }
+            } 
+            if(this.cCheckOperaList.indexOf(oldID) !=-1){
+                this.cCheckOperaList.splice(this.cCheckOperaList.indexOf(oldID),1)
+            }
+        }else if(newDate.data.season == 1){
+            for(var i=0;i<this.operaXData.length;i++){
+                if(this.operaXData[i].data.id == oldID){
+                    this.operaXData.splice(i,1)
+                    break;
+                }
+            }  
+            if(this.xCheckOperaList.indexOf(oldID) !=-1){
+                this.xCheckOperaList.splice(this.xCheckOperaList.indexOf(oldID),1)
+            }            
+        }else if(newDate.data.season == 2){ 
+            for(var i=0;i<this.operaQData.length;i++){
+                if(this.operaQData[i].data.id == oldID){
+                    this.operaQData.splice(i,1)
+                    break;
+                }
+            }
+            if(this.qCheckOperaList.indexOf(oldID) !=-1){
+                this.qCheckOperaList.splice(this.qCheckOperaList.indexOf(oldID),1)
+            }              
+        }
+        this.operaJSON[newID] = newDate.data 
+        let key = oldID;
+        if (this.mapOpera[key]) {
+        this.tMap.removeOverLay(this.mapOpera[key]);
+        }
+        if (this.mapOperaTxt[key]){
+        this.tMap.removeOverLay(this.mapOperaTxt[key]);
+        }
+        if(this.makeABCD[key]){
+            let data = this.makeABCD[key];
+            for(var i=0;i<data.length;i++){
+                this.tMap.removeOverLay(data[i])
+            }
+        }
+        delete this.makeABCD[key];
+        delete this.mapOpera[key];
+        delete this.mapOperaTxt[key];
+        this.delAllBr(key);
+      }else{
+          newDate.oldpk=[];
+      }
       if(newDate.data.sbuid == 'F2005'){
         this.operaSBQData.push(newDate);
       }else if(newDate.data.sbuid == 'F2015'){    
         if(newDate.data.season == 0){       
           let _index0 = -1
           for(var i=0;i<this.operaCData.length;i++){
-            if(this.operaCData[i].data.id == newDate.data.id){
+            if(this.operaCData[i].data.id == newID){
               _index0=i;
               break;
             }
@@ -2092,7 +2225,7 @@ export default class OperatingArea extends Vue {
         }else if(newDate.data.season == 1){
           let _index1 = -1
           for(var i=0;i<this.operaXData.length;i++){
-            if(this.operaXData[i].data.id == newDate.data.id){
+            if(this.operaXData[i].data.id == newID){
               _index1=i;
               break;
             }
@@ -2105,7 +2238,7 @@ export default class OperatingArea extends Vue {
         }else if(newDate.data.season == 2){ 
           let _index2 = -1
           for(var i=0;i<this.operaQData.length;i++){
-            if(this.operaQData[i].data.id == newDate.data.id){
+            if(this.operaQData[i].data.id == newID){
               _index2=i;
               break;
             }

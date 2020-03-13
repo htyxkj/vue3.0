@@ -504,7 +504,7 @@ export default class LayCelVexTable extends Vue {
             if(cc){
                 if(this.cds.currRecord){
                     setTimeout(() => {
-                        cc.refreshData();
+                        // cc.refreshData();
                         cc.clearCurrentRow()
                     }, 200);
                 }
@@ -784,9 +784,9 @@ export default class LayCelVexTable extends Vue {
             if(cc){
                 if(this.cds.currRecord){
                     setTimeout(() => {
-                        cc.refreshData();
                         cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
+                        // cc.refreshData();
                         // cc.toggleRowSelection(this.cds.currRecord);
                         // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
                     }, 200);

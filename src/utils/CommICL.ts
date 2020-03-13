@@ -61,6 +61,7 @@ export const CommICL = Object.assign({
     I_EDITOR_COPY:9,//拷贝定义
     I_EDITOR_TREE:10,//树
     I_EDITOR_RTEXT:11,//富文本编辑器
+    I_EDITOR_AUTOGRAPH:13,//switch开关
     I_EDITOR_SWITCH:14,//switch开关
     I_EDITOR_COLOR:15,//颜色
 //#endregion

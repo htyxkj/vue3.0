@@ -119,7 +119,7 @@ export default class bipTask extends Vue {
           setTimeout(() => {
             cc.clearData();
             cc.reloadData(this.taskValue)
-            cc.refreshData();
+            // cc.refreshData();
             cc.updateData();  
           }, 300);
         }
