@@ -10,4 +10,6 @@ export const BaseVariable = Object.assign({
     MQTT_USERNAME:'bipmq',
     MQTT_PASSWORD:'bipmq',
     MQTT_HOST:'bipmq',
+    Project_Name:'BIP',
+    COPYRIGHT:"",
   });

@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :setting="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :custom="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -28,9 +28,9 @@
                 @edit-closed="editClose"
                 height="300px"
                 :selectRow="cds.currRecord"
-                @select-all="selectAllEvent"
+                @checkbox-all="selectAllEvent"
                 @cell-click="table_cell_click"
-                @select-change="selectChangeEvent"
+                @checkbox-change="selectChangeEvent"
                 :header-cell-style="headerCellStyle"
                 >
                 <vxe-table-column v-if="cds.ds_par" type="checkbox" width="40"></vxe-table-column>
@@ -137,8 +137,8 @@
                 row-id="id"
 
                 :row-class-name="getRowStyleNew"
-                @select-change="checkChange"
-                @select-all="checkChange"
+                @checkbox-change="checkChange"
+                @checkbox-all="checkChange"
                 :checkbox-config="{checkField: 'checked',reserve:'true'}"
                 > 
                 <!-- :pager-config="tablePage"
@@ -320,6 +320,7 @@ import CRecord from '../../classes/pub/CRecord';
 import { BIPUtils } from "@/utils/BaseUtil";
 import { connect } from 'echarts';
 import { on } from 'cluster';
+import { values } from 'xe-utils/methods';
 let baseTool = BIPUtils.baseUtil;
 @Component({
     components: {  BipGridInfo,Accordion }
@@ -403,6 +404,9 @@ export default class LayCelVexTable extends Vue {
 
     async addRecord() {
         if(this.cds.currCanEdit()){
+            let bok = this.checkNotNull(this.cds); 
+            if(!bok)
+                return ; 
             //判断是否是第一次新建
             if(this.cds.cdata.data.length ==0){
                 //第一次新建 判断一下sctrl 是否是需要中常量中取数
@@ -690,8 +694,14 @@ export default class LayCelVexTable extends Vue {
         setTimeout(() => {
             this.cds.index = data.rowIndex;
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
-            this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
+            // this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
             this.$bus.$emit("row_click",value);    
+            if(this.cds.ds_sub){
+                for(var i=0;i<this.cds.ds_sub.length;i++){
+                    let cc = this.cds.ds_sub[i];
+                    this.$bus.$emit("datachange",cc.ccells.obj_id)
+                }
+            }
         }, 250);
     }
     invokecmd(btn:any,rowIndex:any){
@@ -778,14 +788,17 @@ export default class LayCelVexTable extends Vue {
         this.datachange(obj_id);
     }
     datachange(obj_id:string =''){
+        console.log("dataChange")
         if(this.cds.ccells)
         if(obj_id == this.cds.ccells.obj_id){
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 if(this.cds.currRecord){
                     setTimeout(() => {
+                        // cc.loadData(this.cds.cdata.data)
                         cc.clearCurrentRow()
                         cc.setCurrentRow(this.cds.currRecord);
+                        // cc.syncData();
                         // cc.refreshData();
                         // cc.toggleRowSelection(this.cds.currRecord);
                         // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
@@ -1131,7 +1144,25 @@ export default class LayCelVexTable extends Vue {
       });
     }
 
-}
+
+    checkNotNull(cds:CDataSet):boolean{
+            let bok = true;
+            cds.ccells.cels.forEach(item => {
+                if (item.unNull&&bok) {
+                    let vl = null;
+                    let hide:any = [];
+                    if(cds.currRecord.data[item.id]!=null)
+                        vl = cds.currRecord.data[item.id]+'';
+                    if (!vl && hide.indexOf(item.id) == -1) {
+                        this.$notify.warning( "【" + item.labelString + "】不能为空!");
+                        bok =  false;
+                        return false;
+                    }
+                }
+            }); 
+            return bok;
+        }
+    }
 </script>
 <style lang="scss" scoped>
 .sum{

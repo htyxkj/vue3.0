@@ -3,6 +3,10 @@ export namespace GPSUtil {
     var x_pi = 3.14159265358979324 * 3000.0 / 180.0;  
     var a = 6378245.0;  
     var ee = 0.00669342162296594323;  
+
+ 
+
+
     class GPSUtil {
 
         transformLat(x:any,y:any) {  
@@ -74,6 +78,8 @@ export namespace GPSUtil {
          * * 火星坐标系 (GCJ-02) to 84 * * @param lon * @param lat * @return 
          * */  
         gcj02_To_Gps84(lat:any, lon:any) {  
+            lat = +lat;
+            lon = +lon;
             var gps = this.transform(lat, lon);  
             var lontitude = lon * 2 - gps[1];  
             var latitude = lat * 2 - gps[0];  

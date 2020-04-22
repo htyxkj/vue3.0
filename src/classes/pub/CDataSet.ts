@@ -319,6 +319,8 @@ export default class CDataSet {
   }
 
   checkAllGS() {
+    if(!this.currRecord)
+        return;
     this.ccells.cels.forEach(col => {
         let scstr = col.script;
         if (scstr && scstr.indexOf("=:") === 0) {
@@ -858,14 +860,16 @@ export default class CDataSet {
   //创建旧主键集合（主键值就行修改后执行）
   makeOldPK(){
     if((this.currRecord.c_state & 1) != 1){
-      if(this.currRecord.oldpk.length == 0){//旧主键是空 
-        for(var i=0;i<this.ccells.cels.length;i++){
-            let cel = this.ccells.cels[i];
-            if((cel.attr & 0x1) >0 ){//是主键
-                this.currRecord.oldpk.push(this.currRecord.data[cel.id]);
+        if(!this.currRecord.oldpk)
+        this.currRecord.oldpk = [];
+        if(this.currRecord.oldpk.length == 0){//旧主键是空 
+            for(var i=0;i<this.ccells.cels.length;i++){
+                let cel = this.ccells.cels[i];
+                if((cel.attr & 0x1) >0 ){//是主键
+                    this.currRecord.oldpk.push(this.currRecord.data[cel.id]);
+                }
             }
         }
-      }
     }
   }
 }

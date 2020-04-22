@@ -295,43 +295,54 @@ export default class Home extends Vue {
     /**
      * 保存我的桌面
      */
-    saveCoList(){
-      for(var i=0;i<this.delLayout.length;i++){
-        this.myDesktop.currRecord.data = this.delLayout[i];
-        this.myDesktop.currRecord.c_state=4
-        let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-        if(this.myDesktop.currRecord.data.usrcode != "*" || userAttr<=1){
-          this.myDesktop.saveData()
+    async saveCoList(){
+        let state =0;
+        for(var i=0;i<this.delLayout.length;i++){
+            this.myDesktop.currRecord.data = this.delLayout[i];
+            this.myDesktop.currRecord.c_state=4
+            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+            if(this.myDesktop.currRecord.data.usrcode != "*" || userAttr<=1){
+                let res = await this.myDesktop.saveData()
+                if(res.data.id == 0 ){
+                    state++;
+                }
+            }
         }
-      }
-      this.delLayout = [];
-      for(var i =0;i<this.layout.length;i++){
-        let cc = this.layout[i]; 
-        cc.x = this.layout[i].x
-        cc.y = this.layout[i].y
-        cc.w = this.layout[i].w
-        cc.h = this.layout[i].h
-        if(cc.state !=1)
-          cc.state =2;
-        this.myDesktop.currRecord = this.myDesktop.createOne();
-        let usrcode = this.myDesktop.currRecord.data.usrcode
-        this.myDesktop.currRecord.data = cc;   
-        let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-        if(userAttr <=1){
-          this.myDesktop.currRecord.data.usrcode = "*"
+        this.delLayout = [];
+        for(var i =0;i<this.layout.length;i++){
+            let cc = this.layout[i]; 
+            cc.x = this.layout[i].x
+            cc.y = this.layout[i].y
+            cc.w = this.layout[i].w
+            cc.h = this.layout[i].h
+            if(cc.state !=1)
+            cc.state =2;
+            this.myDesktop.currRecord = this.myDesktop.createOne();
+            let usrcode = this.myDesktop.currRecord.data.usrcode
+            this.myDesktop.currRecord.data = cc;   
+            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+            if(userAttr <=1){
+                this.myDesktop.currRecord.data.usrcode = "*"
+            }else{
+                if(cc.usrcode == '*'){
+                    cc.state = 1;
+                    this.myDesktop.currRecord.data.usrcode = usrcode;
+                }
+            }
+            this.myDesktop.currRecord.c_state=cc.state;
+            let res = await this.myDesktop.saveData()
+            if(res.data.id == 0 ){
+                state++;
+            }
+            cc.state =2;
+        }
+        this.isDraggable = false;
+        this.isResizable = false;
+        if(state == 2){
+            this.$notify.success("保存成功！");
         }else{
-          if(cc.usrcode == '*'){
-            cc.state = 1;
-            this.myDesktop.currRecord.data.usrcode = usrcode;
-          }
+            this.$notify.error("保存失败！")
         }
-        this.myDesktop.currRecord.c_state=cc.state;
-        this.myDesktop.saveData()
-        cc.state =2;
-      }
-      this.isDraggable = false;
-      this.isResizable = false;
-      this.$notify.success("保存成功！");
     }
     /**
      * 查询我的桌面

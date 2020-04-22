@@ -2,7 +2,7 @@
     <div>
         <el-dialog title="流程查看" :visible.sync="opendlg" width="40%" append-to-body>
             <div>
-                <div v-for="(item,index) in info" >
+                <div v-for="(item,index) in info" :key="index">
                     <div class="div2-1" v-if=" (item.stfr == '驳回' || item.stfr == '新建')">
                         <img class="image2" src="@/assets/check/process/process_ty.png">
                         <div class="div3">

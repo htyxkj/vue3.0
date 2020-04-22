@@ -235,6 +235,13 @@ export default class BipMenuBtnDlg extends Vue {
             //     })
             // }
         }else if(btn.dlgType == 'D'){ //调用后台程序 
+            let opera:any = this.env.dsm.opera;
+            if(opera && opera.statefld){
+                let state = this.env.dsm.currRecord.data[opera.statefld];
+                if(state && state !=0 && state != -1 && state !=5){
+                    return;
+                }
+            }
             let dlgCont = this.btn.dlgCont;
             let cc = dlgCont.split(";")
             if(cc.length<4){
@@ -251,14 +258,23 @@ export default class BipMenuBtnDlg extends Vue {
                 if(!bok){
                     return ; 
                 }
+                // if ((this.env.dsm.currRecord.c_state & 2) > 0) {
+                //     this.$alert(
+                //         `当前数据没有保存，请先保存当前行数据`,
+                //         `系统提醒`,
+                //         { type: "info" }
+                //     ).catch(() => {
+                //         console.log("取消");
+                //     });
+                //     return;
+                // }
                 this.$message.success("操作执行中。。。。。")
                 await tools.getDlgRunClass(v,b).then(res =>{
                     if(res){
-                        console.log(res)
-                        if(cc[2] && cc[2] =='1'){
-                            this.$emit("selData")
-                        }
                         if(res.data.id == 0 ){
+                            if(cc[2] && cc[2] =='1'){
+                                this.$emit("selData")
+                            }
                             this.$notify.success(res.data.message)
                         }else if(res.data.id == -2){
                             console.log(res);
@@ -268,7 +284,7 @@ export default class BipMenuBtnDlg extends Vue {
                     }
                 })
             }else{
-                let cellID = cc[2];
+                let cellID = cc[3];
                 if(cellID){
                     this.dlgDCell = await this.getCells(cellID);
                     this.dlgDCell.createRecord();
@@ -276,6 +292,13 @@ export default class BipMenuBtnDlg extends Vue {
                 }
             }
         }else if(btn.dlgType == 'E'){ //开支录入表员工按钮点击
+            let opera:any = this.env.dsm.opera;
+            if(opera && opera.statefld){
+                let state = this.env.dsm.currRecord.data[opera.statefld];
+                if(state && state !=0 && state != -1 && state !=5){
+                    return;
+                }
+            }
             const loading = this.$loading({
                 lock: true,
                 text: '拼命加载中',
@@ -290,7 +313,6 @@ export default class BipMenuBtnDlg extends Vue {
                 let v = JSON.stringify(jsonv); 
                 await tools.getDlgRunClass(v,b).then(res =>{
                     if(res.data.id==0){
-                        console.log(res)
                         let values = res.data.data.values;
                         let Refer = res.data.data.refer;
                         let lbno = res.data.data.lbno;//页面上的类别

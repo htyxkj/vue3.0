@@ -54,6 +54,8 @@ import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
 import echarts from 'echarts'; 
+import { GPSUtil } from "./class/GPSUtil";
+let Gps = GPSUtil.GPS;
 @Component({
     components: {
         tMap,
@@ -229,6 +231,12 @@ export default class TrackShow extends Vue {
         for(var i=0;i<this.taskData.length;i++){
             let data = this.taskData[i];
             if(data){
+                let lnglat = [data.latitude, data.longitude]
+                if(!data.sbid){
+                    lnglat = Gps.bd09_To_gps84(data.latitude,data.longitude);
+                    data.longitude = lnglat[1];
+                    data.latitude = lnglat[0]
+                }
                 let flow = data.flow;
                 let lgt = new T.LngLat(data.longitude, data.latitude)
                 po.push(lgt);

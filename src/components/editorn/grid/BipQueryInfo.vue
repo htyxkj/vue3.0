@@ -213,60 +213,74 @@ export default class BipQueryInfo extends Vue{
     }
 
     selectOK(){
-        let crd = this.dsmfrom.currRecord
-        let crd0 = this.cds.currRecord
-        console.log(crd0.subs)
-        crd0 = this.makeUIRecord(this.qcopyconf,crd,crd0,this.cds.ccells)
-        crd0.c_state |= 2
-        // console.log(this.qcopyconf)
-        if(this.qcopyconf.subs.length>0){
-            crd.subs.forEach(cdata=>{
-                let id = cdata.obj_id
-                let _index = this.qcopyconf.subs.findIndex(item=>{
-                    // console.log(item.toId,id)
-                    return item.fromID == id;
-                })
-                //  console.log(_index)
-                if(_index>-1){
-                    let conf = this.qcopyconf.subs[_index]
-                    // console.log(conf)
-                    let cells = this.findCells(this.cds.ccells,conf.toId);
-                    let _mm = crd0.subs.findIndex(item=>{
-                        return item.obj_id == conf.toId
+        let listCrd =[];
+        if(this.dsmfrom.currRecordArr.length>0){
+            listCrd = this.dsmfrom.currRecordArr;
+        }else{
+            listCrd.push(this.dsmfrom.currRecord)
+        }
+        let cc = this.cds.currRecord;
+        for(var i=0;i<listCrd.length;i++){
+            let crd = listCrd[i];
+            if(i>0){
+                this.cds.createRecord()
+            }
+            let crd0:CRecord = new CRecord();
+            crd0 = Object.assign({},this.cds.currRecord);
+            crd0 = this.makeUIRecord(this.qcopyconf,crd,crd0,this.cds.ccells)
+            crd0.c_state |= 2
+            if(this.qcopyconf.subs.length>0){
+                crd.subs.forEach(cdata=>{
+                    let id = cdata.obj_id
+                    let _index = this.qcopyconf.subs.findIndex(item=>{
+                        // console.log(item.toId,id)
+                        return item.fromID == id;
                     })
-                    if(_mm>-1){
-                        crd0.subs[_mm].clearValues();
-                    }
-                    if(cells){
-                        let sdata = new CData(id)
-                        let _nn = this.cds.ds_sub.findIndex(item=>{
-                            // console.log(item.ccells.obj_id,conf.toId,'7777777')
-                            return item.ccells.obj_id == conf.toId
+                    //  console.log(_index)
+                    if(_index>-1){
+                        let conf = this.qcopyconf.subs[_index]
+                        // console.log(conf)
+                        let cells = this.findCells(this.cds.ccells,conf.toId);
+                        let _mm = crd0.subs.findIndex(item=>{
+                            return item.obj_id == conf.toId
                         })
-                        if(_nn>-1){
-                            let subcds = this.cds.ds_sub[_nn]
-                            subcds.clear()
-                            for(let m=0;m<cdata.data.length;m++){
-                                let cr1 = cdata.data[m];
-                                let cr2 = subcds.createRecord()
-                                cr2 = this.makeUIRecord(conf,cr1,cr2,cells)
-                                cr2.c_state |= 2;
-                                sdata.addRecord(cr2,-1);
+                        if(_mm>-1){
+                            crd0.subs[_mm].clearValues();
+                        }
+                        if(cells){
+                            let sdata = new CData(id)
+                            let _nn = this.cds.ds_sub.findIndex(item=>{
+                                // console.log(item.ccells.obj_id,conf.toId,'7777777')
+                                return item.ccells.obj_id == conf.toId
+                            })
+                            if(_nn>-1){
+                                let subcds = this.cds.ds_sub[_nn]
+                                subcds.clear()
+                                for(let m=0;m<cdata.data.length;m++){
+                                    let cr1 = cdata.data[m];
+                                    let cr2 = subcds.createRecord()
+                                    cr2 = this.makeUIRecord(conf,cr1,cr2,cells)
+                                    cr2.c_state |= 2;
+                                    sdata.addRecord(cr2,-1);
+                                }
+                            }
+                            if(_mm>-1){
+                                crd0.subs[_mm] = sdata
+                            }else{
+                                crd0.subs.push(sdata)   
                             }
                         }
-                        if(_mm>-1){
-                            crd0.subs[_mm] = sdata
-                        }else{
-                            crd0.subs.push(sdata)   
-                        }
-                    }
-                    // console.log(crd0,cells,'99999')
+                        // console.log(crd0,cells,'99999')
 
-                }
-            })
+                    }
+                })
+            }
         }
-         this.$emit('select')
-        // console.log(crd0.data)
+        this.cds.currRecord =cc;
+        // this.cds.index = 0;
+        // this.cds.currRecord = this.cds.cdata.data[0];
+        // this.$bus.$emit('datachange',this.cds.ccells.obj_id)
+        this.$emit('select')
     }
 
     makeUIRecord(conf:QCopyConf,crd:CRecord,crd0:CRecord,cells:Cells){
@@ -365,7 +379,6 @@ export default class BipQueryInfo extends Vue{
             tools.getBipInsAidInfo(this.bipInsAid.id,210,qq).then(res=>{
                 if(res.data.id==0){
                     let vr = res.data.data.data
-                    console.log(vr,'ffff') 
                     if(vr){
                         let cd : CData = new CData('');
                         let retdata = vr

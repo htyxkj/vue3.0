@@ -74,6 +74,11 @@ export default class BipAutograph extends Vue{
     mounted(){ 
         let record = this.cds.currRecord
         this.model1 =record.data[this.cell.id];
+        if(!this.bgrid){
+            this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
+        }else{
+            this.span = 24
+        }
     } 
     write(){
         this.showSignature = true; 
@@ -207,6 +212,7 @@ export default class BipAutograph extends Vue{
         var imgBase64 = this.canvas.toDataURL(); 
         if( imgBase64 !== this.model){
             if(this.cds.currCanEdit()){
+                this.$emit("dataChange",imgBase64)
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 let record = this.cds.currRecord
                 record.data[this.cell.id] = imgBase64

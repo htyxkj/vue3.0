@@ -61,6 +61,11 @@
                         </template>
                     </el-checkbox-group>
                 </el-row>
+                <el-row v-if="signature" class="el-col-sm-24">
+                    <el-form @submit.native.prevent label-position="right" label-width="60px">
+                        <bip-input-autograph :cell="cell" :cds="cds" :model="signatureValue" :bgrid="false" :row="0" @dataChange="dataChange"></bip-input-autograph>
+                    </el-form>
+                </el-row>
             </template>
         </template>
   
@@ -84,13 +89,18 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch, Emit } from "vue-property-decorator"
+import BipInputAutograph from '../editorn/BipInputAutograph.vue'
 import CeaPars from "@/classes/cenv/CeaPars";
 import { BIPUtil } from "@/utils/Request";
 import { User } from '@/classes/User';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from '@/store/modules/login/types';
+import CDataSet from '../../classes/pub/CDataSet';
+import { values } from 'xe-utils/methods';
 let tools = BIPUtil.ServApi
-@Component({})
+@Component({
+    components:{BipInputAutograph}
+})
 export default class BipWork extends Vue{
     @Provide() centerDialogVisible:boolean = false
     @Provide() loading:boolean = false
@@ -107,6 +117,14 @@ export default class BipWork extends Vue{
     @Provide() canBack:boolean = false;//是否可以退回
     @Provide() canRetrial:boolean = false;//是否可以重新审核
     @Provide() smakefld:String = "";//制单人
+
+    @Provide() signature:boolean = false;//是否需要审批人签名
+    @Provide() signatureValue:any= null;//签名信息
+    @Provide() cell:any={
+        id:"signature",
+        labelString:"签名",
+    }
+    @Provide() cds:CDataSet = new CDataSet("");
     @Getter('user', { namespace: 'login' }) user?: User;//当前登录人
 
     open(info:any,cea:CeaPars,smakefld:String){ 
@@ -198,6 +216,18 @@ export default class BipWork extends Vue{
         if((info.upUser.userCode == this.user.userCode && !this.bchked )|| cea.statefr =="6"){
             this.canBack = true;
         }
+        if(this.chkInfos.currState.checked){
+            let sshu = this.chkInfos.currState.userssh
+            if(sshu){
+                for(var z=0;z<sshu.length;z++){
+                    if(this.user){
+                        if(sshu[z].userCode == this.user.userCode){
+                            this.canBack = true;
+                        }
+                    }
+                }
+            }
+        }
         if(this.nodeList&&this.nodeList.length>0){ 
             this.initSelectUser()
         }
@@ -208,10 +238,15 @@ export default class BipWork extends Vue{
     }
 
     initSelectUser(){
+        console.log("initSelectUser")
         if (this.chkInfos) {
             this.chkInfos.list.forEach((item:any) => {
-                if(item.stateId =='6')
+                if(item.stateId =='6'){
+                    if(item.attr && (item.attr&16)>0){//签名
+                        this.signature = true;
+                    }
                     return;
+                }
                 if(item.stateId == this.stateId){
                     if(item.hq){//会审 
                         this.userList = [];
@@ -244,16 +279,22 @@ export default class BipWork extends Vue{
                             u.node = item.stateName;
                             u.users = users;
                             this.userList.push(u); 
-                        });
-                        if (this.userList.length == 1) { 
-                            for(var i=0;i<this.userList.length;i++){
-                                if(this.userList[i].users){
-                                    if(this.userListSelect[i] = this.userList[i].users[0]){
-                                        this.userListSelect[i] = this.userList[i].users[0].userCode;
+                            if(this.userList.length>0){
+                                let user = this.userList[0].users;
+                                if(user && user.length>0){
+                                    if(item.attr && (item.attr*16)>0){//签名
+                                        this.signature = true;
+                                    }
+                                    if(item.attr && (item.attr&8)>0){//审批人全选
+                                        for(var j=0;j<user.length;j++){
+                                        this.userListSelect.push(user[j].userCode)
+                                        }
+                                    }else{
+                                        this.userListSelect.push(user[0].userCode)
                                     }
                                 }
                             }
-                        }
+                        });
                     }
                 }
             });
@@ -268,6 +309,12 @@ export default class BipWork extends Vue{
 
     //提交审核
     checkUp(){
+        if(this.signature){
+            if(!this.signatureValue || this.signatureValue ==''){
+                this.$notify.error("请签名");
+                return;
+            }
+        }
         const ckuser = this.makeUU()
         if(ckuser.length<=0 && this.stateId!="6"){
             this.$notify.error("没有审核人！");
@@ -285,6 +332,7 @@ export default class BipWork extends Vue{
             this.cea.yjcontext = this.remark;
             this.cea.ckd = this.chkInfos.checked;
             this.cea.tousr = this.makeUU();
+            this.cea.signature = this.signatureValue;
             if(check.hq){ //会审
                 let cnodes = check.cnodes;
                 let schk_mk = "";
@@ -446,6 +494,11 @@ export default class BipWork extends Vue{
         }).finally(()=>{
             this.loading = false
         })
+    }
+
+    //签名变化
+    dataChange(value:any){
+        this.signatureValue = value;
     }
 }
 </script>

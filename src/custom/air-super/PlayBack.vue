@@ -143,7 +143,7 @@
                                         <el-col :span="12">
                                              <div class="speed-content">
                                                  <div class="sp-title nowtime-header">
-                                                     <span>当前高度</span>
+                                                     <span>海拔高度</span>
                                                  </div>
                                                  <div class="time">
                                                      {{nowheight}}m
@@ -233,27 +233,6 @@
                                     </el-row> -->
                                 </div>
                            </div>
-                         
-                            
-                            
-                            <!-- <el-row style="width:100%">
-                                <el-col :span="12">
-                                    <div ref="speedChart" style="height:200px;background-color:#ffffff;width:145px;"></div> 
-                                </el-col>
-                                <el-col :span="12">
-                                    <div ref="pressureChart" style="height:200px;background-color:#ffffff;width:145px;"></div> 
-                                </el-col>
-                            </el-row>
-                            <el-row style="width:100%">
-                                <el-col :span="24">
-                                    <div ref="flowChart" style="height:200px;background-color:#ffffff;width:290px;"></div> 
-                                </el-col>
-                            </el-row>
-                            <el-row style="width:100%">
-                                <el-col :span="24">
-                                   <div ref="heightChart" style="height:200px;background-color:#ffffff;width:290px;"></div> 
-                                </el-col>
-                            </el-row> -->
                         </el-aside>
                     </el-container>
                 </el-container>
@@ -334,24 +313,9 @@ export default class OperatingArea extends Vue {
     @Provide() trackColor:string = "#FFFF00";//航迹颜色
     @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
-    @Provide() speedChart:any = null;//速度仪表盘对象
-    @Provide() speedChartOption:any = null;//速度数据
-
-    @Provide() pressureChart:any = null;//压强仪表盘对象
-    @Provide() pressureChartOption:any = null;//压强仪表盘对象
-
-    @Provide() flowChart:any = null;//流量图对象
-    @Provide() flowChartOption:any = null;
-    @Provide() flowChartData:any = [];//数据
-
-    @Provide() heightChart:any = null;//高度图对象
-    @Provide() heightChartOption:any = null;//
-    @Provide() heightChartData:any = [];//数据
-
     @Provide() interval:number = 1000;//数据上报间隔
 
     @Provide() forward:number = 1;//快进倍数
-
 
     @Provide() operaWidth: number = 0; //右侧作业区宽度
     @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
@@ -401,8 +365,6 @@ export default class OperatingArea extends Vue {
             this.tMap.addEventListener("zoomend", this.zoomend);//地图缩放结束
         }
         this.initWarn();
-        //初始化图表参数
-        // this.initOptions();
     }
    
     mapChnage() {
@@ -537,7 +499,9 @@ export default class OperatingArea extends Vue {
                 this.haveFlow =[];
                 for(var i=0;i<values.length;i++){
                     let v = values[i];
-                    let lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                    let lnglat = [v.latitude,v.longitude]
+                    if(!v.sbid)
+                        lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
                     let poin = new T.LngLat(lnglat[1],lnglat[0]);
                     this.taskData[i].latitude = lnglat[0];
                     this.taskData[i].longitude = lnglat[1];
@@ -603,7 +567,8 @@ export default class OperatingArea extends Vue {
                 this.sumtimeflow = this.sumtimeflow + 1;
                 this.mileage = this.mileage+data.speed /3600
                 this.mileage = parseFloat(this.mileage.toFixed(4))
-                this.sumarea = (this.sumarea +  (this.flightBeltWidth  * data.speed *1000/3600 /666.67));
+                let nowArea = this.flightBeltWidth  * data.speed *1000/3600 /666.67;
+                this.sumarea = (this.sumarea + nowArea);
                 let lgt = new T.LngLat(data.longitude, data.latitude)
                 if(this.sprayBreak){//中断过需要从起一条线
                     let points = [];
@@ -634,12 +599,23 @@ export default class OperatingArea extends Vue {
                 
                 let msg = "";
                 //预警信息
-                if(flow>this.warn.maxflow){//流量异常
-                    msg = "瞬时流量异常("+flow+"),超出预警值("+this.warn.maxflow+")<br/>"
+                //this.flightBeltWidth  幅宽
+                //Flow = （Loading÷1000）÷（ （（ Area÷1500）÷（Swath÷1000）） ÷ Speed）  
+                let standard=[];
+                let flow0 = (this.warn.drugload/1000)/(((this.warn.area/this.warn.area)/(this.flightBeltWidth/1000))/data.speed);
+                if(!isNaN(flow0)){
+                    standard[0] = (flow0*(1-(this.warn.drugfloat/100))).toFixed(2);
+                    standard[1] = (flow0*(1+(this.warn.drugfloat/100))).toFixed(2);
+                    if(flow>standard[1] || flow<standard[0]){
+                        msg = "当前速度："+data.speed+"km/h<br/>瞬时流量异常("+flow+"),超出当前速度标准范围("+standard[0]+"~"+standard[1]+")"
+                    }
                 }
-                if(data.speed>this.warn.maxspeed){//速度异常
-                    msg += "飞行速度异常("+data.speed+"),超出预警值("+this.warn.maxspeed+")<br/>"
-                }
+                // if(flow>this.warn.maxflow){//流量异常
+                //     msg = "瞬时流量异常("+flow+"),超出预警值("+this.warn.maxflow+")<br/>"
+                // }
+                // if(data.speed>this.warn.maxspeed){//速度异常
+                //     msg += "飞行速度异常("+data.speed+"),超出预警值("+this.warn.maxspeed+")<br/>"
+                // }
                 if(msg != ""){
                     //创建图片对象
                     var icon = new T.Icon({
@@ -660,40 +636,6 @@ export default class OperatingArea extends Vue {
             }
           
             let speed = data.speed;
-            
-
-            // this.speedChartOption.series[0].data[0].value = speed;
-            // this.speedChart.setOption(this.speedChartOption, true);
-            //压强暂时没有
-
-            //高度
-            // let hData = {
-            //     name:data.speedtime1,
-            //     value:[data.speedtime,data.height],
-            // };
-            // if(this.heightChartData.length>=5){
-            //     this.heightChartData.shift();
-            // }
-            // this.heightChartData.push(hData);
-            // this.heightChart.setOption({
-            //     series: [{
-            //         data: this.heightChartData
-            //     }]
-            // });
-            // //流量
-            // let fData = {
-            //     name:data.speedtime1,
-            //     value:[data.speedtime,data.flow],
-            // };
-            // if(this.flowChartData.length>=5){
-            //     this.flowChartData.shift();
-            // }
-            // this.flowChartData.push(fData);
-            // this.flowChart.setOption({
-            //     series: [{
-            //         data: this.flowChartData
-            //     }]
-            // });
         }
         // this.taskData[index-1] = null;
         if(index >= length){//最后一点
@@ -856,8 +798,7 @@ export default class OperatingArea extends Vue {
         qe.page.pageSize = 1;
         let res = await tools.getBipInsAidInfo("GETWARN", 210, qe);
         if(res.data.id ==0){
-            this.warn = res.data.data.data.values[0]
-            console.log(this.warn);
+            this.warn = res.data.data.data.values[0] 
         }
     }
     /**
@@ -898,120 +839,6 @@ export default class OperatingArea extends Vue {
                 this.tMap.addOverLay(marker);
             }
         }
-    }
-    /**
-     * 初始化右侧图表
-     */
-    initOptions(){
-        this.speedChart = echarts.init(this.$refs.speedChart as HTMLCanvasElement); 
-        this.speedChartOption  = { series: [{
-            name: '飞行速度',
-            type: 'gauge',
-            axisLine: {
-                lineStyle: {
-                    width: 8 // 这个是修改宽度的属性
-                }
-            },splitLine:{
-                length:12
-            },
-            pointer:{
-                width:4
-            },
-            max: 220,
-            detail: {formatter:'{value}km/h',fontSize:12},
-            data: [{value: 0, name: '速度'}]}]};
-        this.speedChart.setOption(this.speedChartOption);  
-
-        this.pressureChart = echarts.init(this.$refs.pressureChart as HTMLCanvasElement); 
-        this.pressureChartOption  = { series: [{
-            name: '喷雾压强',
-            type: 'gauge', 
-           axisLine: {
-                lineStyle: {
-                    width: 8 // 这个是修改宽度的属性
-                }
-            },splitLine:{
-                length:12
-            },
-            pointer:{
-                width:4
-            },
-            detail: {formatter:'{value}Kpa',fontSize:12},
-            data: [{value: 0, name: 'Kpa'}]}]};
-        this.pressureChart.setOption(this.pressureChartOption);  
-
-        let datanow = new Date();
-
-        this.heightChart = echarts.init(this.$refs.heightChart as HTMLCanvasElement); 
-        this.heightChartOption = {
-            title: {
-                text: '海拔高度'
-            },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
-                }
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                nameTextStyle:{
-                    color:'#f9f9f9'
-                },
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [{
-                    name:datanow,
-                    value:[
-                        datanow,
-                        0
-                    ]}
-                ]
-            }]
-        };
-        this.heightChart.setOption(this.heightChartOption);  
-
-        this.flowChart = echarts.init(this.$refs.flowChart as HTMLCanvasElement); 
-        this.flowChartOption= {
-            title: {
-                text: '瞬时流量'
-            },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
-                }
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [{
-                    name:datanow,
-                    value:[
-                        datanow,
-                        0
-                    ]}
-                ]
-            }]
-        };
-        this.flowChart.setOption(this.flowChartOption);  
     }
     @Watch("height")
     heightChange() {

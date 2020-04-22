@@ -25,8 +25,11 @@ export namespace TMapUtils {
                     points.push(new T.LngLat(poin[0], poin[1]));
                     }
                 }
+                let options ={color:color,
+                    opacity: 1,
+                    weight: 4,};
                 //创建线对象
-                editLine = new T.Polyline(points);
+                editLine = new T.Polyline(points,options);
                 //向地图上添加线
                 tMap.addOverLay(editLine); 
             }
@@ -57,8 +60,8 @@ export namespace TMapUtils {
             qCont.setContrast(0);
             oneCont.push(qCont);
             if (oneCont.length != 0) {
-            allCont.push(oneCont);
-            cont = "~" + JSON.stringify(allCont);
+                allCont.push(oneCont);
+                cont = "~" + JSON.stringify(allCont);
             }
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
@@ -70,8 +73,16 @@ export namespace TMapUtils {
                 let values = vv.data.data.data.values;
                 for(var i =0;i<values.length;i++){
                     let vl = values[i];
-                    let cc = this.markSurface(vl.boundary1,vl.color,tMap)
-                    points = points.concat(cc);
+                    if(vl.mergeid){
+                        let oidArr:any = vl.mergeid.split(";");
+                        for(var l =0;l<oidArr.length;l++){
+                            let cc = await this.getOpera0(oidArr[l],tMap);
+                            points = points.concat(cc);
+                        }
+                    }else{
+                        let cc = this.markSurface(vl.boundary1,vl.color,tMap)
+                        points = points.concat(cc);
+                    }
                 }
             }
             return points;
@@ -114,7 +125,7 @@ export namespace TMapUtils {
                 let values = vv.data.data.data.values;
                 for(var i =0;i<values.length;i++){
                     let vl = values[i];
-                    this.makeRoute(vl.route,'',tMap)
+                    this.makeRoute(vl.route,'#00FFFF',tMap)
                 }
             }
             return points;
@@ -128,7 +139,36 @@ export namespace TMapUtils {
             if(hoaid){
                 let haid = hoaid.split(";")
                 for(var i=0;i<haid.length;i++){
-                    this.getOperaBr0(haid[i],tMap);
+                    let oneCont =[];
+                    let allCont = [];
+                    let cont = "";
+                    let qCont = new QueryCont('id', haid[i], 12);
+                    qCont.setContrast(0);
+                    oneCont.push(qCont);
+                    if (oneCont.length != 0) {
+                        allCont.push(oneCont);
+                        cont = "~" + JSON.stringify(allCont);
+                    }
+                    let qe: QueryEntity = new QueryEntity("", "");
+                    qe.page.currPage = 1;
+                    qe.page.pageSize = 400;
+                    qe.cont = cont;
+                    let vv = await tools.getBipInsAidInfo("ROUTEOPERA", 210, qe);
+                    if(vv.data.id == 0){
+                        let values = vv.data.data.data.values;
+                        for(var i =0;i<values.length;i++){
+                            let vl = values[i];
+                            if(vl.mergeid){
+                                let oidArr:any = vl.mergeid.split(";");
+                                for(var l =0;l<oidArr.length;l++){
+                                    this.getOperaBr0(oidArr[l],tMap);
+                                }
+                            }else{
+                                this.getOperaBr0(haid[i],tMap);
+                            }
+                        }
+                    }
+                    
                 }
             }
         }
@@ -156,7 +196,7 @@ export namespace TMapUtils {
                         this.markSurface(vl.avoid,vl.color,tMap)
                     }else if(vl.type ==2){
                         this.markCircle(vl.avoid,vl.color,vl.radius,tMap);
-                    }else{
+                    }else if(vl.type ==0){
                         this.markpoint(vl.avoid,tMap)
                     }
                 }
@@ -199,7 +239,7 @@ export namespace TMapUtils {
             tMap.addOverLay(marker);
         }
         /**
-         * 
+         * 覆盖圆
          * @param lngLat 经纬度
          * @param color 颜色
          * @param radius 半径

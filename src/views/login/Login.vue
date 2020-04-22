@@ -1,7 +1,10 @@
 <template>
   <div class="login-img">
        <div class="login-card">
-      <div class="login-title">欢迎登陆飞防管控平台</div>
+      <!-- <div class="login-title">欢迎登陆飞防管控平台</div> -->
+      <div class="login-title">欢迎登陆{{loginTitle}}</div>
+      <!-- <div class="login-title">BIP-电子通行平台</div> -->
+      <!-- <div class="login-title">欢迎登陆人力资源管理系统</div> -->
       <div class="login-cont" @keyup.enter="login">
 
         <el-form @submit.native.prevent label-position="left" label-width="55px" >
@@ -29,18 +32,19 @@
         </el-row>
       </div>
       <div class="login-footer">
-        <address>&copy;2019：北京一风立创科技有限公司 版权所有</address>
+        <!-- <address>&copy;2019：北京一风立创科技有限公司 版权所有</address> -->
+        <address>&copy;{{COPYRIGHT}}</address>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Provide, Prop } from "vue-property-decorator";
+import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
 import qs from "qs";
 import { BIPUtil } from "@/utils/Request";
-
+import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { LoginState } from "@/store/modules/login/types";
 const namespace: string = "login";
@@ -54,6 +58,8 @@ export default class Login extends Vue {
   @Mutation("user", { namespace }) setUserInfo: any;
   @Mutation("menulist", { namespace }) setMenusInfo: any;
   @Provide() checked:boolean =false;
+  @Provide() loginTitle = "";
+  @Provide() COPYRIGHT ="";
   mounted() {
     if (!this.user) {
       this.user = new User("", "", "");
@@ -62,6 +68,8 @@ export default class Login extends Vue {
     // this.user.password = "";
     let ii: string[] = ["1", "2"];
     this.getlocalStorage()
+    this.loginTitle = BaseVariable.Project_Name;
+    this.COPYRIGHT = BaseVariable.COPYRIGHT;
   }
 
   login() {
@@ -94,7 +102,13 @@ export default class Login extends Vue {
           this.setMenusInfo(ms);
 
           this.$router.push({ path: "/", name: "home" });
-          this.$notify.success("登录成功");
+        //   this.$notify.success({message:"登录成功",offset:100});
+          this.$notify.success({
+            title:"",
+            type: 'success',
+            message: '登录成功',
+            offset: 40
+        })
           // 判断记住账户是否为true,是将新账户存储至localStroge，否则清除localStroge中的账户
           if(this.checked){
             if(this.user){
@@ -141,6 +155,12 @@ export default class Login extends Vue {
   clear(){
     localStorage.removeItem('siteName');
   }
+  @Watch("BaseVariable")
+  titleWatch(){
+    this.loginTitle = BaseVariable.Project_Name;
+    this.COPYRIGHT = BaseVariable.COPYRIGHT;
+  }
+
 }
 </script>
 

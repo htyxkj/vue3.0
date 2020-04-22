@@ -84,17 +84,13 @@ export default class BipPopView extends Vue{
 
     mounted(){
         if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels){
-            this.showCols = this.bipInsAid.cells.cels.filter((item,index)=>{
-                let _indexs:number[] = this.bipInsAid.showColsIndex
-                let en = _indexs.find(it=>{
-                    return it == index
-                })
-                if(en == undefined){
-                    return false
-                }
-                return en>-1;
-                // return item.isReq||item.isShow;
-            })
+            let _indexs:number[] = this.bipInsAid.showColsIndex;
+            this.showCols = [];
+            for(var i=0;i<_indexs.length;i++){
+                let idx = _indexs[i];
+                let cel = this.bipInsAid.cells.cels[idx];
+                this.showCols.push(cel)
+            }
             this.idKey = this.bipInsAid.cells.cels[0].id;
 
         }

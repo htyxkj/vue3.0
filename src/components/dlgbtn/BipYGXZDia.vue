@@ -72,21 +72,29 @@ export default class BipYGXZDia extends Vue{
     } 
 
     async selectOK(){ 
+        console.log("user selectOK")
+        const loading = this.$loading({
+            lock: true,
+            text: "加载中",
+            spinner: "el-icon-loading",
+            background: "background:'rgba(0, 0, 0, 0.7)'"
+        });
         let b = JSON.stringify(this.btn);
         let jsonv = {users:this.checkUser,lbno:this.lbno,yymm:this.yymm}
         let v = JSON.stringify(jsonv); 
         await tools.getDlgRunClass(v,b).then(res =>{
             if(res.data.id==0 && this.env.dsm.canEdit){
                 let values = res.data.data.values;
-                let dsm = this.env.dsm.ds_sub[0];
+                let dsm:any = this.env.dsm.ds_sub[0];
                 dsm.clear();
+                dsm.currRecord = null;
                 this.$bus.$emit('datachange',dsm.ccells.obj_id);
                 for(var i=0;i<values.length;i++){
+                    dsm.createRecord();
                     dsm.currRecord.c_state |= 2;
                     if(dsm.ds_par){
                         dsm.ds_par.currRecord.c_state |= 2;
                     }
-                    dsm.createRecord();
                     let vl = values[i];
                     let userID = vl.userid;
                     let ygdata = this.jsonVal[userID];
@@ -105,6 +113,12 @@ export default class BipYGXZDia extends Vue{
                 this.$notify.error(res.data.message)
             }
             this.visibles = false;
+            loading.close();
+        }).catch(err=>{
+            console.log("出错了！")
+            this.$notify.error(err)
+        }).finally(()=>{
+            loading.close();
         })
     }
  

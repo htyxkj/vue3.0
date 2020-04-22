@@ -13,8 +13,8 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home,
-    //   component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),   
+    //   component: Home,//默认首页
+      component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
       meta: {
         keepAlive: true // 需要被缓存
       }

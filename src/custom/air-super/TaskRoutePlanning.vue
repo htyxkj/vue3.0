@@ -432,6 +432,7 @@ export default class TaskRoutePlanning extends Vue {
         return data;
     }
 /****************************** 起降点数据END *********************************/
+
 }
 </script>
 <style scoped lang="scss" >

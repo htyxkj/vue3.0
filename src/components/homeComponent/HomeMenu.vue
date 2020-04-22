@@ -22,9 +22,16 @@
                                 <img class="img pointer" :src="uri+item.menuIcon" @click="menuClick(item.menuId,item.command)"/>
                             </el-col>
                             <el-col :span="24" class="imgcol pointer">
-                                <span @click="menuClick(item.menuId,item.command)" class="menuname">
-                                    {{item.menuName}}
-                                </span>
+                                <template v-if="item.menuName.length>7">
+                                    <el-tooltip effect="dark" :content="item.menuName" placement="top">
+                                        <span class="menuname"  @click="menuClick(item.menuId,item.command)" >{{item.menuName.substring(0,6)}}…</span>
+                                    </el-tooltip>
+                                </template>
+                                <template v-else>
+                                    <span class="menuname"  @click="menuClick(item.menuId,item.command)" >
+                                        {{item.menuName}}
+                                    </span>
+                                </template>
                             </el-col>
                         </el-row>
                     </el-col>

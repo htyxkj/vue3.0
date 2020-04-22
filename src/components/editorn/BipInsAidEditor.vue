@@ -325,7 +325,7 @@ export default class BipInsAidEditor extends Vue{
         } else {
             if (this.refLink && this.refLink.showV) {
                 if (this.bcode) {
-                    this.model1 = this.refLink.showV;
+                    this.model1 = this.refLink.realV;
                 } else{
                     this.model1 = this.refLink.showV;
                 } 

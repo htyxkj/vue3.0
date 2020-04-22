@@ -22,7 +22,7 @@
                 align="center"
                 size="mini"
                 :height="style1"
-                @select-all="selectChange"
+                @checkbox-all="selectChange"
                 @select-change="selectChange"
                 ref="SortiesTable"
                 :data="tableData">
@@ -35,8 +35,8 @@
                 <vxe-table-column field="avgSpeed" title="平均航速(km、h)"></vxe-table-column>
                 <vxe-table-column field="sumDis" title="喷洒里程(km)"></vxe-table-column>
                 <vxe-table-column field="sumArea" title="喷洒面积(亩)"  ></vxe-table-column>
-                <vxe-table-column field="avgFlow" title="平均流量(m3/h)(m)" ></vxe-table-column>
-                <vxe-table-column field="sumFlow" title="总流量(m3)(m3/h)(m)" ></vxe-table-column>
+                <vxe-table-column field="avgFlow" title="平均流量(m3/h)" ></vxe-table-column>
+                <vxe-table-column field="sumFlow" title="总流量(m3)" ></vxe-table-column>
             </vxe-table>
         </div>
   </div>

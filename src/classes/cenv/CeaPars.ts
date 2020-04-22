@@ -11,6 +11,7 @@ export default class CeaPars{
     ckd:any = false
     schk_mk:string = ''
     sorg:string = ''
+    signature:string = ''//审批人签名
     constructor(param:any){
         const options={
             sid:'',
@@ -23,7 +24,8 @@ export default class CeaPars{
             tousr:'',
             ckd:false,
             schk_mk:'',
-            sorg:''
+            sorg:'',
+            signature:''
           }
         Object.assign(this,options,param);
     }

@@ -1442,6 +1442,7 @@ export default class BipStatisticsDialog extends Vue {
             }
             this.comparedData[keyName] = code;
         }
+        name = name +'';
         if (name.indexOf("-") > 0 && name.lastIndexOf("-")== name.length-1) {
             name = name.substring(0, name.length - 1);
         }

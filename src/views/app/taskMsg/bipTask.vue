@@ -34,6 +34,7 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { BIPUtil } from "@/utils/Request"; 
+import { Route, RawLocation } from "vue-router";
 import { URIParams } from "@/classes/URIParams"; 
 import { User } from '@/classes/User';
 import { Menu } from "@/classes/Menu";
@@ -249,6 +250,13 @@ export default class bipTask extends Vue {
             } 
         }
         return this.aidValues.get(str);
+    }
+
+    @Watch("$route")
+    routerChange(to: Route, from: Route) { 
+        if (to.name === "myTask") {
+            this.fetchTaskData();
+        }
     }
 }
 </script>

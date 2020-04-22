@@ -98,6 +98,9 @@ export default class App extends Vue {
             BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
             BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
             BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
+            BaseVariable.Project_Name = res.data.Project_Name;
+            BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
+            
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -113,6 +116,8 @@ export default class App extends Vue {
             BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
             BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
             BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
+            BaseVariable.Project_Name = res.data.Project_Name;
+            BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()

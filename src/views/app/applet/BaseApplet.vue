@@ -16,7 +16,7 @@
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
        <bip-work-process ref="work_process"></bip-work-process>
         <template>
-            <bip-menu-btn-dlg ref="bip_base_dlg" @selData="refreshCurrent"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
+            <bip-menu-btn-dlg ref="bip_base_dlg" @selData="refreshCurrent" @saveData="saveData"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
             <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
         </template>
     </el-row>
@@ -48,6 +48,7 @@ import { stringify } from 'querystring';
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
 import { clear } from 'xe-utils/methods';
+import { t } from 'vxe-table';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
@@ -74,6 +75,7 @@ export default class BaseApplet extends Vue{
     @Provide() oprid:number = 13
     @Provide() style:string='';
     @Provide() switchBusID:number=0;
+    @Provide() rowClickBusID:number =0;
     @Provide() switchHide:any={};
     @Provide() switchShow:any={};
 
@@ -414,7 +416,7 @@ export default class BaseApplet extends Vue{
                 qq.mcont ="";
                 qq.tcell = this.dsm.ccells.obj_id;
                 qq.pcell = this.dsm.ds_sub[j].ccells.obj_id;
-                qq.page.pageSize=10;
+                qq.page.pageSize=10000;
                 qq.page.currPage=1;
                 // let vv:CData = await this.findDataFromServe(qq);
                 let res = await this.dsm.ds_sub[j].queryData(qq);
@@ -422,6 +424,7 @@ export default class BaseApplet extends Vue{
                     let data = res.data;
                     let vv:CData = data.data.data;
                     let cd :CData = this.initCData(vv)
+                    cd.page = res.data.data.data.page;
                     this.dsm.currRecord.subs[j] = cd;
                 }
             }
@@ -436,9 +439,18 @@ export default class BaseApplet extends Vue{
     /**
      * 点击按钮执行后端程序后刷新当前单据
      */
-    refreshCurrent(){
-        let cont = this.dsm.currRecord.data;
-        this.findData(true,cont);
+    async refreshCurrent(){
+        let pkindex = this.dsm.ccells.pkindex
+        let cont:any ={};
+        if(pkindex){
+            for(var i=0;i<pkindex.length;i++){
+                let index = pkindex[i];
+                let cel = this.dsm.ccells.cels[index];
+                cont[cel.id]= this.dsm.currRecord.data[cel.id];
+            }
+        }
+        await this.findData(true,cont);
+        // this.JumpToIndexCRecord(0);
     }
 //#endregion
 //#region 查询数据
@@ -560,7 +572,7 @@ export default class BaseApplet extends Vue{
                     if(oneSubs){
                         cds1.clear();
                         cds1.setCData(oneSubs)
-                        cds1.page.total = vals.length||0
+                        // cds1.page.total = vals.length||0
                         this.$bus.$emit("datachange", cds1.p_cell);
                     }
                 }
@@ -638,6 +650,7 @@ export default class BaseApplet extends Vue{
                 if (res.status == 200) {
                     let data = res.data;
                     if (data.id == 0) {
+                        this.dsm.currRecord.oldpk=[];
                         let ord: any = data.data; 
                         this.dsm.currRecord.data = Object.assign(
                             this.dsm.currRecord.data,
@@ -764,12 +777,7 @@ export default class BaseApplet extends Vue{
                         let crd = cd0.getRecordAtIndex(i);
                         cd0.ccells.cels.forEach(item=>{
                             if(isok&&item.unNull){
-                                var vl = crd.data[item.id];
-                                if(item.type<5){
-                                    if(!vl){
-                                        vl = 0;
-                                    }
-                                }
+                                let vl = crd.data[item.id];+'';
                                 if (!vl) {
                                     this.$notify.warning( "子表第"+(i+1)+"行"+item.id+"【" + item.labelString + "】不能为空!");
                                     isok =  false;
@@ -834,6 +842,7 @@ export default class BaseApplet extends Vue{
             if(value.dsm.ccells.obj_id == this.dsm.ccells.obj_id){
                 this.dsm.page.index = value.rowIndex
                 this.setListMenuName();
+                // this.JumpToIndexCRecord(this.dsm.page.index);
             }
         }
     }
@@ -887,7 +896,7 @@ export default class BaseApplet extends Vue{
         }else{
              this.style = "margin-bottom:0px;  margin-right: 0px; ";
         }
-        this.$bus.$on("row_click",this.getCRecordByPk2) 
+        this.rowClickBusID = this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
         if(!this.params || !this.params.method){
             this.dsm.createRecord();
@@ -911,6 +920,7 @@ export default class BaseApplet extends Vue{
     }
     beforeDestroy(){
         this.$bus.$off('switchChange',this.switchBusID)
+        this.$bus.$off("row_click",this.rowClickBusID)
     }
     //页面上的Switch值发生变化 0对象编码 1 需要显示的字段  2 需要隐藏的字段
     switchChange(value:any){
