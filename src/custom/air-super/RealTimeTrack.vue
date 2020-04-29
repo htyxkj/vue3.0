@@ -447,13 +447,26 @@ export default class RealTimeTrack extends Vue {
             if(v){
                 let key = task.sid;
                 let lnglat = [v.latitude,v.longitude];
+                let offline = false;
                 if(task.trtype =='0'){
                     lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                }else if(task.trtype == '1'){
+                    if(v.offline+'' == '1'){
+                        offline = true;
+                    }
                 }
                 let cc = lnglat[1]+","+lnglat[0]
                 let poin = new T.LngLat(lnglat[1], lnglat[0]);
                 this.airPoint.push(poin);
-                TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick)
+                let msg = "<div>任务编码："+task.sid+"<br/>任务名称："+task.taskname+"<br/>定位信息:"+lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+v.speedtime
+                if(offline){//离线
+                    msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:red;'>离线</span>"
+                }else{//在线
+                    msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:green;'>在线</span>"
+                }
+                msg +="</div>";
+
+                TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
             }
         } 
     }
@@ -605,7 +618,7 @@ export default class RealTimeTrack extends Vue {
             }
             this.nowspeed = (data.speed).toFixed(3);
 
-            this.nowpressure = data.pressure
+            this.nowpressure = (data.pressure).toFixed(1);
             this.nowtemperature = (data.temperature).toFixed(1);
 
             this.nowflow = data.flow;
@@ -708,6 +721,8 @@ export default class RealTimeTrack extends Vue {
      */
     loadPlane(lnglat1:any,lnglat2:any) {
         let cc = lnglat1.longitude + "," + lnglat1.latitude
+        if(lnglat1.longitude == 0 || lnglat1.latitude == 0)
+            return;
         if(!this.plane){
             this.plane = TMapUt.markRealTimeAir(cc,this.tMap,"",null)
         }else{

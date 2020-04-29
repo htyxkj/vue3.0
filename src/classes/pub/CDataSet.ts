@@ -229,7 +229,7 @@ export default class CDataSet {
     this.canEdit = true;
     this.page.currPage = 1;
     this.page.index = this.index;
-    this.page.total = this.cdata.data.length;
+    this.page.total = this.page.total+1
     return this.currRecord;
   }
 

@@ -404,9 +404,11 @@ export default class LayCelVexTable extends Vue {
 
     async addRecord() {
         if(this.cds.currCanEdit()){
-            let bok = this.checkNotNull(this.cds); 
-            if(!bok)
-                return ; 
+            if(this.cds.cdata.data.length>0){
+                let bok = this.checkNotNull(this.cds); 
+                if(!bok)
+                    return ; 
+            }
             //判断是否是第一次新建
             if(this.cds.cdata.data.length ==0){
                 //第一次新建 判断一下sctrl 是否是需要中常量中取数

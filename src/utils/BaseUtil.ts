@@ -137,7 +137,20 @@ export namespace BIPUtils {
         qe: qe
       });
     }
-
+    /**
+     * @description 根据主对象查询子对象
+     * @param qe 查询对象字符串（经过JSON.stringfy()）
+     * @returns 返回的是一个Object{xxx:xxx}
+     */
+    getQueryChildParams(qe: string) {
+        return Object.assign({
+          apiId: GlobalVariable.APIID_FINDCHILDDATA,
+          dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+          usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
+            .userCode,
+          qe: qe
+        });
+      }
     /**
      * @description 获取RPT查询参数
      * @param qe 查询条件

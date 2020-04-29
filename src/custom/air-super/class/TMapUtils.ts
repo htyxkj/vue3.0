@@ -273,19 +273,36 @@ export namespace TMapUtils {
          * @param tMap    天地图对象
          * @param key     标注点唯一值
          * @param click   单机回调方法
+         * @param msg     鼠标悬浮显示内容
+         * @param offline true 离线，false在线
          * @returns 标注点对象
          * */        
-        markRealTimeAir(lngLat:string,tMap:any,key:any,click:any){
+        markRealTimeAir(lngLat:string,tMap:any,key:any,click:any,msg:any="",offline:boolean=false){
             var icon = new T.Icon({
                 iconUrl: require('@/assets/air-super/plane.png'),
                 iconSize: new T.Point(40, 40),
                 iconAnchor: new T.Point(20, 20)
             });
+            if(offline){
+                icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/offlinePlane.png'),
+                    iconSize: new T.Point(40, 40),
+                    iconAnchor: new T.Point(20, 20)
+                });
+            }
             var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), {icon: icon});
             //向地图上添加标注
             tMap.addOverLay(marker);
             marker.key = key;
-            marker.addEventListener("click",click)
+            if(offline == false){
+                marker.addEventListener("click",click)
+            }
+            if(msg.length>0){
+                var markerInfoWin = new T.InfoWindow(msg);
+                marker.addEventListener("mouseover", function () {
+                    marker.openInfoWindow(markerInfoWin);
+                });// 将标注添加到地图中
+            }
             return marker;
         }
         /**

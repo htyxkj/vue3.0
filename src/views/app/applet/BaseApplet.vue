@@ -398,36 +398,25 @@ export default class BaseApplet extends Vue{
      * 获取当前主表对应的子表信息
      */
     async getChildData(){
-        let crd = this.dsm.currRecord
         if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
-            for(var j=0;j<this.dsm.ds_sub.length;j++){
-                let pkindex = this.dsm.ccells.pkindex;
-                let crdc = "";
-                for(var i=0;i<pkindex.length;i++){
-                    let cel = this.dsm.ccells.cels[pkindex[i]];
-                    if(i == pkindex.length -1)
-                        crdc += cel.id + " = '"+crd.data[cel.id]+"' "
-                    else
-                        crdc += cel.id + " = '"+crd.data[cel.id]+"' and  "
-                } 
                 let qq =JSON.parse(JSON.stringify(Object.assign({},this.qe)));
-                qq.cont = crdc
-                qq.oprid = 14;
-                qq.mcont ="";
-                qq.tcell = this.dsm.ccells.obj_id;
-                qq.pcell = this.dsm.ds_sub[j].ccells.obj_id;
-                qq.page.pageSize=10000;
-                qq.page.currPage=1;
-                // let vv:CData = await this.findDataFromServe(qq);
-                let res = await this.dsm.ds_sub[j].queryData(qq);
+                qq.cont = this.dsm.currRecord.data;
+                let res = await tools.queryChild(qq);
                 if(res.data.id == 0){
                     let data = res.data;
                     let vv:CData = data.data.data;
-                    let cd :CData = this.initCData(vv)
-                    cd.page = res.data.data.data.page;
-                    this.dsm.currRecord.subs[j] = cd;
+                    let child = vv.data[0].subs;
+                    for(var z=0;z<child.length;z++){
+                        let cd :CData = this.initCData(child[z])
+                        cd.page.currPage =1;
+                        cd.page.total = cd.data.length
+                        for(var j=0;j<this.dsm.ds_sub.length;j++){
+                            if(this.dsm.ds_sub[j].cdata.obj_id == cd.obj_id){
+                                this.dsm.currRecord.subs[j] = cd;
+                            }
+                        }
+                    }
                 }
-            }
             this.setSubData();
         }
     }

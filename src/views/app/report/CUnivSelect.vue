@@ -298,6 +298,7 @@ export default class CUnivSelect extends Vue {
       }
     }
     find(){
+        this.dsm.clear()
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         if(this.biType == "SEL")

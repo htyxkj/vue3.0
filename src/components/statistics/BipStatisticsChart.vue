@@ -103,6 +103,7 @@ export default class BipStatisticsDialog extends Vue {
     }
 
     async searchData() {
+        console.log(this.stat)
         this.tjcell=null;
         this.fullscreenLoading = true;
         this.selValue = this.stat.selValue;
