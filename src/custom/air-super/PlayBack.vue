@@ -280,6 +280,7 @@ let TMapUt = TMapUtils.TMapUt;
 import { GPSUtil } from "./class/GPSUtil";
 let Gps = GPSUtil.GPS;
 import echarts from 'echarts'; 
+import { Route, RawLocation } from "vue-router";
 @Component({
     components: {
         tMap,
@@ -304,6 +305,7 @@ export default class OperatingArea extends Vue {
     @Provide() taskTrack:any = null;//轨迹对象
     @Provide() taskData:any=[];//任务数据集
     @Provide() isFollow:boolean = true;//画面跟随
+    @Provide() PreviousFlowPoint:any = null;//上一个流量点
     @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
     @Provide() sprayBreak:boolean = true;//喷洒是否中断
@@ -345,6 +347,7 @@ export default class OperatingArea extends Vue {
     @Provide() dragPoints:number =0;
 
     @Provide() warn:any={};//飞行预警参数
+    @Provide() warnInterval:any= 0;
 
     //起降点信息
     @Provide() takeoff:any = null;//起降点
@@ -452,6 +455,7 @@ export default class OperatingArea extends Vue {
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             if(!this.flightBeltWidth)
                 this.flightBeltWidth=45;
+            let tlid = this.taskTjCell.currRecord.data.tlid;//设备标识
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
@@ -460,7 +464,6 @@ export default class OperatingArea extends Vue {
             let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
             let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
             this.initTakeoff(takeoff);
-
             if(showarea == 1){
                  TMapUt.getOpera(oaid,this.tMap);//作业区
                  TMapUt.getOperaBr(oaid,this.tMap);//避让区
@@ -492,7 +495,7 @@ export default class OperatingArea extends Vue {
                 let values = cc.data.data.data.values;
                 this.taskData = values;
                 let opt:any = {interval: this.interval,dynamicLine: true,
-                                polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
+                                polylinestyle: {color:this.noFlowColor, weight: 4, opacity: 0.9},Datas: [],
                                 carstyle:{display:true, iconUrl:require('@/assets/air-super/plane.png'), width:42, height:30},
                                 passOneNode:this.passOneNode}
                 let noFlow  = true;
@@ -562,7 +565,7 @@ export default class OperatingArea extends Vue {
             }
             this.sumflow = ((parseFloat(this.sumflow+'') + parseFloat((parseFloat(this.nowflow+'')/60/60)+'')).toFixed(3))+'';
             
-            if(flow>0){//有流量去划线
+            if(flow>0.6){//有流量去划线
                 // 有流量的点喷洒时长+1s
                 this.sumtimeflow = this.sumtimeflow + 1;
                 this.mileage = this.mileage+data.speed /3600
@@ -580,7 +583,7 @@ export default class OperatingArea extends Vue {
                     this.tMap.addOverLay(newLine0);
                     this.sprayLine0.push(newLine0)
 
-                    let opts1 = {color:this.trackColor,weight:1,opacity:1};
+                    let opts1 = {color:this.trackColor,weight:4,opacity:1};
                     var newLine1 = new T.Polyline(points,opts1);
                     this.tMap.addOverLay(newLine1);     
                     this.sprayLine1.push(newLine1)
@@ -602,13 +605,15 @@ export default class OperatingArea extends Vue {
                 //this.flightBeltWidth  幅宽
                 //Flow = （Loading÷1000）÷（ （（ Area÷1500）÷（Swath÷1000）） ÷ Speed）  
                 let standard=[];
+                this.warnInterval++;
                 let flow0 = (this.warn.drugload/1000)/(((this.warn.area/this.warn.area)/(this.flightBeltWidth/1000))/data.speed);
-                if(!isNaN(flow0)){
+                if(!isNaN(flow0) && this.warnInterval >= this.warn.interval){
                     standard[0] = (flow0*(1-(this.warn.drugfloat/100))).toFixed(2);
                     standard[1] = (flow0*(1+(this.warn.drugfloat/100))).toFixed(2);
                     if(flow>standard[1] || flow<standard[0]){
                         msg = "当前速度："+data.speed+"km/h<br/>瞬时流量异常("+flow+"),超出当前速度标准范围("+standard[0]+"~"+standard[1]+")"
                     }
+                    this.warnInterval = 0;
                 }
                 // if(flow>this.warn.maxflow){//流量异常
                 //     msg = "瞬时流量异常("+flow+"),超出预警值("+this.warn.maxflow+")<br/>"
@@ -762,7 +767,7 @@ export default class OperatingArea extends Vue {
             this.dragPoints = begin;
             let values:any = this.taskData.slice(begin,this.taskData.length-1);
             let opt:any = {interval: this.interval,dynamicLine: true,
-                                    polylinestyle: {color:this.noFlowColor, weight: 1, opacity: 0.9},Datas: [],
+                                    polylinestyle: {color:this.noFlowColor, weight: 4, opacity: 0.9},Datas: [],
                                     carstyle:{display:true, iconUrl:require('@/assets/air-super/plane.png'), width:42, height:30},
                                     passOneNode:this.passOneNode}
             for(var i=0;i<values.length;i++){
@@ -785,6 +790,27 @@ export default class OperatingArea extends Vue {
                 var marker = new T.Marker(this.takeoff,{icon: icon});
                 this.tMap.addOverLay(marker);
             }
+            let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
+            let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
+            let route = this.taskTjCell.currRecord.data.route;//路线
+            let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
+            let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
+            let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
+            let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
+            this.initTakeoff(takeoff);
+            if(showarea == 1){
+                 TMapUt.getOpera(oaid,this.tMap);//作业区
+                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
+            }
+            if(showhkarea ==1){
+                 TMapUt.getOpera(hoaid,this.tMap);//航空识别区
+            }
+           if(showroot == 1){
+                TMapUt.getOperaRoute(oaid,this.tMap);
+                if(route){
+                    TMapUt.makeRoute(route,"",this.tMap)//路线
+                }
+           }
         }catch(err){
             console.log(err)
         }
@@ -845,7 +871,13 @@ export default class OperatingArea extends Vue {
         this.style = "height:" + (this.height - 50) + "px";
         this.style1 = "" + (this.height - 85) ;
     }
-
+    @Watch("$route")
+    routerChange(to: Route, from: Route) { 
+        if (to.name === "PlayBack") {
+            if(this.tMap)
+                this.tMap.checkResize();
+        }
+    }
     get sumareaFixed(){
         return this.sumarea.toFixed(3)
     }

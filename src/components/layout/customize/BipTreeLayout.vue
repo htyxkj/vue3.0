@@ -54,7 +54,7 @@ export default class BipTreeLayout extends Vue{
     async loadNode(node:any, resolve:any) {
       let cont = "";
       if (node.level === 0) {
-        cont = "isnull("+this.fatherID+",'') = '' "
+        cont = this.fatherID+" is null "
       } else {
           let v = node.data[this.keyID]
           cont = " "+this.fatherID+" = '"+v+"' ";

@@ -61,8 +61,10 @@ export default class BipListEditor extends Vue{
     @Provide() methodName:string = ''
     @Provide() cels!:Array<Cell>
 
+    isDefault:boolean = false;
     mounted(){
-        this.multiple = (this.cds.ccells.attr&0x80)>0
+        // this.multiple = (this.cds.ccells.attr&0x80)>0
+        this.isDefault = (this.cell.attr & 0x800) >0
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{
@@ -100,6 +102,9 @@ export default class BipListEditor extends Vue{
                 this.options.push(items)
             });
         }
+        if(this.isDefault && this.options.length>0){
+            this.model1 = this.options[0][this.bipInsAid.cells.cels[0].id];
+        }
     }
 
 
@@ -126,7 +131,7 @@ export default class BipListEditor extends Vue{
                 this.cds.cdata.data[this.cds.index] = Object.assign({},record)
                 const key:string = this.cell.id
                 // this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
-                console.log('3213')
+                // console.log('3213')
                 if(this.cds.baseI){
                     this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
                 }

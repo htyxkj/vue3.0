@@ -696,7 +696,7 @@ export default class LayCelVexTable extends Vue {
         setTimeout(() => {
             this.cds.index = data.rowIndex;
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
-            // this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
+            this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
             this.$bus.$emit("row_click",value);    
             if(this.cds.ds_sub){
                 for(var i=0;i<this.cds.ds_sub.length;i++){

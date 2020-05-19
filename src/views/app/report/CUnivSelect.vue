@@ -253,8 +253,28 @@ export default class CUnivSelect extends Vue {
             if(mb){
                 mb.ReportTableShape();
             }
+        }else if(cmd === 'ADD'){
+            if(this.uriParams){
+                let pclass = this.uriParams.plistener;
+                let MID_ = this.uriParams.pbds["MID_"]
+                if(pclass.indexOf("zxks.cli.SelectAddMenu") !=-1 && MID_){
+                    let menu = baseTool.findMenu(MID_); 
+                    if(menu){
+                        let command = menu.command;
+                        let p = command.split("&");
+                        let pbuid = p[0].split("=")
+                        let pmenuid = p[0].split("=")
+                        this.$router.push({
+                            path:'/layout',
+                            name:'layout',
+                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                        })    
+                    }else{
+                        this.$notify.error( "没有" + MID_ + "菜单权限!" );
+                    }
+                }
+            }
         }
-        console.log(this.dsm_cont.currRecord)
     }
     /**导出Excel */
     async getExcel(){

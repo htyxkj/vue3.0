@@ -244,6 +244,7 @@ let Gps = GPSUtil.GPS;
 import echarts from 'echarts'; 
 import { tmpdir } from 'os';
 
+import { Route, RawLocation } from "vue-router";
 import { GlobalVariable } from "@/utils/ICL";
 import { BaseVariable } from "@/utils/BaseICL";
 import qs from "qs";
@@ -282,7 +283,7 @@ export default class RealTimeTrack extends Vue {
     @Provide() interval:any = 1000;//飞行间隔时间 毫秒    
     @Provide() isFollow:boolean = true;//画面跟随
 
-
+    @Provide() PreviousFlowPoint:any = null;//上一个流量点
     @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
     @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
     @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
@@ -580,7 +581,8 @@ export default class RealTimeTrack extends Vue {
         if(this.taskPoint.length>0){
             if(this.taskPoint.length>1){
                 this.loadPlane(this.taskPoint[0],this.taskPoint[1]);
-            } else{
+            } 
+            else{
                 this.loadPlane(this.taskPoint[0],this.taskPoint[0]);
             }
         }
@@ -621,7 +623,7 @@ export default class RealTimeTrack extends Vue {
             this.nowpressure = (data.pressure).toFixed(1);
             this.nowtemperature = (data.temperature).toFixed(1);
 
-            this.nowflow = data.flow;
+            this.nowflow = ( data.flow).toFixed(2);;
             // this.sumflow = (data.sumfolw).toFixed(3);
             this.nowheight = data.height;
             this.sumtime = this.sumtime+1;
@@ -672,6 +674,12 @@ export default class RealTimeTrack extends Vue {
                 }
                 this.sumtimeflow = this.sumtimeflow + 1;
                 if(this.sprayBreak){//中断过需要从起一条线
+                    if(this.sprayLine2.length>0){
+                        let line2 = this.sprayLine2[this.sprayLine2.length-1];
+                        let points2 = line2.getLngLats();
+                        points2.push(lgt);
+                        line2.setLngLats(points2)
+                    }
                     let points = [];
                     let zoom = this.tMap.getZoom();
                     let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
@@ -707,6 +715,8 @@ export default class RealTimeTrack extends Vue {
                 }else{
                     let opts2 = {color:this.noFlowColor,weight:4,opacity:1};
                     let points = [];
+                    if(this.PreviousFlowPoint)
+                    points.push(this.PreviousFlowPoint);
                     points.push(lgt);
                     var newLine2 = new T.Polyline(points,opts2);
                     this.tMap.addOverLay(newLine2);     
@@ -715,6 +725,7 @@ export default class RealTimeTrack extends Vue {
                 this.sprayBreak = true;
             }
             let speed = data.speed;
+            this.PreviousFlowPoint = lgt;
         }
     }
     /**
@@ -731,15 +742,15 @@ export default class RealTimeTrack extends Vue {
         }
 
         let jl = this.tMap.getDistance(new T.LngLat(lnglat1.longitude, lnglat1.latitude),new T.LngLat(lnglat2.longitude, lnglat2.latitude));
-        if(jl>1.5){
+        if(jl>0.5){
             let curPos = new T.LngLat(lnglat1.longitude, lnglat1.latitude)
             let targetPos = new T.LngLat(lnglat2.longitude, lnglat2.latitude)
             this.rotate =  TMapUt.setRotation(curPos,targetPos,this.tMap);
             this.rotate = parseFloat( this.rotate+'')  
             // if(lnglat1.sbid)
             //     this.rotate = lnglat1.direction || "0";  
-        }
-        if(this.rotate && this.rotate!=0 && this.rotate!=360 && this.rotate!=-90){
+        } 
+        if(this.rotate){
             let style = this.plane.Fr.style[TMapUt.CSS_TRANSFORM()];
             this.plane.Fr.style[TMapUt.CSS_TRANSFORM()]= style+" rotate(" +this.rotate + "deg)";
             this.plane.Fr.style["transform-origin"] = "50% 50%";
@@ -1195,6 +1206,14 @@ export default class RealTimeTrack extends Vue {
                 }
                 this.setBipHeight(height)
             })()
+        }
+    }
+
+    @Watch("$route")
+    routerChange(to: Route, from: Route) { 
+        if (to.name === "RealTimeTrack" || to.name === "home") {
+            if(this.tMap)
+                this.tMap.checkResize();
         }
     }
 }

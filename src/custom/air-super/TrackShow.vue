@@ -8,7 +8,14 @@
                             <!-- 搜索 -->
                             <el-button icon="el-icon-search" circle @click="showTaskTjCell =!showTaskTjCell"></el-button>
                             <!-- 清空 -->
-                            <el-button icon="el-icon-delete" circle @click="clearCover"></el-button>
+                            <el-button icon="el-icon-delete" circle @click="clearCover"></el-button> 
+                            <el-tooltip style="padding-left: 10px;" effect="light" content="显示数据点" placement="top" >
+                                <el-switch
+                                    v-model="isShowPoint"
+                                    active-color="#13ce66"
+                                    inactive-color="#ff4949">
+                                </el-switch>
+                            </el-tooltip>
                         </div>
                         <t-map ref="TMap" class="myTMap"></t-map>
                     </el-main>
@@ -46,6 +53,7 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
+import { Route, RawLocation } from "vue-router";
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
@@ -71,7 +79,7 @@ export default class TrackShow extends Vue {
     @Provide() tZoom: number = 12;
     @Provide() areaWidth: number = 0; //测边行政区宽度
     @Provide() areaBtnOpen: boolean = false; //左侧区域是否显示
-
+    @Provide() PreviousFlowPoint:any = null;//上一个流量点
     @Provide() loading: boolean = false;
     @Provide() showTaskTjCell: boolean = false; //是否显示查询对象弹出框
     @Provide() taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
@@ -86,7 +94,10 @@ export default class TrackShow extends Vue {
     @Provide() trackColor:string = "#FFFF00";//航迹颜色
     @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
     @Provide() params:any = null;
-
+    @Provide() pointMsg:any ={};//数据点提示
+    @Provide() isShowPoint:boolean = false;//是否显示数据提示点
+    @Provide() points:any =[];//点集合
+    @Provide() CloudMarkerCollection:any =null;//海量点对象
     @Provide() trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
 
     async created() {
@@ -158,6 +169,7 @@ export default class TrackShow extends Vue {
                     TMapUt.makeRoute(route,"",this.tMap)//路线
                 }
            }
+           this.pointMsg={};
             // TMapUt.getOpera(oaid,this.tMap);//作业区
             // TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             // TMapUt.getOperaBr(oaid,this.tMap);//避让区
@@ -227,7 +239,7 @@ export default class TrackShow extends Vue {
      * 绘制 航带 航迹 
      */
     drawTrack(){
-        let po = [];
+        this.points = [];
         for(var i=0;i<this.taskData.length;i++){
             let data = this.taskData[i];
             if(data){
@@ -239,11 +251,23 @@ export default class TrackShow extends Vue {
                 }
                 let flow = data.flow;
                 let lgt = new T.LngLat(data.longitude, data.latitude)
-                po.push(lgt);
+                this.points.push(lgt);
+                let key = data.longitude+"_"+data.latitude;
+                lgt.kid = key;
+                 let msg = "<div>任务编码："+this.taskTjCell.currRecord.data.sid+"<br/>任务名称："+this.taskTjCell.currRecord.data.taskname+"<br/>定位信息:"+
+                lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+data.speedtime+"<br/>"+
+                "瞬时流量："+flow+"m³/h<br />"+`累计流量：${data.sumfolw}m³ <br />速度：${data.speed}km/h <br />高度：${data.height}/m`
+                this.pointMsg[key]= msg;
+
                 if(flow>0){//有流量去划线
                     if(this.sprayBreak){//中断过需要从起一条线
                         let points = [];
-                        
+                        if(this.sprayLine2.length>0){
+                            let line2 = this.sprayLine2[this.sprayLine2.length-1];
+                            let points2 = line2.getLngLats();
+                            points2.push(lgt);
+                            line2.setLngLats(points2)
+                        }
                         if(this.trackType == "1" || this.trackType == "2"){
                             let zoom = this.tMap.getZoom();
                             let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
@@ -254,7 +278,7 @@ export default class TrackShow extends Vue {
                             this.sprayLine0.push(newLine0)
                         }
 
-                        let opts1 = {color:this.trackColor,weight:1,opacity:1};
+                        let opts1 = {color:this.trackColor,weight:3,opacity:1};
                         var newLine1 = new T.Polyline(points,opts1);
                         this.tMap.addOverLay(newLine1);     
                         this.sprayLine1.push(newLine1)
@@ -279,8 +303,10 @@ export default class TrackShow extends Vue {
                             points2.push(lgt);
                             line2.setLngLats(points2)
                         }else{
-                            let opts2 = {color:this.noFlowColor,weight:1,opacity:1};
+                            let opts2 = {color:this.noFlowColor,weight:3,opacity:1};
                             let points = [];
+                            if(this.PreviousFlowPoint)
+                                points.push(this.PreviousFlowPoint);
                             points.push(lgt);
                             var newLine2 = new T.Polyline(points,opts2);
                             this.tMap.addOverLay(newLine2);     
@@ -289,13 +315,33 @@ export default class TrackShow extends Vue {
                     }
                     this.sprayBreak = true;
                 }
+                this.PreviousFlowPoint = lgt;
             }
         }
         this.taskData=[];
-        let t1 = this.tMap.getViewport(po);
+        let t1 = this.tMap.getViewport(this.points);
         this.tMap.panTo(t1.center, t1.zoom);
         this.zoomend();
         this.loading = !this.loading;
+        if(this.isShowPoint){
+            this.CloudMarkerCollection = new T.CloudMarkerCollection(this.points,{
+                color:'blue',
+                SizeType:'TDT_POINT_SIZE_SMALL'
+            })
+            let _this = this;
+            this.CloudMarkerCollection.addEventListener("click", function (e:any) {
+                console.log(e)
+                var lnglat = e.lnglat;
+                //创建信息窗口对象
+                var infoWin = new T.InfoWindow();
+                infoWin.setLngLat(lnglat);
+                //设置信息窗口要显示的内容
+                infoWin.setContent(_this.pointMsg[lnglat.kid]);
+                _this.tMap.addOverLay(infoWin);
+            });// 将标注添加到地图中 
+            this.tMap.addOverLay(this.CloudMarkerCollection);
+        }
+
     }
     /**
      * 地图缩放结束
@@ -314,6 +360,30 @@ export default class TrackShow extends Vue {
             this.tMap.removeOverLay(line);
         }
     }
+    @Watch("isShowPoint")
+    isShowPointChange(){
+        if(this.isShowPoint){
+            this.CloudMarkerCollection = new T.CloudMarkerCollection(this.points,{
+                color:'blue',
+                SizeType:'TDT_POINT_SIZE_SMALL'
+            })
+            let _this = this;
+            this.CloudMarkerCollection.addEventListener("click", function (e:any) {
+                console.log(e)
+                var lnglat = e.lnglat;
+                //创建信息窗口对象
+                var infoWin = new T.InfoWindow();
+                infoWin.setLngLat(lnglat);
+                //设置信息窗口要显示的内容
+                infoWin.setContent(_this.pointMsg[lnglat.kid]);
+                _this.tMap.addOverLay(infoWin);
+            });// 将标注添加到地图中 
+            this.tMap.addOverLay(this.CloudMarkerCollection);
+        }else{
+            this.CloudMarkerCollection.clear()	
+        }
+    }
+
     @Watch("height")
     heightChange() {
         this.style = "height:" + (this.height - 50) + "px";
@@ -321,6 +391,8 @@ export default class TrackShow extends Vue {
     @Watch("$route")
     getTrack(){
         if(this.$route && this.$route.path =="/TrackShow"){
+            if(this.tMap)
+                this.tMap.checkResize();
             if(this.$route.params){
                 let params = this.$route.params;
                 let tkid = params.tkid;

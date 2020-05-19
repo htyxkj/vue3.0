@@ -3,7 +3,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
-import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import {CurrUtils} from '@/utils/CurrUtils'
 let currutil = CurrUtils.curr

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <template v-if="item.haveChild">
+        <template v-if="item.haveChild && canShowChile">
             <template v-if="item.childMenu.length === 0">
                 <el-menu-item :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command" -->
                     <i class="el-icon-menu"></i>
@@ -62,6 +62,7 @@ export default class BipMenuItem extends Vue{
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() uri:string='';
+    @Provide() canShowChile:boolean = true;
     closeMenu(command:any){
         if(command.indexOf("&") >-1){
             let cc = command.split("&");
@@ -85,7 +86,16 @@ export default class BipMenuItem extends Vue{
         this.setIsOpenMenu(false);
     }
     created(){
-        console.log(BaseVariable.BaseUri)
+        if(this.item.haveChild){
+            this.canShowChile = false;
+            for(var i=0;i<this.item.childMenu.length;i++){
+                let cm:any = this.item.childMenu[i];
+                if(cm.menuattr != 4){
+                    this.canShowChile = true;
+                    break;
+                }
+            }
+        }
         this.uri = BaseVariable.BaseUri+'/'
     }
 }

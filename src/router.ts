@@ -125,6 +125,45 @@ export default new Router({
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/SortiesInvoke.vue')
+      },
+      {
+        //阿米巴 职能式损益表
+        path: '/ProfitLossFunction',
+        name: 'ProfitLossFunction',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ProfitLossFunction.vue')
+      },
+      {
+        //阿米巴 损益趋势分析
+        path: '/ProfitLossTrend',
+        name: 'ProfitLossTrend',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ProfitLossTrend.vue')
+      },
+      {
+        //阿米巴 损益横比
+        path: '/ProfitLossAspect',
+        name: 'ProfitLossAspect',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ProfitLossAspect.vue')
+      },
+      {
+        //阿米巴 经营趋势分析
+        path: '/ManageLossTrend',
+        name: 'ManageLossTrend',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ManageLossTrend.vue')
+      },
+      {
+        //阿米巴 阿米巴比较分析
+        path: '/AMBCompareTrend',
+        name: 'AMBCompareTrend',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/AMBCompareTrend.vue')
+      },
+      {
+        //阿米巴 经营成功排名
+        path: '/ManageResultsRank',
+        name: 'ManageResultsRank',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ManageResultsRank.vue')
       }
+      
+      
+      
   ]
 })

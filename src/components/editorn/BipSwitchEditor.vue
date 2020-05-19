@@ -45,18 +45,20 @@ export default class BipSwitchEditor extends Vue{
         this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id;
         let name ="STH."+this.cds.ccells.obj_id;
         let sth = await this.initSTH(name);
-        let slink = sth.slink.split("&");
-        for(var i=0;i<slink.length;i++){
-            let v = slink[i];
-            let sth00 = {}; 
-            let key = v.substring(0,1);
-            v = v.substring(2).split(";");
-            let showField = [];
-            for(var j=1;j<v.length;j++){
-                showField.push(v[j]);
-            } 
-            sth00 = { key:key,field:v[0],showField:showField}
-            this.switchBtn.push(sth00);
+        if(sth){
+            let slink = sth.slink.split("&");
+            for(var i=0;i<slink.length;i++){
+                let v = slink[i];
+                let sth00 = {}; 
+                let key = v.substring(0,1);
+                v = v.substring(2).split(";");
+                let showField = [];
+                for(var j=1;j<v.length;j++){
+                    showField.push(v[j]);
+                } 
+                sth00 = { key:key,field:v[0],showField:showField}
+                this.switchBtn.push(sth00);
+            }
         }
         this.switchChange();
     }

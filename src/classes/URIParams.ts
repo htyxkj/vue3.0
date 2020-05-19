@@ -5,7 +5,8 @@ export class URIParams{
     pbds: any = "" //其它+
     pbuid: string =  "" //标识
     pcell: string = "" //组成
-    pclass: string = "" //
+    pclass: string = "" //小程序
+    plistener:string =""//系统接口
     pdata: string = "" //取数条件
     pflow: string = "" //业务号
     pinvoke: string = "" // INVOKE
