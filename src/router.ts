@@ -161,8 +161,19 @@ export default new Router({
         path: '/ManageResultsRank',
         name: 'ManageResultsRank',
         component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ManageResultsRank.vue')
+      },
+      {
+        //阿米巴 目标达成趋势
+        path: '/GoalAchievementTrend',
+        name: 'GoalAchievementTrend',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/GoalAchievementTrend.vue')
+      },
+      {
+        //阿米巴 目标达成分析
+        path: '/GoalAchievementAnalysis',
+        name: 'GoalAchievementAnalysis',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/GoalAchievementAnalysis.vue')
       }
-      
       
       
   ]

@@ -1,10 +1,11 @@
 <template> 
     <div> 
-        <el-input placeholder="请输入内容" v-model="selectName"  size="small"> 
-            <el-button slot="append" icon="el-icon-search" @click="select"></el-button>
+       <el-input placeholder="请输入内容" v-model="selectName"  size="small"> 
+                <el-button slot="append" icon="el-icon-search" @click="select"></el-button>
         </el-input>
 
-        <el-dialog title="期间" :visible.sync="showPeriod">
+        <el-dialog title="期间" :visible.sync="showPeriod" class="bipinsaid">
+             
             <div style="padding-top:0px">
                 <el-table :data="tableData" highlight-current-row size="small" @row-click="tableClick">
                     <el-table-column property="name" label="期间" width="150"></el-table-column>
@@ -21,8 +22,8 @@
                 </el-pagination>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="showPeriod = false">取 消</el-button>
-                <el-button type="primary" @click="selectOk">确 定</el-button>
+                <el-button @click="showPeriod = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="selectOk" size="mini">确 定</el-button>
             </div>
         </el-dialog>
     </div>    

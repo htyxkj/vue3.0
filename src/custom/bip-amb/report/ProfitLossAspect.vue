@@ -11,12 +11,14 @@
             
             <div class="topdiv2"><!-- 导出 -->
                 <el-button style="border:0px" @click="exportDataEvent">      
-                    <i class="iconfont icon-bip-xiazai1"></i>导出
+                    <i class="el-icon-download"></i>
+                    <span>导出</span>
                 </el-button>
             </div>
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData">      
-                    <i class="el-icon-refresh-left"></i>刷新
+                    <i class="el-icon-refresh-right"></i>
+                    <span>刷新</span>
                 </el-button>
             </div>
 

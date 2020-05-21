@@ -5,7 +5,8 @@
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change"></Period>
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData">      
-                    <i class="el-icon-refresh-left"></i>刷新
+                    <i class="el-icon-refresh-right"></i>
+                    <span>刷新</span>
                 </el-button>
             </div>
         </el-header>
