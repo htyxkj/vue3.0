@@ -3,6 +3,10 @@
         <el-tree empty-text="没有阿米巴" size="mini" :node-key="keyID" lazy :load="loadNode" @node-click="handleNodeClick" 
             @check="checkBoxClick" :expand-on-click-node="false" :highlight-current="true" :default-checked-keys="default_checked_keys"
             :props="defaultProps" :default-expanded-keys="expandedKeys" check-strictly :show-checkbox="showCbox"  >
+            <span class="custom-tree-node" slot-scope="{ node }">
+                <span>{{ node.label }}</span>
+                 
+            </span>
         </el-tree>
     </div>
 </template>
@@ -137,6 +141,8 @@ export default class AmbTree extends Vue {
 .amb-tree::-webkit-scrollbar-thumb {
   background-color: #d9d9d9;
 }
+</style>
+<style>
 .custom-tree-node {
     flex: 1;
     display: flex;
