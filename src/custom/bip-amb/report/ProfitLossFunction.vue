@@ -28,7 +28,7 @@
                 <amb-tree :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
             </el-aside>
             <el-main style="padding:0px">
-                <vxe-table size="mini" ref="FIncomeTable" auto-resize :loading="tableLoading" show-overflow
+                <vxe-table resizable size="mini" ref="FIncomeTable" auto-resize :loading="tableLoading" show-overflow
                     border="inner" stripe highlight-hover-row :height="tableHeight"
                     :data="tableData">
                     <vxe-table-column field="element_name" title="收支项目" min-width="200">

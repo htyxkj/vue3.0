@@ -104,6 +104,7 @@ export default class BipListEditor extends Vue{
         }
         if(this.isDefault && this.options.length>0){
             this.model1 = this.options[0][this.bipInsAid.cells.cels[0].id];
+            this.dataChange(this.model1);
         }
     }
 

@@ -71,6 +71,7 @@ export default class BipTreeEditor extends Vue{
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
 
     async mounted(){
+        console.log("BipTreeEditor")
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.TreeDataChangeID = this.$bus.$on('TreeDataChange',this.dataChange)
 
@@ -203,7 +204,7 @@ export default class BipTreeEditor extends Vue{
             this.refLink = vv;
         }
     }
-    getRefValues(){
+    async getRefValues(){
         if(this.refLink&&this.refLink.id.length>0&&this.model1.length>0){
              this.refLink.values = []
             if(this.model&&this.model.length>0){
@@ -218,7 +219,10 @@ export default class BipTreeEditor extends Vue{
                         let str = window.sessionStorage.getItem(key)
                         if(!str){
                             let vvs = {id:this.linkName,key:key,cont:cont}
-                            this.fetchInsDataByCont(vvs)
+                            await this.fetchInsDataByCont(vvs)
+                            vrs = this.aidValues.get(key);
+                            if(vrs)
+                                values.push(vrs)
                         }else{
                             vrs = JSON.parse(str);
                             this.setAidValue({key:key,value:vrs})

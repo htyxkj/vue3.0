@@ -369,7 +369,6 @@ export default class TrackShow extends Vue {
             })
             let _this = this;
             this.CloudMarkerCollection.addEventListener("click", function (e:any) {
-                console.log(e)
                 var lnglat = e.lnglat;
                 //创建信息窗口对象
                 var infoWin = new T.InfoWindow();
@@ -511,5 +510,8 @@ export default class TrackShow extends Vue {
     .el-checkbox__label {
         font-size: 0px !important;
     }
+}
+.tdt-map-pane canvas {
+    z-index: 300 !important;
 }
 </style>

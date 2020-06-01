@@ -173,6 +173,30 @@ export default new Router({
         path: '/GoalAchievementAnalysis',
         name: 'GoalAchievementAnalysis',
         component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/GoalAchievementAnalysis.vue')
+      },
+      {
+          //阿米巴会计期间
+          path: '/AccountingPeriod',
+          name: 'AccountingPeriod',
+          component :()=> import('./custom/bip-amb/document/AccountingPeriod.vue')
+      },
+      {
+          //阿米巴核算要素
+          path: '/AccountingElement',
+          name: 'AccountingElement',
+          component :()=> import('./custom/bip-amb/document/AccountingElement.vue')
+      },
+      {
+          //阿米巴 经营模型
+          path: '/BusinessModel',
+          name: 'BusinessModel',
+          component :()=> import('./custom/bip-amb/document/BusinessModel.vue')
+      },
+      {
+          //阿米巴 阿米巴单元
+          path: '/AMBUnit',
+          name: 'AMBUnit',
+          component :()=> import('./custom/bip-amb/document/AMBUnit.vue')
       }
       
       

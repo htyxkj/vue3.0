@@ -258,12 +258,12 @@ export default class CUnivSelect extends Vue {
                 let pclass = this.uriParams.plistener;
                 let MID_ = this.uriParams.pbds["MID_"]
                 if(pclass.indexOf("zxks.cli.SelectAddMenu") !=-1 && MID_){
-                    let menu = baseTool.findMenu(MID_); 
+                    let menu = baseTool.findMenu(MID_);
                     if(menu){
                         let command = menu.command;
                         let p = command.split("&");
                         let pbuid = p[0].split("=")
-                        let pmenuid = p[0].split("=")
+                        let pmenuid = p[1].split("=")
                         this.$router.push({
                             path:'/layout',
                             name:'layout',
@@ -318,6 +318,9 @@ export default class CUnivSelect extends Vue {
       }
     }
     find(){
+        let bok = this.checkNotNull(this.dsm_cont); 
+        if(!bok)
+            return ; 
         this.dsm.clear()
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
@@ -330,6 +333,23 @@ export default class CUnivSelect extends Vue {
         this.qe.type = 1
         this.qe.page.pageSize = 20
         this.findServerData(this.qe);
+    }
+    //条件非空校验
+    checkNotNull(cds:CDataSet):boolean{ 
+        let bok = true;
+        cds.ccells.cels.forEach(item => {
+            if (item.unNull&&bok) {
+                let vl = null; 
+                if(cds.currRecord.data[item.id]!=null)
+                    vl = cds.currRecord.data[item.id]+'';
+                if (!vl) {
+                    this.$notify.warning( "【" + item.labelString + "】不能为空!");
+                    bok =  false;
+                    return false;
+                }
+            }
+        }); 
+        return bok;
     }
     findListMenuIndex(cmd: string): number {
         let index = -1;

@@ -29,7 +29,7 @@
                 <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
             </el-aside>
             <el-main style="padding:0px">
-                <vxe-table size="mini" ref="FIncomeTable" auto-resize  show-overflow
+                <vxe-table resizable size="mini" ref="FIncomeTable" auto-resize  show-overflow
                     border="inner" stripe highlight-hover-row :height="tableHeight"
                     :data="tableData">
                     <vxe-table-column field="yymm" title="核算期间" width="150">
