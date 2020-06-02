@@ -92,7 +92,11 @@ export default class App extends Vue {
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
-            BaseVariable.BaseUri = res.data.ApiUrl; 
+            let url = res.data.ApiUrl;
+            if(url.lastIndexOf("/") == url.length-1){
+                url = url.substring(0,url.length-1);
+            }
+            BaseVariable.BaseUri = url; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
             BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
             BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
@@ -110,7 +114,11 @@ export default class App extends Vue {
     async mounted() {
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
-            BaseVariable.BaseUri = res.data.ApiUrl; 
+            let url = res.data.ApiUrl;
+            if(url.lastIndexOf("/") == url.length-1){
+                url = url.substring(0,url.length-1);
+            }
+            BaseVariable.BaseUri = url; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
             BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
             BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;

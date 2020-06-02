@@ -338,7 +338,7 @@ export default class Home extends Vue {
         }
         this.isDraggable = false;
         this.isResizable = false;
-        if(state == 2){
+        if(state == (this.layout.length+this.delLayout.length)){
             this.$notify.success("保存成功！");
         }else{
             this.$notify.error("保存失败！")

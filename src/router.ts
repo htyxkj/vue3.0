@@ -197,6 +197,12 @@ export default new Router({
           path: '/AMBUnit',
           name: 'AMBUnit',
           component :()=> import('./custom/bip-amb/document/AMBUnit.vue')
+      },
+      {
+          //阿米巴 交易价格
+          path: '/TradingPrice',
+          name: 'TradingPrice',
+          component :()=> import('./custom/bip-amb/document/TradingPrice.vue')
       }
       
       

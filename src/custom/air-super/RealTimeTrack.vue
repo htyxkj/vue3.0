@@ -243,7 +243,7 @@ import { GPSUtil } from "./class/GPSUtil";
 let Gps = GPSUtil.GPS;
 import echarts from 'echarts'; 
 import { tmpdir } from 'os';
-
+import moment from 'moment'
 import { Route, RawLocation } from "vue-router";
 import { GlobalVariable } from "@/utils/ICL";
 import { BaseVariable } from "@/utils/BaseICL";
@@ -459,6 +459,8 @@ export default class RealTimeTrack extends Vue {
                 let cc = lnglat[1]+","+lnglat[0]
                 let poin = new T.LngLat(lnglat[1], lnglat[0]);
                 this.airPoint.push(poin);
+                v.speedtime = new Date(v.speedtime)
+                v.speedtime = moment(v.speedtime).format("YYYY-MM-DD HH:mm:ss")
                 let msg = "<div>任务编码："+task.sid+"<br/>任务名称："+task.taskname+"<br/>定位信息:"+lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+v.speedtime
                 if(offline){//离线
                     msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:red;'>离线</span>"
@@ -534,16 +536,22 @@ export default class RealTimeTrack extends Vue {
             let cc = await Vue.$axios.post("/realTimeServlet", data1);
             if(cc.data.id ==0 ){
                 let values = cc.data.data.data;
+                if(frist){
+                    this.taskPoint = [];
+                    this.taskPointJSON = [];
+                }
                 for(var i =0;i<values.length;i++){
                     let v = values[i];
                     this.maxTime = v.speedtime;
                     let lnglat = [v.latitude,v.longitude];
                     if(trtype =='0'){
                         lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                        v.speedtime = v.speedtime * 1000
                     }
                     v.latitude = lnglat[0];
                     v.longitude = lnglat[1];
-
+                    v.speedtime = new Date(v.speedtime)
+                    v.speedtime = moment(v.speedtime).format("YYYY-MM-DD HH:mm:ss")
                     if(this.taskPointJSON.indexOf(this.maxTime) ==-1){
                         this.taskPoint.push(v); 
                         this.taskPointJSON.push(this.maxTime);
@@ -614,9 +622,9 @@ export default class RealTimeTrack extends Vue {
         if(data){
             let flow = data.flow;
             
-            this.nowtime = TMapUt.dateFormat(data.speedtime*1000,"yyyy-MM-dd HH:mm:ss")
-            if(data.datetime){
-                this.nowtime = data.datetime;
+            // this.nowtime = TMapUt.dateFormat(data.speedtime*1000,"yyyy-MM-dd HH:mm:ss")
+            if(data.speedtime){
+                this.nowtime = data.speedtime;
             }
             this.nowspeed = (data.speed).toFixed(3);
 
@@ -804,6 +812,7 @@ export default class RealTimeTrack extends Vue {
      */
     async refresh(){
         try{
+            this.PreviousFlowPoint = null;
             this.rightState = true;
             this.clearCover();
             this.loading = true;

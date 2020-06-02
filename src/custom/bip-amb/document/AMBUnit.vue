@@ -85,7 +85,7 @@ import moment from 'moment'
     }
 })
 /**
- * 会计期间
+ * 阿米巴单元
  */
 export default class AMBUnit extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
@@ -177,10 +177,15 @@ export default class AMBUnit extends Vue {
                 }
             } 
             this.treeData = tData;
-                if(tData.length>0){
+            if(tData.length>0){
                 this.treSelData = this.treeData[0]
                 this.setCurrentKey();
                 this.initRightData();
+            }else{
+                this.title = "新增根级巴";
+                this.dsm.createRecord();
+                this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
+                this.addState = 3;
             }
         }
     }
@@ -300,6 +305,7 @@ export default class AMBUnit extends Vue {
         this.dsm.clear();
         this.dsm.createRecord();
         this.dsm.currRecord.data.parent_id = data.id;
+        this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
         this.addState = 2;//修改
     } 
     //删除
@@ -343,6 +349,8 @@ export default class AMBUnit extends Vue {
                     this.$set(this.treSelData, 'children', []);
                 }
                 this.treSelData.children.push(newChild);
+            }else if(this.addState == 3){
+                this.initTreeData();
             }
             this.$notify.success(res.data.message)
         }else{
