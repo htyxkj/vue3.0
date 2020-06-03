@@ -115,9 +115,6 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
-import XEUtils from 'xe-utils'
-import { values, toStringJSON } from 'xe-utils/methods';
-import moment from 'moment'
 @Component({
     components: {
     }

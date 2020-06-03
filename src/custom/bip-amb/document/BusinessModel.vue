@@ -99,11 +99,7 @@ import CDataSet from "@/classes/pub/CDataSet";
 import QueryEntity from "@/classes/search/QueryEntity";
 
 import { BIPUtil } from "@/utils/Request";
-import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
-import XEUtils from 'xe-utils'
-import { values, sum } from 'xe-utils/methods';
-import moment from 'moment'
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 @Component({
     components: {
