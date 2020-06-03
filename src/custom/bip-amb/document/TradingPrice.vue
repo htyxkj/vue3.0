@@ -26,7 +26,7 @@
                 <el-select class="topdiv1" v-model="priceglVal" placeholder="请选择价表" size="small">
                     <el-option v-for="item in priceglValues" :key="item.code" :label="item.name" :value="item.code"></el-option>
                 </el-select>
-                <el-date-picker size="small" class="topdiv1" v-model="selTime" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                <el-date-picker size="small" class="topdiv1" v-model="selTime"  type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 
                 <div class="topdiv2"><!-- 刷新 -->
                     <el-button style="border:0px" @click="showPriceCategories">      
@@ -36,9 +36,47 @@
                 </div> 
             </el-header>
             <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
-                <el-form @submit.native.prevent label-position="right" label-width="120px">
-                    <base-layout v-if="lay.binit" :layout="lay" :env="env"></base-layout>
-                </el-form>
+                <vxe-table border resizable :data="tableData"size="mini">
+                    <vxe-table-column type="expand" width="60">
+                        <template v-slot="{ row, rowIndex }">
+                            <vxe-table border resizable size="mini" :data="row.lines" style="padding:0px">
+                                <vxe-table-column type="seq" width="60"></vxe-table-column>
+                                <vxe-table-column field="fm_date" title="开始日期"></vxe-table-column>
+                                <vxe-table-column field="to_date" title="结束日期"></vxe-table-column>
+                                <vxe-table-column field="cost_price" title="价格"></vxe-table-column>
+                            </vxe-table>
+                        </template>
+                    </vxe-table-column> 
+                    <vxe-table-column header-align="center" align="center" title="价表" show-header-overflow >
+                        <template v-slot="{row,rowIndex}"> 
+                            {{row.category_name}}
+                        </template>
+                    </vxe-table-column>  
+                    <vxe-table-column header-align="center" align="center" title="物料" show-header-overflow >
+                        <template v-slot="{row,rowIndex}">
+                            {{row.item_name}}( {{row.item_code}})
+                        </template>
+                    </vxe-table-column> 
+                    <vxe-table-column field="fm_group_id" title="来源巴">
+                        <template v-slot="{row,rowIndex}"> 
+                            {{row.fm_group_name}}
+                        </template>
+                    </vxe-table-column>
+                    <vxe-table-column field="to_group_id" title="目标巴">
+                        <template v-slot="{row,rowIndex}"> 
+                            {{row.to_group_name}}
+                        </template>
+                    </vxe-table-column>
+                    <vxe-table-column field="cost_price" title="最新价">
+                        <template v-slot="{row,rowIndex}">
+                            {{row.cost_price}}
+                        </template>
+                    </vxe-table-column>
+                </vxe-table>
+                <vxe-pager :current-page="tablePage.currPage" :page-size="tablePage.pageSize"
+                    :total="tablePage.total" @page-change="tablePageChange"
+                    :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']">
+                </vxe-pager>
             </el-main>
         </el-container>
 
@@ -66,7 +104,7 @@
                 <i class="el-icon-plus"></i>
                 <span>添加</span>
             </el-button>
-            <vxe-pager border size="mini" :current-page="priceCPage.currentPage" :page-size="priceCPage.pageSize"
+            <vxe-pager border size="mini" :current-page="priceCPage.currPage" :page-size="priceCPage.pageSize"
                 :total="priceCPage.total" :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']"
                 @page-change="priceCPageChange">
             </vxe-pager>
@@ -90,25 +128,21 @@
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
-import BipMenuBar from "@/classes/pub/BipMenuBar";
-import { URIParams } from "@/classes/URIParams";
+import {BipMenuBtn} from '@/classes/BipMenuBtn'
 import Accounting from "../components/Accounting.vue"//核算目的
 import QueryCont from "@/classes/search/QueryCont";
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import CData from '@/classes/pub/CData';
 import QueryEntity from "@/classes/search/QueryEntity";
-import CCliEnv from "@/classes/cenv/CCliEnv";
-import { BipLayout } from "@/classes/ui/BipLayout";
 import { BIPUtil } from "@/utils/Request";
-import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
-import XEUtils from 'xe-utils'
-import { values } from 'xe-utils/methods';
 import moment from 'moment'
+import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 @Component({
     components: {
-        Accounting
+        Accounting,
+        BipGridInfo
     }
 })
 /**
@@ -116,37 +150,8 @@ import moment from 'moment'
  */
 export default class TradingPrice extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
-    tableHeight:any = 500//高度
-    expandedLevel:number = 100;//默认展开级别
-    keyID:string = "id";//当前节点key字段   
-    amb_purposes_id:any = null;//核算目的  
-    title:any = "";//右侧标题
-
-    dsm: CDataSet = new CDataSet(null);
-    dsm_cont: CDataSet = new CDataSet(null);
-    ds_ext: Array<CDataSet> = Array<CDataSet>();
-    lay: BipLayout = new BipLayout("");
-    env: CCliEnv = new CCliEnv();
-
-    unitCell:CDataSet = new CDataSet("");//阿米巴单元
-    unitCellID:any = "300103WEB";
-
-    unitTJCell:CDataSet = new CDataSet("");//查询条件对象
-    unitTJCellID:any = "300103WEBTJ";//条件对象编码
-
-    treSelData:any = null;
-    treeData:any = [];
-    
-    pcell:any = "300103WEB(300103AWEB;300103BWEB)";
-
-    type_name:any = {};//类型集合
-    addState:any = 1;//添加状态
-
-
-
-
-
-
+    tableHeight:any = 500//高度 
+    amb_purposes_id:any = null;//核算目的 
     loading:boolean = false;
  
     priceglVal:any = null;//选中价表
@@ -166,9 +171,15 @@ export default class TradingPrice extends Vue {
     dataPricesCell:CDataSet = new CDataSet("");
     dataPricesCellID:any = "3002B05WEBSEL";
     
-
+    tablePage:any ={
+        total: 0,
+        currPage:1,
+        pageSize:20
+    };
+    tableData:any =[];
 
     async created() {
+        this.tableHeight =  this.height -120
         this.priceCCell = await this.getCell(this.priceCCellID);
         this.dataPricesCell = await this.getCell(this.dataPricesCellID);
     }
@@ -201,13 +212,14 @@ export default class TradingPrice extends Vue {
         let res = await this.priceCCell.queryData(qe);
         if(res.data.id == 0){
             this.priceCData = res.data.data.data.data;
+            this.priceCPage = res.data.data.data.page
         }
         this.showPriceCategoriesDlg = true;
         this.loading = false;
     }
     //分页信息变化
     priceCPageChange({ currentPage, pageSize }:any) {
-        this.priceCPage.currentPage = currentPage
+        this.priceCPage.currPage = currentPage
         this.priceCPage.pageSize = pageSize
         this.showPriceCategories()
     }
@@ -269,15 +281,53 @@ export default class TradingPrice extends Vue {
         }
     }
     //查询数据
-    initDataPrice(){
-
+    async initDataPrice(){
+        let btn1 = new BipMenuBtn("DLG"," 追加期间")
+        btn1.setDlgSname(name);
+        btn1.setDlgType("D")
+        btn1.setDlgCont("amb.serv.util.report.TradingPrice*202;0;0");//交易价表
+        let b = JSON.stringify(btn1)
+        let fm_date = null;
+        let to_date = null;
+        if(this.selTime != null && this.selTime.length ==2){
+            fm_date = moment(this.selTime[0]).format("YYYY-MM-DD")
+            to_date = moment(this.selTime[1]).format("YYYY-MM-DD")
+        }
+        let prarm = {
+            "fm_group_id":null,//来源巴
+            "to_group_id":null,//目标巴
+            "item":null,//物料
+            // "purpose_id":this.amb_purposes_id,//核算目的
+            "purpose_id":'01e9723843934bb8947920040fea85bd',
+            "category_id":this.priceglVal,//价表ID
+            "fm_date":fm_date,//开始时间
+            "to_date":to_date,//结束时间
+            "currPage":this.tablePage.currPage,//当前页数
+            "pageSize":this.tablePage.pageSize,//每页条数
+        }
+        let v = JSON.stringify(prarm);
+        this.tableData = [];
+        let res = await tools.getDlgRunClass(v,b);
+        if(res.data.id ==0){
+            this.$notify.success(res.data.message)
+            let data = res.data.data;
+            this.tablePage.total = data.total;
+            this.tableData = data.data;
+        }else{
+            this.$notify.error(res.data.message)
+        } 
     }
-
+    tablePageChange({ currentPage, pageSize }:any) {
+        this.tablePage.currPage = currentPage
+        this.tablePage.pageSize = pageSize
+        this.initDataPrice()
+    }
 
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){ 
         this.amb_purposes_id = value.id; 
         this.initWebPRICEGL();
+        this.initDataPrice();
     }
     //获取对象
     async getCell(cellid: string) {
