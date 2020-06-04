@@ -2,29 +2,41 @@
     <el-container v-loading="loading">
         <el-header style="height:45px;padding:0px 10px">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-            <div class="topdiv2">
+            
+            <div class="topdiv2"><!-- 刷新 -->
+                <el-button style="border:0px" @click="filter">      
+                    <i class="el-icon-search"></i>
+                    <span>过滤</span>
+                </el-button>
+            </div> 
+            <!-- <div class="topdiv2">
                 <el-button style="border:0px">      
                     <i class="el-icon-plus"></i>
                     <span>导入</span>
                 </el-button>
-            </div>
+            </div> -->
             <div class="topdiv2"><!-- 刷新 -->
-                <el-button style="border:0px">      
+                <el-button style="border:0px" @click="initDataPrice">      
                     <i class="el-icon-refresh-right"></i>
                     <span>刷新</span>
                 </el-button>
             </div> 
-            <div class="topdiv2"><!-- 刷新 -->
-                <el-button style="border:0px">      
-                    <i class="el-icon-refresh-right"></i>
-                    <span>过滤</span>
-                </el-button>
-            </div> 
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
-            <el-header>
+            <el-header style="height: auto;">
+                <template v-if="showFilter">
+                    <el-form label-position="right" label-width="100px" style="display: flow-root;">
+                        <div v-for="(cel,index) in dataPDelTJCell.ccells.cels" :key="'A'+index">
+                            <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="dataPDelTJCell" :row="0"/>
+                        </div>
+                        <el-button @click="initDataPrice" style="margin: 4px 20px;" size="mini">      
+                            <i class="el-icon-search"></i>
+                            <span>搜索</span>
+                        </el-button>
+                    </el-form>
+                </template>
                 <el-select class="topdiv1" v-model="priceglVal" placeholder="请选择价表" size="small">
-                    <el-option v-for="item in priceglValues" :key="item.code" :label="item.name" :value="item.code"></el-option>
+                    <el-option v-for="item in priceglValues" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
                 <el-date-picker size="small" class="topdiv1" v-model="selTime"  type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 
@@ -35,44 +47,62 @@
                     </el-button>
                 </div> 
             </el-header>
-            <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
-                <vxe-table border resizable :data="tableData" size="mini">
+            <el-main style="padding:0px">
+                <vxe-table border resizable :data="tableData" size="mini" :style="'height:'+tableHeight+'px'">
                     <vxe-table-column type="expand" width="60">
                         <template v-slot="{ row, }">
-                            <vxe-table border resizable size="mini" :data="row.lines" style="padding:0px">
+                            <vxe-table border resizable size="mini" :data="row.lines" style="padding:0px" align="life">
                                 <vxe-table-column type="seq" width="60"></vxe-table-column>
-                                <vxe-table-column field="fm_date" title="开始日期"></vxe-table-column>
-                                <vxe-table-column field="to_date" title="结束日期"></vxe-table-column>
-                                <vxe-table-column field="cost_price" title="价格"></vxe-table-column>
+                                <vxe-table-column field="fm_date" width="100" title="开始日期"></vxe-table-column>
+                                <vxe-table-column field="to_date" width="100" title="结束日期"></vxe-table-column>
+                                <vxe-table-column field="cost_price" width="100" title="价格"></vxe-table-column>
+                                <vxe-table-column align="right">
+                                    <template v-slot="{ row }" >
+                                        <el-button type="text" @click="updateDP(row)">编辑</el-button>
+                                        <el-button type="text" @click="deleteDP(row)">删除</el-button>
+                                    </template>
+                                </vxe-table-column>
                             </vxe-table>
                         </template>
                     </vxe-table-column> 
-                    <vxe-table-column header-align="center" align="center" title="价表" show-header-overflow >
+                    <vxe-table-column width="120" header-align="center" align="left" title="价表" show-header-overflow >
                         <template v-slot="{row}"> 
                             {{row.category_name}}
                         </template>
                     </vxe-table-column>  
-                    <vxe-table-column header-align="center" align="center" title="物料" show-header-overflow >
+                    <vxe-table-column width="500" header-align="center" align="left" title="物料" show-header-overflow >
                         <template v-slot="{row}">
                             {{row.item_name}}( {{row.item_code}})
                         </template>
                     </vxe-table-column> 
-                    <vxe-table-column field="fm_group_id" title="来源巴">
+                    <vxe-table-column width="160" field="fm_group_id" align="left" title="来源巴">
                         <template v-slot="{row}"> 
                             {{row.fm_group_name}}
                         </template>
                     </vxe-table-column>
-                    <vxe-table-column field="to_group_id" title="目标巴">
+                    <vxe-table-column  width="160" field="to_group_id" align="left" title="目标巴">
                         <template v-slot="{row}"> 
                             {{row.to_group_name}}
                         </template>
                     </vxe-table-column>
-                    <vxe-table-column field="cost_price" title="最新价">
+                    <vxe-table-column  width="60" field="cost_price" align="left" title="最新价">
                         <template v-slot="{row}">
                             {{row.cost_price}}
                         </template>
                     </vxe-table-column>
+                    <vxe-table-column align="right">
+                        <template v-slot="{ row }" >
+                            <el-button type="text" @click="debugPrice(row)">调价</el-button>
+                            <el-button type="text" @click="deletePriceByBizKey(row)">删除</el-button>
+                        </template>
+                    </vxe-table-column>
                 </vxe-table>
+                <template v-if="priceglVal">
+                    <el-button style="border:0px;width:100%" @click="goToNewData">      
+                        <i class="el-icon-plus"></i>
+                        <span>新增</span>
+                    </el-button> 
+                </template>
                 <vxe-pager :current-page="tablePage.currPage" :page-size="tablePage.pageSize"
                     :total="tablePage.total" @page-change="tablePageChange"
                     :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']">
@@ -122,7 +152,34 @@
                 </span>
             </el-dialog>
         </el-dialog>
+        
+        <el-dialog :title="title" :close-on-click-modal="false" append-to-body :visible.sync="showDataPriceDlg" width="50%" class="bip-query">
+            <el-row class="bip-lay">
+                <el-form @submit.native.prevent label-position="right" label-width="100px">
+                    <div v-for="(cel,index) in dataPricesCell.ccells.cels" :key="'A'+index">
+                        <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="dataPricesCell" :row="0"/>
+                    </div>
+                </el-form>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showDataPriceDlg = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="saveUpdate" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
 
+        <el-dialog title="价表" :close-on-click-modal="false" append-to-body :visible.sync="showNewDataPriceDlg" width="50%" class="bip-query">
+            <el-row class="bip-lay">
+                <el-form @submit.native.prevent label-position="right" label-width="100px">
+                    <div v-for="(cel,index) in dataPDSaveCell.ccells.cels" :key="'A'+index">
+                        <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="dataPDSaveCell" :row="0"/>
+                    </div>
+                </el-form>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showNewDataPriceDlg = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="saveNewDate" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
     </el-container>
 </template>
 <script lang="ts">
@@ -169,8 +226,9 @@ export default class TradingPrice extends Vue {
 
 
     dataPricesCell:CDataSet = new CDataSet("");
-    dataPricesCellID:any = "3002B05WEBSEL";
-    
+    dataPricesCellID:any = "3002B05WEB";
+    showDataPriceDlg:boolean = false;
+    title:any = "价表";
     tablePage:any ={
         total: 0,
         currPage:1,
@@ -178,10 +236,27 @@ export default class TradingPrice extends Vue {
     };
     tableData:any =[];
 
+    
+    dataPDelCell:CDataSet = new CDataSet("");
+    dataPDelCellID:any = "3002B05WEBDEL";
+
+    dataPDSaveCell:CDataSet = new CDataSet("");
+    dataPDSaveCellID:any = "3002B05WEBSAVE";
+
+    showNewDataPriceDlg:boolean = false;
+
+    dataPDelTJCell:CDataSet = new CDataSet("");
+    dataPDelTJCellID:any = "3002B05WEBTJ";
+
+    showFilter:boolean = false;
+
     async created() {
-        this.tableHeight =  this.height -120
-        this.priceCCell = await this.getCell(this.priceCCellID);
-        this.dataPricesCell = await this.getCell(this.dataPricesCellID);
+        this.tableHeight =  this.height -200
+        this.priceCCell = await this.getCell(this.priceCCellID); 
+        this.dataPricesCell = await this.getCell(this.dataPricesCellID); 
+        this.dataPDelCell = await this.getCell(this.dataPDelCellID); 
+        this.dataPDSaveCell = await this.getCell(this.dataPDSaveCellID); 
+        this.dataPDelTJCell = await this.getCell(this.dataPDelTJCellID);
     }
 
     mounted() { 
@@ -282,6 +357,7 @@ export default class TradingPrice extends Vue {
     }
     //查询数据
     async initDataPrice(){
+        this.loading = true;
         let btn1 = new BipMenuBtn("DLG"," 追加期间")
         btn1.setDlgSname(name);
         btn1.setDlgType("D")
@@ -293,12 +369,20 @@ export default class TradingPrice extends Vue {
             fm_date = moment(this.selTime[0]).format("YYYY-MM-DD")
             to_date = moment(this.selTime[1]).format("YYYY-MM-DD")
         }
+        let fm_group_id = null;
+        let to_group_id = null;
+        let item = null
+        if(this.dataPDelTJCell.currRecord && this.dataPDelTJCell.currRecord.data){
+            item = this.dataPDelTJCell.currRecord.data.item_id
+            to_group_id = this.dataPDelTJCell.currRecord.data.to_group_id
+            fm_group_id = this.dataPDelTJCell.currRecord.data.fm_group_id
+        }
         let prarm = {
-            "fm_group_id":null,//来源巴
-            "to_group_id":null,//目标巴
-            "item":null,//物料
-            // "purpose_id":this.amb_purposes_id,//核算目的
-            "purpose_id":'01e9723843934bb8947920040fea85bd',
+            "fm_group_id":fm_group_id,//来源巴
+            "to_group_id":to_group_id,//目标巴
+            "item":item,//物料
+            "purpose_id":this.amb_purposes_id,//核算目的
+            // "purpose_id":'01e9723843934bb8947920040fea85bd',
             "category_id":this.priceglVal,//价表ID
             "fm_date":fm_date,//开始时间
             "to_date":to_date,//结束时间
@@ -316,16 +400,146 @@ export default class TradingPrice extends Vue {
         }else{
             this.$notify.error(res.data.message)
         } 
+        this.loading = false;
     }
+    //分页信息变化
     tablePageChange({ currentPage, pageSize }:any) {
         this.tablePage.currPage = currentPage
         this.tablePage.pageSize = pageSize
         this.initDataPrice()
     }
+    //编辑价表
+    async updateDP(row:any){
+        for(var i=0;i<this.dataPricesCell.ccells.cels.length;i++){
+            let cel = this.dataPricesCell.ccells.cels[i]
+            if(cel.id == 'item_id' || cel.id == 'fm_group_id' || cel.id == 'to_group_id'){
+                this.dataPricesCell.ccells.cels[i].attr = this.dataPricesCell.ccells.cels[i].attr | 0x40;
+            }
+        }
+        let id = row.id;
+        let qe:QueryEntity = new QueryEntity(this.dataPricesCellID,this.dataPricesCellID);
+        qe.page.pageSize = 1; 
+        qe.cont = JSON.stringify({id:id})
+        let res = await this.dataPricesCell.queryData(qe);
+        if(res.data.id == 0){
+            let data = res.data.data.data.data;
+            this.dataPricesCell.clear();
+            this.dataPricesCell.createRecord();
+            this.dataPricesCell.currRecord.c_state = 2
+            this.dataPricesCell.currRecord.data = data[0].data;
+            this.showDataPriceDlg = true;
+        }else{
+            this.$notify.error(res.data.message)
+        }
+    }
+    //删除价表
+    deleteDP(row:any){
+        //删除
+        this.$confirm('确定删除该记录吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() => {
+            this.doDeleteDP(row);
+        }).catch(() => {
+              
+        });
+        
+    }
+    async doDeleteDP(row:any){
+        let id = row.id;
+        this.dataPricesCell.clear();
+        this.dataPricesCell.createRecord();
+        this.dataPricesCell.currRecord.c_state = 4
+        this.dataPricesCell.currRecord.data.id = id
+        let res:any = await this.dataPricesCell.saveData();
+        if(res.data.id == 0){
+            this.initDataPrice();
+        }else{
+            this.$notify.error(res.data.message)
+        }
+    }
+    //调价
+    debugPrice(row:any){
+        for(var i=0;i<this.dataPricesCell.ccells.cels.length;i++){
+            let cel = this.dataPricesCell.ccells.cels[i]
+            if(cel.id == 'item_id' || cel.id == 'fm_group_id' || cel.id == 'to_group_id'){
+                this.dataPricesCell.ccells.cels[i].attr = this.dataPricesCell.ccells.cels[i].attr | 0x40;
+            }
+        }
+        this.dataPricesCell.clear();
+        this.dataPricesCell.createRecord();
+        this.dataPricesCell.currRecord.data.purpose_id = this.amb_purposes_id;
+        this.dataPricesCell.currRecord.data.fm_group_id = row.fm_group_id;
+        this.dataPricesCell.currRecord.data.to_group_id = row.to_group_id;
+        this.dataPricesCell.currRecord.data.item_id = row.item_id;
+        this.dataPricesCell.currRecord.data.category_id = row.category_id;
+        this.dataPricesCell.currRecord.data.bizkey = row.bizkey;
+        this.showDataPriceDlg = true;
+    }
+    //根据BizKey 删除
+    async deletePriceByBizKey(row:any){ 
+        this.dataPDelCell.clear();
+        this.dataPDelCell.createRecord();
+        this.dataPDelCell.currRecord.c_state = 4
+        this.dataPDelCell.currRecord.data.bizkey = row.bizkey;
+        let res:any = await this.dataPDelCell.saveData();
+        if(res.data.id == 0){
+            this.initDataPrice();
+        }else{
+            this.$notify.error(res.data.message)
+        }
+    }
+
+    //保存修改
+    async saveUpdate(){
+        let bok =this.checkNotNull(this.dataPricesCell);
+        if(!bok)
+            return ;  
+        let res:any = await this.dataPricesCell.saveData();
+        if(res.data.id == 0){
+            this.initDataPrice();
+            this.showDataPriceDlg = false;
+        }else{
+            this.$notify.error(res.data.message)
+        }
+    }
+    goToNewData(){
+        this.dataPDSaveCell.clear();
+        this.dataPDSaveCell.createRecord();
+        this.dataPDSaveCell.currRecord.data.purpose_id = this.amb_purposes_id; 
+        this.dataPDSaveCell.currRecord.data.category_id = this.priceglVal;
+        this.showNewDataPriceDlg = true
+    }
+    //保存新增
+    async saveNewDate(){
+        let bok =this.checkNotNull(this.dataPDSaveCell);
+        if(!bok)
+            return ;
+        let res:any = await this.dataPDSaveCell.saveData();
+        if(res.data.id == 0){
+            this.initDataPrice();
+            this.showNewDataPriceDlg = false;
+        }else{
+            this.$notify.error(res.data.message)
+        }
+    }
+    //过滤
+    filter(){
+        this.showFilter = !this.showFilter;
+        this.dataPDelTJCell.clear();
+        this.dataPDelTJCell.createRecord();
+        if(this.showFilter){
+            this.tableHeight =  this.height -250
+        }else{
+            this.tableHeight =  this.height -200
+        }
+    }
 
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){ 
         this.amb_purposes_id = value.id; 
+        this.priceglVal = null;
         this.initWebPRICEGL();
         this.initDataPrice();
     }
@@ -397,8 +611,13 @@ export default class TradingPrice extends Vue {
     }
     @Watch("height")
     heightChange() {
-        this.tableHeight =  this.height -120
+        this.tableHeight =  this.height -200
     }
+    @Watch("priceglVal")
+    priceglValChange() {
+        this.initDataPrice();
+    }
+    
 }
 </script>
 <style scoped lang="scss" >
