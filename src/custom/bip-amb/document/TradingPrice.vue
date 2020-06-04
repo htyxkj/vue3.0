@@ -36,9 +36,9 @@
                 </div> 
             </el-header>
             <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
-                <vxe-table border resizable :data="tableData"size="mini">
+                <vxe-table border resizable :data="tableData" size="mini">
                     <vxe-table-column type="expand" width="60">
-                        <template v-slot="{ row, rowIndex }">
+                        <template v-slot="{ row, }">
                             <vxe-table border resizable size="mini" :data="row.lines" style="padding:0px">
                                 <vxe-table-column type="seq" width="60"></vxe-table-column>
                                 <vxe-table-column field="fm_date" title="开始日期"></vxe-table-column>
@@ -48,27 +48,27 @@
                         </template>
                     </vxe-table-column> 
                     <vxe-table-column header-align="center" align="center" title="价表" show-header-overflow >
-                        <template v-slot="{row,rowIndex}"> 
+                        <template v-slot="{row}"> 
                             {{row.category_name}}
                         </template>
                     </vxe-table-column>  
                     <vxe-table-column header-align="center" align="center" title="物料" show-header-overflow >
-                        <template v-slot="{row,rowIndex}">
+                        <template v-slot="{row}">
                             {{row.item_name}}( {{row.item_code}})
                         </template>
                     </vxe-table-column> 
                     <vxe-table-column field="fm_group_id" title="来源巴">
-                        <template v-slot="{row,rowIndex}"> 
+                        <template v-slot="{row}"> 
                             {{row.fm_group_name}}
                         </template>
                     </vxe-table-column>
                     <vxe-table-column field="to_group_id" title="目标巴">
-                        <template v-slot="{row,rowIndex}"> 
+                        <template v-slot="{row}"> 
                             {{row.to_group_name}}
                         </template>
                     </vxe-table-column>
                     <vxe-table-column field="cost_price" title="最新价">
-                        <template v-slot="{row,rowIndex}">
+                        <template v-slot="{row}">
                             {{row.cost_price}}
                         </template>
                     </vxe-table-column>
