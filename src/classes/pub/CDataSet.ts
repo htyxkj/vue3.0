@@ -182,6 +182,9 @@ export default class CDataSet {
         return true;
       }
     }
+    if((this.ccells.attr & 0x8 )>0){
+      return false;
+    }
     if (this.ds_par != null) {
       return this.ds_par.currCanEdit();
     }

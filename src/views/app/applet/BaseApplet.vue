@@ -831,6 +831,7 @@ export default class BaseApplet extends Vue{
             if(value.dsm.ccells.obj_id == this.dsm.ccells.obj_id){
                 this.dsm.page.index = value.rowIndex
                 this.setListMenuName();
+                this.getChildData();
                 // this.JumpToIndexCRecord(this.dsm.page.index);
             }
         }

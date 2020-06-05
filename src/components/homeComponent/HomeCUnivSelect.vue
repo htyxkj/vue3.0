@@ -224,7 +224,7 @@ export default class HomeCUnivSelect extends Vue {
         if(this.biType =="SEL"){
             this.dsm.queryData(queryCont).then(res=>{
                 this.processingData(res,"SEL");
-                this.getCRecordByPk2();
+                this.getCRecordByPk2(-1);
             }).catch(err=>{
                 this.fullscreenLoading = false
                 this.$notify.error(err)
@@ -379,9 +379,9 @@ export default class HomeCUnivSelect extends Vue {
         this.find()
     }
 
-    getCRecordByPk2(value:any=null){
+    getCRecordByPk2(value:any){
         if(this.dsm){
-            if(value == null && this.dsm.ds_sub.length>0){
+            if(value == -1 && this.dsm.ds_sub.length>0){
                 this.getCRecordByPk(this.dsm.currRecord)
             }else if(value!=null && value.dsm.ds_sub.length>0){
                 this.getCRecordByPk(value.dsm.currRecord)

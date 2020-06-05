@@ -552,6 +552,9 @@ export default class LayCelVexTable extends Vue {
     }
 
     activeMethod() {
+        if((this.cds.ccells.attr & 0x8 )>0){
+            return false;
+        }
         return true;
     }
 
@@ -698,12 +701,12 @@ export default class LayCelVexTable extends Vue {
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
             this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
             this.$bus.$emit("row_click",value);    
-            if(this.cds.ds_sub){
-                for(var i=0;i<this.cds.ds_sub.length;i++){
-                    let cc = this.cds.ds_sub[i];
-                    this.$bus.$emit("datachange",cc.ccells.obj_id)
-                }
-            }
+            // if(this.cds.ds_sub){
+            //     for(var i=0;i<this.cds.ds_sub.length;i++){
+            //         let cc = this.cds.ds_sub[i];
+            //         this.$bus.$emit("datachange",cc.ccells.obj_id)
+            //     }
+            // }
         }, 250);
     }
     invokecmd(btn:any,rowIndex:any){
