@@ -71,6 +71,7 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/bip-hr/AttendanceMonthly.vue')
       },
       {
+        //飞防架区操作          
         path: '/OperatingArea',
         name: 'OperatingArea',
         // route level code-splitting
@@ -79,6 +80,7 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/OperatingArea.vue')
       },
       {
+        //飞防路线规划
         path: '/TaskRoutePlanning',
         name: 'TaskRoutePlanning',
         // route level code-splitting
@@ -87,6 +89,7 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/TaskRoutePlanning.vue')
       },
       {
+        //飞防轨迹回放
         path: '/PlayBack',
         name: 'PlayBack',
         // route level code-splitting
@@ -95,6 +98,7 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/PlayBack.vue')
       },
       {
+        //飞防航带查询
         path: '/TrackShow',
         name: 'TrackShow',
         // route level code-splitting
@@ -103,6 +107,7 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/TrackShow.vue')
       },
       {
+        //飞防 实时页面
         path: '/RealTimeTrack',
         name: 'RealTimeTrack',
         // route level code-splitting
@@ -111,6 +116,7 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue')
       },
       {
+        //架次查询
         path: '/SortiesQuery',
         name: 'SortiesQuery',
         // route level code-splitting
@@ -119,12 +125,22 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/SortiesQuery.vue')
       },
       {
+        //飞防架次统计
         path: '/SortiesInvoke',
         name: 'SortiesInvoke',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/SortiesInvoke.vue')
+      },
+      {
+        //飞防 机组GPS导入
+        path: '/GPSRepair',
+        name: 'GPSRepair',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/GPSRepair.vue')
       },
       {
         //阿米巴 职能式损益表
