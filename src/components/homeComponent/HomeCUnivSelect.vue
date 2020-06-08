@@ -227,7 +227,7 @@ export default class HomeCUnivSelect extends Vue {
                 this.getCRecordByPk2(-1);
             }).catch(err=>{
                 this.fullscreenLoading = false
-                this.$notify.error(err)
+                console.log(err)
             });
         }else if(this.biType == "RPT"){
             queryCont.type = 2
@@ -235,7 +235,7 @@ export default class HomeCUnivSelect extends Vue {
                 this.processingData(res,"RPT");
             }).catch(err=>{
                 this.fullscreenLoading = false
-                this.$notify.error(err)
+                console.log(err)
             });
         }else if(this.biType == "SQL"){
             queryCont.type = 3
@@ -243,7 +243,7 @@ export default class HomeCUnivSelect extends Vue {
                 this.processingData(res,"RPT");
             }).catch(err=>{
                 this.fullscreenLoading = false
-                this.$notify.error(err)
+                console.log(err)
             });
         }
     }
@@ -381,9 +381,9 @@ export default class HomeCUnivSelect extends Vue {
 
     getCRecordByPk2(value:any){
         if(this.dsm){
-            if(value == -1 && this.dsm.ds_sub.length>0){
+            if(value == -1 && this.dsm.ds_sub && this.dsm.ds_sub.length>0){
                 this.getCRecordByPk(this.dsm.currRecord)
-            }else if(value!=null && value.dsm.ds_sub.length>0){
+            }else if(value!=null && value!=-1 && value.dsm.ds_sub  && value.dsm.ds_sub.length>0){
                 this.getCRecordByPk(value.dsm.currRecord)
             }
         }

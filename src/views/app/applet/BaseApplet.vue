@@ -236,7 +236,13 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.data[cell.id] = currRecord.data[cell.id]
                     }
                 }
-                this.dsm.cdata.data.push(this.dsm.currRecord)
+                let row = this.dsm.cdata.data.length - 1;
+                let page = this.qe.page;
+                let _idx = page.total - 1;
+                if (page.total > 0) {
+                    this.JumpToIndexCRecord(_idx);
+                }
+                // this.dsm.cdata.data.push(this.dsm.currRecord)
             }
         }
     }

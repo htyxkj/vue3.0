@@ -29,6 +29,7 @@
                 height="300px"
                 :selectRow="cds.currRecord"
                 @checkbox-all="selectAllEvent"
+                @cell-dblclick="openrefs"
                 @cell-click="table_cell_click"
                 @checkbox-change="selectChangeEvent"
                 :header-cell-style="headerCellStyle"
@@ -597,9 +598,17 @@ export default class LayCelVexTable extends Vue {
         let rowIndex = data.rowIndex
         let columnIndex = data.columnIndex
         if(columnIndex > 0){
-            let cell = this.laycell.uiCels[columnIndex-1]
-            if((this.laycell.cells.attr & 0x40)>0){
-                cell = this.laycell.uiCels[columnIndex-2]
+            let cell = this.laycell.uiCels[columnIndex]
+
+            if(!this.beBill){
+                cell = this.laycell.uiCels[columnIndex-1]
+                if((this.laycell.cells.attr & 0x40)>0){
+                    cell = this.laycell.uiCels[columnIndex-2]
+                }
+            }else{
+                if(this.cds.ds_par){
+                    cell = this.laycell.uiCels[columnIndex-1]
+                }
             }
             if( (cell.attr & 1) >0 || (cell.attr & (0x80000)) >0 ) { // 0主键   0x80000关联
                 let slkid = row[cell.id];
@@ -732,11 +741,17 @@ export default class LayCelVexTable extends Vue {
         this.table_cell_click(data,event)
     }
 
-    selectAllEvent ({ selection,checked }:any) {
-        this.removeData = selection;
-        for(var i=0;i<this.removeData.length;i++){
-            this.removeData[i].c_state =4;
-        }
+    selectAllEvent ({ records, reserves, indeterminates, checked, $event }:any) {
+        console.log(records)
+        console.log(reserves)
+        console.log(indeterminates)
+        console.log(checked)
+        console.log(checked)
+
+        // this.removeData = selection;
+        // for(var i=0;i<this.removeData.length;i++){
+        //     this.removeData[i].c_state =4;
+        // }
     }
     selectChangeEvent ({ selection,checked,}:any) {
         this.removeData = selection;

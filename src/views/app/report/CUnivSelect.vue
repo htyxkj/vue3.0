@@ -547,9 +547,9 @@ export default class CUnivSelect extends Vue {
 
     getCRecordByPk2(value:any=null){
         if(this.dsm){
-            if(value == null && this.dsm.ds_sub.length>0){
+            if(value == null && this.dsm.ds_sub && this.dsm.ds_sub.length>0){
                 this.getCRecordByPk(this.dsm.currRecord)
-            }else if(value!=null && value.dsm.ds_sub.length>0){
+            }else if(value!=null && this.dsm.ds_sub && value.dsm.ds_sub.length>0){
                 this.getCRecordByPk(value.dsm.currRecord)
             }
         }
