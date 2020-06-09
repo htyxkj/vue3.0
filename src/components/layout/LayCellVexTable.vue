@@ -14,25 +14,25 @@
                 v-if="beBill"
                 border
                 size="small"
+                :data.sync="cds.cdata.data"
+                row-id="id"
+                resizable
+                height="300px"
                 highlight-hover-row
                 show-all-overflow="tooltip"
                 show-header-overflow
                 highlight-current-row
                 class="vxe-table-element"
-                :data.sync="cds.cdata.data"
                 :optimized="true"
                 :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
-                row-id="id"
-                resizable
-                @edit-actived="rowActive"
-                @edit-closed="editClose"
-                height="300px"
                 :selectRow="cds.currRecord"
-                @checkbox-all="selectAllEvent"
                 @cell-dblclick="openrefs"
                 @cell-click="table_cell_click"
+                :header-cell-style="headerCellStyle"                
+                @edit-actived="rowActive"
+                @edit-closed="editClose"
                 @checkbox-change="selectChangeEvent"
-                :header-cell-style="headerCellStyle"
+                @checkbox-all="selectAllEvent"
                 >
                 <vxe-table-column v-if="cds.ds_par" type="checkbox" width="40"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">

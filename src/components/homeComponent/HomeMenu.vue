@@ -122,18 +122,28 @@ export default class HomeMenu extends Vue {
      * 菜单点击
      */
     menuClick(menuid:string,command:string){
+        console.log("asdf")
         let menu = baseTool.findMenu(menuid);
         if(menu ==  null){
             this.$notify.error("没有菜单"+menuid+"操作权限！");
             return;
         }
-        "pbuid=C107&pmenuid=C107"
-        command = command.split("&")[0].split("=")[1];
-        this.$router.push({
-            path:'/layout',
-            name:'layout',
-            query: {pbuid:command,pmenuid:menu.menuId},
-        })
+        if(command.indexOf("pmenu=") !=-1){
+            command = command.split("&")[0].split("=")[1];
+            command = "/"+command;
+            this.$router.push({
+                path:command,
+                name:command,
+                query: {pmenuid:menu.menuId},
+            })
+        }else{ 
+            command = command.split("&")[0].split("=")[1];
+            this.$router.push({
+                path:'/layout',
+                name:'layout',
+                query: {pbuid:command,pmenuid:menu.menuId},
+            })
+        }
     }
     /**
      * 添加新的自定义菜单
