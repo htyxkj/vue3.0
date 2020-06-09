@@ -73,8 +73,8 @@
                     </div>
                 </el-form>
                 <template>
-                    <el-radio v-model="deviceType" label="1">旧设备</el-radio>
-                    <el-radio v-model="deviceType" label="2">新设备</el-radio>
+                    <el-radio v-model="deviceType" label="0">旧设备</el-radio>
+                    <el-radio v-model="deviceType" label="1">新设备</el-radio>
                 </template>
             </el-row>
             <span slot="footer" class="dialog-footer">
@@ -239,7 +239,7 @@ export default class GPSRepair extends Vue {
             subCell.createRecord();
             subCell.currRecord.data = Object.assign({},data);
 
-            if(this.deviceType == '1'){
+            if(this.deviceType == '0'){
                 let latlng = Gps.gps84_To_bd09(parseFloat(data.latitude),parseFloat(data.longitude));
                 subCell.currRecord.data.latitude = latlng.tempLat;
                 subCell.currRecord.data.longitude = latlng.tempLon;
