@@ -315,7 +315,7 @@ export default class GPSRepair extends Vue {
 
                             let oneDate = Number(moment(speedTime,'YYYY-MM-DD HH:mm:ss').format('X'))
                             let nextDate = Number(moment(nextTime,'YYYY-MM-DD HH:mm:ss').format('X'))
-                            let ListData = this.parsingGPS(latlng,nextLatLng,speedTime,(nextDate-oneDate-1),height,speed)
+                            let ListData = this.parsingGPS(latlng,nextLatLng,speedTime,(nextDate-oneDate),height,speed)
                             this.allData = this.allData.concat(ListData); //c=[1,2,3,4,5,6];
                         }
                     }
@@ -377,7 +377,9 @@ export default class GPSRepair extends Vue {
         let listData:Array<any> = new Array<any>(); 
         for(var i=0;i<time;i++){
             let data:any = this.getEntity();
-            speedTime = moment(speedTime,'YYYY-MM-DD HH:mm:ss').add(1, 's').format('YYYY-MM-DD HH:mm:ss');
+            if(i>0){
+                speedTime = moment(speedTime,'YYYY-MM-DD HH:mm:ss').add(1, 's').format('YYYY-MM-DD HH:mm:ss');
+            }
             data.speedtime = speedTime;
             data.datetime = speedTime;
             data.longitude = (parseFloat(lng1) + (lngc*i)).toFixed(5);
