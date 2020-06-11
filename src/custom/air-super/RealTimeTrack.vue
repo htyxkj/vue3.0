@@ -826,6 +826,8 @@ export default class RealTimeTrack extends Vue {
             this.sprayLine2=[];//飞行轨迹（没有喷洒农药的轨迹线）
             this.sprayBreak = true;//喷洒是否中断
             this.airPoint=[];
+            this.sumtime = 0;
+            this.sumtimeflow = 0;
             await this.initTask();
             for(var k in this.taskData){
                 await this.initOperDevice(this.taskData[k]);
