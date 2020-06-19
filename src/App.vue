@@ -1,8 +1,12 @@
 <template >
   <div id="app" v-if="configT">
     <template v-if="!isLogin"> 
-      <login v-if="isLoginPage == 0"></login>
-      <wx-applets v-if="isLoginPage == 3" :query="query"></wx-applets>
+        <template v-if="isLoginPage == 0">
+            <login></login>
+        </template>
+        <template v-else>
+            <router-view />
+        </template>
     </template>
     <template v-else>
       <el-container> 
@@ -42,7 +46,6 @@
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import Login from "@/views/login/Login.vue";
-import WxApplets from "@/views/login/WxApplets.vue";
 import BipAside from "@/views/app/BipAside.vue";
 import LayOut from "@/views/app/LayOut.vue";
 import LayHeader from "@/views/app/LayHeader.vue";
@@ -65,8 +68,7 @@ import QueryEntity from './classes/search/QueryEntity';
     Login,
     BipAside,
     LayOut,
-    LayHeader,
-    WxApplets
+    LayHeader
   }
 })
 export default class App extends Vue {
@@ -104,6 +106,7 @@ export default class App extends Vue {
             BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
             BaseVariable.Project_Name = res.data.Project_Name;
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
+            BaseVariable.SMSURL = res.data.SMSURL;
             
         }).catch((err:any) => {
             console.log(err)
@@ -126,6 +129,7 @@ export default class App extends Vue {
             BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
             BaseVariable.Project_Name = res.data.Project_Name;
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
+            BaseVariable.SMSURL = res.data.SMSURL;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -194,6 +198,10 @@ export default class App extends Vue {
 
     @Watch("$route")
     routerChange(to: Route, from: Route) { 
+        if(this.$route.name == "registered"){
+            this.isLoginPage = 1;
+            return;
+        }
         if (to.name === "login") {
             this.setIsLogin(false);
             return;

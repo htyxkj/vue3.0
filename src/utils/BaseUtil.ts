@@ -21,6 +21,12 @@ export namespace BIPUtils {
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+    getRegisteredParam(){
+      return Object.assign({
+        typeid: 2,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID
+      });
+    }
     /**
      * @description 获取免密登录系统参数
      * @returns 返回是一个object{apiId:'xxx',dbid:'xx'}

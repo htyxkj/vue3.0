@@ -1,4 +1,5 @@
 export const GlobalVariable = Object.assign({},{
+    REGAPI:"/reginfo",
     API:"/sysapi",
     API_UPD:"/sysupd",
     API_ID: "apiId",

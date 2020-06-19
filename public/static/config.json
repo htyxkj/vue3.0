@@ -1,10 +1,11 @@
 {
-    "dbid": "01",
-    "ApiUrl": "http://211.144.37.205/air-super/",
+    "dbid": "142",
+    "ApiUrl": "http://127.0.0.1:9999/jd",
     "MQTT_SERVICE": "ws://115.28.191.203:85/ws",
     "MQTT_USERNAME": "bipmq",
     "MQTT_PASSWORD": "bipmq",
     "MQTT_HOST": "bipmq",
     "Project_Name":"飞机施药质量监测监管自动化计量综合服务平台",
-    "COPYRIGHT":"2020：一风立创科技 版权所有"
+    "COPYRIGHT":"2020：一风立创科技 版权所有",
+    "SMSURL":"http://www.bip-soft.com:8080/ssms/"
 }

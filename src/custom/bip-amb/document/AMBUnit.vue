@@ -45,11 +45,11 @@
                     </span>
                 </el-tree>
             </el-aside>
-            <el-main style="padding:0px"> 
+            <el-main style="padding:0px;border-left: 1px solid rgb(204, 204, 204);"> 
                 <el-container>
-                    <el-header>
-                        <el-button type="primary" @click="saveUnit">保存</el-button>
-                        {{title}}
+                    <el-header class="rightHeader">
+                        <el-button type="primary" @click="saveUnit" icon="el-icon-document-add" size="small">保存</el-button>
+                        <div class="rightTitle">{{title}}</div>
                     </el-header>
                     <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
                         <el-form @submit.native.prevent label-position="right" label-width="120px">
@@ -175,6 +175,7 @@ export default class AMBUnit extends Vue {
             this.treeData = tData;
             if(tData.length>0){
                 this.treSelData = this.treeData[0]
+                this.update(this.treSelData);
                 this.setCurrentKey();
                 this.initRightData();
             }else{
@@ -301,6 +302,9 @@ export default class AMBUnit extends Vue {
         this.dsm.clear();
         this.dsm.createRecord();
         this.dsm.currRecord.data.parent_id = data.id;
+        this.dsm.currRecord.data.type_id = data.type_id
+        this.dsm.currRecord.data.employees = data.employees
+        this.dsm.currRecord.data.enabled = data.enabled
         this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
         this.addState = 2;//修改
     } 
@@ -484,5 +488,16 @@ export default class AMBUnit extends Vue {
 .saveelebtn{
     margin-top: 20px;
     margin-left:45%;
+}
+.rightHeader{
+    height: 50px !important;;
+    line-height: 50px;
+    border-bottom: 1px solid rgb(204, 204, 204);
+}
+.rightTitle{
+    float:right;
+    color: rgba(0,0,0,.65);
+    font-weight: 400;
+    font-size: 12px;
 }
 </style>

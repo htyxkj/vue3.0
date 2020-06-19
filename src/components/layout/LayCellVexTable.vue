@@ -32,7 +32,7 @@
                 @edit-actived="rowActive"
                 @edit-closed="editClose"
                 @checkbox-change="selectChangeEvent"
-                @checkbox-all="selectAllEvent"
+                @checkbox-all="selectChangeEvent"
                 >
                 <vxe-table-column v-if="cds.ds_par" type="checkbox" width="40"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
@@ -741,18 +741,6 @@ export default class LayCelVexTable extends Vue {
         this.table_cell_click(data,event)
     }
 
-    selectAllEvent ({ records, reserves, indeterminates, checked, $event }:any) {
-        console.log(records)
-        console.log(reserves)
-        console.log(indeterminates)
-        console.log(checked)
-        console.log(checked)
-
-        // this.removeData = selection;
-        // for(var i=0;i<this.removeData.length;i++){
-        //     this.removeData[i].c_state =4;
-        // }
-    }
     selectChangeEvent ({ selection,checked,}:any) {
         this.removeData = selection;
         for(var i=0;i<this.removeData.length;i++){

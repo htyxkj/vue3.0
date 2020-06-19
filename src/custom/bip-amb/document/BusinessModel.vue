@@ -17,10 +17,10 @@
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
             <el-aside width="350px">
-                <el-header>
-                    <el-button type="primary" @click="creatModel">新建</el-button>
-                    <el-button @click="updateModel">编辑</el-button>
-                    <el-button @click="delModel">删除</el-button>
+                <el-header class="myheader">
+                    <el-button type="primary" @click="creatModel" icon="el-icon-document-add" size="small">新建</el-button>
+                    <el-button @click="updateModel" icon="el-icon-edit" size="small">编辑</el-button>
+                    <el-button @click="delModel" icon="el-icon-delete"  size="small">删除</el-button>
                 </el-header>
                 <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
                     <el-tree ref="modelTree" :data="treeData" :props="defaultProps" @node-click="handleNodeClick" highlight-current node-key="id" default-expand-all ></el-tree>
@@ -28,9 +28,9 @@
             </el-aside>
             <el-main style="padding:0px"> 
                 <el-container>
-                    <el-header>
-                        <el-button type="primary" @click="createModalA">新建</el-button>
-                        <el-button @click="delModalA">删除</el-button>
+                    <el-header class="myheader">
+                        <el-button type="primary" @click="createModalA" icon="el-icon-document-add" size="small">新建</el-button>
+                        <el-button @click="delModalA" icon="el-icon-delete"  size="small">删除</el-button>
                     </el-header>
                     <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
                         <vxe-table resizable size="mini" ref="BusinessModelTable" auto-resize :loading="tableLoading" show-overflow
@@ -39,8 +39,8 @@
                             :data="modelACell.cdata.data">
                                 <vxe-table-column type="checkbox" width="60"></vxe-table-column>
                                 <template v-for="(item,index) in modelACell.ccells.cels"> 
-                                    <vxe-table-column :key="index" header-align="center" align="center" :field="item.id"
-                                        :title="item.labelString" show-header-overflow 
+                                    <vxe-table-column :key="index" header-align="center" min-width="120" align="center" :field="item.id"
+                                        :title="item.labelString" show-header-overflow  v-if="!(item.attr & 0x400)>0"
                                         show-overflow :sortable ="(item.attr&0x400000)>0">
                                         <template v-slot="{row,rowIndex}"> 
                                             <bip-grid-info :cds="modelACell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
@@ -451,5 +451,9 @@ export default class BusinessModel extends Vue {
 .saveelebtn{
     margin-top: 20px;
     margin-left:45%;
+}
+.myheader{
+    height: 46px !important;
+    line-height: 46px;
 }
 </style>

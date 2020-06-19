@@ -141,6 +141,12 @@ export default class TrackShow extends Vue {
      * 查找飞防轨迹信息
      */
     async getOneTask() {
+        this.PreviousFlowPoint = null;        
+        this.taskData = [];
+        this.sprayLine0 = [];
+        this.sprayLine1 = [];
+        this.sprayLine2 = [];
+        this.sprayBreak = true;
         try {
             let bok = TMapUt.checkNotNull(this.taskTjCell);
             if(bok.length>1){

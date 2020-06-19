@@ -10,8 +10,7 @@
                                     <el-button type="primary" :disabled="this.fileList.length !== 0">上传文件</el-button>
                                 </el-upload>
                             </div>
-                            <el-button type="primary" @click="showUnitGPSRepairDlg = true">修复</el-button>
-                            <!-- 搜索 -->
+                            <!-- <el-button type="primary" @click="showUnitGPSRepairDlg = true">修复</el-button>
                             <el-tooltip class="item" effect="light" content="轨迹信息查询" placement="top" >
                                 <el-button icon="el-icon-search" circle @click="showTaskTjCell =!showTaskTjCell"></el-button>
                             </el-tooltip>
@@ -19,7 +18,7 @@
 
                             <el-tooltip class="item" effect="light" content="保存" placement="top" >
                                 <el-button icon="el-icon-document-add" circle @click="showSaveDlg"></el-button>
-                            </el-tooltip>
+                            </el-tooltip> -->
 
                             <!-- 清空 -->
                             <el-button icon="el-icon-delete" circle @click="clearCover"></el-button>

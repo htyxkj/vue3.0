@@ -393,7 +393,7 @@ export default class TradingPrice extends Vue {
         this.tableData = [];
         let res = await tools.getDlgRunClass(v,b);
         if(res.data.id ==0){
-            this.$notify.success(res.data.message)
+            // this.$notify.success(res.data.message)
             let data = res.data.data;
             this.tablePage.total = data.total;
             this.tableData = data.data;
@@ -615,6 +615,10 @@ export default class TradingPrice extends Vue {
     }
     @Watch("priceglVal")
     priceglValChange() {
+        this.initDataPrice();
+    }
+    @Watch("selTime")
+    selTimeChange(){
         this.initDataPrice();
     }
     

@@ -31,10 +31,12 @@ export default class Accounting extends Vue {
         let res = await tools.getBipInsAidInfo("PURPOSES", 210, qe);
         if(res.data.id ==0 ){
             this.amb_purposes_val = res.data.data.data.values;
+            this.amb_purposes_id = "";
             this.amb_purposes_val.forEach((item:any) => {
                 this.jsonData[item.id] = item;
                 if(item.is_main == 1){
-                    this.amb_purposes_id = item.id;
+                    if(this.amb_purposes_id =="")
+                        this.amb_purposes_id = item.id;
                 }
             });
             if(this.amb_purposes_id == "" && this.amb_purposes_val.length>0){

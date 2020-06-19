@@ -47,10 +47,10 @@
                 <el-button plain icon="el-icon-plus" size="small" class="addelembtn" @click="creatElement">新增核算要素</el-button>
                 
             </el-aside>
-            <el-main style="padding:0px"> 
+            <el-main style="padding:0px;border-left: 1px solid rgb(204, 204, 204);"> 
                 <el-container>
-                    <el-header>{{title}}</el-header>
-                    <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
+                    <el-header class="rightHeader">{{title}}</el-header>
+                    <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px;">
                         <el-form @submit.native.prevent label-position="right" label-width="100px">
                             <template v-if="elementCell">
                                 <div v-for="(cel,index) in elementCell.ccells.cels" :key="'A'+index">
@@ -141,6 +141,10 @@ export default class AccountingElement extends Vue {
             }
         }
         this.elementCell.currRecord.data.type_id = data.type_id;
+        this.elementCell.currRecord.data.direction_id = data.direction_id;
+        this.elementCell.currRecord.data.factor_id = data.factor_id
+        this.elementCell.currRecord.data.is_manual = data.is_manual
+        this.elementCell.currRecord.data.enabled = data.enabled
         this.elementCell.currRecord.data.purpose_id = this.amb_purposes_id
         this.elementCell.currRecord.data.parent_id = data.id;
         this.treSelData = data;
@@ -327,5 +331,11 @@ export default class AccountingElement extends Vue {
 .saveelebtn{
     margin-top: 20px;
     margin-left:45%;
+}
+.rightHeader{
+    height: 50px !important;;
+    line-height: 50px;
+    border-bottom: 1px solid rgb(204, 204, 204);
+    padding-left: 50px;
 }
 </style>

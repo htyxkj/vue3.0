@@ -15,10 +15,22 @@
             <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
           </el-form-item>
         </el-form>
-        <div class="rt">
-          <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
-          <!-- <span @click="clear" style="cursor: pointer;color: #f19149;font-size: 0.75rem;margin-left: 5px;">忘记密码？</span> -->
-        </div>
+        <el-row type="flex" justify="start">
+          <el-col :span="12">
+            <el-row type="flex" justify="start">
+              <el-col :span="12">
+                <!-- <el-button @click="registered" type="text">注册</el-button> -->
+              </el-col> 
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row type="flex" justify="end">
+              <el-col :span="12">
+                <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
+              </el-col> 
+            </el-row>
+          </el-col>
+        </el-row>
         <el-row>
           <el-col :span="24"  style="margin-top:10px">
             <el-button
@@ -71,7 +83,10 @@ export default class Login extends Vue {
     this.loginTitle = BaseVariable.Project_Name;
     this.COPYRIGHT = BaseVariable.COPYRIGHT;
   }
-
+  //注册
+  registered(){
+    this.$router.push({ path: "/registered", name: "registered" });
+  }
   login() {
     if(this.fullscreenLoading)
       return;
@@ -222,7 +237,17 @@ address {
   color: #FAFBFC;
 }
 .rt {
-  text-align: right;
+  text-align: right;    
+  width: 120px;
+  float: right;
+}
+.reg{
+  width: 50px;
+  float: left;
+  padding-left: 60px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #a0a0a0;
 }
 </style>
 

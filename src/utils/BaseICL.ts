@@ -12,4 +12,5 @@ export const BaseVariable = Object.assign({
     MQTT_HOST:'bipmq',
     Project_Name:'BIP',
     COPYRIGHT:"",
+    SMSURL : ""
   });

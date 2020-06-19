@@ -250,6 +250,7 @@ export default class BipMenuBtnDlg extends Vue {
                     uriParams:this.env.uriParams,
                     cells:this.env.cells,
                     dsm:this.env.dsm.currRecord,
+                    dsmArr:this.env.dsm.currRecordArr,
                     ds_cont:this.env.ds_cont,
                     ds_ext:this.env.ds_ext
                 }

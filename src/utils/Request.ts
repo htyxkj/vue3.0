@@ -17,6 +17,11 @@ export namespace BIPUtil {
       param.pwd = tool.base64Encode(user.password);
       return this.getFromServer(param);
     }
+    registered(param:any){
+        let pm = tool.getRegisteredParam();
+        param = Object.assign(param,pm);
+        return this.getFromRegistered(param);
+    }
     /**
      * @description 登录方法 根据秘钥登录
      * @param secret 秘钥
@@ -91,6 +96,12 @@ export namespace BIPUtil {
     getFromServer(param:any){
         let data = qs.stringify(param);
         return Vue.$axios.post(GlobalVariable.API, data);
+        //dubbo格式请求时，不需要将数据转jsonstring
+        // return Vue.$axios.post(GlobalVariable.API, param,{headers:{'content-type':"application/json;charset=UTF-8"}});
+    }
+    getFromRegistered(param:any){
+        let data = qs.stringify(param);
+        return Vue.$axios.post(GlobalVariable.REGAPI, data);
         //dubbo格式请求时，不需要将数据转jsonstring
         // return Vue.$axios.post(GlobalVariable.API, param,{headers:{'content-type':"application/json;charset=UTF-8"}});
     }
