@@ -41,6 +41,16 @@
                         </el-row>
                         <el-row :gutter="20">
                             <el-col :span="20">
+                                <el-form-item label="行业" prop="orgcode">
+                                    <el-input v-model="ruleForm.orgcode1" class="input-with-select">
+                                        <el-button @click="shoOrg" slot="append" icon="el-icon-search"></el-button>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4">&nbsp;</el-col>
+                        </el-row>                        
+                        <el-row :gutter="20">
+                            <el-col :span="20">
                                 <el-form-item label="推荐机构" prop="address1">
                                     <el-input v-model="ruleForm.address1"></el-input>
                                 </el-form-item>
@@ -74,6 +84,22 @@
     </el-col>
     <el-col :span="6">&nbsp;</el-col>
     </el-row>
+
+    <el-dialog title="行业选择" :close-on-click-modal="false" append-to-body :visible.sync="showOrgDlg" width="50%" class="bip-query">
+        <vxe-table height="300" resizable :data="tableData" size="mini" stripe border highlight-hover-row highlight-current-row
+        @current-change="currentChangeEvent">
+            <vxe-table-column field="orgcode" title="编码" width="150"></vxe-table-column>
+            <vxe-table-column field="orgname" title="名称" min-width="300"></vxe-table-column>  
+        </vxe-table> 
+        <vxe-pager border size="mini" :current-page="tablePage.currPage" :page-size="tablePage.pageSize"
+            :total="tablePage.total" :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']"@page-change="orgPageChange">
+        </vxe-pager> 
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="showOrgDlg = false">取 消</el-button>
+            <el-button type="primary" @click="selectOrgcode">确 定</el-button>
+        </span>
+    </el-dialog>
+
   </el-row>
 </template>
 <script lang="ts">
@@ -81,24 +107,35 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
 import qs from "qs";
+import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
+let tools = BIPUtil.ServApi;
 import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { LoginState } from "@/store/modules/login/types";
+import { Row } from "element-ui";
+
 const namespace: string = "login";
 @Component
 export default class Registered extends Vue {
+    @Mutation("snkey", { namespace }) setSnkey: any;
+    @Mutation("user", { namespace }) setUserInfo: any;
     ruleForm:any =  {
         username: '',
         usrcode:'',
         yzcode1:'',
         address1:'',
         orgname:'',
+        orgcode:'',
+        orgcode1:'',
         xycode:'',
     };
     rules:any = {
         username: [
             { required: true, message: '用户名不能为空!', trigger: 'blur' }
+        ],
+        orgcode: [
+            { required: true, message: '行业不能为空!', trigger: 'blur' }
         ],
         usrcode: [
             { required: true, validator: this.checkTel, trigger: 'blur' }
@@ -110,8 +147,25 @@ export default class Registered extends Vue {
     yzcode1Btn:any = "发送验证码";
     cansendcode:boolean = true;//是否可以发送验证码
     seconds:number = 60;
-    smsurl:any = "http://www.bip-soft.com:8080/ssms/";
-    mounted() {
+    smsurl:any = "";
+    tableData:any = [];//行业信息
+    tableSelRow:any = null;
+    showOrgDlg:boolean = false;
+    tablePage:any ={//分页信息
+        total: 0,
+        currPage:1,
+        pageSize:20
+    };
+    async mounted() {
+        let res:any = await tools.loginWithOutPwd("admin");
+        let data:any = res.data;
+        if (data.id === 0) {
+            let userI = data.data.user;
+            let snkey = data.data.snkey;
+            userI.password = "";
+            this.setSnkey(snkey);
+            this.setUserInfo(userI);
+        }
         this.smsurl = BaseVariable.SMSURL;
     } 
     //发送验证码
@@ -219,6 +273,37 @@ export default class Registered extends Vue {
         let res:any = this.$refs[formName];
         if(res)
             res.resetFields();
+    }
+    //获取行业信息
+    async getOrgContent(){
+        let qe:QueryEntity = new QueryEntity('','');
+        qe.page.currPage = this.tablePage.currPage;
+        qe.page.pageSize = this.tablePage.pageSize;
+        qe.cont = "";
+        let vv = await tools.getBipInsAidInfo('INDUS',210,qe);
+        if(vv.data.id ==0){
+            let values = vv.data.data.data.values;
+            this.tablePage = vv.data.data.data.page
+            this.tableData = values;
+        }
+    }
+    async shoOrg(){
+        await this.getOrgContent();
+        this.showOrgDlg = true;
+    }
+    //分页信息变化
+    orgPageChange({ currentPage, pageSize }:any) {
+        this.tablePage.currPage = currentPage
+        this.tablePage.pageSize = pageSize
+        this.getOrgContent()
+    }
+    selectOrgcode(){
+        this.ruleForm.orgcode = this.tableSelRow.orgcode
+        this.ruleForm.orgcode1 = this.tableSelRow.orgname
+        this.showOrgDlg = false;
+    }
+    currentChangeEvent({row}:any){
+        this.tableSelRow = row;
     }
 }
 </script>

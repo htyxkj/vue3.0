@@ -29,7 +29,7 @@
             type="success"
             @click="submitUpload"
           >上传到服务器</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
       </el-tab-pane>
       <el-tab-pane label="文件下载" name="file-down">

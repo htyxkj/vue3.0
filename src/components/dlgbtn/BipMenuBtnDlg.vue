@@ -50,7 +50,18 @@
                 </span>   
             </el-dialog> 
         </template>
-        <bip-ygxz-dia ref="ygxz"></bip-ygxz-dia>
+        <bip-ygxz-dia ref="ygxz"></bip-ygxz-dia> 
+        <el-dialog title="微信扫码支付" :visible.sync="showPayQR" append-to-body :close-on-click-modal="false" width="400px" class="bip-query">
+            <div style="text-align: center;">
+                <vue-qr :text="code_url" :size="200"></vue-qr>
+            </div>
+            <div style="text-align: center;">
+                {{total_fee}}
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showPayQR =false">取 消</el-button>
+            </span>   
+        </el-dialog> 
     </el-row>
 </template>
 <script lang="ts">
@@ -68,16 +79,17 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import { truncate } from 'fs';
 import { Menu } from "@/classes/Menu";
 import { Cells } from "@/classes/pub/coob/Cells";
-import CData from '../../classes/pub/CData';
+import CData from '@/classes/pub/CData';
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtils } from "@/utils/BaseUtil";
- import CRecord from '../../classes/pub/CRecord';
+import CRecord from '@/classes/pub/CRecord';
+import VueQr from 'vue-qr'
 let baseTool = BIPUtils.baseUtil;
 
 import BipYgxzDia from './BipYGXZDia.vue';
 @Component({
-    components: {BipYgxzDia}
+    components: {BipYgxzDia,VueQr}
 })
 export default class BipMenuBtnDlg extends Vue { 
     @Provide() btn:any = ""; 
@@ -98,6 +110,11 @@ export default class BipMenuBtnDlg extends Vue {
 
     @Provide() dlgDCell: CDataSet = new CDataSet("");//D: 弹出对象
     @Provide() showDCell:boolean =false;
+
+    showPayQR:boolean = false;//微信收款二维码弹框
+    code_url:any ="";//二维码内容
+    total_fee:any = 0;//支付金额
+
     mounted() {
 
     }
@@ -327,6 +344,60 @@ export default class BipMenuBtnDlg extends Vue {
                     }
                 })
             }
+        }else if(btn.dlgType == 'F'){ //生成微信收款二维码
+            if ((this.env.dsm.currRecord.c_state & 2) > 0) {
+                this.$alert(
+                    `当前数据没有保存，请先保存当前行数据`,
+                    `系统提醒`,
+                    { type: "info" }
+                ).catch(() => {
+                    console.log("取消");
+                });
+                return;
+            }
+            const loading = this.$loading({
+                lock: true,
+                text: '拼命加载中',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            let dlgCont = this.btn.dlgCont;
+            let cc = dlgCont.split(";")
+            let b = JSON.stringify(this.btn);
+            let _env = {
+                uriParams:this.env.uriParams,
+                cells:this.env.cells,
+                dsm:this.env.dsm.currRecord,
+                dsmArr:this.env.dsm.currRecordArr,
+                ds_cont:this.env.ds_cont,
+                ds_ext:this.env.ds_ext
+            }
+            let v = JSON.stringify(_env);
+            let bok = this.checkNotNull(this.env.dsm);
+            if(!bok){
+                return ; 
+            }
+            this.code_url = null;
+            await tools.getDlgRunClass(v,b).then(res =>{
+                loading.close();
+                if(res.data.id ==0){
+                    if(res.data.data){
+                        this.code_url = res.data.data.code_url; 
+                        let fee = res.data.data.total_fee;
+                        this.total_fee =parseFloat(fee) /100;
+                    }
+                    if(this.code_url){
+                        this.showPayQR = true;
+                    }else{
+                        this.$notify.success(res.data.message);
+                    }
+                }else{
+                    this.$notify.error(res.data.message);
+                }
+            }).catch(e =>{
+                loading.close();
+            }) 
+             
         }
     }
     async dlgDOk(){

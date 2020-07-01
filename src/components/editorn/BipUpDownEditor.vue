@@ -2,9 +2,16 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input v-model="model1" size="small" :clearable="clearable" :disabled="disabled" :readonly="true">
+                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="small" :clearable="clearable" :disabled="disabled" :readonly="true">
                     <i slot="suffix" class="el-input__icon el-icon-document"  :disabled="disabled" @click="iconClick()"></i>
                 </el-input>
+                <template v-if="cell.desc">
+                    <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                        <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                            <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                        </el-tooltip>
+                    </span>
+                </template>
             </el-form-item>
             </template>
         <template v-else>

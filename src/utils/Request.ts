@@ -17,6 +17,10 @@ export namespace BIPUtil {
       param.pwd = tool.base64Encode(user.password);
       return this.getFromServer(param);
     }
+    /**
+     * 注册方法
+     * @param param 注册信息
+     */
     registered(param:any){
         let pm = tool.getRegisteredParam();
         param = Object.assign(param,pm);
@@ -26,9 +30,9 @@ export namespace BIPUtil {
      * @description 登录方法 根据秘钥登录
      * @param secret 秘钥
      */
-    loginWithOutPwd(secret:string){
+    loginWithOutPwd(userCode:string){
         let param = tool.getLoginWithOutPwdParmasUri();
-        param.wxAppLetsSecret = secret;
+        param.usercode = userCode;
         return this.getFromServer(param);
     }
     /**

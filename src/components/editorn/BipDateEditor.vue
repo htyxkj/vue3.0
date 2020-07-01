@@ -6,8 +6,8 @@
                     <template v-if="condition"><!-- 报表条件 -->
                         <el-date-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
-                            type="datetimerange"
                             :picker-options="pickerOptions"
+                            :type="dateType"
                             range-separator="~"
                             :format="dateFormat"
                             :value-format="dateFormat"
@@ -121,6 +121,9 @@ export default class BipDateEditor extends Vue{
     @Provide() dateTime:boolean = true;
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
+        if((this.cell.attr&0x400000)>0){
+            this.condition = false;
+        }
         this.model1 = this.model
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
@@ -131,9 +134,13 @@ export default class BipDateEditor extends Vue{
             if(this.cell.type===93){
                 this.dateType = 'datetime'
                 this.dateFormat = 'yyyy-MM-dd HH:mm:ss'
+                if(!this.bgrid && this.condition)
+                    this.dateType = "datetimerange";
             }else if(this.cell.editName == 'YM'){
                 this.dateType = 'month';
                 this.dateFormat = 'yyyyMM'
+                if(!this.bgrid && this.condition)
+                    this.dateType = "monthrange";
             }else if(this.bipInsAid.bType == 'CHSMEditor'){
                 this.dateTime = false;
                 if(this.bipInsAid.id == 'HS'){

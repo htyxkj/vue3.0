@@ -3,6 +3,7 @@
     <el-row style="padding: 5px 0px;">
       <el-button type="primary" icon="el-icon-search" size="mini" @click.native="select">查找</el-button>
       <el-button type="primary" icon="el-icon-files" size="mini" @click.native="exportDataEvent">导出</el-button>
+      <el-button type="primary" icon="el-icon-printer" size="mini" @click.native="printEvent">打印</el-button>
     </el-row>
     <el-row class="bip-lay" >
       <el-form @submit.native.prevent label-position="right" label-width="100px">
@@ -19,11 +20,12 @@ import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { User } from "@/classes/User";
 import { Route, RawLocation } from "vue-router";
-import CDataSet from "@/classes/pub/CDataSet";
 import { Cells } from "@/classes/pub/coob/Cells";
 import QueryEntity from "@/classes/search/QueryEntity";
 import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
+import CDataSet from "@/classes/pub/CDataSet";
+import XLSX from "xlsx"
 let tools = BIPUtil.ServApi;
 @Component({
   components: {
@@ -41,11 +43,26 @@ export default class AttendanceMonthly extends Vue {
   @Provide() yymm:any=null;
   @Provide() sopr:any=null;
   @Provide() sorg:any=null;
+  rcellID:any = "KQ0335";
+  rcell:CDataSet = new CDataSet("");
+  rightData:any =[];
+
   async created() {
     this.tjCell = await this.getCell("KQ1020TJ");
+    this.rcell = await this.getCell(this.rcellID);
+    await this.initRightCellData();
     this.tjCell.createRecord();
     this.assemblyTableColumn();//组成表头
   } 
+  async initRightCellData(){
+    let qe:QueryEntity = new QueryEntity(this.rcellID,this.rcellID);
+    qe.page.pageSize = 10000;
+    let res = await this.rcell.queryData(qe);
+    if(res.data.id ==0 ){
+      let data = res.data.data.data;
+      this.rightData = data.data;
+    }
+  }
   async select(){
     this.sopr = this.tjCell.currRecord.data.sopr;
     this.sorg = this.tjCell.currRecord.data.sorg;
@@ -99,7 +116,7 @@ export default class AttendanceMonthly extends Vue {
     }else{
       qe.cont = "";
     }
-    let vv = await tools.getBipInsAidInfo('YBKQ_STATE',210,qe);
+    let vv = await tools.getBipInsAidInfo('KQYB_LEFT',210,qe);
     if(vv.data.id ==0){
       this.kq_state = vv.data.data.data.values
     }
@@ -138,7 +155,7 @@ export default class AttendanceMonthly extends Vue {
     }else{
       qe.cont = "";
     }
-    let vv = await tools.getBipInsAidInfo('YBKQ_DETIL',210,qe);
+    let vv = await tools.getBipInsAidInfo('KQYB_RIGHT',210,qe);
     if(vv.data.id ==0){
       let values = vv.data.data.data.values;
       for(var i=0;i<values.length;i++){
@@ -171,37 +188,53 @@ export default class AttendanceMonthly extends Vue {
       week = day ==4?"四":week;
       week = day ==5?"五":week;
       week = day ==6?"六":week;
-      let column =  { title: i,
-        children: [
-          { field: 'day'+(i), title: week ,width: 60}
-        ]
-      }
+      // let column =  { title: i,
+      //   children: [
+      //     { field: 'day'+(i), title: week ,width: 60}
+      //   ]
+      // }
+      let column = { field: 'day'+(i), title: i ,width: 60}
       this.tableColumn.push(column);
     }
-    let tableColumn1:any = [
-      { field: 'shjoin', title: '应出勤数' ,width: 80},
-      { field: 'acjoin', title: '实际出勤' ,width: 80},
-      { field: 'sajoin', title: '周六加班' ,width: 80},
-      { field: 'sujoin', title: '周天加班' ,width: 80},
-      { field: 'hoday', title: '法定节假日',width: 100},
-      { field: 'horest', title: '调休假' ,width: 80},
-      { field: 'zc', title: '驻场' ,width: 50},
-      { field: 'qj_bj', title: '病假' ,width: 50},
-      { field: 'qj_sj', title: '事假' ,width: 50},
-      { field: 'qj_cc', title: '出差' ,width: 50},
-      { field: 'qj_kg', title: '旷工' ,width: 50},
-      { field: 'qj_cd', title: '迟到' ,width: 50},
-      { field: 'qj_nj', title: '年假' ,width: 50},
-      { field: 'qj_hj', title: '婚假' ,width: 50},
-      { field: 'qj_cj', title: '产假' ,width: 50},
-      { field: 'qj_cjj', title: '产检假' ,width: 70},
-      { field: 'qj_gs', title: '工伤' ,width: 50},
-      { field: 'qj_sjj', title: '丧假' ,width: 50},
-      { field: 'qj_tx', title: '调休' ,width: 50},
-      // { field: 'qj_tqj', title: '探亲假' ,width: 70},
-      // { field: 'qj_phj', title: '陪护假' ,width: 70},
-      // { field: 'name', title: '备注' ,width: 50},
-    ]
+    let tableColumn1:any =[];
+    for(var i =0;i<this.rightData.length;i++){
+      let d1 = this.rightData[i].data;
+      let column  = {};
+      if(d1.title1){
+        column =  { title: d1.title1,
+          children: [
+            { field: d1.field, title: d1.title ,width: d1.width}
+          ]
+        }
+      }else{
+        column = { field: d1.field, title: d1.title ,width: d1.width}
+      }
+      tableColumn1.push(column)
+    }
+    // tableColumn1 = [
+    //   { field: 'shjoin', title: '应出勤数' ,width: 80},
+    //   { field: 'acjoin', title: '实际出勤' ,width: 80},
+    //   { field: 'sajoin', title: '周六加班' ,width: 80},
+    //   { field: 'sujoin', title: '周天加班' ,width: 80},
+    //   { field: 'hoday', title: '法定节假日',width: 100},
+    //   { field: 'horest', title: '调休假' ,width: 80},
+    //   { field: 'zc', title: '驻场' ,width: 50},
+    //   { field: 'qj_bj', title: '病假' ,width: 50},
+    //   { field: 'qj_sj', title: '事假' ,width: 50},
+    //   { field: 'qj_cc', title: '出差' ,width: 50},
+    //   { field: 'qj_kg', title: '旷工' ,width: 50},
+    //   { field: 'qj_cd', title: '迟到' ,width: 50},
+    //   { field: 'qj_nj', title: '年假' ,width: 50},
+    //   { field: 'qj_hj', title: '婚假' ,width: 50},
+    //   { field: 'qj_cj', title: '产假' ,width: 50},
+    //   { field: 'qj_cjj', title: '产检假' ,width: 70},
+    //   { field: 'qj_gs', title: '工伤' ,width: 50},
+    //   { field: 'qj_sjj', title: '丧假' ,width: 50},
+    //   { field: 'qj_tx', title: '调休' ,width: 50},
+    //   // { field: 'qj_tqj', title: '探亲假' ,width: 70},
+    //   // { field: 'qj_phj', title: '陪护假' ,width: 70},
+    //   // { field: 'name', title: '备注' ,width: 50},
+    // ]
     this.tableColumn = this.tableColumn.concat(tableColumn1)
   }
   //组成table数据
@@ -259,12 +292,61 @@ export default class AttendanceMonthly extends Vue {
   }
   //导出数据
   exportDataEvent(){
+    console.log("导出")
+    // this.exportEvent ();
     let tb:any = this.$refs.ybTable;
     if(tb){
       tb.exportData({
           filename: '考勤月报',
           data: this.tableData
         })
+    }
+  }
+  exportEvent () {
+    let tb:any = this.$refs.ybTable;
+    if(tb){
+      // 转换数据
+      let header = tb.$el.querySelector('.body--wrapper>.vxe-table--header')
+      let hesheet = XLSX.utils.table_to_sheet(header)
+      let table = tb.$el.querySelector('.body--wrapper>.vxe-table--body')
+      let book = XLSX.utils.book_new()
+      let sheet = XLSX.utils.table_to_sheet(table)
+      XLSX.utils.book_append_sheet(book, sheet)
+      let wbout = XLSX.write(book, { bookType: 'xlsx', bookSST: false, type: 'binary' })
+      let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
+      // 保存导出
+      this.exportFilesServ(blob, '考勤月报')
+      // FileSaver.saveAs(blob, '考勤月报.xlsx')
+    }
+  }
+  /**导出Excel */
+  exportFilesServ(content:any,title:string){
+    const blob = new Blob([content]);
+    const fileName = title+'.xlsx'
+    if ('download' in document.createElement('a')) { // 非IE下载
+      const elink = document.createElement('a')
+      elink.download = fileName
+      elink.style.display = 'none'
+      elink.href = URL.createObjectURL(blob)
+      document.body.appendChild(elink)
+      elink.click()
+      URL.revokeObjectURL(elink.href) // 释放URL 对象
+      document.body.removeChild(elink)
+    } else { // IE10+下载
+      navigator.msSaveBlob(blob, fileName)
+    }
+  }
+  toBuffer (wbout:any) {
+    let buf = new ArrayBuffer(wbout.length)
+    let view = new Uint8Array(buf)
+    for (let index = 0; index !== wbout.length; ++index) view[index] = wbout.charCodeAt(index) & 0xFF
+    return buf
+  }
+  //打印数据
+  printEvent(){
+    let tb:any = this.$refs.ybTable;
+    if(tb){
+      tb.print() 
     }
   }
   async getCell(cellid:string){

@@ -35,7 +35,6 @@ import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
 import XEUtils from 'xe-utils'
 import { values } from 'xe-utils/methods';
-import moment from 'moment'
 @Component({
     components: {
         Accounting,

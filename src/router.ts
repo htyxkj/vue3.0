@@ -219,6 +219,12 @@ export default new Router({
           path: '/TradingPrice',
           name: 'TradingPrice',
           component :()=> import('./custom/bip-amb/document/TradingPrice.vue')
+      },
+      {
+          //阿米巴 接口取数
+          path: '/InterfaceGetData',
+          name: 'InterfaceGetData',
+          component :()=> import('./custom/bip-amb/report/InterfaceGetData.vue')
       }
       
       

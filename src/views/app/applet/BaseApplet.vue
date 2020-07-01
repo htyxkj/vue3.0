@@ -658,7 +658,17 @@ export default class BaseApplet extends Vue{
                             this.$message.warning(data.message);
                         }
                         if(this.uriParams){
-                            if((this.uriParams.pattr & CommICL.B_IWORKEA)>0){
+                            let canSubmit = true;
+                            if(this.mbs){
+                                for(var i=0;i<this.mbs.menuList.length;i++){
+                                    let btn = this.mbs.menuList[i];
+                                    if(btn.cmd == 'DLG'){
+                                        canSubmit =false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(canSubmit && (this.uriParams.pattr & CommICL.B_IWORKEA)>0){
                                 this.submint();
                             }
                         }
@@ -846,6 +856,7 @@ export default class BaseApplet extends Vue{
      * 获取自定义按钮
      */
     async initDlgBtn(){
+        console.log("initDLG")
         if(this.uriParams){
             let name = "DLG."+this.uriParams.pbuid;
             let str = name
@@ -877,6 +888,7 @@ export default class BaseApplet extends Vue{
                     btn1.setDlgSname(name);
                     btn1.setDlgType(type)
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
+                    btn1.setIconFontIcon(cc.split(",")[1])
                     this.mbs.menuList.push(btn1)
                 });
             }
