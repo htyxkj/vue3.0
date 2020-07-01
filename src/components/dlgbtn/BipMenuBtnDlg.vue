@@ -190,7 +190,7 @@ export default class BipMenuBtnDlg extends Vue {
                     let zd = cont2arr[i].split("=")
                     let vl = data[0][zd[1]];
                     if(!vl)
-                        vl = "'"+zd[1]+"'"
+                        vl = zd[1]
                     jsontj[zd[0]] = vl
                 }  
             }

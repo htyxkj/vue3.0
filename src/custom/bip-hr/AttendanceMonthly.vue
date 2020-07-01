@@ -12,7 +12,7 @@
         </div> 
       </el-form>
     </el-row>
-    <vxe-grid ref="ybTable" align="center" border stripe resizable height="550" :columns="tableColumn" :span-method="rowspanMethod" :data="tableData"></vxe-grid>
+    <vxe-grid overflow ref="ybTable" align="center" border stripe resizable height="550" :columns="tableColumn" :span-method="rowspanMethod" :data="tableData"></vxe-grid>
   </div>
 </template>
 <script lang="ts">
@@ -26,6 +26,7 @@ import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
 import CDataSet from "@/classes/pub/CDataSet";
 import XLSX from "xlsx"
+import moment from 'moment'
 let tools = BIPUtil.ServApi;
 @Component({
   components: {
@@ -52,6 +53,7 @@ export default class AttendanceMonthly extends Vue {
     this.rcell = await this.getCell(this.rcellID);
     await this.initRightCellData();
     this.tjCell.createRecord();
+        this.tjCell.currRecord.data.yymm = (new Date().getFullYear()*100+new Date().getMonth()+1)+'~'+(new Date().getFullYear()*100+new Date().getMonth()+1);
     this.assemblyTableColumn();//组成表头
   } 
   async initRightCellData(){
@@ -69,13 +71,13 @@ export default class AttendanceMonthly extends Vue {
     this.yymm = this.tjCell.currRecord.data.yymm;
     let bok = this.checkNotNull(this.tjCell);
     if (!bok) return;
-    this.assemblyTableColumn();//组成表头
     const loading = this.$loading({
       lock: true,
       text: '加载中',
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)'
     }); 
+    this.assemblyTableColumn();//组成表头
     await this.getkqstate();
     await this.getkqybdetil();
     this.assemblyTableData();
@@ -91,11 +93,17 @@ export default class AttendanceMonthly extends Vue {
     let oneCont = []; 
     //classes/search/QueryCont'; 有详细说明
     let qCont = new QueryCont('hpdate','2019-11-01',12);
-    if(this.yymm){
-      qCont = new QueryCont('hpdate1',this.yymm,12);
-      qCont.setContrast(0);
+    if(this.yymm){ 
+       let styymm = this.yymm.split("~")[0];
+      let edyymm = this.yymm.split("~")[1];
+      let qCont = new QueryCont('hpdate1',styymm,12);
+      qCont.setContrast(1);
       qCont.setLink(1);
-      oneCont.push(qCont);
+      oneCont.push(qCont); 
+      qCont = new QueryCont('hpdate1',edyymm,12);
+      qCont.setContrast(2);
+      qCont.setLink(1);
+      oneCont.push(qCont); 
     }
     if(this.sopr){
       qCont = new QueryCont('sopr',this.sopr,12);
@@ -132,8 +140,14 @@ export default class AttendanceMonthly extends Vue {
     //classes/search/QueryCont'; 有详细说明
     let qCont = new QueryCont('yymm',this.yymm,12);
     if(this.yymm){
-      let qCont = new QueryCont('yymm',this.yymm,12);
-      qCont.setContrast(0);
+      let styymm = this.yymm.split("~")[0];
+      let edyymm = this.yymm.split("~")[1];
+      let qCont = new QueryCont('yymm',styymm,12);
+      qCont.setContrast(1);
+      qCont.setLink(1);
+      oneCont.push(qCont); 
+      qCont = new QueryCont('yymm',edyymm,12);
+      qCont.setContrast(2);
       qCont.setLink(1);
       oneCont.push(qCont); 
     }
@@ -166,34 +180,30 @@ export default class AttendanceMonthly extends Vue {
   //组成表头
   assemblyTableColumn(){
     if(this.yymm == null){
-      this.yymm = (new Date().getFullYear()*100+new Date().getMonth()+1)+'';
+      this.yymm = (new Date().getFullYear()*100+new Date().getMonth()+1)+'~'+(new Date().getFullYear()*100+new Date().getMonth()+1);
     }
-    let year = this.yymm.substring(0,4)
-    let month = this.yymm.substring(4,this.yymm.length)
+    let styymm = this.yymm.split("~")[0];
+    let edyymm = this.yymm.split("~")[1];
+    let styear = styymm.substring(0,4);
+    let stmonth = styymm.substring(4,styymm.length);
+    let edyear = edyymm.substring(0,4);
+    let edmonth = edyymm.substring(4,edyymm.length);
+    let stTime = new Date(styear,stmonth-1,1);
+    let edTime = new Date(edyear,edmonth,0);
+    let t1 = moment(stTime).format("YYYY-MM-DD")
+    let t2 = moment(edTime).format("YYYY-MM-DD")
+    let dateArr = this.getAllData(stTime,edTime); 
+    dateArr.splice(0,0,t1)
+    dateArr.push(t2);
     this.tableColumn = [
-      { type: 'index', width: 50, fixed:"left"},
+      { type: 'seq', width: 50, fixed:"left"},
       { field: 'sorg', title: '部门' ,width: 60 ,fixed:"left"},
       { field: 'name', title: '姓名' ,width: 60 ,fixed:"left"},
     ]
-    var tempTime = new Date(year,month,0);
-    var time = new Date();
-    for(var i=1;i<=tempTime.getDate();i++){
-      time.setFullYear(tempTime.getFullYear(),tempTime.getMonth(),i);
-      var day = time.getDay();
-      let week = "一";
-      week = day ==0?"日":week;
-      week = day ==1?"一":week;
-      week = day ==2?"二":week;
-      week = day ==3?"三":week;
-      week = day ==4?"四":week;
-      week = day ==5?"五":week;
-      week = day ==6?"六":week;
-      // let column =  { title: i,
-      //   children: [
-      //     { field: 'day'+(i), title: week ,width: 60}
-      //   ]
-      // }
-      let column = { field: 'day'+(i), title: i ,width: 60}
+    for(var i=0;i<dateArr.length;i++){
+      let d = dateArr[i];
+      let date = new Date(d);
+      let column = { field: 'day'+(date.getMonth())+(date.getDate()), title: date.getDate() ,width: 60}
       this.tableColumn.push(column);
     }
     let tableColumn1:any =[];
@@ -211,31 +221,35 @@ export default class AttendanceMonthly extends Vue {
       }
       tableColumn1.push(column)
     }
-    // tableColumn1 = [
-    //   { field: 'shjoin', title: '应出勤数' ,width: 80},
-    //   { field: 'acjoin', title: '实际出勤' ,width: 80},
-    //   { field: 'sajoin', title: '周六加班' ,width: 80},
-    //   { field: 'sujoin', title: '周天加班' ,width: 80},
-    //   { field: 'hoday', title: '法定节假日',width: 100},
-    //   { field: 'horest', title: '调休假' ,width: 80},
-    //   { field: 'zc', title: '驻场' ,width: 50},
-    //   { field: 'qj_bj', title: '病假' ,width: 50},
-    //   { field: 'qj_sj', title: '事假' ,width: 50},
-    //   { field: 'qj_cc', title: '出差' ,width: 50},
-    //   { field: 'qj_kg', title: '旷工' ,width: 50},
-    //   { field: 'qj_cd', title: '迟到' ,width: 50},
-    //   { field: 'qj_nj', title: '年假' ,width: 50},
-    //   { field: 'qj_hj', title: '婚假' ,width: 50},
-    //   { field: 'qj_cj', title: '产假' ,width: 50},
-    //   { field: 'qj_cjj', title: '产检假' ,width: 70},
-    //   { field: 'qj_gs', title: '工伤' ,width: 50},
-    //   { field: 'qj_sjj', title: '丧假' ,width: 50},
-    //   { field: 'qj_tx', title: '调休' ,width: 50},
-    //   // { field: 'qj_tqj', title: '探亲假' ,width: 70},
-    //   // { field: 'qj_phj', title: '陪护假' ,width: 70},
-    //   // { field: 'name', title: '备注' ,width: 50},
-    // ]
     this.tableColumn = this.tableColumn.concat(tableColumn1)
+  }
+  //获取两个日期间的全部日期
+  getAllData(date1:any, date2:any) {   
+     if (date1 > date2) {  
+         var tempDate = date1;  
+         date1 = date2;  
+         date2 = tempDate;  
+     }  
+     date1.setDate(date1.getDate() + 1);  
+     var dateArr = [];  
+     var i = 0;  
+     while (!(date1.getFullYear() == date2.getFullYear()  
+             && date1.getMonth() == date2.getMonth() && date1.getDate() == date2  
+             .getDate())) {  
+          var dayStr =date1.getDate().toString();  
+          if(dayStr.length ==1){  
+            dayStr="0"+dayStr;  
+          }  
+          var monthStr = (date1.getMonth() + 1).toString();
+          if(monthStr.length ==1){  
+            monthStr="0"+monthStr;  
+          }  
+         dateArr[i] = date1.getFullYear() + "-" + monthStr + "-"  
+                 + dayStr;  
+         i++;   
+         date1.setDate(date1.getDate() + 1);  
+     }  
+    return dateArr;  
   }
   //组成table数据
   assemblyTableData(){
@@ -256,7 +270,7 @@ export default class AttendanceMonthly extends Vue {
         this.tableData.push(data);
         data={};
       }
-      data['day'+hpdate.getDate()] = v1.kq_ybstate;
+      data['day'+(hpdate.getMonth())+(hpdate.getDate())] = v1.kq_ybstate;
       sopr = sopr1;
       name = name1;
       if(i == this.kq_state.length-1){
