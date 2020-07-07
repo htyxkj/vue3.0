@@ -295,6 +295,7 @@ export default class BusinessModel extends Vue {
         this.modelA2Cell.createRecord();
         this.modelA2Cell.currRecord.data.compo_id = this.treSelData.id;
         this.modelA2Cell.currRecord.data.purpose_id = this.amb_purposes_id;
+        this.modelA2Cell.currRecord.data.match_group_id = this.treSelData.group_id
         this.showModelADlg = true;
     }
     //保存子表

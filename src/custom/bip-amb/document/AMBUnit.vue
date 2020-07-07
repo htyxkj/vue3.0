@@ -345,6 +345,15 @@ export default class AMBUnit extends Vue {
                 const children = parent.data.children || parent.data;
                 const index = children.findIndex((d:any) => d.id === data.id);
                 children.splice(index, 1);
+                if(this.treeData.length == 0){
+                    this.title = "新增根级巴";
+                    if(this.dsm.ccells){
+                        this.dsm.clear();
+                        this.dsm.createRecord();
+                        this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
+                        this.addState = 3;
+                    }
+                }
             }
         }else{
 
