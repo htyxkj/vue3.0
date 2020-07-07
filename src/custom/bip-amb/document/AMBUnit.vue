@@ -2,12 +2,12 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-            <div class="topdiv2">
+            <!-- <div class="topdiv2">
                 <el-button style="border:0px">      
                     <i class="el-icon-plus"></i>
                     <span>导入</span>
                 </el-button>
-            </div>
+            </div> -->
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initTreeData">      
                     <i class="el-icon-refresh-right"></i>
@@ -144,6 +144,19 @@ export default class AMBUnit extends Vue {
                 this.ds_ext
             );
         }
+        if(this.treeData.length>0){
+            this.treSelData = this.treeData[0]
+            this.update(this.treSelData);
+            this.setCurrentKey();
+            this.initRightData();
+        }else{
+            this.title = "新增根级巴";
+            if(this.dsm.ccells){
+                this.dsm.createRecord();
+                this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
+                this.addState = 3;
+            }
+        }
     }
     mounted() { 
     }  
@@ -180,9 +193,11 @@ export default class AMBUnit extends Vue {
                 this.initRightData();
             }else{
                 this.title = "新增根级巴";
-                this.dsm.createRecord();
-                this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
-                this.addState = 3;
+                if(this.dsm.ccells){
+                    this.dsm.createRecord();
+                    this.dsm.currRecord.data.purpose_id = this.amb_purposes_id;
+                    this.addState = 3;
+                }
             }
         }
     }

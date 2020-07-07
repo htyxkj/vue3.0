@@ -479,6 +479,8 @@ export default class BipWork extends Vue{
         }
         this.cea.bup = "2";
         this.cea.tousr =this.smakefld; 
+        this.cea.yjcontext = this.remark;
+        this.cea.signature = this.signatureValue;
         var id=34;
         this.loading = true;
         tools.getCheckInfo(this.cea,id).then(res=>{

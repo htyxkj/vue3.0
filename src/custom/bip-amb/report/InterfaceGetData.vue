@@ -142,16 +142,16 @@ export default class InterfaceGetData extends Vue {
         let ClientID = "";
         if(this.user){
             ClientID = this.user.deptInfo.cmcCode
-        }
-        let prarm = {
-            "date":this.date,//时间
-            "ids":ids, //接口ID
-            "ClientID":ClientID,
-            "userId":this.user.userCode,
-        }
-        let v = JSON.stringify(prarm);
-        let res = await tools.getDlgRunClass(v,b);
 
+            let prarm = {
+                "date":this.date,//时间
+                "ids":ids, //接口ID
+                "ClientID":ClientID,
+                "userId":this.user.userCode,
+            }
+            let v = JSON.stringify(prarm);
+            let res = await tools.getDlgRunClass(v,b);
+        }
     }
     //分页信息变化
     PageChange({ currentPage, pageSize }:any) {

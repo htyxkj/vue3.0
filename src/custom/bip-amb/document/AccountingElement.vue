@@ -2,12 +2,12 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-            <div class="topdiv2">
+            <!-- <div class="topdiv2">
                 <el-button style="border:0px">      
                     <i class="el-icon-plus"></i>
                     <span>导入</span>
                 </el-button>
-            </div>
+            </div> -->
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initTreeData">      
                     <i class="el-icon-refresh-right"></i>

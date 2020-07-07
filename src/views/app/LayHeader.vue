@@ -26,6 +26,18 @@
                                 <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
                                 <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
                                 <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
+                                <el-row class="user_padding user_hr" v-if="user.mulscm && user.mulscm.length>0">
+                                    <el-popover  width="160" placement="left-start" >
+                                        <el-row style="margin: 0px;">
+                                            <el-col :span="24"> 
+                                                <el-row class="user_padding user_hr" v-for="(item,index) in user.mulscm" :key="index">
+                                                    <el-button type="text" class="user_button" @click="switchCMC(item)">{{item.cmcName}}</el-button>
+                                                </el-row>                            
+                                            </el-col>
+                                        </el-row>  
+                                        <el-button slot="reference" type="text" class="user_button">切换公司</el-button>
+                                    </el-popover>
+                                </el-row>
                                 <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">注销</el-button></el-row>
                             </el-col>
                         </el-row>  
@@ -80,6 +92,10 @@ export default class LayHeader extends Vue {
     @Provide() pwdForm:any={oldPwd:"",newPwd:"",newPwd1:"",};
     @Provide() rules:any = null;
     @Getter('user', { namespace: 'login' }) user?: User;
+    @Mutation("user", { namespace: 'login' }) setUserInfo: any;
+    @Mutation("menulist", { namespace: 'login' }) setMenusInfo: any;
+    @Mutation("isLogin", { namespace: 'login' }) setIsLogin: any;
+    @Mutation("snkey", { namespace: 'login' }) setSnkey: any;    
     @Prop() isLogin!:boolean;
     @State('login') profile!: LoginState 
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
@@ -129,6 +145,28 @@ export default class LayHeader extends Vue {
             this.$emit('loginOut');
         }
         this.$emit('loginOut');
+    }
+    //切换公司
+    async switchCMC(item:any){ 
+        let cmcCode = item.cmcCode;
+        let ret = await tools.switchCMC(cmcCode);
+        console.log(ret);
+        if(ret.data.id ==0){
+            let user = ret.data.data.user;
+            let snkey = ret.data.data.snkey;
+            if(!snkey){
+                snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');
+            }
+            sessionStorage.clear();
+            this.setUserInfo(user);
+            let ms = ret.data.data.menulist;
+            this.setMenusInfo(ms);
+            this.setIsLogin(true);
+            this.setSnkey(snkey); 
+            this.$router.go(0)
+        }else{
+            this.$notify.error(ret.data.message)
+        }
     }
     @Watch("isLogin")
     async logined(){

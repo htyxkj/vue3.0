@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" 
+                <el-input :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="small" :clearable="clearable" :disabled="(cell.attr&0x40)>0" 
                         @focus="getFocus(true)"
                         @blur="getFocus(false)"
                         @change="dataChange"
@@ -66,6 +66,7 @@ export default class BipInsAidEditor extends Vue{
 
     @Provide() dia:boolean = false;
 
+    readonly:boolean = false;//非输入
 
     @Provide() mulcols: boolean = false;//多列
     @Provide() bcode: boolean = false;//文本编码
@@ -87,6 +88,7 @@ export default class BipInsAidEditor extends Vue{
         this.multiple = (this.cds.ccells.attr&0x80)>0
         this.mulcols = (this.cell.attr & 0x100000) > 0;
         this.bfmt = (this.cell.attr & 0x10000) > 0;
+        this.readonly = (this.cell.attr & 0x2000000) > 0;
         this.bcode = (this.cell.attr & 0x40000) > 0 ;//|| (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         if(!this.bgrid){
@@ -121,11 +123,31 @@ export default class BipInsAidEditor extends Vue{
             this.refLink.showV = this.model
         }
 
-        this.getRefValues()
+        await this.getRefValues()
         this.methodName = ICL.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
-        if(this.mulcols)
+        if(this.mulcols){
             this.initMulColInfo()
-
+            let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
+            let _val = this.refLink.values;
+            let val:any = null;
+            for(var i=0;i<_val.length;i++){
+                let vv = _val[0]
+                if(vv[this.refLink.cells.cels[0].id] == this.model){
+                    val = vv;
+                }
+            }
+            if(record && record.data && val){
+                this.othCols.forEach((fld, index) => {
+                    let idx = this.othColsIndex[index];
+                    let layC = this.bipInsAid.cells.cels[idx];
+                    if (layC && !record.data[fld]) {
+                        record.data[fld] = val[layC.id]||"";
+                        let cel = this.cds.getCell(fld)
+                        this.cds.checkGS(cel);
+                    }
+                });
+            }
+        }
     }
 
     iconClick() {
@@ -386,7 +408,21 @@ export default class BipInsAidEditor extends Vue{
             this.refLink.values = []
             this.makeShow() 
         }
-        
+        if (this.mulcols) {
+            let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
+            let val = this.refLink.values;
+            if(record){
+                this.othCols.forEach((fld, index) => {
+                    let idx = this.othColsIndex[index];
+                    let layC = this.bipInsAid.cells.cels[idx];
+                    if (layC && !record.data[fld]) {
+                        record.data[fld] = val[0][layC.id]||"";
+                        let cel = this.cds.getCell(fld)
+                        this.cds.checkGS(cel);
+                    }
+                });
+            }
+        }
     }
 
     @Watch('aidValues')

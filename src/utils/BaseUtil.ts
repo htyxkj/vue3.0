@@ -57,6 +57,18 @@ export namespace BIPUtils {
         dbid: BaseVariable.COMM_FLD_VALUE_DBID
       });
     }
+    /**
+     * @description 切换公司
+     * @returns 返回是一个object{apiId:'xxx',dbid:'xx'}
+     */
+    switchCMC(cmcCode:any) {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_SWITCHCMC,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        cmcCode:cmcCode
+      });
+    }
 
     /**
      * @description 根据菜单号和菜单参数好获取菜单参数信息

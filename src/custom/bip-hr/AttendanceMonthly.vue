@@ -47,6 +47,7 @@ export default class AttendanceMonthly extends Vue {
   rcellID:any = "KQ0335";
   rcell:CDataSet = new CDataSet("");
   rightData:any =[];
+  dateYMArr:any = [];
 
   async created() {
     this.tjCell = await this.getCell("KQ1020TJ");
@@ -79,7 +80,12 @@ export default class AttendanceMonthly extends Vue {
     }); 
     this.assemblyTableColumn();//组成表头
     await this.getkqstate();
-    await this.getkqybdetil();
+    for(var i=0;i<this.dateYMArr.length;i++){
+      await this.getkqybdetil(this.dateYMArr[i],this.dateYMArr[i]);
+    }
+    if(this.dateYMArr.length>1){
+      await this.getkqybdetil(this.dateYMArr[0],this.dateYMArr[this.dateYMArr.length-1]);
+    }
     this.assemblyTableData();
     loading.close();
   }
@@ -129,19 +135,20 @@ export default class AttendanceMonthly extends Vue {
       this.kq_state = vv.data.data.data.values
     }
   } 
-  async getkqybdetil(){
+  async getkqybdetil(styymm:any,edyymm:any){
     let qe:QueryEntity = new QueryEntity('','');
     qe.page.currPage = 1;
     qe.page.pageSize = 20000;
     qe.cont = "";
-
+    let yymm = styymm+""+edyymm;
+    if(styymm == edyymm){
+      yymm = styymm
+    }
     let allCont = [];
     let oneCont = []; 
     //classes/search/QueryCont'; 有详细说明
     let qCont = new QueryCont('yymm',this.yymm,12);
-    if(this.yymm){
-      let styymm = this.yymm.split("~")[0];
-      let edyymm = this.yymm.split("~")[1];
+    if(styymm && edyymm){ 
       let qCont = new QueryCont('yymm',styymm,12);
       qCont.setContrast(1);
       qCont.setLink(1);
@@ -173,7 +180,21 @@ export default class AttendanceMonthly extends Vue {
     if(vv.data.id ==0){
       let values = vv.data.data.data.values;
       for(var i=0;i<values.length;i++){
-        this.kq_ybstate[values[i].sopr] = values[i];
+        let vl:any = {};
+        for(var key in values[i]){
+          let vlue =  values[i][key]
+          key = key.substring(key.indexOf("(")+1,key.indexOf(")"));
+          if(key !="sopr" && key != "sorg" && key != "yymm"){
+            key = yymm+key;
+          }
+          vl[key] = vlue;
+        }
+        let cc = styymm+"~"+edyymm;
+        if(styymm == edyymm){
+          cc = styymm
+        }
+        vl[yymm+"kqyf"] = cc;
+        this.kq_ybstate[yymm+""+values[i].sopr] = vl;
       }
     }
   }
@@ -200,28 +221,86 @@ export default class AttendanceMonthly extends Vue {
       { field: 'sorg', title: '部门' ,width: 60 ,fixed:"left"},
       { field: 'name', title: '姓名' ,width: 60 ,fixed:"left"},
     ]
+    let month = 0
+    let columnD:any =  { title: "", children: [ ] }
+    let dateYM:any = [];
     for(var i=0;i<dateArr.length;i++){
       let d = dateArr[i];
       let date = new Date(d);
-      let column = { field: 'day'+(date.getMonth())+(date.getDate()), title: date.getDate() ,width: 60}
-      this.tableColumn.push(column);
-    }
-    let tableColumn1:any =[];
-    for(var i =0;i<this.rightData.length;i++){
-      let d1 = this.rightData[i].data;
-      let column  = {};
-      if(d1.title1){
-        column =  { title: d1.title1,
-          children: [
-            { field: d1.field, title: d1.title ,width: d1.width}
-          ]
+      let m = date.getMonth()+1;
+      let y = date.getFullYear();
+
+      let _m = null;
+        if(m<10){
+          _m = "0"+m;
+        }else{
+          _m = m;
         }
-      }else{
-        column = { field: d1.field, title: d1.title ,width: d1.width}
+      if(dateYM.indexOf(y+""+_m) ==-1){
+        dateYM.push(y+""+_m)
       }
-      tableColumn1.push(column)
+      if(i==0){
+        month = m
+      }
+      if(m != month){
+        this.tableColumn.push(columnD);
+        columnD =  { title: "", children: [ ] }
+        month = m
+      }
+      columnD.title = y+'年'+m+'月'
+      let column:any = { field: 'day'+(date.getMonth())+(date.getDate()), title: date.getDate() ,width: 60}
+      columnD.children.push(column);
+      if(i == dateArr.length-1){
+        this.tableColumn.push(columnD);
+        columnD =  { title: "", children: [ ] }
+        month = m
+      }
     }
-    this.tableColumn = this.tableColumn.concat(tableColumn1)
+    this.dateYMArr = dateYM;
+    for(var j=0;j<dateYM.length;j++){
+      let yymm = dateYM[j];
+      let tableColumn1:any =[];
+      let column:any = { field: yymm+"kqyf", title: "考勤月份" ,width: 80}
+      tableColumn1.push(column)
+      for(var i =0;i<this.rightData.length;i++){
+        let d1 = this.rightData[i].data;
+        let column  = {};
+        if(d1.title1){
+          column =  { title: d1.title1,
+            children: [
+              { field: yymm+d1.field, title: d1.title ,width: d1.width}
+            ]
+          }
+        }else{
+          column = { field: yymm+d1.field, title: d1.title ,width: d1.width}
+        }
+        tableColumn1.push(column)
+      }
+      this.tableColumn = this.tableColumn.concat(tableColumn1)
+    }
+    if(dateYM.length>1){
+      let styymm = dateYM[0];
+      let edyymm = dateYM[dateYM.length-1];
+      let yymm = styymm+""+edyymm;
+      let tableColumn1:any =[];
+      let column = { field: yymm+"kqyf", title: "考勤月份" ,width: 140}
+      tableColumn1.push(column)
+      for(var i =0;i<this.rightData.length;i++){
+        let d1 = this.rightData[i].data;
+        let column  = {};
+        if(d1.title1){
+          column =  { title: d1.title1,
+            children: [
+              { field: yymm+d1.field, title: d1.title ,width: d1.width}
+            ]
+          }
+        }else{
+          column = { field: yymm+d1.field, title: d1.title ,width: d1.width}
+        }
+        tableColumn1.push(column)
+      }
+      this.tableColumn = this.tableColumn.concat(tableColumn1)
+    }
   }
   //获取两个日期间的全部日期
   getAllData(date1:any, date2:any) {   
@@ -248,7 +327,7 @@ export default class AttendanceMonthly extends Vue {
                  + dayStr;  
          i++;   
          date1.setDate(date1.getDate() + 1);  
-     }  
+     }
     return dateArr;  
   }
   //组成table数据
@@ -256,6 +335,7 @@ export default class AttendanceMonthly extends Vue {
     this.tableData=[];
     let sopr = "";
     let name = "";
+    let ym = "";
     let data:any={};
     for(var i=0;i<this.kq_state.length;i++){
       let v1 = this.kq_state[i];
@@ -266,16 +346,30 @@ export default class AttendanceMonthly extends Vue {
       let name1 = v1.name;
       if(sopr !="" && sopr !=sopr1){
         data["name"] = name;
-        data= Object.assign(data,this.kq_ybstate[sopr]);
+        for(var j=0;j<this.dateYMArr.length;j++){
+          let ym = this.dateYMArr[j]
+          data= Object.assign(data,this.kq_ybstate[ym+""+sopr]);
+        }
+        if(this.dateYMArr.length>1){
+          let ym = this.dateYMArr[0] + "" + this.dateYMArr[this.dateYMArr.length-1]
+          data= Object.assign(data,this.kq_ybstate[ym+""+sopr]);
+        }
         this.tableData.push(data);
         data={};
       }
       data['day'+(hpdate.getMonth())+(hpdate.getDate())] = v1.kq_ybstate;
       sopr = sopr1;
-      name = name1;
+      name = name1; 
       if(i == this.kq_state.length-1){
         data["name"] = v1.name;
-        data= Object.assign(data,this.kq_ybstate[v1.sopr]);
+        for(var j=0;j<this.dateYMArr.length;j++){
+          let ym = this.dateYMArr[j]
+          data= Object.assign(data,this.kq_ybstate[ym+""+v1.sopr]);
+        }
+        if(this.dateYMArr.length>1){
+          let ym = this.dateYMArr[0] + "" + this.dateYMArr[this.dateYMArr.length-1]
+          data= Object.assign(data,this.kq_ybstate[ym+""+sopr]);
+        }
         this.tableData.push(data);
       }
     }

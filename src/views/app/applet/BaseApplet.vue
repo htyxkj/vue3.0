@@ -232,7 +232,7 @@ export default class BaseApplet extends Vue{
                 let user = JSON.parse(u)
                 for(var i=0;i<this.dsm.ccells.cels.length;i++){
                     let cell = this.dsm.ccells.cels[i]
-                    if(!cell.initValue){
+                    if(!cell.initValue && (cell.attr & 1) <= 0 && (cell.attr & 0x8000)<=0){
                         this.dsm.currRecord.data[cell.id] = currRecord.data[cell.id]
                     }
                 }

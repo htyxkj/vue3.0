@@ -198,6 +198,7 @@ export default class App extends Vue {
 
     @Watch("$route")
     routerChange(to: Route, from: Route) { 
+        this.isLoginPage = 0;
         if(this.$route.name == "registered"){
             this.isLoginPage = 1;
             return;

@@ -28,3 +28,7 @@ declare module 'dom-to-image'{
   const dom_to_image:any;
   export default dom_to_image;
 }
+declare module 'vue-qr'{
+  const vue_qr:any;
+  export default vue_qr;
+}

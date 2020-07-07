@@ -21,7 +21,7 @@
                                     统计维度：{{this.getTitle()}}
                                 </template>
                             </el-col>
-                            <el-col :span="4" class="main-title-icon"  >
+                            <el-col :span="4" class="main-title-icon pointer"  >
                                 <i class="iconfont icon-bip-kucun"></i> &nbsp;
                                 <span @click="openMenu">MORE</span>
                             </el-col>
@@ -1560,5 +1560,8 @@ export default class BipStatisticsDialog extends Vue {
 }
 .main-title-icon {
     text-align: right;
-} 
+}      
+.pointer{
+    cursor:pointer;
+}
 </style>

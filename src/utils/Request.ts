@@ -60,6 +60,15 @@ export namespace BIPUtil {
         return this.getFromServer(param);
     }
     /**
+     * @description 切换公司
+     */
+    switchCMC(cmcCode:any){
+        let param = tool.switchCMC(cmcCode);
+        param.snkey =  JSON.parse(window.sessionStorage.getItem('snkey')+'');
+        return this.getFromServer(param);
+    }
+
+    /**
      * @description 获取菜单参数
      * @param sbuid 业务号
      * @param menuid 菜单编码
