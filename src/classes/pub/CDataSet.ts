@@ -257,10 +257,11 @@ export default class CDataSet {
     //     this.checkGS();
     // }
   }
-  checkGS(cell?: Cell) {
+  async checkGS(cell?: Cell) {
     if(cell){
         let id = cell.id
-        this.ccells.cels.forEach(col => {
+        for(var i=0;i<this.ccells.cels.length;i++){
+            let col = this.ccells.cels[i];
             let scstr = col.script;
             if(scstr){
                 let _i = col.refCellIds.findIndex(item=>{
@@ -280,7 +281,8 @@ export default class CDataSet {
                           if(this.scriptProc.data.id != this.currRecord.id){
                             this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
                           }
-                          vl = this.scriptProc.execute(scstr, "", col);
+                          vl = await this.scriptProc.execute(scstr, "", col);
+                          console.log(vl)
                           if(vl && (vl.isNaN || vl == 'NaN'))
                             vl = 0;
                         }
@@ -311,7 +313,7 @@ export default class CDataSet {
                     
                 }
             }
-        })
+        }
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
           cd.checkGSByRefId(id);
@@ -324,7 +326,8 @@ export default class CDataSet {
   checkAllGS() {
     if(!this.currRecord)
         return;
-    this.ccells.cels.forEach(col => {
+      for(var i=0;i<this.ccells.cels.length;i++){
+        let col = this.ccells.cels[i];
         let scstr = col.script;
         if (scstr && scstr.indexOf("=:") === 0) {
             scstr = scstr.replace("=:", "");
@@ -373,7 +376,7 @@ export default class CDataSet {
             }
           }
         }
-      });
+      };
   }
 
   checkGSByRefId(id:string){
@@ -874,5 +877,54 @@ export default class CDataSet {
             }
         }
     }
+  }
+  //检查主表非空
+  checkNotNull():any{
+    let cds:CDataSet = this;
+    let bok:any = null;
+    cds.ccells.cels.forEach(item => {
+        if (item.unNull && bok == null) {
+            let vl = null; 
+            if(cds.currRecord.data[item.id]!=null)
+                vl = cds.currRecord.data[item.id]+''; 
+            if (!vl) {
+              return bok =  "【" + item.labelString + "】不能为空!";
+            }
+        }
+    });
+    if(bok == null){
+        if (cds.ds_sub.length>0) {
+            return this.checkChildNotNull(cds);
+    }
+  }
+  return bok;
+}
+//检查子表非空
+checkChildNotNull(cds:CDataSet):any{
+    let isok:any = null ;
+    cds.ds_sub.forEach(cd0=>{
+        if(isok == null){
+            if(cd0.cdata.data.length===0 && !cd0.ccells.unNull){
+                return isok =  "【" + cd0.ccells.desc + "】不能为空!";
+            }else{
+                for(let i=0;i<cd0.cdata.data.length;i++){
+                    let crd = cd0.getRecordAtIndex(i);
+                    cd0.ccells.cels.forEach(item=>{
+                        if(isok&&item.unNull){
+                            let vl = crd.data[item.id];+'';
+                            if (!vl) {
+                                return isok =  "子表第"+(i+1)+"行"+item.id+"【" + item.labelString + "】不能为空!";
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        if(cd0.ds_sub.length>0){
+            isok = this.checkChildNotNull(cd0);
+        }
+
+    })
+  return isok;
   }
 }

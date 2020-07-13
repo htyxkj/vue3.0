@@ -1078,7 +1078,7 @@ export default class OperatingArea extends Vue {
         .catch(err => {
             this.showOperaDia = false;
             this.loading =0;
-            this.$notify.error(err);
+            this.$notify.error(err+";OperatingArea getOpera");
         });
     }
 /*********************** 右侧架区 ******************************/
@@ -1814,7 +1814,7 @@ export default class OperatingArea extends Vue {
             }
         })
         .catch(err => {
-            this.$notify.error(err);
+            this.$notify.error(err+";OperatingArea showOperaBr");
         });
     }
     /**

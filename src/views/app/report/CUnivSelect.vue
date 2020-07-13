@@ -151,6 +151,7 @@ export default class CUnivSelect extends Vue {
     }
 
     async mounted(){
+        console.log("mounted")
         this.config['type']=2;
         this.biType="SEL" 
         if(this.uriParams){
@@ -212,7 +213,23 @@ export default class CUnivSelect extends Vue {
                     let cc = ptran[i].split("=");
                     this.dsm_cont.currRecord.data[cc[0]] = cc[1];
                 }
-                this.find();
+                let canFind = true;
+                for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
+                    let cel = this.dsm_cont.ccells.cels[i];
+                    if((cel.attr & 0x800)>0){
+                        let val = this.dsm_cont.currRecord.data[cel.id]
+                        if(!val){
+                            canFind = false;
+                        }
+                    }
+                }
+                if(canFind){
+                    this.find();
+                }else{
+                    setTimeout(() => {
+                        this.find();
+                    }, 500);
+                }
             }
         }
     }
@@ -366,7 +383,7 @@ export default class CUnivSelect extends Vue {
                 this.getCRecordByPk2();
             }).catch(err=>{
                 this.fullscreenLoading = false
-                this.$notify.error(err)
+                this.$notify.error(err+";CUnivSelect findServerData")
             });
         }else if(this.biType == "RPT"){
             queryCont.type = 2
@@ -374,7 +391,7 @@ export default class CUnivSelect extends Vue {
                 this.processingData(res,"RPT");
             }).catch(err=>{
                 this.fullscreenLoading = false
-                this.$notify.error(err)
+                this.$notify.error(err+";CUnivSelect findServerData")
             });
         }else if(this.biType == "SQL"){
             queryCont.type = 3
@@ -382,7 +399,7 @@ export default class CUnivSelect extends Vue {
                 this.processingData(res,"RPT");
             }).catch(err=>{
                 this.fullscreenLoading = false
-                this.$notify.error(err)
+                this.$notify.error(err+";CUnivSelect findServerData")
             });
         }
     }

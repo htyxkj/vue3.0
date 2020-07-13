@@ -16,12 +16,17 @@
             </div> 
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
-            <el-aside width="400px">
-                <el-tree ref="elementTree" :style="'height:'+(tableHeight-50)+'px'" empty-text="没有核算要素" size="mini" :node-key="keyID"  
+            <el-aside width="400px" class="tree" :style="'height:'+(tableHeight)+'px'" >
+                <el-tree ref="elementTree" empty-text="没有核算要素" size="mini" :node-key="keyID"  
                     :data="treeData" @node-click="handleNodeClick"  :expand-on-click-node="false" :highlight-current="true" 
                     default-expand-all check-strictly  >
                     <span class="custom-tree-node" slot-scope="{ node,data  }">
-                        <span>{{ node.data.name }}({{node.data.code}})</span>
+                        <span>
+                            {{ node.data.name }}({{node.data.code}})
+                            <template v-if="node.level == 1">
+                                ({{type_name[node.data.type_id]}})
+                            </template>
+                        </span>
                         <span v-if="treSelData && treSelData.id == node.data.id">
                             <el-button
                                 type="text"
@@ -99,8 +104,9 @@ export default class AccountingElement extends Vue {
     addState:any = null;//右侧保存状态  0 新增   1 修改    2新增下一级
 
     treeData:any=[];//树状结构数据
-
+    type_name:any = {};//类型集合
     async created() {
+        this.initType()
         this.tableHeight =  this.height -60
         this.elementCell = await this.getCell(this.elementCellID);//核算要素主表
         this.elementTJCell = await this.getCell(this.elementTJCellID);//核算要素主表条件项
@@ -262,6 +268,11 @@ export default class AccountingElement extends Vue {
         if(this.addState ==1){//修改
             this.elementCell.currRecord.c_state = 2;
         }
+        let msg = this.elementCell.checkNotNull();
+        if(msg != null){
+            this.$notify.warning(msg)
+            return;
+        }
         let res = await this.elementCell.saveData();
         
         if(res.data.id == 0){
@@ -289,6 +300,20 @@ export default class AccountingElement extends Vue {
             return new CDataSet(cells[0]);
         } else {
             return new CDataSet("");
+        }
+    }
+    //获取类型参照
+    async initType(){
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 50000; 
+        let res = await tools.getBipInsAidInfo("D.HSYSTYPE", 300, qe);
+        if(res.data.id ==0 ){
+            let vals = res.data.data.data.values;
+            for(var i=0;i<vals.length;i++){
+                let vl = vals[i]
+                this.type_name[vl.id ] = vl.name;
+            }
         }
     }
     @Watch("height")
@@ -324,6 +349,7 @@ export default class AccountingElement extends Vue {
     padding-right: 8px;
 }
 .addelembtn{
+    margin-top: 20px;
     width: 70%;
     margin-left: 10%;
 }

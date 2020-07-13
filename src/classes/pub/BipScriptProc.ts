@@ -5,6 +5,7 @@ import { GlobalVariable } from '@/utils/ICL';
 import { BIPUtils } from "@/utils/BaseUtil";
 import CRecord from './CRecord';
 let baseTool = BIPUtils.baseUtil;
+import { BIPUtil } from '@/utils/Request';
 export default class BipScriptProc {
   data: CRecord;
   cells: Cells;
@@ -31,7 +32,7 @@ export default class BipScriptProc {
       } else if (xlf > 0) {
         // TODO 后续处理
       } else {
-        s0 = this.expcalc(s0, true);
+        s0 = this.expcalc(s0, true, cell);
         if (s0 instanceof Array) {
           return s0;
         } else return this.keepRound(s0, cell); //;--单行公式
@@ -40,19 +41,19 @@ export default class BipScriptProc {
     return ""; //处理其他运算
   }
 
-  expcalc(ogs: string | Array<string>, bds: boolean): any {
+  expcalc(ogs: string | Array<string>, bds: boolean, cell: Cell): any {
     let s0 = ogs;
     if (typeof s0 === "string") {
       s0 = this.bdstovec(s0);
     }
     if (typeof s0 === "object") {
       let bb: any = [];
-      return this.expcalc1(s0, bb, 0, s0.length)[0];
+      return this.expcalc1(s0, bb, 0, s0.length, cell)[0];
     }
     return s0;
   }
 
-  expItem(s0: string, bds: boolean) {
+  expItem(s0: string, bds: boolean,cell :Cell) {
     var x1 = s0 != null ? s0.length - 1 : -1;
     if (x1 < 0) return null;
     if ("null" === s0) return null;
@@ -80,15 +81,15 @@ export default class BipScriptProc {
     if (bds) {
       if (c0 === "'" && x1 === 2) {
         if (x1 === 2) return s0.charAt(1);
-        return this.expItem2(s0, null);
+        return this.expItem2(s0, null,cell);
       }
       if (c0 === '"') {
         if (s0.charAt(x1) === '"') {
           return s0.substring(1, x1);
         }
-        return this.expItem2(s0, null);
+        return this.expItem2(s0, null,cell);
       }
-      return this.expItem2(s0, null);
+      return this.expItem2(s0, null,cell);
     }
     x1 = c0 >= "A" ? s0.indexOf(".") : 0;
     if (x1 > 0) console.log("varfield");
@@ -96,7 +97,7 @@ export default class BipScriptProc {
     //getVar(new CVar(s0, -1, null));
     return s0;
   }
-  expItem2(s0: string, oins: any) {
+  expItem2(s0: string, oins: any,cell :Cell) {
     let x0 = s0.length - 1;
     if (
       x0 > 1 &&
@@ -106,7 +107,7 @@ export default class BipScriptProc {
     ) {
       return s0.substring(2, x0);
     }
-    let o0 = this.expItema(s0);
+    let o0 = this.expItema(s0,cell);
     let s1 = "",
       idx = -1,
       b10 = true,
@@ -132,7 +133,7 @@ export default class BipScriptProc {
     if (x0 < 1) {
       if (bf) {
         let fps1: any = fps;
-        oins = this.invokefun(s0, fps1);
+        oins = this.invokefun(s0, fps1,cell);
         return oins;
       }
     }
@@ -161,7 +162,7 @@ export default class BipScriptProc {
     console.log(sgs, "调用方法");
   }
 
-  invokefun(scf: string, fps: Array<any>) {
+  async invokefun(scf: string, fps: Array<any>,cell :Cell) {
     console.log("invokefun", scf);
     let x0 = scf.length;
     if (x0 === 1 && scf.charAt(0) === "M") {
@@ -178,6 +179,14 @@ export default class BipScriptProc {
           return ov;
         }
         return fps[1];
+      }
+      if("sql" === scf){
+        let res:any = await BIPUtil.ServApi.execClientGsSQL(this.cells.obj_id,this.data,cell.id)
+        if(res.data.id == 0){
+          return res.data.data.data
+        }else{
+          return "";
+        }
       }
     }
     x0 = scf.lastIndexOf(".");
@@ -262,7 +271,7 @@ export default class BipScriptProc {
     return o0;
   }
 
-  expItema(s0: string) {
+  expItema(s0: string, cell: Cell) {
     let il0 = s0.length, x0:number;
     let c0 = '(', cs0 = s0.split('');
     for (x0 = 0;x0 < il0;x0++) {
@@ -280,7 +289,7 @@ export default class BipScriptProc {
     let x1 = baseTool.nextBarcket4(cs0, x0, il0, c0);
     let s1 = s0.substring(x0+1,x1).replace(/(^\s*)|(\s*$)/g, "");
     if (s1.length > 0)
-      ors[2] = this.procexpret(s1);//;--参数值
+      ors[2] = this.procexpret(s1,cell);//;--参数值
       x1 += 1;
       if (x1 < il0) {
         if (s0.charAt(x1) === '.')
@@ -293,7 +302,7 @@ export default class BipScriptProc {
   /***
    * 处理表达式
    */
-  procexpret(s1: string) {
+  procexpret(s1: string, cell: Cell) {
     var ov = this.bdstovec(s1);
     let fps = [];
     let k = 0;
@@ -305,7 +314,7 @@ export default class BipScriptProc {
       while (x1 < rr) {
         let o = ov[x1++];
         if (o === ",") {
-          bufs = this.expcalc1(ov, bufs, x0, x1 - 1);
+          bufs = this.expcalc1(ov, bufs, x0, x1 - 1,cell);
           let cc = bufs[0];
           if (cc) {
             fps[k] = cc;
@@ -316,13 +325,13 @@ export default class BipScriptProc {
           k++;
         }
       }
-      ov = this.expcalc1(ov, bufs, x0, x1)[0];
-    } else ov = this.expItem(ov.toString(), false);
+      ov = this.expcalc1(ov, bufs, x0, x1,cell)[0];
+    } else ov = this.expItem(ov.toString(), false,cell);
     fps[k] = ov;
     return fps;
   }
 
-  expcalc1(vgs: string[], bufs: Array<any>, x0: number, x1: number) {
+  expcalc1(vgs: string[], bufs: Array<any>, x0: number, x1: number, cell: Cell) {
     let ov,
       dvs = vgs,
       sv0,
@@ -379,13 +388,13 @@ export default class BipScriptProc {
               sv1 = sv0.substring(cx0 + 2); //[xxxx].方法或其它变量
               sv0 = sv0.substring(1, cx0);
             }
-            ov = cfh == "(" ? this.expcalc(sv0, true) : this.invokeref(sv0);
+            ov = cfh == "(" ? this.expcalc(sv0, true, cell) : this.invokeref(sv0);
             if (ov != null && sv1 != null) {
               // 有其他关联
             }
             bufs[idx] = ov;
           } else {
-            bufs[idx] = this.expItem(sv0, true);
+            bufs[idx] = this.expItem(sv0, true,cell);
           }
         } else {
           bufs[idx] = ov;
@@ -436,6 +445,8 @@ export default class BipScriptProc {
   }
 
   bdstovec(ogs: string): any {
+    if(ogs.indexOf("sql") === 0)
+      return [ogs]
     let s0 = ogs;
     var t0 = s0 ? s0.length : 0;
     if (t0 < 1) return [];

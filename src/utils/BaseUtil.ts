@@ -267,7 +267,22 @@ export namespace BIPUtils {
         qe: qe
       });
     }
-
+    /**
+     * @description 获取辅助/常量元素对象
+     * @param pcell 对象编码
+     * @param dsm 数据
+     * @param field 字段
+     */
+    execClientGsSQLParams(pcell: any,dsm:any,field:any) {
+      return Object.assign({
+        apiId: GlobalVariable.APIID_CLIENTGSSQL,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        pcell: pcell,
+        dsm:dsm,
+        field:field,
+      });
+  }
     /**
      * @description 获取辅助/常量元素对象
      * @param aId 辅助后者常量ID

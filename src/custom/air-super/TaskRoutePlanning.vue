@@ -356,7 +356,7 @@ export default class TaskRoutePlanning extends Vue {
             })
             .catch((err: any) => {
                 this.showTaskTJDia = false;
-                this.$notify.error(err);
+                this.$notify.error(err+";TaskRoutePlanning getOperarea0");
             });
     }
     /**

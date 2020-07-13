@@ -1023,7 +1023,7 @@ export default class RealTimeTrack extends Vue {
                             }
                         })
                         .catch((err:any) => {
-                            this.$notify.error(err);
+                            this.$notify.error(err+";RealTimeTrack getHKZYQ");
                         });
                     }
                 }

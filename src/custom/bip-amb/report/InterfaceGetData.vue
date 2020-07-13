@@ -54,7 +54,7 @@
                                 {{ row.data.status_id == 'succeed' ?'执行成功':"执行失败"}}
                                 <br/>
                                 <hr/>
-                                <a class="log" @click="getLog(row.data.id)">日志</a>
+                                <a class="log" @click="getLog(row.data)">日志</a>
                             </div>
                         </template>  
                     </vxe-table-column>  
@@ -70,6 +70,37 @@
                     :total="tablePage.total" :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']" @page-change="PageChange">
                 </vxe-pager>
             </el-row>
+            <el-drawer :visible.sync="logDrawer" size="45%" direction="rtl">
+                <div slot="title">
+                    <el-button @click="getLog(null)">      
+                        <i class="el-icon-refresh-right" ></i>
+                        <span>刷新</span>
+                    </el-button>
+                    <el-button @click="delLog()">      
+                        <i class="el-icon-delete" ></i>
+                        <span>清除日志</span>
+                    </el-button>
+                </div>
+                <vxe-table style="width:100%" :height="tableHeight" resizable :data="logTableData" size="mini" stripe border highlight-hover-row highlight-current-row>
+                    <vxe-table-column title="时间" width="170" header-align="center" align="start" show-header-overflow show-overflow>
+                        <template v-slot="{ row }">
+                            <div>
+                                {{row.data.created_at}} 
+                            </div>
+                        </template>
+                    </vxe-table-column> 
+                    <vxe-table-column title="日志" min-width="300" header-align="center" align="start" show-header-overflow show-overflow>
+                        <template v-slot="{ row }">
+                            <div>
+                                {{row.data.msg}} 
+                            </div>
+                        </template>
+                    </vxe-table-column>   
+                </vxe-table> 
+                <vxe-pager border size="mini" :current-page="logTablePage.currPage" :page-size="logTablePage.pageSize"
+                    :total="logTablePage.total" :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']" @page-change="logPageChange">
+                </vxe-pager>
+            </el-drawer>
         </el-container>
     </el-container>
 </template>
@@ -107,9 +138,26 @@ export default class InterfaceGetData extends Vue {
     };
     tableData:any =[];
     selData:any =[];//勾选接口集合
+    logDrawer:boolean = false;
+
+    logTj:any = null;
+    logCell:CDataSet = new CDataSet("");
+    logCellId:any = "100104"
+    logTablePage:any ={//分页信息
+        total: 0,
+        currPage:1,
+        pageSize:20
+    };
+    logTableData:any =[];
+
+    logDelCell:CDataSet = new CDataSet("");
+    logDelCellId:any = "100104WEBDEL";
+
     async created() {
         this.date = moment(new Date()).format("YYYY-MM-DD");
         this.cell = await this.getCell(this.cellID);
+        this.logCell = await this.getCell(this.logCellId);
+        this.logDelCell = await this.getCell(this.logDelCellId);
         this.initData();
     } 
     //查询接口信息
@@ -164,8 +212,38 @@ export default class InterfaceGetData extends Vue {
         this.selData = records;
     }
     //显示日志
-    getLog(id:any){
-        console.log("获取日志："+id)
+    async getLog(data:any){
+        if(data!=null){
+            this.logTj = data;
+            this.logTablePage.currPage = 1;
+        }
+        this.logTableData = [];
+        let qe:QueryEntity = new QueryEntity(this.logCellId,this.logCellId);
+        qe.page = this.logTablePage;
+        let tj = {node_id : this.logTj.code}
+        qe.cont = JSON.stringify(tj)
+        let res = await this.logCell.queryData(qe);
+        if(res.data.id ==0 ){
+            let data = res.data.data.data;
+            this.logTablePage = data.page;
+            this.logTableData = data.data;
+        }
+        this.logDrawer = true;
+    }
+    //日志分页信息变化
+    logPageChange({ currentPage, pageSize }:any) {
+        this.logTablePage.currPage = currentPage
+        this.logTablePage.pageSize = pageSize
+        this.getLog(null);
+    }
+    async delLog(){
+        this.logDelCell.createRecord();
+        this.logDelCell.currRecord.data.node_id = this.logTj.code;
+        this.logDelCell.currRecord.c_state = 4;
+        let res = await this.logDelCell.saveData();
+        console.log(res)
+        this.logTablePage.currPage = 1
+        this.getLog(null);
     }
     //获取对象
     async getCell(cellid: string) {

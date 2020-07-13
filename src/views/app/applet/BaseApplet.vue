@@ -721,7 +721,7 @@ export default class BaseApplet extends Vue{
                         work.open(data,this.cea,smakefld);
                     }
                 }).catch(err=>{
-                    this.$notify.error(err)
+                    this.$notify.error(err+";BaseApplet submint")
                 }).finally(()=>{
                     this.fullscreenLoading = false
                 });

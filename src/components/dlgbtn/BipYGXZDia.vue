@@ -115,8 +115,7 @@ export default class BipYGXZDia extends Vue{
             this.visibles = false;
             loading.close();
         }).catch(err=>{
-            console.log("出错了！")
-            this.$notify.error(err)
+            this.$notify.error(err+";BipYGXZDia selectOK")
         }).finally(()=>{
             loading.close();
         })

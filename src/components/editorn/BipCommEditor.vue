@@ -282,16 +282,19 @@ export default class BipCommEditor extends Vue{
         }
         vv = this.aidInfo.get(str);
         //List  是辅助的 进行一下数据查询
-        await tools.getBipInsAidInfo(editName,210,this.qe).then((res:any)=>{
-            if(res.data.id==0){
-                vv.values = res.data.data.data.values;
-                this.bipInsAid = vv;
-            }
-            let vals = {key:str,value:this.bipInsAid}
-            this.setAidInfo(vals)
-        }).catch((err:any)=>{
-            this.$notify.error(err)
-        });
+        if(vv){
+            this.qe.page.pageSize = 1000
+            await tools.getBipInsAidInfo(editName,210,this.qe).then((res:any)=>{
+                if(res.data.id==0){
+                    vv.values = res.data.data.data.values;
+                    this.bipInsAid = vv;
+                }
+                let vals = {key:str,value:this.bipInsAid}
+                this.setAidInfo(vals)
+            }).catch((err:any)=>{
+                this.$notify.error(err+";BipCommEditor getInsAidInfoValues")
+            });
+        }
     }
 
     async initInsAid(str:any){

@@ -215,12 +215,25 @@ export namespace BIPUtil {
     }
 
     /**
+     * 执行客户端公式sql
+     * @param pcell     对象
+     * @param dsm       数据
+     * @param field     字段
+     */
+    execClientGsSQL(pcell:any,dsm:any,field:any){
+        dsm = JSON.stringify(dsm)
+        let param = tool.execClientGsSQLParams(pcell,dsm,field);
+        return this.getFromServer(param);
+    }
+
+    /**
      * 弹出框执行SQL语句 常量里面定义的 DLG.
      * @param value 当前选中行内容
      * @param btn BipMenuBtn 对象
      */
-    getDlgRunSql(value:string,btn:string){
+    getDlgRunSql(value:string,btn:string,dsmArr:any){
         let param = tool.getDlgRunSqlParams(value,btn);
+        param.dsmArr = dsmArr;
         return this.getFromServer(param)
     }
     /**

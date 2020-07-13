@@ -10,6 +10,7 @@
                         </el-tooltip>
                     </span>
                 </template>
+                <div v-if="model1.length>cell.ccLeng" class="el-form-item__error">长度应小于等于{{cell.ccLeng}}个字符</div>
             </el-form-item>
         </template>
         <template v-else>

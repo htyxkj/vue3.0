@@ -434,7 +434,9 @@ export default class BipMenuBtnDlg extends Vue {
                 console.log("执行SQL语句修改")
                 let b = JSON.stringify(this.btn);
                 let v = JSON.stringify(this.env.dsm.currRecord.data);
-                let cc = await tools.getDlgRunSql(v,b)
+                let vs = JSON.stringify(this.env.dsm.currRecordArr);
+
+                let cc = await tools.getDlgRunSql(v,b,vs)
                 if(cc.data.id ==0){
                     this.$notify.success(cc.data.message)
                 }else {

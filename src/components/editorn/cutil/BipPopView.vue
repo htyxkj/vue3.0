@@ -209,7 +209,7 @@ export default class BipPopView extends Vue{
                 this.qe.page = res.data.data.data.page
             }
         }).catch(err=>{
-            this.$notify.error(err)
+            this.$notify.error(err+";BipPopView searchInsAidDatas")
         });
     }
 

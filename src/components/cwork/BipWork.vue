@@ -380,8 +380,7 @@ export default class BipWork extends Vue{
                     this.$notify.error(res.data.message)
                 }
             }).catch(err=>{
-                console.log("出错了！")
-                this.$notify.error(err)
+                this.$notify.error(err+";BipWork checkUp")
             }).finally(()=>{
                 this.loading = false
             })
@@ -435,7 +434,7 @@ export default class BipWork extends Vue{
                     this.$notify.error(res.data.message)
                 }
             }).catch(err=>{
-                this.$notify.error(err)
+                this.$notify.error(err+";BipWork returnBack")
             }).finally(()=>{
                 this.loading = false
             }) 
@@ -452,7 +451,7 @@ export default class BipWork extends Vue{
                     this.$notify.error(res.data.message)
                 }
             }).catch(err=>{
-                this.$notify.error(err)
+                this.$notify.error(err+";BipWork returnBack")
             }).finally(()=>{
                 this.loading = false
             })
@@ -492,7 +491,7 @@ export default class BipWork extends Vue{
                 this.$notify.error('驳回失败！')
             }
         }).catch(err=>{
-            this.$notify.error(err)
+            this.$notify.error(err+";BipWork overrule")
         }).finally(()=>{
             this.loading = false
         })

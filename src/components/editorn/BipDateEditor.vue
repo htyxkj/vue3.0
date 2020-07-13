@@ -319,6 +319,7 @@ export default class BipDateEditor extends Vue{
                     this.cds.currRecord.data[this.cell.id] = this.model1
                     this.cds.currRecord = Object.assign({},this.cds.currRecord)
                     this.cds.cdata.data[this.cds.index] = this.cds.currRecord
+                    this.cds.checkGS(this.cell)
                 }else{
                     if(value != this.model){
                         // this.model1 = value
