@@ -268,22 +268,24 @@ export default class AccountingPeriod extends Vue {
     }
     //查询期间详情
     async initChileData(){
-        this.tableLoading = true;
-        this.tableData =[];
-        let keyid = this.selPeriod.id;//主键
-        let cont = {calendar_id:keyid};
-        let qe:QueryEntity = new QueryEntity(this.periodChileCellID,this.periodChileCellID);
-        qe.page = this.tablePage;
-        qe.cont = JSON.stringify(cont);
-        qe.orderBy = "fm_date";
-        let res = await this.periodChileCell.queryData(qe);
-        if(res.data.id ==0 ){
-            let data = res.data.data.data.data;
-            this.tablePage = res.data.data.data.page
-            if(data && data.length>0){
-                for(var i=0;i<data.length;i++){
-                    let od = data[i].data;
-                    this.tableData.push(od);
+        if(this.selPeriod){
+            this.tableLoading = true;
+            this.tableData =[];
+            let keyid = this.selPeriod.id;//主键
+            let cont = {calendar_id:keyid};
+            let qe:QueryEntity = new QueryEntity(this.periodChileCellID,this.periodChileCellID);
+            qe.page = this.tablePage;
+            qe.cont = JSON.stringify(cont);
+            qe.orderBy = "fm_date";
+            let res = await this.periodChileCell.queryData(qe);
+            if(res.data.id ==0 ){
+                let data = res.data.data.data.data;
+                this.tablePage = res.data.data.data.page
+                if(data && data.length>0){
+                    for(var i=0;i<data.length;i++){
+                        let od = data[i].data;
+                        this.tableData.push(od);
+                    }
                 }
             }
         }

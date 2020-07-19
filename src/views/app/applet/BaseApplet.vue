@@ -8,6 +8,7 @@
         </template>
         <div class="bip-main-container" v-if="lay.binit">            
             <el-scrollbar :style="style">
+                <!-- <el-form :model="dsm.currRecord.data" :rules="rules" @submit.native.prevent label-position="right" label-width="120px"> -->
                 <el-form @submit.native.prevent label-position="right" label-width="120px">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
@@ -78,6 +79,7 @@ export default class BaseApplet extends Vue{
     @Provide() rowClickBusID:number =0;
     @Provide() switchHide:any={};
     @Provide() switchShow:any={};
+    rules:any={};//form 表单验证
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -225,6 +227,7 @@ export default class BaseApplet extends Vue{
                 return;
             }
             var currRecord = this.dsm.currRecord;
+            let oldPage = Object.assign({},this.dsm.page);
             let u = window.sessionStorage.getItem('user');
             if(u){
                 this.dsm.currRecord = this.dsm.createRecord();
@@ -236,12 +239,31 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.data[cell.id] = currRecord.data[cell.id]
                     }
                 }
+                this.dsm.page = oldPage;
+                this.dsm.page.index++;
                 let row = this.dsm.cdata.data.length - 1;
-                let page = this.qe.page;
-                let _idx = page.total - 1;
-                if (page.total > 0) {
-                    this.JumpToIndexCRecord(_idx);
+                let crd = this.dsm.cdata.getDataAtIndex(row)
+                this.dsm.currRecord  = crd 
+                let newD = this.dsm.cdata.data[row];
+                this.dsm.cdata.data.splice(row,1)
+                this.dsm.cdata.data.splice(this.dsm.page.index,1,newD)
+                this.setListMenuName();
+                //设置当前记录审批流程信息
+                if(crd != null && this.dsm.opera){
+                    let params = {
+                        sid: crd.data[this.dsm.opera.pkfld],
+                        sbuid: crd.data[this.dsm.opera.buidfld],
+                        statefr: crd.data[this.dsm.opera.statefld],
+                        stateto: crd.data[this.dsm.opera.statefld],
+                        spuserId: ""
+                    }  
+                    this.cea = new CeaPars(params);
+                    this.dsm.ceaPars = this.cea;
                 }
+                this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                // if (page.total > 0) {
+                //     this.JumpToIndexCRecord(_idx);
+                // }
                 // this.dsm.cdata.data.push(this.dsm.currRecord)
             }
         }
@@ -631,6 +653,27 @@ export default class BaseApplet extends Vue{
         }
 
     }
+
+    // initRules(){
+    //     this.rules={};
+    //     if(this.dsm && this.dsm.ccells){
+    //         for(var i =0;i<this.dsm.ccells.cels.length;i++){
+    //             let vl = [];
+    //             let cel = this.dsm.ccells.cels[i];
+    //             if(cel.isReq){
+    //                 let req = { required: true, message: cel.labelString+'不能为空', trigger: 'blur' };
+    //                 // vl.push(req)
+    //             }
+    //             if(cel.ccLeng){
+    //                 let leng = { min: 0, max: cel.ccLeng, message: '字符长度应<='+cel.ccLeng, trigger: 'blur' } 
+    //                 vl.push(leng)
+    //             }
+    //             this.rules[cel.id] = vl;
+    //         }
+    //     }
+    // }
+
+    
 //#endregion
 //#region 保存数据
     async saveData() {
@@ -837,6 +880,7 @@ export default class BaseApplet extends Vue{
                     let ope = rtn1.data.opt
                     this.dsm.setOpera(ope)
                 }
+                // this.initRules()
             } else {
                 this.$notify.error("没有获取到对象定义");
             }

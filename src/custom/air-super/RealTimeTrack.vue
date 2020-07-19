@@ -12,6 +12,16 @@
                                 <el-button icon="el-icon-refresh-left" circle @click="refresh"></el-button>
                                 <!-- 查找 -->
                                 <el-button icon="el-icon-search" circle @click="dialogShow = true"></el-button>
+                                <!-- 画面跟随 -->
+                                 <span class="follow">
+                                    <el-tooltip class="item" effect="light" content="画面跟随" placement="top" >
+                                        <el-switch
+                                            v-model="isFollow"
+                                            active-color="#13ce66"
+                                            inactive-color="#ff4949">
+                                        </el-switch>
+                                    </el-tooltip>
+                                 </span>
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="operaBtn" @click="operaBtnClick">
@@ -104,20 +114,6 @@
                                             </el-col>
                                             <el-col :span="12">
                                                 <div class="speed-content">
-                                                    <div class="sp-title nowtime-header">
-                                                        <span>当前温度</span>
-                                                    </div>
-                                                    <div class="time">
-                                                        {{nowtemperature}}℃
-                                                    </div>
-                                                </div>
-                                            </el-col>
-                                        </el-row>
-                                    </div> 
-                                    <div class="speed-flow">
-                                        <el-row>
-                                            <el-col :span="12">
-                                                <div class="speed-content">
                                                     <div class="sp-title ">
                                                         <span>当前流量</span>
                                                     </div>
@@ -126,6 +122,11 @@
                                                     </div>
                                                 </div>
                                             </el-col>
+                                            
+                                        </el-row>
+                                    </div> 
+                                    <div class="speed-flow">
+                                        <el-row>
                                             <el-col :span="12">
                                                 <div class="speed-content">
                                                     <div class="sp-title nowtime-header">
@@ -136,8 +137,42 @@
                                                     </div>
                                                 </div>
                                             </el-col>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title nowtime-header">
+                                                        <span>当前风速</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{windSpeed}}m/s
+                                                    </div>
+                                                </div>
+                                            </el-col>
                                         </el-row>
                                     </div>
+                                    <div class="speed-flow">
+                                        <el-row>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title nowtime-header">
+                                                        <span>当前温度</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{nowtemperature}}℃
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <div class="speed-content">
+                                                    <div class="sp-title nowtime-header">
+                                                        <span>当前湿度</span>
+                                                    </div>
+                                                    <div class="time">
+                                                        {{humidity}}%rh
+                                                    </div>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </div> 
                                     <div class="speed-flow">
                                         <el-row>
                                             <el-col :span="12">
@@ -320,6 +355,8 @@ export default class RealTimeTrack extends Vue {
     @Provide() sumtime:number = 0;
     @Provide() taskname:String = "";
     sumarea:number = 0;
+    windSpeed:any = 0;//风速
+    humidity:any = 0;//湿度
     //当前任务起降点
     @Provide() takeoff:any = null;//起降点
     @Provide() takeoffRange:any = 50;//起降点范围
@@ -372,7 +409,7 @@ export default class RealTimeTrack extends Vue {
         let cont ="bgtime<='"+date+"' and edtime>='"+date+"' and  tkst='1' ";
         qe.cont = cont;
         let cc = await tools.getBipInsAidInfo("TKMSG", 210, qe);
-        console.log(cc)
+        console.log(cc);
         if(cc.data.id ==0){
             let values = cc.data.data.data.values;
             this.newTaskList = cc.data.data.data.values;
@@ -429,7 +466,6 @@ export default class RealTimeTrack extends Vue {
         }else{
             time = time - 10000;
         }
-        console.log(time)
         let key = task.tlid;
         let trtype = task.trtype;
         let condition ={key:key,time:time,trtype:trtype};
@@ -628,6 +664,11 @@ export default class RealTimeTrack extends Vue {
             }
             this.nowspeed = (data.speed).toFixed(3);
 
+            if(data.windspeed)
+                this.windSpeed = data.windspeed;//风速
+            if(data.humidity)
+                this.humidity = data.humidity;//湿度
+
             this.nowpressure = (data.pressure).toFixed(1);
             this.nowtemperature = (data.temperature).toFixed(1);
 
@@ -659,7 +700,6 @@ export default class RealTimeTrack extends Vue {
                 if(!isNaN(flow0) && this.warnInterval >= this.warn.interval){
                     standard[0] = (flow0*(1-(this.warn.drugfloat/100))).toFixed(2);
                     standard[1] = (flow0*(1+(this.warn.drugfloat/100))).toFixed(2);
-                    console.log(standard)
                     if(flow>standard[1] || flow<standard[0]){
                         msg = "当前速度："+data.speed+"km/h<br/>瞬时流量异常("+flow+"),超出当前速度标准范围("+standard[0]+"~"+standard[1]+")"
                     }
@@ -880,7 +920,6 @@ export default class RealTimeTrack extends Vue {
             if(this.checkList[i] == '1'){//航空识别区
                 this.getHKSBQ();
             }else if(this.checkList[i] =='5'){//起降点
-                console.log("起降点")
                 this.getLift();
             }
         }
@@ -1179,7 +1218,6 @@ export default class RealTimeTrack extends Vue {
     }
 /********************************* 预警信息 *******************************/
     mapChnage() {
-        console.log("地图切换！");
     }
     @Watch("height")
     heightChange() {
@@ -1211,7 +1249,6 @@ export default class RealTimeTrack extends Vue {
         window.onresize = () => {
             return (() => {
                 let height = document.documentElement.clientHeight
-                // console.log(this.height)
                 if(height>70){
                     height=height-94;
                 }
@@ -1425,6 +1462,12 @@ export default class RealTimeTrack extends Vue {
 }
 .pointer {
     cursor: pointer;
+}
+
+.follow {
+    margin-left: 15px;
+    color: #20A0ff;
+    font-size: 14px;
 }
 </style>
 <style lang="scss" >

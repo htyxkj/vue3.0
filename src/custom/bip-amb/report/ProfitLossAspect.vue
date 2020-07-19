@@ -159,6 +159,8 @@ export default class ProfitLossAspect  extends Vue {
                 this.$notify.error(res.data.message)
             }
             this.tableLoading = false;
+        }else{
+            this.tableLoading = false;
         }
     }
     getUpLevel(resData:any,i:any,level:any){

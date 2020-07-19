@@ -162,7 +162,7 @@ export default class BipScriptProc {
     console.log(sgs, "调用方法");
   }
 
-  async invokefun(scf: string, fps: Array<any>,cell :Cell) {
+  invokefun(scf: string, fps: Array<any>,cell :Cell) {
     console.log("invokefun", scf);
     let x0 = scf.length;
     if (x0 === 1 && scf.charAt(0) === "M") {
@@ -181,7 +181,7 @@ export default class BipScriptProc {
         return fps[1];
       }
       if("sql" === scf){
-        let res:any = await BIPUtil.ServApi.execClientGsSQL(this.cells.obj_id,this.data,cell.id)
+        let res:any = BIPUtil.ServApi.execClientGsSQL(this.cells.obj_id,this.data,cell.id)
         if(res.data.id == 0){
           return res.data.data.data
         }else{
@@ -192,8 +192,10 @@ export default class BipScriptProc {
     x0 = scf.lastIndexOf(".");
     if (x0 < 0) {
       let fn = eval("this.f_" + scf);
-      if (fn) return this.doCallBackFn(fn, [fps]);
-      else {
+      if (fn) {
+        let vl = this.doCallBackFn(fn, [fps]);
+        return vl;
+      } else {
         console.log("没有这个方法:" + scf);
         return null;
       }

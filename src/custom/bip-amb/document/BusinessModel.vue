@@ -274,17 +274,19 @@ export default class BusinessModel extends Vue {
     }
     //查询子表数据
     async ininModalAData(){
-        this.removeData = [];
-        this.modelACell.cdata.data = [];
-        this.tableLoading = true;
-        let qe:QueryEntity = new QueryEntity(this.modelACellID,this.modelACellID);
-        qe.page = this.tablePage;
-        qe.cont = JSON.stringify({compo_id:this.treSelData.id})
-        let res = await this.modelACell.queryData(qe);
-        if(res.data.id ==0){
-            let data = res.data.data.data.data;
-            this.modelACell.cdata.data = data;
-            this.tablePage = res.data.data.data.page
+        if(this.treSelData){
+            this.removeData = [];
+            this.modelACell.cdata.data = [];
+            this.tableLoading = true;
+            let qe:QueryEntity = new QueryEntity(this.modelACellID,this.modelACellID);
+            qe.page = this.tablePage;
+            qe.cont = JSON.stringify({compo_id:this.treSelData.id})
+            let res = await this.modelACell.queryData(qe);
+            if(res.data.id ==0){
+                let data = res.data.data.data.data;
+                this.modelACell.cdata.data = data;
+                this.tablePage = res.data.data.data.page
+            }
         }
         this.tableLoading = false;
     }

@@ -220,10 +220,10 @@ export namespace BIPUtil {
      * @param dsm       数据
      * @param field     字段
      */
-    execClientGsSQL(pcell:any,dsm:any,field:any){
+    async execClientGsSQL(pcell:any,dsm:any,field:any){
         dsm = JSON.stringify(dsm)
         let param = tool.execClientGsSQLParams(pcell,dsm,field);
-        return this.getFromServer(param);
+        return await this.getFromServer(param);
     }
 
     /**

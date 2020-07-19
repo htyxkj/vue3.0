@@ -57,7 +57,7 @@ export default class AmbTree extends Vue {
         if (node.level === 0) {
             this.node = node;
             this.resolve =resolve;
-            cont = this.fatherID+" is null  and purpose_id = '"+this.purposesId+"'"
+            cont = "("+this.fatherID+" is null or "+this.fatherID+" = '' )  and purpose_id = '"+this.purposesId+"'"
         } else {
             let v = node.data[this.keyID]
             cont = " "+this.fatherID+" = '"+v+"'  and purpose_id = '"+this.purposesId+"'"

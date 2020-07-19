@@ -72,11 +72,13 @@
 
                                  <!-- 画面跟随 -->
                                  <span class="follow">
-                                    <el-switch
-                                        v-model="isFollow"
-                                        active-color="#13ce66"
-                                        inactive-color="#ff4949">
-                                    </el-switch>
+                                    <el-tooltip class="item" effect="light" content="画面跟随" placement="top" >
+                                        <el-switch
+                                            v-model="isFollow"
+                                            active-color="#13ce66"
+                                            inactive-color="#ff4949">
+                                        </el-switch>
+                                    </el-tooltip>
                                  </span>
                                 
                                 <!-- <el-tooltip class="item" effect="light" content="画面跟随" placement="top" >
@@ -131,48 +133,97 @@
                                 <div class="speed-flow">
                                     <el-row>
                                         <el-col :span="12">
-                                             <div class="speed-content">
-                                                 <div class="sp-title ">
-                                                     <span>当前速度</span>
-                                                 </div>
-                                                 <div class="time">
-                                                     {{nowspeed}}km/h
-                                                 </div>
-                                             </div>
+                                            <div class="speed-content">
+                                                <div class="sp-title ">
+                                                    <span>当前速度</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{nowspeed}}km/h
+                                                </div>
+                                            </div>
                                         </el-col>
                                         <el-col :span="12">
-                                             <div class="speed-content">
-                                                 <div class="sp-title nowtime-header">
-                                                     <span>海拔高度</span>
-                                                 </div>
-                                                 <div class="time">
-                                                     {{nowheight}}m
-                                                 </div>
-                                             </div>
+                                            <div class="speed-content">
+                                                <div class="sp-title nowtime-header">
+                                                    <span>海拔高度</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{nowheight}}m
+                                                </div>
+                                            </div>
                                         </el-col>
                                     </el-row>
                                 </div>
-                                 <div class="speed-flow">
+                                <div class="speed-flow">
                                     <el-row>
                                         <el-col :span="12">
-                                             <div class="speed-content">
-                                                 <div class="sp-title ">
-                                                     <span>当前流量</span>
-                                                 </div>
-                                                 <div class="time">
-                                                     {{nowflow}}m³/h
-                                                 </div>
-                                             </div>
+                                            <div class="speed-content">
+                                                <div class="sp-title ">
+                                                    <span>当前压力</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{nowpressure}}kpa
+                                                </div>
+                                            </div>
                                         </el-col>
                                         <el-col :span="12">
-                                             <div class="speed-content">
-                                                 <div class="sp-title nowtime-header">
-                                                     <span>累计流量</span>
-                                                 </div>
-                                                 <div class="time">
-                                                     {{sumflow}}m³
-                                                 </div>
-                                             </div>
+                                            <div class="speed-content">
+                                                <div class="sp-title ">
+                                                    <span>当前流量</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{nowflow}}m³/h
+                                                </div>
+                                            </div>
+                                        </el-col>
+                                        
+                                    </el-row>
+                                </div> 
+                                <div class="speed-flow">
+                                    <el-row>
+                                        <el-col :span="12">
+                                            <div class="speed-content">
+                                                <div class="sp-title nowtime-header">
+                                                    <span>累计流量</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{sumflow}}m³
+                                                </div>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div class="speed-content">
+                                                <div class="sp-title nowtime-header">
+                                                    <span>当前风速</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{windSpeed}}m/s
+                                                </div>
+                                            </div>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                                <div class="speed-flow">
+                                    <el-row>
+                                        <el-col :span="12">
+                                            <div class="speed-content">
+                                                <div class="sp-title nowtime-header">
+                                                    <span>当前温度</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{nowtemperature}}℃
+                                                </div>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div class="speed-content">
+                                                <div class="sp-title nowtime-header">
+                                                    <span>当前湿度</span>
+                                                </div>
+                                                <div class="time">
+                                                    {{humidity}}%rh
+                                                </div>
+                                            </div>
                                         </el-col>
                                     </el-row>
                                 </div>
@@ -335,7 +386,10 @@ export default class OperatingArea extends Vue {
     @Provide() sumarea:number = 0;
     @Provide() mileage:number = 0;//喷洒里程
     @Provide() haveFlow:any=[];//有流量的节点
-
+    nowpressure:any =0;//当前压力
+    windSpeed:any = 0;//风速
+    humidity:any = 0;//湿度
+    nowtemperature:any = 0;//温度
      // 前端分页显示数据
     @Provide() totalPage:number= 1; // 统共页数，默认为1
     @Provide() currentPage:number= 1     //前页数 ，默认为1
@@ -493,6 +547,11 @@ export default class OperatingArea extends Vue {
             console.log("用时（秒）" + (t2 - t1) / 1000);
             if (cc.data.id == 0) {
                 let values = cc.data.data.data.values;
+                if(values.length == 0){
+                    this.$notify.warning("该任务没有飞行记录！");
+                    this.loading = !this.loading;
+                    return;
+                }
                 this.taskData = values;
                 let opt:any = {interval: this.interval,dynamicLine: true,
                                 polylinestyle: {color:this.noFlowColor, weight: 4, opacity: 0.9},Datas: [],
@@ -551,8 +610,16 @@ export default class OperatingArea extends Vue {
         this.percent = (index+this.dragPoints)/this.taskData.length *100;
         if(data){
             this.nowtime = data.speedtime;
-            this.nowspeed = data.speed; 
-            this.nowflow = data.flow;
+            this.nowspeed = (data.speed).toFixed(3);
+            if(data.windspeed)
+                this.windSpeed = data.windspeed;//风速
+            if(data.humidity)
+                this.humidity = data.humidity;//湿度
+            if(data.nowpressure)
+                this.nowpressure = (data.nowpressure).toFixed(1);
+            if(data.nowtemperature)
+                this.nowtemperature = (data.temperature).toFixed(1);
+            this.nowflow = ( data.flow).toFixed(2);;
             this.nowheight = data.height;
             this.sumtime = this.sumtime + 1;
             let flow = data.flow

@@ -198,7 +198,7 @@ export default class AccountingElement extends Vue {
             for(var i=0;i<data.length;i++){ 
                 let d1 = data[i].data;
                 let pid = d1.id;
-                if(d1.parent_id == null){
+                if(d1.parent_id == null || d1.parent_id == ''){
                     d1.children=[];
                     this.traverseList(pid, data, d1);
                     tData.push(d1);

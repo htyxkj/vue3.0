@@ -128,6 +128,8 @@ export default class ProfitLossFunction extends Vue {
             }
             this.tableData = tdata
             this.tableLoading = false;
+        }else{
+            this.tableLoading = false;
         }
     }
     getUpLevel(resData:any,i:any,level:any){

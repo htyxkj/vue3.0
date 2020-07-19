@@ -127,6 +127,10 @@ export default class BipMenuBtnDlg extends Vue {
         this.env = env;
         this.Title = btn.name;
         if(btn.dlgType == 'A'){ // 执行SQL
+            if((this.env.dsm.ccells.attr&0x40)>0 && this.env.dsm.currRecordArr.length ==0){
+                this.$notify.warning("请勾选数据行！")
+                return;
+            }
             this.sqlCont = [];
             this.sqlStyle = []; 
             let cont = btn.dlgCont.split(";")[0];
