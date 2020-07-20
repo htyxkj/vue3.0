@@ -116,12 +116,13 @@ export default class BipPopView extends Vue{
                 let cont = crd.data[gfld]
                 if(cont&&cont.length>0){
                     this.qe.groupV = cont 
-                        this.searchInsAidDatas()
+                    this.searchInsAidDatas()
                 }
             }
         }else{
-            if(this.datas.length==0)
+            if(this.datas.length==0){
                 this.searchInsAidDatas()
+            }
         }
         if(this.value){
             let cc = this.value.split(";")

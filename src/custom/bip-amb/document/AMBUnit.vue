@@ -86,7 +86,6 @@ let tools = BIPUtil.ServApi;
 export default class AMBUnit extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     tableHeight:any = 500//高度
-    expandedLevel:number = 100;//默认展开级别
     keyID:string = "id";//当前节点key字段   
     amb_purposes_id:any = null;//核算目的  
     title:any = "";//右侧标题
