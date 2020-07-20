@@ -29,7 +29,7 @@
                 <span style="margin-left: 10px">{{ scope.row[item.id]}}</span>
             </template>
             </el-table-column>
-        </el-table>
+        </el-table>  
 
         <div class="block">
             <el-pagination
@@ -83,7 +83,7 @@ export default class BipPopView extends Vue{
     @Provide() idKey:string = "usrcode"; // 标识列表数据中每一行的唯一键的名称(需要按自己的数据改一下)
 
     mounted(){
-        if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels){
+        if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels&&this.bipInsAid.cells.cels.length>0){
             let _indexs:number[] = this.bipInsAid.showColsIndex;
             this.showCols = [];
             for(var i=0;i<_indexs.length;i++){

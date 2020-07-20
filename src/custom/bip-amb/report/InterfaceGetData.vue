@@ -158,6 +158,7 @@ export default class InterfaceGetData extends Vue {
         this.cell = await this.getCell(this.cellID);
         this.logCell = await this.getCell(this.logCellId);
         this.logDelCell = await this.getCell(this.logDelCellId);
+        this.tableHeight =  this.height - 90
         this.initData();
     } 
     //查询接口信息
@@ -259,7 +260,7 @@ export default class InterfaceGetData extends Vue {
     }
     @Watch("height")
     heightChange() {
-        this.tableHeight =  this.height -60
+        this.tableHeight =  this.height - 90
     }
 }
 </script>

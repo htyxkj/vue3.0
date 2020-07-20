@@ -1,6 +1,6 @@
 {
-    "dbid": "01",
-    "ApiUrl": "http://211.144.37.205:80/air-super",
+    "dbid": "M1",
+    "ApiUrl": "http://www.juminfuwu.cn:88/bip-amb/",
     "MQTT_SERVICE": "ws://115.28.191.203:85/ws",
     "MQTT_USERNAME": "bipmq",
     "MQTT_PASSWORD": "bipmq",

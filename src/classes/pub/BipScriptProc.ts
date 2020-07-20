@@ -181,12 +181,7 @@ export default class BipScriptProc {
         return fps[1];
       }
       if("sql" === scf){
-        let res:any = BIPUtil.ServApi.execClientGsSQL(this.cells.obj_id,this.data,cell.id)
-        if(res.data.id == 0){
-          return res.data.data.data
-        }else{
-          return "";
-        }
+        fps.push(cell.id);
       }
     }
     x0 = scf.lastIndexOf(".");
@@ -239,33 +234,39 @@ export default class BipScriptProc {
     return baseTool.dateSub(fps);
   }
 
-  f_sql(fps: any) {
-    let cc = fps.length;
-    let sql = "",
-      vid = "",
-      sf = "";
-    if (cc == 1) {
-      sql = fps[0];
-      vid = "";
-      sf = "queryOne";
-    } else {
-      vid = fps[0];
-      sql = fps[1];
-      let c0 = vid.charAt(0);
-      //;--R=行,C=列,其它字符=单个。
-      sf = c0 === "R" ? "queryRow" : c0 === "C" ? "queryCol" : "queryOne";
-      vid = vid.length < 2 ? "" : vid.substr(1);
+  async f_sql(fps: any) {
+    let res:any = await BIPUtil.ServApi.execClientGsSQL(this.cells.obj_id,this.data,fps[fps.length-1])
+    if(res.data.id == 0){
+      return res.data.data.data
+    }else{
+      return "";
     }
-    if (sql.length < 15 && sql.indexOf(" ") < 0) {
-      // 长文本中获取sql
-      return null;
-    }
+    // let cc = fps.length;
+    // let sql = "",
+    //   vid = "",
+    //   sf = "";
+    // if (cc == 1) {
+    //   sql = fps[0];
+    //   vid = "";
+    //   sf = "queryOne";
+    // } else {
+    //   vid = fps[0];
+    //   sql = fps[1];
+    //   let c0 = vid.charAt(0);
+    //   //;--R=行,C=列,其它字符=单个。
+    //   sf = c0 === "R" ? "queryRow" : c0 === "C" ? "queryCol" : "queryOne";
+    //   vid = vid.length < 2 ? "" : vid.substr(1);
+    // }
+    // if (sql.length < 15 && sql.indexOf(" ") < 0) {
+    //   // 长文本中获取sql
+    //   return null;
+    // }
 
-    // sql = baseTool.formatVarMacro(sql,this.cells,this.data);
-    if (sql !== null) {
-      return [sql, sf];
-    }
-    return null;
+    // // sql = baseTool.formatVarMacro(sql,this.cells,this.data);
+    // if (sql !== null) {
+    //   return [sql, sf];
+    // }
+    // return null;
   }
 
   doCallBackFn(fn: Function, args: any) {
