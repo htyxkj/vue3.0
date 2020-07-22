@@ -30,7 +30,7 @@
                 <el-container>
                     <el-header class="myheader">
                         <el-button type="primary" @click="createModalA" icon="el-icon-document-add" size="small">新建</el-button>
-                        <el-button @click="delModalA" icon="el-icon-delete"  size="small">删除</el-button>
+                        <el-button @click="delModalA" icon="el-icon-delete"  size="small" :disabled="removeData.length==0">删除</el-button>
                     </el-header>
                     <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
                         <vxe-table resizable size="mini" ref="BusinessModelTable" auto-resize :loading="tableLoading" show-overflow
@@ -331,6 +331,7 @@ export default class BusinessModel extends Vue {
         if(res.data.id ==0){
             let d1 = res.data.data.data.data[0]
             if(d1){
+                this.modelA2Cell.clear();
                 this.modelA2Cell.createRecord();
                 this.modelA2Cell.currRecord.data = d1.data;
                 this.showModelADlg = true;

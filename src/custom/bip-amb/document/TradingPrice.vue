@@ -47,11 +47,14 @@
                     </el-button>
                 </div> 
             </el-header>
-            <el-main style="padding:0px">
-                <vxe-table border resizable :data="tableData" size="mini" :style="'height:'+tableHeight+'px'">
+            <!-- <el-main style="padding:0px">
+                <vxe-table border  :data="tableData" size="mini" :style="'height:'+tableHeight+'px'"> -->
+            <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
+                <vxe-table resizable size="mini" ref="TradingPriceTable" auto-resize show-overflow border="inner" 
+                    stripe highlight-hover-row :height="tableHeight-85" :data="tableData">
                     <vxe-table-column type="expand" width="60">
-                        <template v-slot="{ row, }">
-                            <vxe-table border resizable size="mini" :data="row.lines" style="padding:0px" align="life">
+                        <template v-slot:content="{ row }">
+                            <vxe-table auto-resize show-overflow border="inner" stripe highlight-hover-row  resizable size="mini" :data="row.lines" style="padding:0px" align="life">
                                 <vxe-table-column type="seq" width="60"></vxe-table-column>
                                 <vxe-table-column field="fm_date" width="100" title="开始日期"></vxe-table-column>
                                 <vxe-table-column field="to_date" width="100" title="结束日期"></vxe-table-column>
@@ -65,31 +68,15 @@
                             </vxe-table>
                         </template>
                     </vxe-table-column> 
-                    <vxe-table-column width="120" header-align="center" align="left" title="价表" show-header-overflow >
-                        <template v-slot="{row}"> 
-                            {{row.category_name}}
-                        </template>
-                    </vxe-table-column>  
+                    <vxe-table-column width="120" field="category_name" header-align="center" align="left" title="价表" show-header-overflow ></vxe-table-column>  
                     <vxe-table-column width="500" header-align="center" align="left" title="物料" show-header-overflow >
                         <template v-slot="{row}">
                             {{row.item_name}}( {{row.item_code}})
                         </template>
                     </vxe-table-column> 
-                    <vxe-table-column width="160" field="fm_group_id" align="left" title="来源巴">
-                        <template v-slot="{row}"> 
-                            {{row.fm_group_name}}
-                        </template>
-                    </vxe-table-column>
-                    <vxe-table-column  width="160" field="to_group_id" align="left" title="目标巴">
-                        <template v-slot="{row}"> 
-                            {{row.to_group_name}}
-                        </template>
-                    </vxe-table-column>
-                    <vxe-table-column  width="60" field="cost_price" align="left" title="最新价">
-                        <template v-slot="{row}">
-                            {{row.cost_price}}
-                        </template>
-                    </vxe-table-column>
+                    <vxe-table-column width="160" field="fm_group_name" align="left" title="来源巴"></vxe-table-column>
+                    <vxe-table-column  width="160" field="to_group_name" align="left" title="目标巴"></vxe-table-column>
+                    <vxe-table-column  width="60" field="cost_price" align="left" title="最新价"></vxe-table-column>
                     <vxe-table-column align="right">
                         <template v-slot="{ row }" >
                             <el-button type="text" @click="debugPrice(row)">调价</el-button>
@@ -251,7 +238,7 @@ export default class TradingPrice extends Vue {
     showFilter:boolean = false;
 
     async created() {
-        this.tableHeight =  this.height -200
+        this.tableHeight =  this.height -110
         this.priceCCell = await this.getCell(this.priceCCellID); 
         this.dataPricesCell = await this.getCell(this.dataPricesCellID); 
         this.dataPDelCell = await this.getCell(this.dataPDelCellID); 
@@ -530,9 +517,9 @@ export default class TradingPrice extends Vue {
         this.dataPDelTJCell.clear();
         this.dataPDelTJCell.createRecord();
         if(this.showFilter){
-            this.tableHeight =  this.height -250
+            this.tableHeight =  this.height -160
         }else{
-            this.tableHeight =  this.height -200
+            this.tableHeight =  this.height -110
         }
     }
 
@@ -611,7 +598,7 @@ export default class TradingPrice extends Vue {
     }
     @Watch("height")
     heightChange() {
-        this.tableHeight =  this.height -200
+        this.tableHeight =  this.height -110
     }
     @Watch("priceglVal")
     priceglValChange() {
