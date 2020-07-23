@@ -76,7 +76,7 @@
                     </vxe-table-column> 
                     <vxe-table-column width="160" field="fm_group_name" align="left" title="来源巴"></vxe-table-column>
                     <vxe-table-column  width="160" field="to_group_name" align="left" title="目标巴"></vxe-table-column>
-                    <vxe-table-column  width="60" field="cost_price" align="left" title="最新价"></vxe-table-column>
+                    <vxe-table-column  width="90" field="cost_price" align="left" title="最新价"></vxe-table-column>
                     <vxe-table-column align="right">
                         <template v-slot="{ row }" >
                             <el-button type="text" @click="debugPrice(row)">调价</el-button>
@@ -462,6 +462,11 @@ export default class TradingPrice extends Vue {
         this.dataPricesCell.currRecord.data.item_id = row.item_id;
         this.dataPricesCell.currRecord.data.category_id = row.category_id;
         this.dataPricesCell.currRecord.data.bizkey = row.bizkey;
+        this.dataPricesCell.currRecord.data.cost_price = row.cost_price;
+        if(row.fm_date)
+            this.dataPricesCell.currRecord.data.fm_date = row.fm_date;
+        if(row.to_date)
+            this.dataPricesCell.currRecord.data.to_date = row.to_date;
         this.showDataPriceDlg = true;
     }
     //根据BizKey 删除

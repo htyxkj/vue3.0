@@ -143,6 +143,12 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/GPSRepair.vue')
       },
       {
+        //阿米巴 数据建模
+        path: '/DataModeling',
+        name: 'DataModeling',
+        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/DataModeling.vue')
+      },
+      {
         //阿米巴 职能式损益表
         path: '/ProfitLossFunction',
         name: 'ProfitLossFunction',

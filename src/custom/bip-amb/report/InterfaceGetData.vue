@@ -17,7 +17,7 @@
         <el-container>
             <el-row style="width:100%">
                 <vxe-table style="width:100%" :height="tableHeight" resizable :data="tableData" size="mini" stripe border highlight-hover-row highlight-current-row
-                    @checkbox-all="selectChangeEvent" @checkbox-change="selectChangeEvent">
+                    @checkbox-all="selectChangeEvent" @checkbox-change="selectChangeEvent" :loading="tableLoading" ref="intergetdataTable">
                     <vxe-table-column type="checkbox" width="60"></vxe-table-column>
                     <vxe-table-column title="接口类型" width="200" header-align="center" align="start" show-header-overflow show-overflow>
                         <template v-slot="{ row }">
@@ -51,7 +51,15 @@
                     <vxe-table-column title="状态" width="100" header-align="center" align="center" show-header-overflow show-overflow>
                         <template v-slot="{ row }">
                             <div>
-                                {{ row.data.status_id == 'succeed' ?'执行成功':"执行失败"}}
+                                <template v-if="row.data.status_id == 'succeed'">
+                                    执行成功
+                                </template>
+                                <template v-else-if="row.data.status_id == 'failed'">
+                                    执行失败
+                                </template>
+                                <template v-else>
+                                    正在运行
+                                </template>
                                 <br/>
                                 <hr/>
                                 <a class="log" @click="getLog(row.data)">日志</a>
@@ -153,6 +161,7 @@ export default class InterfaceGetData extends Vue {
     logDelCell:CDataSet = new CDataSet("");
     logDelCellId:any = "100104WEBDEL";
 
+    tableLoading:boolean = false;
     async created() {
         this.date = moment(new Date()).format("YYYY-MM-DD");
         this.cell = await this.getCell(this.cellID);
@@ -163,6 +172,7 @@ export default class InterfaceGetData extends Vue {
     } 
     //查询接口信息
     async initData(){
+        this.tableLoading = true;
         let qe:QueryEntity = new QueryEntity(this.cellID,this.cellID);
         qe.page = this.tablePage;
         let res = await this.cell.queryData(qe);
@@ -171,6 +181,8 @@ export default class InterfaceGetData extends Vue {
             this.tablePage = data.page
             this.tableData = data.data
         }
+        this.selData=[];
+        this.tableLoading = false;
     }
     //进行取数
     async getAPIData(){
@@ -191,7 +203,6 @@ export default class InterfaceGetData extends Vue {
         let ClientID = "";
         if(this.user){
             ClientID = this.user.deptInfo.cmcCode
-
             let prarm = {
                 "date":this.date,//时间
                 "ids":ids, //接口ID
@@ -199,8 +210,12 @@ export default class InterfaceGetData extends Vue {
                 "userId":this.user.userCode,
             }
             let v = JSON.stringify(prarm);
+            this.$message.success("程序执行中！")
             let res = await tools.getDlgRunClass(v,b);
         }
+        setTimeout(()=>{
+            this.initData();
+        },200); 
     }
     //分页信息变化
     PageChange({ currentPage, pageSize }:any) {

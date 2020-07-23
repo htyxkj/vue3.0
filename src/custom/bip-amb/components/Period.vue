@@ -33,6 +33,7 @@ import { Component, Vue, Provide, Prop,Watch } from "vue-property-decorator";
 import QueryEntity from "@/classes/search/QueryEntity";
 import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
+import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
 @Component({
     components: {
@@ -40,7 +41,8 @@ let tools = BIPUtil.ServApi;
 })
 //核算目的
 export default class Period extends Vue {
-    @Prop() calendar_id?:string;//核算id 
+    @Prop() calendar_id?:string;//日历id 
+    @Prop() type?:string ;//日历id 
     showPeriod:boolean = false;//是否显示期间弹框
     page:any={pageSize:10,currPage:1,total:0} 
     tableData:any = [];
@@ -100,14 +102,28 @@ export default class Period extends Vue {
         this.initData()
     } 
     @Watch("calendar_id")
-    async purposesChange(){//核算目的发生变化
+    async purposesChange(){//日历编码发生变化
         let data = null;
         if(this.calendar_id){
-            await this.initData();
-            let row = this.tableData[0];
-            if(row){
-                this.selectName = row.name;
-                this.selectID = row.id;
+            let prarm = {
+                "calendar_id":this.calendar_id,//日历编码 
+            }
+            let btn1 = new BipMenuBtn("DLG"," 追加期间")
+            btn1.setDlgSname(name);
+            btn1.setDlgType("D")
+            btn1.setDlgCont("amb.serv.util.report.CalendarMAXMIN*202;0;0");//交易价表
+            let b = JSON.stringify(btn1)
+            let v = JSON.stringify(prarm);
+            let res = await tools.getDlgRunClass(v,b);
+            if(res.data.id ==0){
+                let data  = res.data.data;
+                if(this.type && this.type=='min'){
+                    this.selectName = data.minName;
+                    this.selectID = data.minID;
+                }else{
+                    this.selectName = data.maxName;
+                    this.selectID = data.maxID;
+                }
                 this.$emit("dataChange",this.selectID);
             }
         }

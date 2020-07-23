@@ -156,6 +156,7 @@ export default class BusinessModel extends Vue {
         this.modelACell = await this.getCell(this.modelACellID);//经营模型 子表
         this.modelA2Cell = await this.getCell(this.modelA2CellID);//经营模型 子表
         this.modelTJCell.createRecord();
+        this.initModelData();
     }
     mounted() { 
     } 
@@ -179,17 +180,20 @@ export default class BusinessModel extends Vue {
         if(res.data.id ==0){
             if(!this.isUpModel){
                 this.modelCell.currRecord.data.id = res.data.data.id
-                this.treeData.push(this.modelCell.currRecord.data);
+                // this.treeData.push(this.modelCell.currRecord.data);
             }
             this.$notify.success(res.data.message)
-            this.showModelDlg = false;
             this.treSelData = this.modelCell.currRecord.data
-            this.treeData.forEach((item:any,index:any) => {
-                if(item.id == this.treSelData.id){
-                    this.treeData[index] = this.treSelData;
+            this.showModelDlg = false;
+            for(var i=0;i<this.treeData.length;i++){
+                let item = this.treeData[i];
+                if( this.treSelData.id.localeCompare(item.id) ){
+                    this.treeData.splice(i,0,this.treSelData);
+                    this.setCurrentKey();
+                    this.ininModalAData();
+                    break;
                 }
-            });
-            this.treeData.push();
+            }
         }else{
             this.$notify.error(res.data.message)
         }
@@ -249,7 +253,7 @@ export default class BusinessModel extends Vue {
         this.treeData =[];
         let qe:QueryEntity = new QueryEntity(this.modelCellID,this.modelCellID);
         qe.page.pageSize = 9999;
-        this.modelTJCell.currRecord.data.purpose_id  = this.amb_purposes_id
+        // this.modelTJCell.currRecord.data.purpose_id  = this.amb_purposes_id
         qe.cont = JSON.stringify(this.modelTJCell.currRecord.data)
         let res = await this.modelCell.queryData(qe);
         if(res.data.id ==0){
@@ -379,7 +383,7 @@ export default class BusinessModel extends Vue {
     accChange(value:any){
         this.modelCell.clear();
         this.amb_purposes_id = value.id;
-        this.initModelData();
+        this.ininModalAData();
     }
     //获取对象
     async getCell(cellid: string) {

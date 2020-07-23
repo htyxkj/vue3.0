@@ -39,12 +39,12 @@
                         </template>
                     </vxe-table-column>
                     <vxe-table-column v-for="(itemP,index) in period" :key="index" :title="itemP.name">
-                        <vxe-table-column title="发生额">
+                        <vxe-table-column title="发生额" min-width="80">
                             <template v-slot="{row}"> 
                                 {{ (parseFloat(row[itemP.key+'month_money'])/showType).toFixed(2) }}
                             </template>
                         </vxe-table-column>
-                        <vxe-table-column title="结构比例">
+                        <vxe-table-column title="结构比例"  min-width="100">
                             <template v-slot="{row}"> 
                                 {{ row[itemP.key+'month_rate'] }}
                             </template>
@@ -201,7 +201,7 @@ export default class ProfitLossFunction extends Vue {
     
     //导出excel
     exportDataEvent () {
-        let refT:any = this.$refs["FIncomeTable"]
+        let refT:any = this.$refs["ProfitLossTrendTable"]
         if(refT){
             refT.exportData({ type: 'csv' })
         }

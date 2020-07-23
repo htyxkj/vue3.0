@@ -457,6 +457,7 @@ export default class BaseApplet extends Vue{
      * 点击按钮执行后端程序后刷新当前单据
      */
     async refreshCurrent(){
+        console.log("按钮执行后刷新页面");
         let pkindex = this.dsm.ccells.pkindex
         let cont:any ={};
         if(pkindex){

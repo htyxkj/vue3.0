@@ -2,8 +2,8 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change"></Period>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change"></Period>
+            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
+            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData">      
                     <i class="el-icon-refresh-right"></i>
@@ -142,6 +142,7 @@ export default class ProfitLossFunction extends Vue {
     
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
+        console.log(value)
         this.calendar_id = value.calendar_id
         this.amb_purposes_id = value.id;
         this.initData();

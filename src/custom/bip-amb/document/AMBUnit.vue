@@ -16,7 +16,7 @@
             </div> 
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
-            <el-aside width="400px">
+            <el-aside width="400px" class="tree">
                  <el-tree ref="ambUnitTree" :style="'height:'+(tableHeight-50)+'px'" empty-text="没有阿米巴单元" size="mini" :node-key="keyID"  
                     :data="treeData" @node-click="handleNodeClick"  :expand-on-click-node="false" :highlight-current="true" 
                     default-expand-all check-strictly  >
