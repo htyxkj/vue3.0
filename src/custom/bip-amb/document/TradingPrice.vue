@@ -1,6 +1,6 @@
 <template> 
     <el-container v-loading="loading">
-        <el-header style="height:45px;padding:0px 10px">
+        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
             
             <div class="topdiv2"><!-- 刷新 -->

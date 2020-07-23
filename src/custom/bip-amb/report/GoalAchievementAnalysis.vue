@@ -1,6 +1,6 @@
 <template> 
     <el-container>
-        <el-header style="height:45px;padding:0px 10px">
+        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change"></Period>
             <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change"></Period> -->
@@ -32,24 +32,12 @@
                 <vxe-table resizable size="mini" ref="FIncomeTable" auto-resize  show-overflow
                     border="inner" stripe highlight-hover-row :height="tableHeight"
                     :data="tableData">
-                    <vxe-table-column field="basicelements" title="基准要素项" width="150">
-                        
-                    </vxe-table-column>
-                    <vxe-table-column field="targettype" title="目标类型" width="150">
-
-                    </vxe-table-column>
-                    <vxe-table-column field="act_target" title="基准要素实际值" width="150">
-                       
-                     </vxe-table-column>
-                     <vxe-table-column field="target" title="目标值" width="150">
-                       
-                     </vxe-table-column>
-                    <vxe-table-column field="act_com" title="实际完成" width="150">
-                        
-                    </vxe-table-column>
-                    <vxe-table-column field="com_rate" title="差异" width="150">
-
-                    </vxe-table-column>
+                    <vxe-table-column field="basicelements" title="基准要素项" width="150"></vxe-table-column>
+                    <vxe-table-column field="targettype" title="目标类型" width="150"></vxe-table-column>
+                    <vxe-table-column field="act_target" title="基准要素实际值" width="150"></vxe-table-column>
+                    <vxe-table-column field="target" title="目标值" width="150"></vxe-table-column>
+                    <vxe-table-column field="act_com" title="实际完成" width="150"></vxe-table-column>
+                    <vxe-table-column field="com_rate" title="差异" width="150"></vxe-table-column>
                 </vxe-table>
             </el-main>
         </el-container>

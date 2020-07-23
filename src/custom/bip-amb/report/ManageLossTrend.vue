@@ -1,6 +1,6 @@
 <template> 
     <el-container>
-        <el-header style="height:45px;padding:0px 10px">
+        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>

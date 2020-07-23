@@ -1,6 +1,6 @@
 <template> 
     <el-container>
-        <el-header style="height:45px;padding:0px 10px">
+        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
             <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
             <div class="topdiv1"><!-- 显示类别 -->

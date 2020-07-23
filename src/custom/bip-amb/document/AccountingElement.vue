@@ -1,6 +1,6 @@
 <template> 
     <el-container>
-        <el-header style="height:45px;padding:0px 10px">
+        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
             <!-- <div class="topdiv2">
                 <el-button style="border:0px">      
@@ -189,6 +189,7 @@ export default class AccountingElement extends Vue {
         this.elementTJCell.currRecord.data.purpose_id = this.amb_purposes_id;
         let qe:QueryEntity = new QueryEntity(this.elementCellID,this.elementCellID);
         qe.page.pageSize = 9999;
+        qe.type =1;
         qe.cont = JSON.stringify(this.elementTJCell.currRecord.data)
         let res = await this.elementCell.queryData(qe);
         let treeData = [];
