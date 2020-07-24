@@ -97,7 +97,7 @@ export default class ProfitLossFunction extends Vue {
         {id:100000000,label:"按亿元显示"}
     ];
     async created() {
-        this.fm_date = moment(new Date()).format("YYYY-MM-DD")
+        this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.tableHeight =  this.height - 60
     }
     mounted() { 

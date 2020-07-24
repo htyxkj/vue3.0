@@ -10,7 +10,7 @@
             </div>
 
             <div class="topdiv2"><!-- 导出 -->
-                <el-button type="text">查看未定价信息</el-button>
+                <el-button type="text" @click="getUnpriced">查看未定价信息</el-button>
             </div>
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData">      
@@ -45,6 +45,7 @@
                 :total="tablePage.total" @page-change="tablePageChange"
                 :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']">
             </vxe-pager>
+            <!-- 日志 -->
             <el-drawer :visible.sync="logDrawer" size="45%" direction="rtl">
                 <div slot="title">
                     <el-button @click="getLog(null)">      
@@ -76,6 +77,23 @@
                     :total="logTablePage.total" :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']" @page-change="logPageChange">
                 </vxe-pager>
             </el-drawer>
+            <el-drawer :visible.sync="unpricedDrawer" size="45%" direction="rtl">
+                <div slot="title">
+                    <el-button @click="getUnpriced()">      
+                        <i class="el-icon-refresh-right" ></i>
+                        <span>刷新</span>
+                    </el-button>
+                    <el-input style="width: 230px;padding-left:9px" v-model="item_code_name" placeholder="按物料编码或者名称搜索"></el-input>
+                </div>
+                <vxe-table style="width:100%" :height="tableHeight" resizable :data="unpricedTableData" size="mini" stripe border highlight-hover-row highlight-current-row>
+                    <vxe-table-column title="料号"  field="item_code" width="170" header-align="center" align="start" show-header-overflow show-overflow></vxe-table-column> 
+                    <vxe-table-column title="物料" field="item_name"  min-width="300" header-align="center" align="start" show-header-overflow show-overflow></vxe-table-column>   
+                    <vxe-table-column title="时间" field="date"  min-width="300" header-align="center" align="start" show-header-overflow show-overflow></vxe-table-column>   
+                </vxe-table> 
+                <vxe-pager border size="mini" :current-page="unpricedTablePage.currPage" :page-size="unpricedTablePage.pageSize"
+                    :total="unpricedTablePage.total" :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']" @page-change="unpricedPageChange">
+                </vxe-pager>
+            </el-drawer>
         </el-main>
     </el-container>
 </template>
@@ -85,6 +103,7 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import Accounting from "../components/Accounting.vue"//核算目的
 import Period from "../components/Period.vue"//阿米期间
 import QueryEntity from "@/classes/search/QueryEntity";
+import QueryCont from '@/classes/search/QueryCont';
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from '@/classes/pub/CDataSet';
 import { BIPUtil } from "@/utils/Request";
@@ -139,6 +158,14 @@ export default class DataModeling  extends Vue {
     logDelCell:CDataSet = new CDataSet("");
     logDelCellId:any = "100104WEBDEL";
 
+    unpricedDrawer:boolean = false;
+    unpricedTablePage:any ={//分页信息
+        total: 0,
+        currPage:1,
+        pageSize:20
+    };
+    unpricedTableData:any =[];
+    item_code_name:any = "";
     async created() {
         this.fm_date = moment(new Date()).format("YYYY-MM-DD")
         this.tableHeight =  this.height - 120
@@ -151,7 +178,7 @@ export default class DataModeling  extends Vue {
     }
     async initData(){
         this.dataTJCell.currRecord.data.purpose_id = this.amb_purposes_id
-        // this.dataTJCell.currRecord.data.period_id = this.period_id
+        this.dataTJCell.currRecord.data.period_id = this.period_id
         this.dataCell.cdata.data = [];
         this.selData = [];
         this.tableLoading = true;
@@ -224,6 +251,42 @@ export default class DataModeling  extends Vue {
         }
         this.initData();
     }
+    //查询未定价信息
+    async getUnpriced(){
+        this.unpricedTableData = [];
+        let allCont = [];
+        let oneCont = []; 
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page = this.unpricedTablePage;
+        let qCont = new QueryCont('purpose_id',this.amb_purposes_id,12);
+        qCont.setContrast(0);
+        qCont.setLink(1)
+        oneCont.push(qCont);
+        allCont.push(oneCont);
+        if(this.item_code_name && this.item_code_name.length>0){
+            let arr = [];
+            let qC = new QueryCont('item_code',this.item_code_name,12);
+            qC.setContrast(3);
+            arr.push(qC);
+            qC = new QueryCont('item_name',this.item_code_name,12);
+            qC.setContrast(3);
+            arr.push(qC);
+            allCont.push(arr);
+        }
+        qe.cont = "~" + JSON.stringify(allCont)
+        let cc = await tools.getBipInsAidInfo("UNPRICED", 210, qe);
+        if(cc.data.id ==0 ){
+            this.unpricedTableData = cc.data.data.data.values;
+            this.unpricedTablePage = cc.data.data.data.page
+        }
+        this.unpricedDrawer = true;
+    }
+    //分页数据发送变化
+    unpricedPageChange({ currentPage, pageSize }:any) {
+        this.unpricedTablePage.currPage = currentPage
+        this.unpricedTablePage.pageSize = pageSize
+        this.getUnpriced();
+    }
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
         this.amb_purposes_id = value.id;
@@ -253,6 +316,10 @@ export default class DataModeling  extends Vue {
         } else {
             return new CDataSet("");
         }
+    }
+    @Watch("item_code_name")
+    item_code_name_Change(){
+        this.getUnpriced();
     }
     @Watch("height")
     heightChange() {

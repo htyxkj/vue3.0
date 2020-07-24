@@ -13,6 +13,10 @@ export default class QueryCont{
         this.type = type;
     }
 
+    /**
+     * 对比操作  0：= ; 1：>=; 2:<=; 3:like; 4: <>  5;:in ;6:> ; 7: <
+     * @param value 
+     */
     public setContrast(value:number){
         this.contrast = value;
     }
