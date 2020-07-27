@@ -469,8 +469,22 @@ export default class TradingPrice extends Vue {
             this.dataPricesCell.currRecord.data.to_date = row.to_date;
         this.showDataPriceDlg = true;
     }
+
+    deletePriceByBizKey(row:any){
+        //删除
+        this.$confirm('确定删除该记录吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() => {
+            this.deletePriceByBizKeyDo(row);
+        }).catch(() => {
+            
+        });
+    }
+
     //根据BizKey 删除
-    async deletePriceByBizKey(row:any){ 
+    async deletePriceByBizKeyDo(row:any){ 
         this.dataPDelCell.clear();
         this.dataPDelCell.createRecord();
         this.dataPDelCell.currRecord.c_state = 4

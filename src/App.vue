@@ -203,6 +203,10 @@ export default class App extends Vue {
             this.isLoginPage = 1;
             return;
         }
+        if(this.$route.name == "portal"){
+            this.isLoginPage = 2;
+            return;
+        }
         if (to.name === "login") {
             this.setIsLogin(false);
             return;

@@ -3,8 +3,11 @@ import VXETable from "vxe-table";
 import 'vxe-table/lib/index.css'
 
 import VXETablePluginElement from 'vxe-table-plugin-element'
+import VXETablePluginExportXLSX from 'vxe-table-plugin-export-xlsx'
+
 Vue.use(VXETable);
 VXETable.use(VXETablePluginElement)
+VXETable.use(VXETablePluginExportXLSX)
 
 VXETable.interceptor.add('event.clear_actived', (params, event) => {
     // 比如点击了某日期组件的面板，此时被激活单元格不应该被自动关闭，通过返回 false 可以阻止默认的行为。

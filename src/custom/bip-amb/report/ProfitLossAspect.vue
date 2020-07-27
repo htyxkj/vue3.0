@@ -63,6 +63,7 @@ import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
 import XEUtils from 'xe-utils'
+import XLSX from "xlsx"
 import { values } from 'xe-utils/methods';
 import moment from 'moment'
 @Component({
@@ -120,9 +121,7 @@ export default class ProfitLossAspect  extends Vue {
             let res = await tools.getDlgRunClass(v,b);
             let tdata = [];
             if(res.data.id ==0){
-                console.log(res)
                 tdata = res.data.data.data
-
                 let element_ids:any=[];
                 let groups_ids:any = [];
                 let td:any = [];
@@ -190,22 +189,77 @@ export default class ProfitLossAspect  extends Vue {
         this.amb_group_ids = checkData.keys;
         this.initData();
     }
-    
     //导出excel
     exportDataEvent () {
-        let refT:any = this.$refs["ProfitLossAspectTable"]
-        if(refT){
-            refT.exportData({ type: 'csv' })
+        this.exportEvent()
+    }
+    exportEvent () {
+        let tb:any = this.$refs.ProfitLossAspectTable;
+        if(tb){
+            // 转换数据
+            let header = tb.$el.querySelector('.body--wrapper>.vxe-table--header')
+            let hesheet = XLSX.utils.table_to_sheet(header)
+            let headerbook:any = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(headerbook, hesheet)
+            let jsonArr = [];
+            for(var i=0;i<this.tableData.length;i++){
+                let json:any = {}
+                let cellID = 0;
+                let d1 = this.tableData[i];
+                let v = this.createCellPos(cellID);
+                cellID++;
+                json[v] = d1.element_name;
+                for(var j=0;j<this.groups.length;j++){
+                    let itemP = this.groups[j];
+                    v = this.createCellPos(cellID);
+                    cellID++;
+                    json[v] = d1[itemP.key+'month_money'];
+                    v = this.createCellPos(cellID);
+                    cellID++;
+                    json[v] = d1[itemP.key+'month_rate'];
+                }
+                jsonArr.push(json)
+            }
+            XLSX.utils.sheet_add_json(headerbook.Sheets.Sheet1, jsonArr , {skipHeader: true, origin: "A3"});
+            let wbout = XLSX.write(headerbook, { bookType: 'xlsx', bookSST: false, type: 'binary' })
+            let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
+            // 保存导出
+            this.exportFilesServ(blob, '损益横比')
         }
-        // // 转换数据
-        // let table = this.$refs.xGrid2.$el.querySelector('.body--wrapper>.vxe-table--body')
-        // let book = XLSX.utils.book_new()
-        // let sheet = XLSX.utils.table_to_sheet(table)
-        // XLSX.utils.book_append_sheet(book, sheet)
-        // let wbout = XLSX.write(book, { bookType: 'xlsx', bookSST: false, type: 'binary' })
-        // let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
-        // // 保存导出
-        // FileSaver.saveAs(blob, '数据导出.xlsx')
+    }
+    /**导出Excel */
+    exportFilesServ(content:any,title:string){
+        const blob = new Blob([content]);
+        const fileName = title+'.xlsx'
+        if ('download' in document.createElement('a')) { // 非IE下载
+        const elink = document.createElement('a')
+        elink.download = fileName
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href) // 释放URL 对象
+        document.body.removeChild(elink)
+        } else { // IE10+下载
+        navigator.msSaveBlob(blob, fileName)
+        }
+    }
+    toBuffer (wbout:any) {
+        let buf = new ArrayBuffer(wbout.length)
+        let view = new Uint8Array(buf)
+        for (let index = 0; index !== wbout.length; ++index) view[index] = wbout.charCodeAt(index) & 0xFF
+        return buf
+    }
+    createCellPos( n:any ){
+        var ordA = 'A'.charCodeAt(0);
+        var ordZ = 'Z'.charCodeAt(0);
+        var len = ordZ - ordA + 1;
+        var s = "";
+        while( n >= 0 ) {
+            s = String.fromCharCode(n % len + ordA) + s;
+            n = Math.floor(n / len) - 1;
+        }
+        return s;
     }
     @Watch("height")
     heightChange() {

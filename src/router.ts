@@ -18,6 +18,10 @@ export default new Router({
       meta: {
         keepAlive: true // 需要被缓存
       }
+    },{
+      path: '/portal',
+      name: 'portal',
+      component: () => import(/* webpackChunkName: "about" */ './views/login/Portal.vue'),//未登录状态门户页
     },
     {
       path: '/login',

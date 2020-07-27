@@ -164,18 +164,14 @@ export default class ProfitLossFunction extends Vue {
     exportDataEvent () {
         let refT:any = this.$refs["FIncomeTable"]
         if(refT){
-            refT.exportData({ type: 'csv' })
+            refT.exportData({
+                filename: '职能式损益表',
+                sheetName: 'Sheet1',
+                type: 'xlsx'
+             })
         }
-        // // 转换数据
-        // let table = this.$refs.xGrid2.$el.querySelector('.body--wrapper>.vxe-table--body')
-        // let book = XLSX.utils.book_new()
-        // let sheet = XLSX.utils.table_to_sheet(table)
-        // XLSX.utils.book_append_sheet(book, sheet)
-        // let wbout = XLSX.write(book, { bookType: 'xlsx', bookSST: false, type: 'binary' })
-        // let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
-        // // 保存导出
-        // FileSaver.saveAs(blob, '数据导出.xlsx')
     }
+    
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -60
