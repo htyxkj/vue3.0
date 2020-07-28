@@ -6,7 +6,7 @@
           <el-row>
             <el-col :span="20">
               <i class="iconfont icon-bip-menu"></i>
-              新闻中心
+              {{sname}}
             </el-col>
           </el-row>
         </div>
@@ -55,7 +55,7 @@
           <el-row>
             <el-col :span="20">
               <i class="iconfont icon-bip-menu"></i>
-              公告中心
+              {{sname}}
             </el-col>
           </el-row>
         </div>
@@ -106,6 +106,7 @@ export default class HomeNews extends Vue {
   @Prop() rech!: string;
   @Prop() type!: string; //新闻或公告
   @Getter("menulist", { namespace: "login" }) menusList!: Menu[];
+  @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
   @Provide() menuList: Array<any> = new Array<any>();
   @Provide() showMenuList: boolean = false;
   @Provide() selection: Array<any> = new Array<any>();
@@ -113,11 +114,15 @@ export default class HomeNews extends Vue {
   @Provide() ggList: Array<any> = new Array<any>();
   @Provide() showContentDialog: boolean = false;
   @Provide() content: string = "";
+  sname:any = "";
   mounted() {
-    console.log("news");
     this.init();
   }
   init() {
+    if(this.cont){
+      let cc = JSON.parse(this.cont);
+      this.sname = cc.sname
+    }
     let datastr = "";
     if (this.type == "news") {
       datastr = " slb = '1' ";
@@ -151,6 +156,13 @@ export default class HomeNews extends Vue {
   }
 
   showcontent(content: string) {
+    if(!this.isLogin){
+      this.$router.push({
+        path:'/login',
+        name:'login',
+      })
+      return;
+    }
     this.content = content;
     this.showContentDialog = true;
   }

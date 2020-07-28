@@ -2,7 +2,8 @@
   <div id="app" v-if="configT">
     <template v-if="!isLogin"> 
         <template v-if="isLoginPage == 0">
-            <login></login>
+            <!-- <login></login> -->
+            <portal></portal>
         </template>
         <template v-else>
             <router-view />
@@ -46,6 +47,7 @@
 <script lang="ts">
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import Login from "@/views/login/Login.vue";
+import Portal from "@/views/login/Portal.vue";
 import BipAside from "@/views/app/BipAside.vue";
 import LayOut from "@/views/app/LayOut.vue";
 import LayHeader from "@/views/app/LayHeader.vue";
@@ -66,6 +68,7 @@ import QueryEntity from './classes/search/QueryEntity';
 @Component({
   components: {
     Login,
+    Portal,
     BipAside,
     LayOut,
     LayHeader
@@ -107,6 +110,7 @@ export default class App extends Vue {
             BaseVariable.Project_Name = res.data.Project_Name;
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
+            BaseVariable.SHOWPORTAL = res.data.SHOWPORTAL;
             
         }).catch((err:any) => {
             console.log(err)
@@ -130,6 +134,7 @@ export default class App extends Vue {
             BaseVariable.Project_Name = res.data.Project_Name;
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
+            BaseVariable.SHOWPORTAL = res.data.SHOWPORTAL;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -181,7 +186,7 @@ export default class App extends Vue {
         if(this.user!=null)
             await BIPUtil.ServApi.loginOut(this.user);
         this.editableTabs2=[];
-        this.$router.push({ path: "/" });
+        this.$router.push({ path: "/portal" });
         this.setIsLogin(false);
         sessionStorage.clear(); 
     } 
@@ -198,16 +203,16 @@ export default class App extends Vue {
 
     @Watch("$route")
     routerChange(to: Route, from: Route) { 
-        this.isLoginPage = 0;
         if(this.$route.name == "registered"){
             this.isLoginPage = 1;
             return;
         }
         if(this.$route.name == "portal"){
-            this.isLoginPage = 2;
+            this.isLoginPage = 0;
             return;
         }
         if (to.name === "login") {
+            this.isLoginPage = 2;
             this.setIsLogin(false);
             return;
         }
@@ -281,6 +286,13 @@ export default class App extends Vue {
                     } else {
                         this.editableTabsValue2 = menu.menuId;
                     }
+                }
+            }else{
+                if(!this.isLogin){
+                    this.$router.push({
+                        path:'/portal',
+                        name:'portal',
+                    })
                 }
             }
         }

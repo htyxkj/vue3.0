@@ -115,12 +115,13 @@ export default class Home extends Vue {
       this.isDraggable = false;
       this.isResizable = false;
       let dataStr = "usrcode = '*' ";
-      if(this.user)
+      if(this.user){
         dataStr = " usrcode ='"+this.user.userCode+"'";
-      await this.selectCoList(dataStr);
-      if(this.layout.length ==0){
-        dataStr = "usrcode = '*' ";
         await this.selectCoList(dataStr);
+        if(this.layout.length ==0 && this.user.userCode != 'portal'){
+          dataStr = "usrcode = '*' ";
+          await this.selectCoList(dataStr);
+        }
       }
     }
     //组件移动时
@@ -321,7 +322,7 @@ export default class Home extends Vue {
             let usrcode = this.myDesktop.currRecord.data.usrcode
             this.myDesktop.currRecord.data = cc;   
             let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-            if(userAttr <=1){
+            if(userAttr <=1 && usrcode!='portal'){
                 this.myDesktop.currRecord.data.usrcode = "*"
             }else{
                 if(cc.usrcode == '*'){

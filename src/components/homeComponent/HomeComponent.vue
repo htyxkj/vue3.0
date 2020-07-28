@@ -10,10 +10,13 @@
             <home-calendar :cont ="cont" :rech="rech"></home-calendar>
         </template>
         <template v-else-if="type == 'news'">
-            <home-news :type="type"></home-news>
+            <home-news :type="type" :cont ="cont"></home-news>
         </template>
         <template v-else-if="type == 'bulletin'">
-            <home-news :type="type"></home-news>
+            <home-news :type="type" :cont ="cont"></home-news>
+        </template>
+        <template v-else-if="type == 'Carousel'">
+            <home-carousel :cont ="cont" :rech="rech"></home-carousel>
         </template>
     </el-row>
 </template>
@@ -23,8 +26,9 @@ import HomeReport from './HomeReport.vue';
 import HomeMenu from './HomeMenu.vue';
 import HomeCalendar from './HomeCalendar.vue';
 import HomeNews from './HomeNews.vue';
+import HomeCarousel from './HomeCarousel.vue';
 @Component({
-    components:{HomeReport,HomeMenu,HomeCalendar,HomeNews}
+    components:{HomeReport,HomeMenu,HomeCalendar,HomeNews,HomeCarousel}
 })
 export default class HomeComponent extends Vue { 
     @Prop() type!:string;

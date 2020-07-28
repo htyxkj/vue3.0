@@ -6,7 +6,7 @@
           <el-row>
             <el-col :span="20">
                 <i class="iconfont icon-bip-menu"></i>
-                快捷菜单
+                {{sname}}
             </el-col>
             <el-col :span="4" class="main-title-icon">
                 <i class="el-icon-edit pointer" @click="showMenuList = true"></i>  
@@ -66,12 +66,14 @@ import {BaseVariable} from "@/utils/BaseICL"
 export default class HomeMenu extends Vue {
    @Prop() cont!:string;
     @Prop() rech!:string;
+    @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Provide() menuList:Array<any> = new Array<any>();
     @Provide() showMenuList:boolean = false;
     @Provide() selection:Array<any> = new Array<any>();
     @Provide() optionalMenu:Array<any> = new Array<any>();
     @Provide() uri:string = '';
+    sname:any = "快捷菜单";
     created(){
         this.uri = BaseVariable.BaseUri+'/'
     }
@@ -83,6 +85,7 @@ export default class HomeMenu extends Vue {
         this.menuList = [];
         if(this.cont){
             let cc = JSON.parse(this.cont);
+            this.sname = cc.sname
             let menu:any = cc.menuid.split(";");
             for(var i=0;i<this.menusList.length;i++){
                 menu.forEach( (item:any) => {
@@ -122,7 +125,13 @@ export default class HomeMenu extends Vue {
      * 菜单点击
      */
     menuClick(menuid:string,command:string){
-        console.log("asdf")
+        if(!this.isLogin){
+            this.$router.push({
+                path:'/login',
+                name:'login',
+            })
+            return;
+        }
         let menu = baseTool.findMenu(menuid);
         if(menu ==  null){
             this.$notify.error("没有菜单"+menuid+"操作权限！");

@@ -27,7 +27,7 @@ export namespace BIPUtil {
         return this.getFromRegistered(param);
     }
     /**
-     * @description 登录方法 根据秘钥登录
+     * @description 登录方法 根据账户登录
      * @param secret 秘钥
      */
     loginWithOutPwd(userCode:string){

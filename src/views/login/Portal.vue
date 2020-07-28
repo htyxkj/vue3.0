@@ -1,5 +1,9 @@
 <template>
   <div class="bip-main-container">
+    <div class="top">
+      <el-button type="text" class="btn" @click="gaotoPage('login')">登陆</el-button>
+      <el-button type="text" class="btn" @click="gaotoPage('registered')">注册</el-button>
+    </div>
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
       <grid-layout class="hoem_component" :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
         :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[5, 5]" :use-css-transforms="true" >
@@ -7,52 +11,12 @@
           <grid-item v-for="item in layout" :key="item.i" :x="item.x"
             :y="item.y" :w="item.w" :h="item.h" :i="item.i"
             :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" 
-            :isDraggable="isDraggable" :isResizable="isResizable"
-            @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
-            style="margin:5px;"
-            >
+            :isDraggable="isDraggable" :isResizable="isResizable"  @resized="resizedEvent">
             <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech" @menuChange="menuChange" :sid="item.sid"></home-component>
           </grid-item>
         </template>
       </grid-layout>
-    </el-scrollbar>
-    <el-dialog title="组件选择"  class="bipinsaid" :visible.sync="showCoList" width="40%"  :append-to-body="true" >
-      <el-transfer :titles="['可选组件', '已选组件']" v-model="selection" :props="{key: 'sid',label: 'sname'}" 
-      :data="CoList" filterable style="margin: 20px 0px 5px 26px;"></el-transfer>
-      <hr/>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showCoList = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="selectionSelectOK" size="small">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <div class="wrap">
-        <div class="inner">
-          <div @click="getCoList">
-            <el-tooltip class="item" effect="dark" content="组件选择" placement="top-start">
-              <i class="iconfont icon-bip-zujian"/>
-            </el-tooltip>
-          </div>
-          <div @click="isDraggable =true,isResizable=true">
-            <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
-              <i class="iconfont icon-bip-bianji"/>
-            </el-tooltip>
-          </div>
-          <div @click="saveCoList">
-            <el-tooltip class="item" effect="dark" content="保存" placement="top-start">
-              <i class="iconfont icon-bip-baocun1"/>
-            </el-tooltip>
-          </div>
-          <div @click="reduction">
-            <el-tooltip class="item" effect="dark" content="还原" placement="top-start">              
-              <i class="iconfont icon-bip-fanhui"/>
-            </el-tooltip>
-          </div>
-        </div>
-        <div class="home">
-          <div @click="imgMenuClikc"><i class="iconfont icon-bip-caidan"/></div>
-        </div>
-    </div>     
+    </el-scrollbar>  
   </div>
 </template>
 
@@ -71,8 +35,7 @@ import QueryCont from '@/classes/search/QueryCont';
 Vue.use(VueGridLayout)
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
-
-
+import { BaseVariable } from "@/utils/BaseICL";
 import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
@@ -80,12 +43,15 @@ let tools = BIPUtil.ServApi
   components: {
     GridLayout,
     GridItem,
-    homeComponent,
+    homeComponent
   }
 })
 export default class Portal extends Vue { 
     @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @Getter('user', { namespace: 'login' }) user?: User;
+    @Mutation("snkey", { namespace: 'login' }) setSnkey: any;
+    @Mutation("user", { namespace: 'login' }) setUserInfo: any;
+    @Mutation("menulist", { namespace: 'login' }) setMenusInfo: any;
     @Provide() layout:Array<any> = [];
     @Provide() delLayout:Array<any> = [];
     @Provide() curBox:any;
@@ -103,35 +69,29 @@ export default class Portal extends Vue {
     @Provide() menuIsShow:boolean=false //右下角菜单是否显示
     @Provide() height:number=400;
     @Provide() cc:Array<any> = new Array<any>();
-    mounted() {
-      this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
+    async mounted() {
+      console.log("portal")
+      if(!BaseVariable.SHOWPORTAL){
+        this.$router.push({
+          path:'/login',
+          name:'login',
+        })
+        return;
+      }      
       this.initHeight();
-    }
-    async created(){
+      this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
       this.isDraggable = false;
       this.isResizable = false;
-      let dataStr = "usrcode = '*' ";
-      if(this.user)
-        dataStr = " usrcode ='"+this.user.userCode+"'";
-      await this.selectCoList(dataStr);
-      if(this.layout.length ==0){
-        dataStr = "usrcode = '*' ";
-        await this.selectCoList(dataStr);
+      await this.initPortal();
+    }
+    async created(){
+      if(!BaseVariable.SHOWPORTAL){
+        this.$router.push({
+          path:'/login',
+          name:'login',
+        })
+        return;
       }
-    }
-    //组件移动时
-    moveEvent(i:any, newX:any, newY:any,e:any){
-        //console.log(e)
-        // console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
-    }
-    //组件大小改变时
-    resizeEvent(i:any, newH:any, newW:any){
-        // console.log("RESIZE i=" + i + ", H=" + newH + ", W=" + newW);
-    }
-    //组件移动结束时
-    movedEvent(i:any, newX:any, newY:any,e:any){
-        //console.log(e)
-        //console.log("MOVED i=" + i + ", X=" + newX + ", Y=" + newY);
     }
     //组件大小改变结束时
     resizedEvent(i:any, newH:any, newW:any, newHPx:any, newWPx:any){
@@ -289,58 +249,6 @@ export default class Portal extends Vue {
       });
     }
     /**
-     * 保存我的桌面
-     */
-    async saveCoList(){
-        let state =0;
-        for(var i=0;i<this.delLayout.length;i++){
-            this.myDesktop.currRecord.data = this.delLayout[i];
-            this.myDesktop.currRecord.c_state=4
-            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-            if(this.myDesktop.currRecord.data.usrcode != "*" || userAttr<=1){
-                let res = await this.myDesktop.saveData()
-                if(res.data.id == 0 ){
-                    state++;
-                }
-            }
-        }
-        this.delLayout = [];
-        for(var i =0;i<this.layout.length;i++){
-            let cc = this.layout[i]; 
-            cc.x = this.layout[i].x
-            cc.y = this.layout[i].y
-            cc.w = this.layout[i].w
-            cc.h = this.layout[i].h
-            if(cc.state !=1)
-            cc.state =2;
-            this.myDesktop.currRecord = this.myDesktop.createOne();
-            let usrcode = this.myDesktop.currRecord.data.usrcode
-            this.myDesktop.currRecord.data = cc;   
-            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-            if(userAttr <=1){
-                this.myDesktop.currRecord.data.usrcode = "*"
-            }else{
-                if(cc.usrcode == '*'){
-                    cc.state = 1;
-                    this.myDesktop.currRecord.data.usrcode = usrcode;
-                }
-            }
-            this.myDesktop.currRecord.c_state=cc.state;
-            let res = await this.myDesktop.saveData()
-            if(res.data.id == 0 ){
-                state++;
-            }
-            cc.state =2;
-        }
-        this.isDraggable = false;
-        this.isResizable = false;
-        if(state == (this.layout.length+this.delLayout.length)){
-            this.$notify.success("保存成功！");
-        }else{
-            this.$notify.error("保存失败！")
-        }
-    }
-    /**
      * 查询我的桌面
      */
     async selectCoList(dataStr:string){
@@ -375,21 +283,49 @@ export default class Portal extends Vue {
         }
       }
     }
-    /**
-     * 还原桌面为管理员设置桌面
-     */
-    async reduction(){
-      for(var i=0;i<this.layout.length;i++){
-        this.myDesktop.currRecord.data = this.layout[i];
-        this.myDesktop.currRecord.c_state=4
-        if(this.myDesktop.currRecord.data.usrcode != "*"){
-          this.myDesktop.saveData()
-        }
-      }
-      this.layout=[];
-      let dataStr = "usrcode = '*' ";
-      await this.selectCoList(dataStr);
+    gaotoPage(url:any){
+      this.$router.push({
+        path:'/'+url,
+        name:url,
+      })
     }
+    async initPortal(){
+      const loading = this.$loading({
+        lock: true,
+        text: "加载中",
+        spinner: "el-icon-loading",
+        background: "background:'rgba(0, 0, 0, 0.7)'"
+      });
+      let res = await tools.loginWithOutPwd("portal");
+      let data = res.data;
+      if (data.id === 0) {
+        let userI = data.data.user;
+        let snkey = data.data.snkey;
+        userI.password = "";
+        this.setSnkey(snkey);
+        this.setUserInfo(userI);
+        let ms = data.data.menulist;
+        this.setMenusInfo(ms);
+        let dataStr = "usrcode = 'portal' ";
+        await this.selectCoList(dataStr);
+        loading.close();
+        if(this.layout.length ==0){//跳转至登陆页面
+          this.$router.push({
+            path:'/login',
+            name:'login',
+          })
+        }
+      }else{
+        loading.close();
+        if(this.layout.length ==0){//跳转至登陆页面
+          this.$router.push({
+            path:'/login',
+            name:'login',
+          })
+        }        
+      }
+    }
+
     async getCell(cellid:string){
       let res = await tools.getCCellsParams(cellid); 
       let rtn: any = res.data; 
@@ -402,70 +338,6 @@ export default class Portal extends Vue {
       }
     }
 
-    /** 右下角扇形菜单 */
-    imgMenuClikc(){
-      if (this.menuIsShow) {
-          // this.style.transform = 'rotate(0deg)'
-          this.showInners()
-      } else {
-          // this.style.transform = 'rotate(-720deg)'
-          this.showInners()
-      }
-      this.menuIsShow = !this.menuIsShow
-    }
-    showInners() {
-      let long = 100
-      let delay = 0.1
-      let deg = 90
-
-      let inners = document.querySelectorAll('.inner > div')
-      let _this = this;
-      inners.forEach((item:any, index) => {
-          if (this.menuIsShow) {
-              item.style.transition = `1s ${delay * (inners.length - index)}s`;
-              item.style.transform = 'rotate(0deg) scale(1)'
-              item.style.top = 0 + 'px'
-              item.style.left = 0 + 'px'
-          } else {
-              let itemTranslate = this.getTranslate(index)
-              let itemDelay = delay * (index + 1)
-              item.style.transition = `1s ${itemDelay}s`;
-              item.style.transform = `rotate(-360deg) scale(1)`
-              item.style.top = -itemTranslate.y + 'px'
-              item.style.left = -itemTranslate.x + 'px' 
-              item.addEventListener('click', function () {
-                  item.style.transition = `0.3s`
-                  item.style.transform = `rotate(-360deg) scale(1.8)`
-                  item.style.opacity = 0.1
-                  item.addEventListener('transitionend', _this.scaleFun)
-              })
-              item.addEventListener('mousemove', function () {
-                  item.style.transition = `0.2s`
-                  item.style.transform = `rotate(-360deg) scale(1)`
-                  item.style.opacity = 0.5
-                  item.addEventListener('transitionend', _this.scaleFun)
-              })
-          }
-      })
-    }
-    scaleFun(event:any) {
-      let item = event.target, tmpTransform
-      item.style.transform = `rotate(-360deg) scale(1)`
-      item.style.opacity = 1
-      item.removeEventListener('transitionend', this.scaleFun)
-    }
-    getTranslate(index:any) {
-      let long = 100
-      let deg = 90
-      let inners = document.querySelectorAll('.inner > div')
-      let x = 0, y = 0, itemDeg = 0
-      itemDeg = (deg / (inners.length - 1)) * index
-      // 角度转弧度 (deg * Math.PI) / 180
-      x = Math.round(long * Math.sin((itemDeg * Math.PI) / 180))
-      y = Math.round(long * Math.cos((itemDeg * Math.PI) / 180))
-      return {x, y}
-    }
-    /** 右下角扇形菜单 end */
     initHeight(){
       this.height = document.documentElement.clientHeight
       if(this.height>70){
@@ -488,19 +360,14 @@ export default class Portal extends Vue {
 <style lang="scss" scoped>
 .bip-main-container {
     position: fixed; 
-    height: calc(100% - 104px) !important;
-    width: calc(100% - 30px) !important;
+    height: 100% !important;
+    width: 100% !important;
     z-index: 1;
     overflow: hidden;
-    margin-right: 20px;
-    background-color: #f8f8f8;
     .el-scrollbar {
         height: 100%;
-        margin-bottom: 10px !important;
-        margin-right: 0px !important; 
         .el-scrollbar__wrap {
             overflow-x: hidden !important;
-            padding-right: 5px;
             height: 100%;
         }
         .scrollbar-wrapper{
@@ -508,9 +375,7 @@ export default class Portal extends Vue {
         }
     }
 
-}
-</style>
-<style lang="scss" scoped>
+} 
   .vue-grid-layout {
      position: relative;
      width:100%;
@@ -518,7 +383,6 @@ export default class Portal extends Vue {
   }
   .vue-grid-layout>div {
      position: absolute;
-    //  background: indianred;
   } 
   .wrap {
     position: fixed;
@@ -543,28 +407,19 @@ export default class Portal extends Vue {
     font-size: 30px;
     color:#20a2FF;
   }
-  .home {
+  .top{
     position: absolute;
-    top: 0;
-    left: 0;
-    transition: 2s;
-    border-radius: 50%;
+    z-index: 999999;
     width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background-color: #eaeaea52;
   }
-  .home > div {
-    width: 45px;
-    height: 45px;
-    background-color: white;
-    text-align: center;
-    line-height: 45px;
-    border-radius: inherit;
-    color: #20a2FF;
-  }
-  .home > div > i{
-    font-size: 30px;
-  }
-  .home > div:hover {
-    transform: scale(1.1);
+  .btn{
+    color: #ffffff !important;
+    float: right;
+    padding-right: 50px;
+    font-size: 17px;
   }
 </style>
 

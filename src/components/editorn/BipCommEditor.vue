@@ -270,6 +270,8 @@ export default class BipCommEditor extends Vue{
         let vv = this.aidInfo.get(str)
         if(!vv || (vv.values && vv.values.length==0)){
             vv  = window.sessionStorage.getItem(str)
+            if(vv)
+                vv = JSON.parse(vv)
             if(!vv || (vv.values && vv.values.length==0)){
                 let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                 await this.fetchInsAid(vars);
