@@ -503,10 +503,10 @@ export default class HomeCalendar extends Vue {
 .bip-home-container {
     background-color: #ffffff !important;
     position: fixed; 
-    height: calc(100% - 20px)  !important;
+    height: calc(100%)  !important;
     z-index: 1;
     overflow: hidden;  
-    // width: calc(100% - 3px) !important;
+    // width: calc(100%) !important;
     .el-scrollbar {
         height: 100%;
         margin-bottom: 10px !important;

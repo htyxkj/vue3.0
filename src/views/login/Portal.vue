@@ -1,5 +1,5 @@
 <template>
-  <div class="bip-main-container">
+  <div class="bip-main-container" v-show="showPortal">
     <div class="top">
       <el-button type="text" class="btn" @click="gaotoPage('login')">登陆</el-button>
       <el-button type="text" class="btn" @click="gaotoPage('registered')">注册</el-button>
@@ -69,8 +69,8 @@ export default class Portal extends Vue {
     @Provide() menuIsShow:boolean=false //右下角菜单是否显示
     @Provide() height:number=400;
     @Provide() cc:Array<any> = new Array<any>();
+    showPortal:boolean = false;
     async mounted() {
-      console.log("portal")
       if(!BaseVariable.SHOWPORTAL){
         this.$router.push({
           path:'/login',
@@ -314,6 +314,8 @@ export default class Portal extends Vue {
             path:'/login',
             name:'login',
           })
+        }else{
+          this.showPortal = true;
         }
       }else{
         loading.close();

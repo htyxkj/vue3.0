@@ -174,10 +174,10 @@ export default class HomeNews extends Vue {
   background-color: #ffffff;
   border-radius: 6px;
   position: fixed;
-  height: calc(100% - 20px)  !important;
+  height: calc(100%)  !important;
   z-index: 1;
   overflow: hidden;
-  width: calc(100% - 7px) !important;
+  width: calc(100%) !important;
   color: #868D94;
   box-shadow: 1px 2px 10px #dde2e4;
   .el-scrollbar {

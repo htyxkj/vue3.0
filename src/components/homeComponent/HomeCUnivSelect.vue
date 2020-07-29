@@ -479,10 +479,10 @@ export default class HomeCUnivSelect extends Vue {
 <style  lang="scss" scoped>
 .bip-home-container {
     position: fixed; 
-    height: calc(100% - 20px)  !important;
+    height: calc(100%)  !important;
     z-index: 1;
     overflow: hidden;  
-    width: calc(100% - 3px) !important;
+    width: calc(100%) !important;
     .el-scrollbar {
         height: 100%;
         margin-bottom: 0px !important;

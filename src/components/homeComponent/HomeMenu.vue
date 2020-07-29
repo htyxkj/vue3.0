@@ -9,7 +9,7 @@
                 {{sname}}
             </el-col>
             <el-col :span="4" class="main-title-icon">
-                <i class="el-icon-edit pointer" @click="showMenuList = true"></i>  
+                <i v-if="isLogin" class="el-icon-edit pointer" @click="addNewMenu"></i>  
             </el-col>
           </el-row>
         </div>
@@ -121,6 +121,16 @@ export default class HomeMenu extends Vue {
             this.optionalMenu.push(m);
         } 
     }
+    addNewMenu(){
+        if(!this.isLogin){
+            this.$router.push({
+                path:'/login',
+                name:'login',
+            })
+            return;
+        }
+        this.showMenuList = true
+    }
     /**
      * 菜单点击
      */
@@ -199,10 +209,10 @@ export default class HomeMenu extends Vue {
         background-color: #ffffff;
         border-radius: 6px;
         position: fixed;
-        height: calc(100% - 20px)  !important;
+        height: calc(100%)  !important;
         z-index: 1;
         overflow: hidden;
-        width: calc(100% - 7px) !important;
+        width: calc(100%) !important;
         color: #868D94;
         box-shadow: 1px 2px 10px #dde2e4;
         .el-scrollbar {

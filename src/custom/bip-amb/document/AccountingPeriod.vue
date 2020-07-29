@@ -220,7 +220,7 @@ export default class AccountingPeriod extends Vue {
             this.periodData.splice(index,1)
             this.$notify.success(res.data.message);
             index = index <= this.periodData.length-1?index:this.periodData.length-1
-            this.selPeriod = this.periodData[index]
+            this.selPeriod = this.periodData[index].data
             this.initChileData();
         }else{
             this.$notify.error(res.data.message)

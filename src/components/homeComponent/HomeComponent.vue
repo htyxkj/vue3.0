@@ -43,3 +43,8 @@ export default class HomeComponent extends Vue {
     }
 }
 </script>
+<style>
+.vue-grid-item>.vue-resizable-handle{
+    z-index: 9999;
+}   
+</style>
