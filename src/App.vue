@@ -5,9 +5,6 @@
             <!-- <login></login> -->
             <portal></portal>
         </template>
-        <template v-else-if="isLoginPage == 2">
-            <login></login>
-        </template>
         <template v-else>
             <router-view />
         </template>
