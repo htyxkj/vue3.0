@@ -19,7 +19,7 @@
           <el-col :span="12">
             <el-row type="flex" justify="start">
               <el-col :span="12">
-                <el-button @click="registered" type="text">注册</el-button>
+                <!-- <el-button @click="registered" type="text">注册</el-button> -->
               </el-col> 
             </el-row>
           </el-col>

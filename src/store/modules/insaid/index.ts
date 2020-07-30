@@ -59,6 +59,7 @@ const actions: ActionTree<BipInsState, RootState> = {
     fetchInsAid:({commit},val:any): AxiosPromise<BipInsState>  => {
         let id = val.id;
         let aid = val.aid;
+        let eq = val.eq;
         let k1 = aid
         let k = "";
         if(val.ak){
@@ -70,7 +71,7 @@ const actions: ActionTree<BipInsState, RootState> = {
             k1 = ICL.AID_KEY+k+aid;
         }
         commit('setKeyMap',k1);
-        return tools.getBipInsAidInfo(aid, id).then(res=>{
+        return tools.getBipInsAidInfo(aid, id,eq).then(res=>{
             if(res.data.id==0){
                 let vrr = res.data.data.data
                 commit('setAidInfo',{key:k1,value:vrr});

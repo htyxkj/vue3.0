@@ -312,7 +312,7 @@ import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import Accordion from '@/components/accordion/Accordion.vue'
 import { BipLayout } from "@/classes/ui/BipLayout";
-
+import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request"; 
 let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
@@ -448,8 +448,7 @@ export default class LayCelVexTable extends Vue {
                     bool = true;
                     oneSc = oneSc.split('=')[1];
                     let data = await this.initCL(oneSc);
-                    console.log(data)
-                    if(data){
+                    if(data && data.values.length >0){
                         let value = data.values;
                         let slink = data.slink;
                         slink = slink.substring(slink.indexOf("{")+1,slink.indexOf("}"))
@@ -476,6 +475,8 @@ export default class LayCelVexTable extends Vue {
                         if(this.cds.ds_par){
                             this.cds.ds_par.currRecord.c_state |= 2;
                         }
+                    }else{
+                        bool = false;
                     }
                 }
             }
@@ -756,20 +757,20 @@ export default class LayCelVexTable extends Vue {
         let str = name
         // let dlg = await pubMethod.getConstant(str);
         str = ICL.AID_KEYCL+str;
-        if(!this.aidValues.get(str)){
-            let vv  = window.sessionStorage.getItem(str)
-            if(!vv){
-                let vars = {id:300,aid:name}
-                await this.fetchInsAid(vars);
-                let vv  = window.sessionStorage.getItem(str)
-                if(vv){
-                    let vals = {key:str,value:JSON.parse(vv)}
-                    this.setAidValue(vals)
-                }
-            }else{
-                let vals = {key:str,value:JSON.parse(vv)}
-                this.setAidValue(vals)
-            } 
+        let eq = new QueryEntity('','');
+        if(this.cds.ds_par){
+            eq.pcell = this.cds.ds_par.ccells.obj_id;
+            eq.cont = this.cds.ds_par.currRecord.data;
+        }else{
+            eq.pcell = this.cds.ccells.obj_id;
+            eq.cont = this.cds.currRecord.data;
+        }
+        let vars = {id:300,aid:name,eq:eq}
+        await this.fetchInsAid(vars);
+        let vv  = window.sessionStorage.getItem(str)
+        if(vv){
+            let vals = {key:str,value:JSON.parse(vv)}
+            this.setAidValue(vals)
         }
         return this.aidValues.get(str);
     }

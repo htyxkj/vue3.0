@@ -240,3 +240,8 @@ export default new Router({
       
   ]
 })
+
+const originalPush:any = Router.prototype.push
+Router.prototype.push = function push(location:any) {
+  return originalPush.call(this, location).catch((err:any) => err)
+}

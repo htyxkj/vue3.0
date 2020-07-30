@@ -282,7 +282,6 @@ export default class CDataSet {
                             this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
                           }
                           vl = await this.scriptProc.execute(scstr, "", col);
-                          console.log(vl)
                           if(vl && (vl.isNaN || vl == 'NaN'))
                             vl = 0;
                         }
@@ -347,7 +346,6 @@ export default class CDataSet {
               this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
             }
             vl = await this.scriptProc.execute(scstr, "", col);
-            console.log(vl)
             if(vl && (vl.isNaN || vl == 'NaN'))
               vl = 0;
           }
@@ -375,7 +373,6 @@ export default class CDataSet {
             if (this.currRecord.data[scstr]) {
               scval = this.currRecord.data[scstr];
             }
-            console.log(this.currRecord.data[col.id]);
             let vl = col.initValue.replace("%", scval);
             this.currRecord.data[col.id] = vl;
           }
@@ -427,7 +424,6 @@ export default class CDataSet {
     // let deptInfo = user.deptInfo
     if(this.ccells==null)
         return new CRecord();
-    // console.log(this.ccells,'fdsfds')
     let xinc = this.ccells.autoInc;
     if (xinc > 0) xinc = xinc - 1;
     let cel = this.ccells.cels[xinc];

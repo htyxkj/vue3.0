@@ -156,9 +156,9 @@ export default class TrackShow extends Vue {
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
             this.trackType = this.taskTjCell.currRecord.data.type;//航迹类型
-            let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
-            let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
-            let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
+            let showarea = 1;//this.taskTjCell.currRecord.data.showarea;//显示作业区
+            let showhkarea = 1;//this.taskTjCell.currRecord.data.showhkarea;//显示识别区
+            let showroot = 1;//this.taskTjCell.currRecord.data.showhkarea;//显示航线
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             if(showarea == 1){
                 TMapUt.getOpera(oaid,this.tMap);//作业区

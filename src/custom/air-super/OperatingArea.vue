@@ -1110,7 +1110,7 @@ export default class OperatingArea extends Vue {
     xCheckAllChange(val:any){ 
         for(let key in this.operaXData){
             if(val){
-                if(!this.operaCData[key].mergeid){
+                if(!this.operaXData[key].mergeid){
                     if(this.jqSelList.indexOf(key) ==-1){
                         this.jqSelList.push(key);
                     }
@@ -1130,7 +1130,7 @@ export default class OperatingArea extends Vue {
     qCheckAllChange(val:any){
         for(let key in this.operaQData){
             if(val){
-                if(!this.operaCData[key].mergeid){
+                if(!this.operaQData[key].mergeid){
                     if(this.jqSelList.indexOf(key) ==-1){
                         this.jqSelList.push(key);
                     }
