@@ -53,21 +53,13 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { User } from "@/classes/User";
-import { Route, RawLocation } from "vue-router";
 import CDataSet from "@/classes/pub/CDataSet";
 import { Cells } from "@/classes/pub/coob/Cells";
-import VueGridLayout from "vue-grid-layout";
-Vue.use(VueGridLayout);
-var GridLayout = VueGridLayout.GridLayout;
-var GridItem = VueGridLayout.GridItem;
-
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 @Component({
   components: {
-    GridLayout,
-    GridItem
   }
 })
 export default class followTimesLine extends Vue {

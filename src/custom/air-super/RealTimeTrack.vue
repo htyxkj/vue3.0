@@ -276,14 +276,11 @@ import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
 import { GPSUtil } from "./class/GPSUtil";
 let Gps = GPSUtil.GPS;
-import echarts from 'echarts'; 
-import { tmpdir } from 'os';
 import moment from 'moment'
-import { Route, RawLocation } from "vue-router";
 import { GlobalVariable } from "@/utils/ICL";
 import { BaseVariable } from "@/utils/BaseICL";
 import qs from "qs";
-
+import { Route, RawLocation } from "vue-router";
 @Component({
     components: {
         tMap,

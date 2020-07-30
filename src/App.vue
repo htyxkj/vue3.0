@@ -54,17 +54,14 @@ import LayHeader from "@/views/app/LayHeader.vue";
 import { Route, RawLocation } from "vue-router";
 import { BipTag } from "./classes/BipTag";
 import { Menu } from "@/classes/Menu";
-import router from "@/router";
 import { User } from '@/classes/User';
 import { BaseVariable } from "@/utils/BaseICL";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
-import { AxiosPromise } from 'axios'
 const namespace: string = 'login'; 
 import { BIPUtil } from "@/utils/Request";
-import QueryEntity from './classes/search/QueryEntity';
 @Component({
   components: {
     Login,

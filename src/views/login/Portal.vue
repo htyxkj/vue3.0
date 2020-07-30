@@ -24,9 +24,7 @@
 import { Component, Vue, Provide ,Watch} from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { User } from '@/classes/User';
-import echarts from 'echarts'; 
 import { Menu } from "@/classes/Menu";
-import { Route, RawLocation } from 'vue-router';
 import CDataSet from "@/classes/pub/CDataSet"; 
 import { Cells } from "@/classes/pub/coob/Cells";
 import homeComponent from "@/components/homeComponent/HomeComponent.vue";

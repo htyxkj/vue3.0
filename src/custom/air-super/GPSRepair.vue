@@ -110,17 +110,14 @@ import {BipMenuBtn} from '@/classes/BipMenuBtn'
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import QueryEntity from "@/classes/search/QueryEntity";
-import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
-import { Route, RawLocation } from "vue-router";
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
-import echarts from 'echarts'; 
 import { GPSUtil } from "./class/GPSUtil";
 let Gps = GPSUtil.GPS;
 import moment from 'moment';

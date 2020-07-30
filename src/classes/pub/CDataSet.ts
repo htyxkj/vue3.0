@@ -233,13 +233,13 @@ export default class CDataSet {
     this.page.currPage = 1;
     this.page.index = this.index;
     this.page.total = this.page.total+1
+    this.checkGS();
     return this.currRecord;
   }
 
   createOne(): CRecord {
     let modal: CRecord = this.initModal(true);
     this.scriptProc.data = modal;
-    this.checkGS();
     return modal;
   }
 
@@ -323,60 +323,65 @@ export default class CDataSet {
     }
   }
 
-  checkAllGS() {
-    if(!this.currRecord)
-        return;
-      for(var i=0;i<this.ccells.cels.length;i++){
-        let col = this.ccells.cels[i];
-        let scstr = col.script;
-        if (scstr && scstr.indexOf("=:") === 0) {
-            scstr = scstr.replace("=:", "");
-            // 公式计算 
-            let vl;
-            //获取父级字段内容
-            if(col.pRefIds.length >0){
-              if(this.ds_par){
-                vl= this.ds_par.currRecord.data[col.pRefIds[0]]
-              }
-            } else{
-              if(this.scriptProc.data.id != this.currRecord.id){
-                this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
-              }
-              vl = this.scriptProc.execute(scstr, "", col);
-              if(vl && (vl.isNaN || vl == 'NaN'))
-                vl = 0;
+  async checkAllGS() {
+    if(!this.currRecord){
+      return
+    }
+    if (Object.keys(this.currRecord.data).length === 0) {
+      return;
+    }
+    for(var i=0;i<this.ccells.cels.length;i++){
+      let col = this.ccells.cels[i];
+      let scstr = col.script;
+      if (scstr && scstr.indexOf("=:") === 0) {
+          scstr = scstr.replace("=:", "");
+          // 公式计算 
+          let vl;
+          //获取父级字段内容
+          if(col.pRefIds.length >0){
+            if(this.ds_par){
+              vl= this.ds_par.currRecord.data[col.pRefIds[0]]
             }
-            if (vl instanceof Array) {
-            } else {
-                if (vl == "Invalid date") {
-                    let dd = DateUtils.DateTool.now();
-                    if (col.type == 91) {
-                        this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
-                        dd,
-                        GlobalVariable.DATE_FMT_YMD
-                        );
-                    } else {
-                        this.currRecord.data[col.id] = dd;
-                    }
-                } else {
-                    this.currRecord.data[col.id] = vl;
-                }
+          } else{
+            if(this.scriptProc.data.id != this.currRecord.id){
+              this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
             }
-        }
-        if (scstr) {
-          if (col.initValue && (col.attr & 0x80) > 0) {
-            if (col.initValue.indexOf("%") > 0) {
-              let scval = "%";
-              if (this.currRecord.data[scstr]) {
-                scval = this.currRecord.data[scstr];
+            vl = await this.scriptProc.execute(scstr, "", col);
+            console.log(vl)
+            if(vl && (vl.isNaN || vl == 'NaN'))
+              vl = 0;
+          }
+          if (vl instanceof Array) {
+          } else {
+              if (vl == "Invalid date") {
+                  let dd = DateUtils.DateTool.now();
+                  if (col.type == 91) {
+                      this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
+                      dd,
+                      GlobalVariable.DATE_FMT_YMD
+                      );
+                  } else {
+                      this.currRecord.data[col.id] = dd;
+                  }
+              } else {
+                  this.currRecord.data[col.id] = vl;
               }
-              console.log(this.currRecord.data[col.id]);
-              let vl = col.initValue.replace("%", scval);
-              this.currRecord.data[col.id] = vl;
+          }
+      }
+      if (scstr) {
+        if (col.initValue && (col.attr & 0x80) > 0) {
+          if (col.initValue.indexOf("%") > 0) {
+            let scval = "%";
+            if (this.currRecord.data[scstr]) {
+              scval = this.currRecord.data[scstr];
             }
+            console.log(this.currRecord.data[col.id]);
+            let vl = col.initValue.replace("%", scval);
+            this.currRecord.data[col.id] = vl;
           }
         }
-      };
+      }
+    };
   }
 
   checkGSByRefId(id:string){

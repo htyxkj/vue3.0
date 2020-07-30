@@ -34,19 +34,16 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { BIPUtil } from "@/utils/Request"; 
-import { Route, RawLocation } from "vue-router";
 import { URIParams } from "@/classes/URIParams"; 
 import { User } from '@/classes/User';
 import { Menu } from "@/classes/Menu";
 import { Cells } from "@/classes/pub/coob/Cells";
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
-
+import { Route, RawLocation } from "vue-router";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import QueryEntity from "@/classes/search/QueryEntity";
-import BaseApplet from '../applet/BaseApplet.vue'
-import CUnivSelect from '../report/CUnivSelect.vue' 
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 let tools = BIPUtil.ServApi 
 import { BIPUtils } from "@/utils/BaseUtil";

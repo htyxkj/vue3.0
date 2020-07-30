@@ -19,7 +19,6 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { User } from "@/classes/User";
-import { Route, RawLocation } from "vue-router";
 import { Cells } from "@/classes/pub/coob/Cells";
 import QueryEntity from "@/classes/search/QueryEntity";
 import QueryCont from "@/classes/search/QueryCont";
