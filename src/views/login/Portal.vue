@@ -82,15 +82,6 @@ export default class Portal extends Vue {
       this.isResizable = false;
       await this.initPortal();
     }
-    async created(){
-      if(!BaseVariable.SHOWPORTAL){
-        this.$router.push({
-          path:'/login',
-          name:'login',
-        })
-        return;
-      }
-    }
     //组件大小改变结束时
     resizedEvent(i:any, newH:any, newW:any, newHPx:any, newWPx:any){
       let dl = this.layout[i];

@@ -183,9 +183,9 @@ export default class App extends Vue {
         if(this.user!=null)
             await BIPUtil.ServApi.loginOut(this.user);
         this.editableTabs2=[];
-        this.$router.push({ path: "/portal" });
         this.setIsLogin(false);
         sessionStorage.clear(); 
+        this.isLoginPage = 0
     } 
     @Watch('isLogin')
     logined(){ 
