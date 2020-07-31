@@ -1,8 +1,8 @@
 <template>
   <div class="bip-main-container">
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
-      <grid-layout class="hoem_component" :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
-        :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[5, 5]" :use-css-transforms="true" >
+      <grid-layout class="hoem_component" :style="layoutStyle" :layout="layout" :auto-size="true" :col-num="24" :row-height="10" :max-rows="1000"
+        :is-draggable="true" :is-resizable="true" :vertical-compact="true" :margin="[5, 5]" :use-css-transforms="true"> 
         <template v-if="layout.length>0">
           <grid-item v-for="item in layout" :key="item.i" :x="item.x"
             :y="item.y" :w="item.w" :h="item.h" :i="item.i"
@@ -105,6 +105,7 @@ export default class Home extends Vue {
     @Provide() menuIsShow:boolean=false //右下角菜单是否显示
     @Provide() height:number=400;
     @Provide() cc:Array<any> = new Array<any>();
+    layoutStyle:any = "width:100%";
     mounted() {
       this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
       this.initHeight();
@@ -484,6 +485,15 @@ export default class Home extends Vue {
               }
               this.setBipHeight(this.height)
           })()
+      }
+    }
+    @Watch("$route")
+    changeRoute(){
+      if(this.$route && this.$route.name =="home"){
+        setTimeout(() => {
+          this.layoutStyle = "width:99%";  
+          this.layoutStyle = "width:100%";
+        }, 100);
       }
     }
 }

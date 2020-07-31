@@ -158,8 +158,8 @@ export default class HomeNews extends Vue {
   showcontent(content: string) {
     if(!this.isLogin){
       this.$router.push({
-        path:'/login',
-        name:'login',
+        path:'/wlogin',
+        name:'wlogin',
       })
       return;
     }

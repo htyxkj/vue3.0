@@ -208,7 +208,7 @@ export default class App extends Vue {
             this.isLoginPage = 0;
             return;
         }
-        if (to.name === "login") {
+        if (to.name === "wlogin") {
             this.isLoginPage = 2;
             this.setIsLogin(false);
             return;

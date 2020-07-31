@@ -124,8 +124,8 @@ export default class HomeMenu extends Vue {
     addNewMenu(){
         if(!this.isLogin){
             this.$router.push({
-                path:'/login',
-                name:'login',
+                path:'/wlogin',
+                name:'wlogin',
             })
             return;
         }
@@ -137,8 +137,8 @@ export default class HomeMenu extends Vue {
     menuClick(menuid:string,command:string){
         if(!this.isLogin){
             this.$router.push({
-                path:'/login',
-                name:'login',
+                path:'/wlogin',
+                name:'wlogin',
             })
             return;
         }

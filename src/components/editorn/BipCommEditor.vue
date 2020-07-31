@@ -8,7 +8,7 @@
                 <bip-flow-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-flow-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CUpDownEditor'">
-                <bip-up-down-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-up-down-editor>
+                <bip-up-down-editor :env="env" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-up-down-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CQueryEditor'">
                 <bip-query-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-query-editor>
@@ -85,6 +85,7 @@ import QueryEntity from '../../classes/search/QueryEntity';
     components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor,BipInputColorEditor,BipInputAutograph}
 })
 export default class BipCommEditor extends Vue{
+    @Prop() env!:CCliEnv
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
     @Prop() row!:number

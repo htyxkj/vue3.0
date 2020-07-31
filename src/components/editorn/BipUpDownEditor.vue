@@ -20,7 +20,7 @@
                 </el-input>
         </template>
         
-        <bip-file-info ref="file" :cds="cds" :cell="cell" :index="row" @select="selectOK"></bip-file-info>
+        <bip-file-info :env="env" ref="file" :cds="cds" :cell="cell" :index="row" @select="selectOK"></bip-file-info>
             
     </el-col>
 </template>
@@ -30,11 +30,13 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import BipFileInfo from './cutil/BipFileInfo.vue'
+import CCliEnv from '@/classes/cenv/CCliEnv'
 // import { BIPUtil } from '@/utils/Request';
 @Component({
     components:{BipFileInfo}
 })
 export default class BipUpDownEditor extends Vue{
+  @Prop() env!:CCliEnv    
   @Prop() cds!: CDataSet;
   @Prop() cell!: Cell;
   @Prop() row!:number

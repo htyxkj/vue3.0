@@ -1,7 +1,7 @@
 <template>
     <div v-if="laycell" class="bip-lay">
         <template v-if="laycell&&!laycell.btable">
-            <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
+            <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
         </template>
         <template v-else>
             <lay-cell-vex-table :laycell="laycell" :cds="cds" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :beBill="beBill" :pbuid="pbuid" :env="env" :config="config" @invokecmd="invokecmd"></lay-cell-vex-table>

@@ -53,8 +53,8 @@ export default class HomeCarousel extends Vue {
     menuClick(menuid:string){
         if(!this.isLogin){
             this.$router.push({
-                path:'/login',
-                name:'login',
+                path:'/wlogin',
+                name:'wlogin',
             })
             return;
         }

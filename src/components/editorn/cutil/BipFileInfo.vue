@@ -8,7 +8,7 @@
     :close-on-click-modal="false"
   >
     <el-tabs v-model="activeName">
-      <el-tab-pane label="文件上传" name="file-up">
+      <el-tab-pane v-if="showUpPage" label="文件上传" name="file-up">
         <el-upload
           class="upload-demo"
           ref="upload"
@@ -78,8 +78,10 @@ import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import { GlobalVariable } from '@/utils/ICL';
 import { t } from 'vxe-table';
+import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({})
 export default class BipFileInfo extends Vue {
+    @Prop() env!:CCliEnv    
     @Prop() cds!: CDataSet;
     @Prop() cell!: Cell;
     @Prop() index!: number;
@@ -90,9 +92,16 @@ export default class BipFileInfo extends Vue {
     @Provide() uri:string=GlobalVariable.API_UPD//附件操作接口
     @Provide() upLoadDid:string = ''
     @Provide() fj_root_index = -1
+    showUpPage:boolean = true;
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
+        if(this.env){
+            let pattr = this.env.uriParams.pattr;
+            if((pattr & 0x40 ) <= 0){//菜单参数中未勾选保存属性
+                this.showUpPage = false;
+            }
+        }
     }
     mounted() {
         if(this.cds&&this.cell){

@@ -255,7 +255,7 @@ export default class Registered extends Vue {
                     this.$notify.success('注册成功！用户名：' + this.ruleForm.usrcode+",密码是手机号后8位！");
                     loading.close();
                     setTimeout(() => {
-                        this.$router.push({ path: "/login", name: "login" });
+                        this.$router.push({ path: "/wlogin", name: "login" });
                     }, 2000);
                 }else{
                     this.$notify.success("注册失败！");

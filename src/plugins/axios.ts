@@ -38,7 +38,7 @@ _axios.interceptors.response.use(
     // Do something with response data
     if(res.data && res.data.id && res.data.id ==-2){
       router.replace({
-        path: '/login', 
+        path: '/wlogin', 
       }) 
     }else{
       return res;
