@@ -47,7 +47,7 @@
                                         </template>
                                     </vxe-table-column>  
                                 </template>
-                                <vxe-table-column title="操作">
+                                <vxe-table-column title="操作" width="90">
                                     <template v-slot="{ rowIndex }">
                                         <el-button @click="updateModelA(rowIndex)" type="text">编辑</el-button>
                                     </template>
@@ -231,22 +231,22 @@ export default class BusinessModel extends Vue {
         let res = await this.modelCell.saveData();
         if(res.data.id == 0){
             this.$notify.success(res.data.message)
+            this.modelCell.p_cell=this.modelCellID
+            this.treeData.forEach((item:any,index:any) => {
+                if(item.id == this.treSelData.id){
+                    this.treeData.splice(index,1)
+                    if(index<this.treeData.length-1){
+                        this.treSelData = this.treeData[index]
+                    }else{
+                        this.treSelData = this.treeData[this.treeData.length-1]
+                    }
+                    this.setCurrentKey();
+                }
+            });
+            this.ininModalAData();
         }else{
             this.$notify.error(res.data.message)
         }
-        this.modelCell.p_cell=this.modelCellID
-        this.treeData.forEach((item:any,index:any) => {
-            if(item.id == this.treSelData.id){
-                this.treeData.splice(index,1)
-                if(index<this.treeData.length-1){
-                    this.treSelData = this.treeData[index]
-                }else{
-                    this.treSelData = this.treeData[this.treeData.length-1]
-                }
-                this.setCurrentKey();
-            }
-        });
-        this.ininModalAData();
     }
     //查询模型数据
     async initModelData(){

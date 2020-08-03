@@ -33,6 +33,9 @@
                     :lazy="true"
                     :style="style"
                 >    
+                    <!-- <span slot="label">
+                        {{item.title}}
+                    </span> -->
                     <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
                     </lay-out>
                 </el-tab-pane>
@@ -232,7 +235,8 @@ export default class App extends Vue {
                 )[0];
                 // console.log(currTag)
                 if (!currTag) {
-                    let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
+                    let strName = menu.menuName;//.substring(0,6)
+                    let tag = new BipTag(menu.menuId, strName, to.fullPath, true, menu.menuName);
                     this.editableTabs2.push(tag);
                     this.editableTabsValue2 = menu.menuId;
                 } else {

@@ -429,7 +429,7 @@ export default class CDataSet {
     let cel = this.ccells.cels[xinc];
     let modal: CRecord = new CRecord();
     modal.c_state = billState.DICT;
-    if ((xinc >= 0 && modal.data[cel.id]) || isNew) {
+    if ((xinc >= 0 && cel) || isNew) {
       modal.c_state = modal.c_state | billState.INSERT;
     }
     modal = this.createDataModal(this.ccells, modal);

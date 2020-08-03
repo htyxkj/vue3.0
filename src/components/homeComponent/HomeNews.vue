@@ -73,13 +73,7 @@
         </el-scrollbar>
       </template>
     </div>
-    <el-dialog
-      title="内容"
-      class="bipinsaid"
-      :visible.sync="showContentDialog"
-      width="50%"
-      :append-to-body="true"
-    >
+    <el-dialog title="内容" class="bipinsaid":visible.sync="showContentDialog" width="50%" :append-to-body="true">
       <p style="min-height:500px" v-html="content">{{content}}</p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showContentDialog = false">取 消</el-button>
@@ -163,7 +157,10 @@ export default class HomeNews extends Vue {
       })
       return;
     }
-    this.content = content;
+    let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'')
+    snkey = encodeURIComponent(snkey);
+    let cc = 'snkey='+snkey;
+    this.content = content.replace(new RegExp('snkey={BIPSNKEY}','gm'),cc)
     this.showContentDialog = true;
   }
 }

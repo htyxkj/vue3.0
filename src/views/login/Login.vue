@@ -44,7 +44,6 @@
         </el-row>
       </div>
       <div class="login-footer">
-        <!-- <address>&copy;2019：北京一风立创科技有限公司 版权所有</address> -->
         <address>&copy;{{COPYRIGHT}}</address>
       </div>
     </div>
