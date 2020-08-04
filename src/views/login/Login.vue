@@ -1,10 +1,7 @@
 <template>
   <div class="login-img">
        <div class="login-card">
-      <!-- <div class="login-title">欢迎登陆飞防管控平台</div> -->
       <div class="login-title">欢迎登陆{{loginTitle}}</div>
-      <!-- <div class="login-title">BIP-电子通行平台</div> -->
-      <!-- <div class="login-title">欢迎登陆人力资源管理系统</div> -->
       <div class="login-cont" @keyup.enter="login">
 
         <el-form @submit.native.prevent label-position="left" label-width="55px" >
@@ -19,7 +16,7 @@
           <el-col :span="12">
             <el-row type="flex" justify="start">
               <el-col :span="12">
-                <!-- <el-button @click="registered" type="text">注册</el-button> -->
+                <el-button @click="registered" type="text">注册</el-button>
               </el-col> 
             </el-row>
           </el-col>
@@ -72,12 +69,11 @@ export default class Login extends Vue {
   @Provide() loginTitle = "";
   @Provide() COPYRIGHT ="";
   mounted() {
-    if (!this.user) {
+    if(!this.user){
       this.user = new User("", "", "");
+    }else{
+      this.user.userCode="";
     }
-    // this.user.userCode = "";
-    // this.user.password = "";
-    let ii: string[] = ["1", "2"];
     this.getlocalStorage()
     this.loginTitle = BaseVariable.Project_Name;
     this.COPYRIGHT = BaseVariable.COPYRIGHT;
@@ -102,36 +98,31 @@ export default class Login extends Vue {
     BIPUtil.ServApi.login(this.user)
       .then((res: any) => {
         let data = res.data;
-        console.log(data);
+        let _u = Object.assign({},this.user);
         if (data.id === 0) {
-
           let userI = data.data.user;
           let snkey = data.data.snkey;
           userI.password = "";
-
           let ms = data.data.menulist;
           this.setIsLogin(true);
           this.setSnkey(snkey);
           this.setUserInfo(userI);
           this.setMenusInfo(ms);
-
           this.$router.push({ path: "/", name: "home" });
-        //   this.$notify.success({message:"登录成功",offset:100});
           this.$notify.success({
             title:"",
             type: 'success',
             message: '登录成功',
             offset: 40
-        })
+          })
           // 判断记住账户是否为true,是将新账户存储至localStroge，否则清除localStroge中的账户
           if(this.checked){
-            if(this.user){
-               this.setlocalStorage(this.user.userCode);
+            if(_u){
+              this.setlocalStorage(_u.userCode);
             }       
           }else {
-              this.clear()
-          } 
-          
+            this.clear()
+          }
         } else {
           this.$notify.error(data.message);
         }

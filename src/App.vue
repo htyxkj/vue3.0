@@ -92,6 +92,7 @@ export default class App extends Vue {
     @Getter('user', { namespace: 'login' }) user?: User;
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
+    @Mutation("user", { namespace:'login' }) setUserInfo: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
     async created(){

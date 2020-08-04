@@ -36,6 +36,7 @@
                 </template>
                 <template>
                     <bip-menu-btn-dlg ref="bip_dlg" @selData="Recheck" @Recheck="Recheck"></bip-menu-btn-dlg>
+                    <im-ex-file :canImport="false" :cell="dsm.ccells" ref="imExFile" @exFile="getExcel"></im-ex-file>
                 </template>
             </el-scrollbar>
         </div>
@@ -47,6 +48,7 @@ import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
 import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
 import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
+import ImExFile from '@/components/file/ImExFile.vue';
 
 import { URIParams } from "@/classes/URIParams";
 import { BIPUtil } from "@/utils/Request";
@@ -75,7 +77,7 @@ import { Menu } from '../../../classes/Menu';
 // import BipLayConf from '../../../classes/ui/BipLayConf';
 // import { truncate } from 'fs';
 @Component({
-    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg}
+    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg,ImExFile}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
@@ -260,8 +262,10 @@ export default class CUnivSelect extends Vue {
                 }, 100);
             }
         }else if(cmd === 'DOWNLOADFILE'){
-            this.fullscreenLoading=true;
-            this.getExcel();
+            // this.fullscreenLoading=true;
+            // this.getExcel();
+            let file:any = this.$refs.imExFile
+            file.open()
         }else if(cmd === 'ROWCOLUMN'){
             if(this.uriParams){
                 this.$bus.$emit('ReportTableShape',[this.uriParams.pbuid,this.mbs])
@@ -295,6 +299,9 @@ export default class CUnivSelect extends Vue {
     }
     /**导出Excel */
     async getExcel(){
+        let file:any = this.$refs.imExFile
+        file.close()
+        this.fullscreenLoading=true;
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         if(this.biType == "SEL")

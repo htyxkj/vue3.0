@@ -425,10 +425,19 @@ export default class CDataSet {
     if(this.ccells==null)
         return new CRecord();
     let xinc = this.ccells.autoInc;
-    if (xinc > 0) xinc = xinc - 1;
-    let cel = this.ccells.cels[xinc];
+
     let modal: CRecord = new CRecord();
     modal.c_state = billState.DICT;
+    let cel = null;
+    let cx = xinc & 0xFF;
+
+    if (cx > 0){
+      let cel = this.ccells.cels[cx];
+    }
+    cx = (xinc >>> 8) & 0xFF;
+    if (cx > 0){
+
+    }
     if ((xinc >= 0 && cel) || isNew) {
       modal.c_state = modal.c_state | billState.INSERT;
     }

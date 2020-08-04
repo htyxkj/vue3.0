@@ -490,10 +490,10 @@ export default class Home extends Vue {
     @Watch("$route")
     changeRoute(){
       if(this.$route && this.$route.name =="home"){
+        this.layoutStyle = "width:90%";  
         setTimeout(() => {
-          this.layoutStyle = "width:99%";  
           this.layoutStyle = "width:100%";
-        }, 100);
+        }, 300);
       }
     }
 }

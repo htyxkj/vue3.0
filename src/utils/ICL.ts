@@ -26,6 +26,7 @@ export const GlobalVariable = Object.assign({},{
     APIID_DLGCLASSRUN : "dlgclassrun" ,
     APIID_TIME:"systime",
     APIID_EXPDATA:"expdata",
+    APIID_IMPORTEXPDATA:"importexpdata",
     APIID_TA_MSG:"taskmsg",
     APIID_CLIENTGSSQL : "clientGSSql",
 

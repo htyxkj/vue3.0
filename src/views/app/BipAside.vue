@@ -4,8 +4,6 @@
         <el-row>
             <el-col :span="24" class="menu-title" >
                 <div>{{loginTitle}}</div>
-                <!-- <div> BIP-电子通行平台</div>  -->
-                <!-- <div>人力资源管理系统</div> -->
             </el-col>
         </el-row>
         <el-row>

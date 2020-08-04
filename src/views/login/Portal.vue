@@ -1,7 +1,7 @@
 <template>
-  <div class="bip-main-container" v-show="showPortal">
+  <div class="bip-main-container" v-if="showPortal">
     <div class="top">
-      <el-button type="text" class="btn" @click="gaotoPage('login')">登陆</el-button>
+      <el-button type="text" class="btn" @click="gaotoPage('wlogin')">登陆</el-button>
       <el-button type="text" class="btn" @click="gaotoPage('registered')">注册</el-button>
     </div>
     <el-scrollbar wrap-class="scrollbar-wrapper"> 
@@ -11,8 +11,8 @@
           <grid-item v-for="item in layout" :key="item.i" :x="item.x"
             :y="item.y" :w="item.w" :h="item.h" :i="item.i"
             :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" 
-            :isDraggable="isDraggable" :isResizable="isResizable"  @resized="resizedEvent">
-            <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech" @menuChange="menuChange" :sid="item.sid"></home-component>
+            :isDraggable="isDraggable" :isResizable="isResizable" >
+            <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech" :sid="item.sid"></home-component>
           </grid-item>
         </template>
       </grid-layout>
@@ -81,15 +81,7 @@ export default class Portal extends Vue {
       this.isDraggable = false;
       this.isResizable = false;
       await this.initPortal();
-    }
-    //组件大小改变结束时
-    resizedEvent(i:any, newH:any, newW:any, newHPx:any, newWPx:any){
-      let dl = this.layout[i];
-      if(dl.comtype =='Report'){//报表组件
-        this.$bus.$emit('componentsizechange','')
-      }
-        // console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW + ", H(px)=" + newHPx + ", W(px)=" + newWPx);
-    }
+    } 
     /**
      * 获取全部组件
      */
@@ -138,104 +130,6 @@ export default class Portal extends Vue {
           this.mapList[dd.sid] = dd;
         }
       }  
-    }
-    /**
-     *设置选中桌面
-     *  */ 
-    selectionSelectOK(){
-      let newLayout:Array<any> = [];
-      for(var i =0;i<this.selection.length;i++){
-        let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:"",usrcode:""}
-        let dd = this.selection[i];
-        let cc = this.mapList[dd];
-        if(this.layout.length==0){ 
-          layout.x=0;
-          layout.y=0,
-          layout.w=cc.minw,
-          layout.h=cc.minh,
-          layout.minw = cc.minw;
-          layout.minh = cc.minh;
-          layout.maxw = cc.maxw;
-          layout.maxh = cc.maxh;
-          layout.sid = cc.sid;
-          layout.rech = cc.rech;
-          cc.cont = JSON.parse(cc.cont)
-          cc.cont.sname = cc.sname;
-          layout.cont = JSON.stringify(cc.cont);
-          layout.comtype = cc.comtype; 
-          let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-          if(userAttr <=1){
-            layout.usrcode = "*"
-          }else{
-            if(this.user)
-              layout.usrcode = this.user.userCode 
-          }
-          newLayout.push(layout);
-          continue;
-        }
-        let bh = false;
-        for(var j= this.layout.length-1 ;j>=0;j--){
-          let dd = this.layout[j];
-          dd.i=i;
-          if(dd.sid == cc.sid){
-            dd.state=2;
-            newLayout.push(dd);
-            bh =true;
-            this.layout.splice(j,1);
-          }
-        }  
-
-        if(!bh){
-          layout.x=0;
-          layout.y=0,
-          layout.w=cc.minw,
-          layout.h=cc.minh,
-          layout.minw = cc.minw;
-          layout.minh = cc.minh;
-          layout.maxw = cc.maxw;
-          layout.maxh = cc.maxh;
-          layout.sid = cc.sid;
-          layout.rech = cc.rech;
-          cc.cont = JSON.parse(cc.cont)          
-          cc.cont.sname = cc.sname;
-          layout.cont = JSON.stringify(cc.cont);
-          layout.comtype = cc.comtype; 
-          let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-          if(userAttr <=1){
-            layout.usrcode = "*"
-          }else{
-            if(this.user)
-              layout.usrcode = this.user.userCode 
-          }
-          newLayout.push(layout); 
-        }  
-      } 
-
-      
-      this.delLayout=this.delLayout.concat(JSON.parse(JSON.stringify(this.layout)));
-      this.layout = []
-      this.layout = newLayout;
-      this.showCoList = false;
-    }
-    /**
-     * 快捷菜单发生改变
-     */
-    menuChange(selection:any,sid:string){
-      let menuid = "";
-      for(var i=0;i<selection.length;i++){
-        if(i == selection.length -1){
-          menuid+=selection[i]
-        }else{
-          menuid+=selection[i]+";"
-        }
-      }
-      this.layout.forEach(item => {
-        if(item.sid == sid){
-          let cont = JSON.parse(item.cont)
-          cont.menuid = menuid;
-          item.cont = JSON.stringify(cont);
-        }
-      });
     }
     /**
      * 查询我的桌面
