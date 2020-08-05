@@ -36,7 +36,7 @@
                 </template>
                 <template>
                     <bip-menu-btn-dlg ref="bip_dlg" @selData="Recheck" @Recheck="Recheck"></bip-menu-btn-dlg>
-                    <im-ex-file :canImport="false" :cell="dsm.ccells" ref="imExFile" @exFile="getExcel"></im-ex-file>
+                    <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @exFile="getExcel"></im-ex-file>
                 </template>
             </el-scrollbar>
         </div>

@@ -243,6 +243,7 @@ export default class SortiesInvoke extends Vue {
             curr.data.sumarea =  oneJD.sumArea;//总面积(亩)
             curr.data.avgyl = oneJD.getSYL;//每亩施药量
             curr.data.usrcode = usrcode;
+            curr.data.id = taskid+"-"+curr.data.ssid;
             let res = await this.saveCell.saveData();
             if(res.data.id == -1){
                 this.$notify.error("保存失败！")

@@ -16,7 +16,7 @@
           <el-col :span="12">
             <el-row type="flex" justify="start">
               <el-col :span="12">
-                <el-button @click="registered" type="text">注册</el-button>
+                <!-- <el-button @click="registered" type="text">注册</el-button> -->
               </el-col> 
             </el-row>
           </el-col>
@@ -98,7 +98,7 @@ export default class Login extends Vue {
     BIPUtil.ServApi.login(this.user)
       .then((res: any) => {
         let data = res.data;
-        let _u = Object.assign({},this.user);
+        let _u:any = Object.assign({},this.user);
         if (data.id === 0) {
           let userI = data.data.user;
           let snkey = data.data.snkey;
