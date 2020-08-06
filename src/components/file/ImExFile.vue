@@ -35,7 +35,7 @@ let tools = BIPUtil.ServApi
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import { GlobalVariable } from "@/utils/ICL";
-import { Cell } from '@/classes/pub/coob/Cell';
+import { Cells } from '@/classes/pub/coob/Cells';
 @Component({})
 /**
  * 导入 导出 Excel
@@ -44,7 +44,7 @@ export default class ImExFile extends Vue {
     @Prop() title!:string
     @Prop() canImport!:boolean//可以导入
     @Prop() canExport!:boolean//可以导出
-    @Prop() cell!:Cell;
+    @Prop() cell!:Cells;
     @Prop() cellID!:string;
     outerVisible: boolean = false;
     mytitle = "文件导入导出";
