@@ -202,6 +202,11 @@ export default class App extends Vue {
         }
     } 
 
+    @Watch("editableTabs2")
+    tabsCange(){
+        if(this.editableTabs2.length==0)
+            this.addIndex();
+    }
     @Watch("$route")
     routerChange(to: Route, from: Route) { 
         if(this.$route.name == "registered"){

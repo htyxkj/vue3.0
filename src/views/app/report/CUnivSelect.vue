@@ -262,10 +262,10 @@ export default class CUnivSelect extends Vue {
                 }, 100);
             }
         }else if(cmd === 'DOWNLOADFILE'){
-            // this.fullscreenLoading=true;
-            // this.getExcel();
-            let file:any = this.$refs.imExFile
-            file.open()
+            this.fullscreenLoading=true;
+            this.getExcel();
+            // let file:any = this.$refs.imExFile
+            // file.open()
         }else if(cmd === 'ROWCOLUMN'){
             if(this.uriParams){
                 this.$bus.$emit('ReportTableShape',[this.uriParams.pbuid,this.mbs])
