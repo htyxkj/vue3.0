@@ -614,10 +614,10 @@ export default class OperatingArea extends Vue {
                 this.windSpeed = data.windspeed;//风速
             if(data.humidity)
                 this.humidity = data.humidity;//湿度
-            if(data.nowpressure)
-                this.nowpressure = (data.nowpressure).toFixed(1);
-            if(data.nowtemperature)
-                this.nowtemperature = (data.temperature).toFixed(1);
+            if(data.pressure)
+                this.nowpressure = (data.pressure).toFixed(1); //压力
+            if(data.temperature)
+                this.nowtemperature = (data.temperature).toFixed(1);//温度
             this.nowflow = ( data.flow).toFixed(2);;
             this.nowheight = data.height;
             this.sumtime = this.sumtime + 1;
