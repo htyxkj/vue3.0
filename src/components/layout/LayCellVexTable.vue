@@ -484,6 +484,7 @@ export default class LayCelVexTable extends Vue {
         return bool;
     }
     delRecord(){
+        console.log("delRecord")
         if(this.cds.currCanEdit() && this.removeData.length>0){
             this.cds.cdata.rmdata = this.removeData;
             // console.log(this.cds)
