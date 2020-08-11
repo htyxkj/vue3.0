@@ -1,7 +1,7 @@
 <template>
     <el-dialog :title="mytitle" class="bip-file" :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false" >
         <el-row class="padding" :gutter="40" v-if="outerVisible">
-            <el-col :span="12" v-if="myCanExport">
+            <!-- <el-col :span="12" v-if="myCanExport">
                 <el-card shadow="never" class="myCard">
                     <el-row>
                         <i class="el-icon-download icon pointer" @click="exFile"></i>
@@ -10,8 +10,8 @@
                         <div class="el-upload__text a-upload" @click="exFile">导出Excel文件</div>
                     </el-row>
                 </el-card>
-            </el-col>
-            <el-col :span="12" v-if="myCanImport">
+            </el-col> -->
+            <el-col :span="24" v-if="myCanImport">
                 <el-card shadow="never" class="myCard">
                     <el-row>
                         <i class="el-icon-upload icon pointer"></i>
@@ -47,7 +47,7 @@ export default class ImExFile extends Vue {
     @Prop() cell!:Cells;
     @Prop() cellID!:string;
     outerVisible: boolean = false;
-    mytitle = "文件导入导出";
+    mytitle = "文件导入";
     myCanImport:boolean = true//可以导入
     myCanExport:boolean = true//可以导出
     uri:string = "";

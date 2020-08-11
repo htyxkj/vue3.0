@@ -122,7 +122,11 @@ export default class CUnivSelect extends Vue {
                     this.ds_ext[i - 1] = new CDataSet(this.cells[i]);
                 }
                 this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm,true);
-                console.log(this.mbs, "mbs");
+                if(this.uriParams && this.uriParams.pbds.importCellId){
+                    let btn = new BipMenuBtn(ICL.B_CMD_UPFILE,"导入")
+                    btn.setIconFontIcon('ruku');
+                    this.mbs.menuList.push(btn)
+                }
                 this.listIndex = this.findListMenuIndex("LIST");
                 let layout = this.uriParams.playout
                 if(layout==''){
@@ -262,13 +266,11 @@ export default class CUnivSelect extends Vue {
                 }, 100);
             }
         }else if(cmd === 'DOWNLOADFILE'){
-            if(this.uriParams && this.uriParams.pbds.importCellId){
-                let file:any = this.$refs.imExFile
-                file.open()
-            }else{
-                this.fullscreenLoading=true;
-                this.getExcel();
-            }
+            this.fullscreenLoading=true;
+            this.getExcel();
+        }else if(cmd === ICL.B_CMD_UPFILE){
+            let file:any = this.$refs.imExFile
+            file.open()
         }else if(cmd === 'ROWCOLUMN'){
             if(this.uriParams){
                 this.$bus.$emit('ReportTableShape',[this.uriParams.pbuid,this.mbs])

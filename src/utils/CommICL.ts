@@ -34,7 +34,7 @@ export const CommICL = Object.assign({
     B_CMD_FIND:'FIND',//查找
     B_CMD_CLEAR:'CLEAR',//清空
     B_CMD_SAVE:'SAVE',//保存
-    B_CMD_COPY:'COPY',//保存
+    B_CMD_COPY:'COPY',//复制
     B_CMD_FIRST:'FIRST',//第一个
     B_CMD_PRIOR:'PRIOR',//上一个
     B_CMD_NEXT:'NEXT',//下一个
@@ -49,6 +49,7 @@ export const CommICL = Object.assign({
     B_CMD_LIST:'LIST',//连接
     B_CMD_ISTAT:'ISTAT',//统计
     B_CMD_IFILE:'DOWNLOADFILE',//文件
+    B_CMD_UPFILE:'UPLOADFILE',//文件
     B_CMD_ROWCOLUMN:'ROWCOLUMN',//行转列
     //#region 输入框常量
     I_EDITOR_COMM:0,//普通输入框
