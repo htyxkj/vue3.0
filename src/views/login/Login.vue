@@ -144,13 +144,15 @@ export default class Login extends Vue {
   }
   // 将账户信息存储值localStroge
   setlocalStorage(c_name:String) {
+    if(c_name && c_name !='undefined'){
       localStorage.siteName = c_name
+    }
   }
   // 获取localStroge中的账户信息
   getlocalStorage() {
     var c_usrname = localStorage.getItem('siteName');
     if(this.user){
-      if(c_usrname){
+      if(c_usrname && c_usrname !='undefined'){
         this.user.userCode = c_usrname
         this.checked = true;
       }

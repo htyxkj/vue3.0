@@ -291,12 +291,14 @@ export default class DataModeling  extends Vue {
     accChange(value:any){
         this.amb_purposes_id = value.id;
         this.calendar_id = value.calendar_id
-        this.initData();
+        if(this.period_id && this.amb_purposes_id)
+            this.initData();
     }
     //期间发生变化
     period_change(value:any){
         this.period_id = value;
-        this.initData();
+        if(this.period_id && this.amb_purposes_id)
+            this.initData();
     } 
     
     //分页信息变化
