@@ -297,7 +297,7 @@ export default class DataModeling  extends Vue {
     //期间发生变化
     period_change(value:any){
         this.period_id = value;
-        if(this.period_id && this.amb_purposes_id)
+        if(this.period_id !=null && this.amb_purposes_id)
             this.initData();
     } 
     

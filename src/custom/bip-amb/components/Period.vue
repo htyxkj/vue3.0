@@ -47,7 +47,7 @@ export default class Period extends Vue {
     page:any={pageSize:10,currPage:1,total:0} 
     tableData:any = [];
 
-    selectID:any = "";
+    selectID:any = null;
     selectName:any = "";
 
     async created() {
@@ -126,6 +126,14 @@ export default class Period extends Vue {
                 }
                 this.$emit("dataChange",this.selectID);
             }
+        }
+    }
+
+    @Watch("selectName")
+    selChange(){
+        if(!this.selectName){
+            this.selectID="";
+            this.$emit("dataChange",this.selectID);
         }
     }
 }
