@@ -182,6 +182,19 @@ export default class DataModeling  extends Vue {
         this.dataCell.cdata.data = [];
         this.selData = [];
         this.tableLoading = true;
+
+        // let param = this.dataTJCell.currRecord.data;
+        // param.page = this.tablePage;
+        // let btn1 = new BipMenuBtn("DLG"," 数据建模")
+        // btn1.setDlgSname(name);
+        // btn1.setDlgType("D")
+        // btn1.setDlgCont("amb.serv.util.accounting.DataModeling*202;0;1");//数据建模
+        // let b = JSON.stringify(btn1)
+        // let v = JSON.stringify(param);
+        // let res = await tools.getDlgRunClass(v,b);
+        // if(res.data.id ==0){
+
+
         let qe:QueryEntity = new QueryEntity(this.dataCellID,this.dataTJCellID);
         qe.cont= JSON.stringify(this.dataTJCell.currRecord.data)
         qe.page = this.tablePage;
@@ -234,10 +247,14 @@ export default class DataModeling  extends Vue {
     }
     //数据建模
     async doDataM(){
+        if(this.period_id == null || this.period_id ==''){
+            this.$notify.error("没有选择期间")
+            return;
+        }
         let prarm = {
             dsmArr: this.selData
         }
-        let btn1 = new BipMenuBtn("DLG"," 追加期间")
+        let btn1 = new BipMenuBtn("DLG"," 数据建模")
         btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.accounting.DataModeling*201;0;1");//交易价表
