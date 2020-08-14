@@ -22,22 +22,17 @@
         </el-header>
         <el-main> 
             <vxe-table resizable size="mini" ref="ProfitLossAspectTable" auto-resize :loading="tableLoading" show-overflow
-                stripe highlight-hover-row :height="tableHeight" :data="dataCell.cdata.data"
+                stripe highlight-hover-row :height="tableHeight" :data="tableData"
                 border show-header-overflow
                 @checkbox-all="selectAllEvent" @checkbox-change="selectAllEvent">
                 <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                <template v-for="(item,index) in dataCell.ccells.cels"> 
-                    <vxe-table-column :key="index" header-align="center" min-width="120" align="center" :field="item.id"
-                        :title="item.labelString" show-header-overflow  v-if="!(item.attr & 0x400)>0"
-                        show-overflow :sortable ="(item.attr&0x400000)>0">
-                        <template v-slot="{row,rowIndex}"> 
-                            <bip-grid-info :cds="dataCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                        </template>
-                    </vxe-table-column>  
-                </template>
+                <vxe-table-column header-align="center" min-width="120" align="center" field="compo_name" title="模型" show-header-overflow show-overflow></vxe-table-column>  
+                <vxe-table-column header-align="center" min-width="120" align="center" field="fm_date" title="时间" show-header-overflow show-overflow></vxe-table-column>  
+                <vxe-table-column header-align="状态" min-width="120" align="center" field="status_id" title="" show-header-overflow show-overflow></vxe-table-column>  
+                <vxe-table-column header-align="center" min-width="120" align="center" field="msg" title="消息" show-header-overflow show-overflow></vxe-table-column>  
                 <vxe-table-column title="日志" align="center" >
                     <template v-slot="{ row }" >
-                        <el-button type="text" @click="getLog(row.data)">日志</el-button>
+                        <el-button type="text" @click="getLog(row)">日志</el-button>
                     </template>
                 </vxe-table-column>
             </vxe-table>
@@ -131,11 +126,7 @@ export default class DataModeling  extends Vue {
         currPage:1,
         pageSize:20
     };
-    dataCellID:any ="300401";
-    dataCell:CDataSet = new CDataSet("");
-    dataTJCellID:any ="300401TJ";
-    dataTJCell:CDataSet = new CDataSet("");
-    
+    tableData:any =[];
 
     calendar_id:any = "";//日历编码
     period_id:any = "";//期间编码
@@ -171,39 +162,24 @@ export default class DataModeling  extends Vue {
         this.tableHeight =  this.height - 120
     }
     async mounted() { 
-        this.dataCell = await this.getCell(this.dataCellID);
-        this.dataTJCell = await this.getCell(this.dataTJCellID);
         this.logDelCell = await this.getCell(this.logDelCellId);
-        this.dataTJCell.createRecord();
     }
     async initData(){
-        this.dataTJCell.currRecord.data.purpose_id = this.amb_purposes_id
-        this.dataTJCell.currRecord.data.period_id = this.period_id
-        this.dataCell.cdata.data = [];
         this.selData = [];
         this.tableLoading = true;
-
-        // let param = this.dataTJCell.currRecord.data;
-        // param.page = this.tablePage;
-        // let btn1 = new BipMenuBtn("DLG"," 数据建模")
-        // btn1.setDlgSname(name);
-        // btn1.setDlgType("D")
-        // btn1.setDlgCont("amb.serv.util.accounting.DataModeling*202;0;1");//数据建模
-        // let b = JSON.stringify(btn1)
-        // let v = JSON.stringify(param);
-        // let res = await tools.getDlgRunClass(v,b);
-        // if(res.data.id ==0){
-
-
-        let qe:QueryEntity = new QueryEntity(this.dataCellID,this.dataTJCellID);
-        qe.cont= JSON.stringify(this.dataTJCell.currRecord.data)
-        qe.page = this.tablePage;
-        qe.type =1;
-        let res = await this.dataCell.queryData(qe);
-        if(res.data.id ==0 ){
-            let data = res.data.data.data.data;
-            this.dataCell.cdata.data = data;
-            this.tablePage = res.data.data.data.page
+        let param = {purpose_id: this.amb_purposes_id,period_id:this.period_id,page:this.tablePage}
+        let btn1 = new BipMenuBtn("DLG"," 数据建模")
+        btn1.setDlgSname(name);
+        btn1.setDlgType("D")
+        btn1.setDlgCont("amb.serv.util.accounting.DataModeling*202;0;1");//数据建模
+        let b = JSON.stringify(btn1)
+        let v = JSON.stringify(param);
+        let res:any = await tools.getDlgRunClass(v,b);
+        if(res.data.id ==0){
+            let d = res.data.data.data;
+            console.log(d)
+            this.tableData = d.data;
+            this.tablePage = d.page;
         }
         this.tableLoading = false;
     } 
@@ -251,8 +227,14 @@ export default class DataModeling  extends Vue {
             this.$notify.error("没有选择期间")
             return;
         }
+        let compo_ids = [];
+        for(var i=0;i<this.selData.length;i++){
+            compo_ids.push(this.selData[i].compo_id);
+        }
         let prarm = {
-            dsmArr: this.selData
+            compo_ids: compo_ids,
+            purposes_id:this.amb_purposes_id,
+            period_id:this.period_id
         }
         let btn1 = new BipMenuBtn("DLG"," 数据建模")
         btn1.setDlgSname(name);
