@@ -21,6 +21,9 @@
                             <input type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="imFile($event)" name="file" > 点击这里上传文件 
                         </a>
                     </el-row>
+                    <el-row style="text-align: start;color: #518dff;cursor:pointer">
+                        <a @click="getTML">模板下载</a>
+                    </el-row>
                 </el-card>
             </el-col>
         </el-row>
@@ -96,13 +99,19 @@ export default class ImExFile extends Vue {
         form.append("name", name); 
         this.$axios.post(GlobalVariable.API,form,config).then((res)=>{
             if(res.data.id==-1){
-                this.$notify.error("上传失败！");
+                this.$notify.error("导入失败！");
             }else{
-                this.$notify.success( "上传完成！")
+                this.$notify.success( "导入完成！")
             }
         });
-        console.log(file)
         this.outerVisible = false;
+    }
+    //获取模板
+    getTML(){
+        let userid = JSON.parse(window.sessionStorage.getItem("user") + "").userCode
+        let uri = BaseVariable.BaseUri+''+GlobalVariable.API+"?apiId="+ GlobalVariable.APIID_IMPORTEXPDATA
+        uri += "&usercode="+userid+"&cellID="+this.cellID+"&template=1&dbid="+BaseVariable.COMM_FLD_VALUE_DBID;
+        window.open(uri)
     }
 }
 </script>
