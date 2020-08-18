@@ -580,6 +580,7 @@ export default class LayCelVexTable extends Vue {
             return ;
         }
         this.cds.cdata.clearValues();
+        this.cds.clear();
         this.$emit("handleCurrentChange", value);
     }
     /**排序发生变化 */
@@ -803,7 +804,7 @@ export default class LayCelVexTable extends Vue {
         if(obj_id == this.cds.ccells.obj_id){
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
-                if(this.cds.currRecord){
+                if(this.cds.currRecord && Object.keys(this.cds.currRecord.data).length>0){
                     setTimeout(() => {
                         // cc.loadData(this.cds.cdata.data)
                         cc.clearCurrentRow()

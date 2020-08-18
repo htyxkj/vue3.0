@@ -952,8 +952,6 @@ export default class BaseApplet extends Vue{
         this.rowClickBusID = this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
         if(!this.params || !this.params.method){
-            this.dsm.createRecord();
-            this.dsm.currRecord.c_state = 1
             if(this.uriParams && this.uriParams.pbds){
                 if(this.uriParams.pbds.polnk){
                     this.dsm.polnk = this.uriParams.pbds.polnk;
@@ -963,7 +961,10 @@ export default class BaseApplet extends Vue{
                 this.oprid = 14;
                 this.dsm.cont = this.uriParams.pdata;
                 await this.findData(true,this.uriParams.pdata); 
-            } 
+            }else{
+                this.dsm.createRecord();
+                this.dsm.currRecord.c_state = 1
+            }
         }else{
 
             this.pmenuid = this.$route.query.pmenuid+'';
@@ -1038,7 +1039,7 @@ export default class BaseApplet extends Vue{
     }
 
     async handleCurrentChange(value:number){
-        // console.log('handleCurrentChange',value)
+        console.log('handleCurrentChange',value)
         this.qe.oprid = this.oprid
         this.qe.type = 0
         this.qe.page.currPage = value
@@ -1050,7 +1051,7 @@ export default class BaseApplet extends Vue{
         if (vv != null) {
             // this.qe = vv;
             // this.qe.values = vv.data;
-            
+            vv.page.index=0;
             this.qe.page = vv.page;
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
