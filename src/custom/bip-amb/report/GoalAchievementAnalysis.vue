@@ -6,7 +6,7 @@
             <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change"></Period> -->
             <div class="topdiv1"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="请选择" size="small">
-                    <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.bid"></el-option>
+                    <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </div>
            

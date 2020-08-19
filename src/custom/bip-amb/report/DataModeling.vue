@@ -233,7 +233,7 @@ export default class DataModeling  extends Vue {
         }
         let prarm = {
             compo_ids: compo_ids,
-            purposes_id:this.amb_purposes_id,
+            purpose_id:this.amb_purposes_id,
             period_id:this.period_id
         }
         let btn1 = new BipMenuBtn("DLG"," 数据建模")

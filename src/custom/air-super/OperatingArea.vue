@@ -2827,6 +2827,7 @@ export default class OperatingArea extends Vue {
         let season = null;
         let area = 0;
         let operid = "";
+        let id = "";
         for(var i=0;i<this.jqSelList.length;i++){
             let key = this.jqSelList[i];
             let d1 = this.getOneJqData(key);
@@ -2841,6 +2842,10 @@ export default class OperatingArea extends Vue {
             num++;
             operid+= d1.id+";"
             area+=d1.area
+            if(id == ""){
+                let dd = d1.id.split("-")
+                id = dd[0]
+            }
         }
         if(num <= 1){
             this.$notify.warning("请勾选多个架区！")
@@ -2849,6 +2854,7 @@ export default class OperatingArea extends Vue {
         operid = operid.substring(0,operid.length-1);
         this.jqMergeCell.clear();
         this.jqMergeCell.createRecord();
+        this.jqMergeCell.currRecord.data.id = id;
         this.jqMergeCell.currRecord.data.mergeid = operid;
         this.jqMergeCell.currRecord.data.season = season;
         this.jqMergeCell.currRecord.data.area = area;
