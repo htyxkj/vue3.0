@@ -7,7 +7,7 @@
         <el-dialog title="期间" :visible.sync="showPeriod" class="bipinsaid">
              
             <div style="padding-top:0px">
-                <el-table :data="tableData" highlight-current-row size="small" @row-click="tableClick">
+                <el-table :data="tableData" height="350px" highlight-current-row size="small" @row-click="tableClick">
                     <el-table-column property="name" label="期间" width="150"></el-table-column>
                     <el-table-column property="year" label="年度" width="200"></el-table-column>
                     <el-table-column property="month" label="月份"></el-table-column>

@@ -2,7 +2,8 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="period_change" :type="'max'"></Period>
+            <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="period_change" :type="'max'"></Period> -->
+            <el-date-picker v-model="period_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="period_dateChange" placeholder="选择日期" size="small"></el-date-picker>
             <div class="topdiv1">
                 <el-button size="small" style="margin-left:20px" type="primary" :disabled="selData.length ==0" @click="doDataM">      
                     <span>数据建模</span>
@@ -129,10 +130,10 @@ export default class DataModeling  extends Vue {
     tableData:any =[];
 
     calendar_id:any = "";//日历编码
-    period_id:any = "";//期间编码
+    period_date:any = "";//期间日期
+
     amb_purposes_id:string = "";//核算目的id
     selData:any =[];
-    fm_date:any = "";//期间
     tableHeight:any ="500";
     tableLoading:boolean = false;
 
@@ -158,7 +159,7 @@ export default class DataModeling  extends Vue {
     unpricedTableData:any =[];
     item_code_name:any = "";
     async created() {
-        this.fm_date = moment(new Date()).format("YYYY-MM-DD")
+        this.period_date = moment(new Date()).format("YYYY-MM-DD")
         this.tableHeight =  this.height - 120
     }
     async mounted() { 
@@ -167,7 +168,7 @@ export default class DataModeling  extends Vue {
     async initData(){
         this.selData = [];
         this.tableLoading = true;
-        let param = {purpose_id: this.amb_purposes_id,period_id:this.period_id,page:this.tablePage}
+        let param = {purpose_id: this.amb_purposes_id,period_date:this.period_date,page:this.tablePage}
         let btn1 = new BipMenuBtn("DLG"," 数据建模")
         btn1.setDlgSname(name);
         btn1.setDlgType("D")
@@ -223,7 +224,7 @@ export default class DataModeling  extends Vue {
     }
     //数据建模
     async doDataM(){
-        if(this.period_id == null || this.period_id ==''){
+        if(this.period_date == null || this.period_date ==''){
             this.$notify.error("没有选择期间")
             return;
         }
@@ -234,7 +235,7 @@ export default class DataModeling  extends Vue {
         let prarm = {
             compo_ids: compo_ids,
             purpose_id:this.amb_purposes_id,
-            period_id:this.period_id
+            period_date:this.period_date
         }
         let btn1 = new BipMenuBtn("DLG"," 数据建模")
         btn1.setDlgSname(name);
@@ -290,13 +291,13 @@ export default class DataModeling  extends Vue {
     accChange(value:any){
         this.amb_purposes_id = value.id;
         this.calendar_id = value.calendar_id
-        if(this.period_id && this.amb_purposes_id)
+        if(this.period_date && this.amb_purposes_id)
             this.initData();
     }
     //期间发生变化
-    period_change(value:any){
-        this.period_id = value;
-        if(this.period_id !=null && this.amb_purposes_id)
+    period_dateChange(value:any){
+        this.period_date = moment(value).format("YYYY-MM-DD")
+        if(this.period_date !=null && this.amb_purposes_id)
             this.initData();
     } 
     
