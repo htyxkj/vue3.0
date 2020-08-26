@@ -97,6 +97,9 @@ export default class TrackShow extends Vue {
     @Provide() points:any =[];//点集合
     @Provide() CloudMarkerCollection:any =null;//海量点对象
     @Provide() trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
+    //起降点信息
+    @Provide() takeoff:any = null;//起降点
+    @Provide() takeoffRange:any = 50;//起降点范围
 
     async created() {
         this.params = this.$route.params;
@@ -156,18 +159,20 @@ export default class TrackShow extends Vue {
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
             this.trackType = this.taskTjCell.currRecord.data.type;//航迹类型
-            let showarea = 1;//this.taskTjCell.currRecord.data.showarea;//显示作业区
-            let showhkarea = 1;//this.taskTjCell.currRecord.data.showhkarea;//显示识别区
-            let showroot = 1;//this.taskTjCell.currRecord.data.showhkarea;//显示航线
+            let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
+            let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
+            let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
-            if(showarea == 1){
+            let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
+            this.initTakeoff(takeoff);
+            if(showarea == '1'){
                 TMapUt.getOpera(oaid,this.tMap);//作业区
                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
             }
-            if(showhkarea ==1){
+            if(showhkarea =='1'){
                  TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             }
-           if(showroot == 1){
+           if(showroot == '1'){
                 TMapUt.getOperaRoute(oaid,this.tMap);
                 if(route){
                     TMapUt.makeRoute(route,"",this.tMap)//路线
@@ -346,6 +351,45 @@ export default class TrackShow extends Vue {
             this.tMap.addOverLay(this.CloudMarkerCollection);
         }
 
+    }
+        /**
+     * 初始化起降点信息
+     */
+    async initTakeoff(sid:any){
+        if(sid){
+            let oneCont =[];
+            let allCont = [];
+            let cont = "";
+            let qCont = new QueryCont('sid', sid, 12);
+            qCont.setContrast(0);
+            oneCont.push(qCont);
+            if (oneCont.length != 0) {
+            allCont.push(oneCont);
+                cont = "~" + JSON.stringify(allCont);
+            }
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.page.pageSize = 1;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("TAKEOFF", 210, qe);
+            if(vv.data.id ==0){
+                let takoff = vv.data.data.data.values[0];
+                let north = takoff.north 
+                if(takoff.range)
+                    this.takeoffRange = takoff.range 
+                let boundary = north.split(",");
+                //创建图片对象
+                var icon = new T.Icon({
+                    iconUrl: require('@/assets/air-super/lift.png'), 
+                    iconSize: new T.Point(70, 70),
+                    iconAnchor:new T.Point(35,70),
+                });
+                //向地图上添加自定义标注
+                this.takeoff = new T.LngLat(boundary[0], boundary[1]);
+                var marker = new T.Marker(this.takeoff,{icon: icon});
+                this.tMap.addOverLay(marker);
+            }
+        }
     }
     /**
      * 地图缩放结束
