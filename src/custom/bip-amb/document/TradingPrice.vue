@@ -346,7 +346,6 @@ export default class TradingPrice extends Vue {
     async initDataPrice(){
         this.loading = true;
         let btn1 = new BipMenuBtn("DLG"," 追加期间")
-        btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.report.TradingPrice*202;0;0");//交易价表
         let b = JSON.stringify(btn1)

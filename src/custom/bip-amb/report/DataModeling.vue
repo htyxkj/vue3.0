@@ -170,7 +170,6 @@ export default class DataModeling  extends Vue {
         this.tableLoading = true;
         let param = {purpose_id: this.amb_purposes_id,period_date:this.period_date,page:this.tablePage}
         let btn1 = new BipMenuBtn("DLG"," 数据建模")
-        btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.accounting.DataModeling*202;0;1");//数据建模
         let b = JSON.stringify(btn1)
@@ -238,7 +237,6 @@ export default class DataModeling  extends Vue {
             period_date:this.period_date
         }
         let btn1 = new BipMenuBtn("DLG"," 数据建模")
-        btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.accounting.DataModeling*201;0;1");//交易价表
         let b = JSON.stringify(btn1)

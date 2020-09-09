@@ -121,7 +121,6 @@ export default class ManageResultsRank extends Vue {
         let option:any = this.initChartOption();
         if(this.amb_purposes_id !="" && this.amb_group_ids.length>0 && this.fm_period_id){
             let btn1 = new BipMenuBtn("DLG","经营趋势分析")
-            btn1.setDlgSname(name);
             btn1.setDlgType("D")
             btn1.setDlgCont("amb.serv.util.report.ProfitsInvoke*202;0;0");//职能损益表
             let b = JSON.stringify(btn1)

@@ -194,7 +194,6 @@ export default class GPSRepair extends Vue {
         this.showUnitGPSRepairDlg = false;
         this.loading = true;
         let btn1 = new BipMenuBtn("DLG"," 追加期间")
-        btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("airfence.upgrade.serv.repair.RepairGPS*200;0;0");//修复
         let b = JSON.stringify(btn1) 

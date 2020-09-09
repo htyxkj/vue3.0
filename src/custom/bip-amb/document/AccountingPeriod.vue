@@ -231,7 +231,6 @@ export default class AccountingPeriod extends Vue {
         this.tableLoading = true;
         console.log("追加期间")
         let btn1 = new BipMenuBtn("DLG"," 追加期间")
-        btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.accounting.AccountingPeriod*201;0;0");//职能损益表
         let b = JSON.stringify(btn1)

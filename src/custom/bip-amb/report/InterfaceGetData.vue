@@ -196,7 +196,6 @@ export default class InterfaceGetData extends Vue {
             ids.push(d.data.id);
         }
         let btn1 = new BipMenuBtn("DLG","接口取数")
-        btn1.setDlgSname(name);
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.report.InterfaceGetData*202;0;0");//职能损益表
         let b = JSON.stringify(btn1)

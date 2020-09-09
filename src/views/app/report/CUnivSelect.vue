@@ -532,7 +532,6 @@ export default class CUnivSelect extends Vue {
                     let type = cc.substring(0,1);
                     let bname = cc.substring(2,item.indexOf(","));  
                     let btn1 = new BipMenuBtn("DLG",bname)
-                    btn1.setDlgSname(name);
                     btn1.setDlgType(type)
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
                     btn1.setIconFontIcon(cc.split(",")[1])
