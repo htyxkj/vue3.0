@@ -158,7 +158,6 @@ export default class BipRichTextEditor extends Vue{
                 snkey = encodeURIComponent(snkey);
                 let cc = 'snkey='+snkey;
                 this.model1= value.replace(new RegExp(cc,'gm'),'snkey={BIPSNKEY}')
-                console.log(this.model1)
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
                 if(this.cds.baseI){

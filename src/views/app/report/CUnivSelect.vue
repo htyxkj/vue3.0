@@ -36,7 +36,7 @@
                 </template>
                 <template>
                     <bip-menu-btn-dlg ref="bip_dlg" @selData="Recheck" @Recheck="Recheck"></bip-menu-btn-dlg>
-                    <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @exFile="getExcel"></im-ex-file>
+                    <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @exFile="getExcel" @Recheck="Recheck"></im-ex-file>
                 </template>
             </el-scrollbar>
         </div>
@@ -532,6 +532,7 @@ export default class CUnivSelect extends Vue {
                     let type = cc.substring(0,1);
                     let bname = cc.substring(2,item.indexOf(","));  
                     let btn1 = new BipMenuBtn("DLG",bname)
+                    btn1.setDlgSname(name);
                     btn1.setDlgType(type)
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
                     btn1.setIconFontIcon(cc.split(",")[1])

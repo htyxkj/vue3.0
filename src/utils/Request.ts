@@ -237,7 +237,7 @@ export namespace BIPUtil {
         return this.getFromServer(param)
     }
     /**
-     * 弹出框执行SQL语句 常量里面定义的 DLG.
+     * 执行java程序
      * @param value 当前选中行内容
      * @param btn BipMenuBtn 对象
      */

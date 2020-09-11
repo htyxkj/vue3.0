@@ -97,11 +97,13 @@ export default class ImExFile extends Vue {
         config.params.apiId = GlobalVariable.APIID_IMPORTEXPDATA;
         form.append("data", file); 
         form.append("name", name); 
+        this.$message('数据导入中！');
         this.$axios.post(GlobalVariable.API,form,config).then((res)=>{
             if(res.data.id==-1){
                 this.$notify.error("导入失败！");
             }else{
                 this.$notify.success( "导入完成！")
+                this.$emit("Recheck")
             }
         });
         this.outerVisible = false;
