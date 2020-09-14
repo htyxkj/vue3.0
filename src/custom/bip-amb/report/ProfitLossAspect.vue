@@ -135,11 +135,11 @@ export default class ProfitLossAspect  extends Vue {
                         data = {};
                         data.element_name = d.element_name;
                         data.level = d.level
-                        data[d.group_id+'month_money'] = d.month_money
+                        data[d.group_id+'month_money'] = d.tmonth_money
                         data[d.group_id+'month_rate'] = d.month_rate 
                         td.push(data);
                     }else{
-                        data[d.group_id+'month_money'] = d.month_money
+                        data[d.group_id+'month_money'] = d.tmonth_money
                         data[d.group_id+'month_rate'] = d.month_rate 
                         td[elIndex] = data;
                     }
