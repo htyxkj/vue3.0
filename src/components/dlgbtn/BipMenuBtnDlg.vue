@@ -419,6 +419,11 @@ export default class BipMenuBtnDlg extends Vue {
             if(res){
                 if(res.data.id == 0 ){
                     this.$notify.success(res.data.message)
+                    let dlgCont = this.btn.dlgCont;
+                    let cc = dlgCont.split(";")
+                    if(cc[2] && cc[2] =='1'){
+                        this.$emit("selData")
+                    }
                 }else if(res.data.id == -2){
                     console.log(res);
                 }else {
