@@ -88,6 +88,7 @@ export default class BipRichTextEditor extends Vue{
         let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'')
         snkey = encodeURIComponent(snkey);
         let cc = this.model1.replace(/snkey={BIPSNKEY}/g,'snkey='+snkey);
+        cc = cc.replace(/{BIPURI}/g,this.uri)
         editor.txt.html(cc);
     } 
     async uploadFile(param:any){
@@ -158,6 +159,7 @@ export default class BipRichTextEditor extends Vue{
                 snkey = encodeURIComponent(snkey);
                 let cc = 'snkey='+snkey;
                 this.model1= value.replace(new RegExp(cc,'gm'),'snkey={BIPSNKEY}')
+                this.model1= this.model1.replace(new RegExp(this.uri,'gm'),'{BIPURI}')
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
                 if(this.cds.baseI){
