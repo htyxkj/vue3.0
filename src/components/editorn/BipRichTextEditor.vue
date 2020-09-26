@@ -3,9 +3,6 @@
         <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
             <div class="ueditor" :id="id" ></div>
         </el-form-item>
-        <!-- <div class="title" v-if="!cell.isReq">{{cell.labelString}}</div>
-        <div v-else class="title2">{{cell.labelString}}*</div>
-        <div class="ueditor" :id="id" ></div> -->
     </el-col>
 </template>
 <script lang="ts">
@@ -18,7 +15,8 @@ import { CommICL } from '@/utils/CommICL';
 import { GlobalVariable } from '@/utils/ICL';
 import E  from 'wangeditor';
 let icl = CommICL
-@Component({})
+@Component({
+})
 export default class BipRichTextEditor extends Vue{
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
@@ -66,7 +64,7 @@ export default class BipRichTextEditor extends Vue{
             'justify',  // 对齐方式
             'quote',  // 引用
             'emoticon',  // 表情
-            // 'image',  // 插入图片
+            'image',  // 插入图片
             'table',  // 表格
             // 'video',  // 插入视频
             // 'code',  // 插入代码

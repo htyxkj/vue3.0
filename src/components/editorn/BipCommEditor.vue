@@ -31,7 +31,8 @@
                 <bip-list-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-list-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_RTEXT">
-                <bip-rich-text-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-editor>
+                <!-- <bip-rich-text-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-editor> -->
+                <bip-rich-text-u-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-u-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_CHECK">
                 <bip-check-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-check-editor>
@@ -67,6 +68,7 @@ import BipFlowEditor from './BipFlowEditor.vue'
 import BipUpDownEditor from './BipUpDownEditor.vue'
 import BipQueryEditor from './BipQueryEditor.vue'
 import BipRichTextEditor from './BipRichTextEditor.vue'
+import BipRichTextUEditor from './BipRichTextUEditor.vue'
 import BipTreeEditor from './BipTreeEditor.vue'
 import BipSwitchEditor from './BipSwitchEditor.vue'
 import BipInputAutograph from './BipInputAutograph.vue'
@@ -82,7 +84,7 @@ import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 import QueryEntity from '../../classes/search/QueryEntity';
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor,BipInputColorEditor,BipInputAutograph}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor,BipInputColorEditor,BipInputAutograph,BipRichTextUEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() env!:CCliEnv
@@ -277,7 +279,7 @@ export default class BipCommEditor extends Vue{
                 let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                 await this.fetchInsAid(vars);
             }else{
-                cc = JSON.parse(vv)
+                cc = vv
             }
         }else{
             this.bipInsAid = vv;

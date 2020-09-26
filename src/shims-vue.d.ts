@@ -32,3 +32,7 @@ declare module 'vue-qr'{
   const vue_qr:any;
   export default vue_qr;
 }
+declare module 'vue-ueditor-wrap'{
+  const vue_ueditor_wrap:any;
+  export default vue_ueditor_wrap;
+}
