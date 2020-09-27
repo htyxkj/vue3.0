@@ -6,6 +6,7 @@
     :append-to-body="true"
     :close-on-press-escape="true"
     :close-on-click-modal="false"
+    :before-close="selectOK"
   >
     <el-tabs v-model="activeName">
       <el-tab-pane v-if="showUpPage" label="文件上传" name="file-up">
@@ -140,28 +141,40 @@ export default class BipFileInfo extends Vue {
      * 上传文件
      */
     uploadFile(param:any){
-        let dfconfig:any = {
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            },
-            params:{
-                snkey:JSON.parse(window.sessionStorage.getItem('snkey')+''),
-            }
-        }
+        let upload:any = this.$refs.upload
+        let files:Array<any> = upload.uploadFiles
+        console.log(files)
         let file = param.file
         let name = file.name
         let size = file.size
         let succeed = 0;
-        let shardSize = 2 * 1024 * 1024,    //以2MB为一个分片
+        let shardSize = 4 * 1024 * 1024,    //以2MB为一个分片
         shardCount = Math.ceil(size / shardSize);  //总片数
         let fkey = this.makePath();
+        let pro:any = {};
         for(let i = 0;i < shardCount;i++){
             let start = i * shardSize,end = Math.min(size, start + shardSize);
             let form = new FormData();
-            let config  = dfconfig;
+            let config:any  = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                params:{
+                    snkey:JSON.parse(window.sessionStorage.getItem('snkey')+''),
+                },
+                onUploadProgress: (progressEvent:any) => {
+                    pro[name+"_"+fkey+"_"+i] = (progressEvent.loaded/progressEvent.total)*100
+                    let num = 0;
+                    for(let key in pro){
+                        num += pro[key]
+                    }
+                    num = num /shardCount;
+                    num = Math.floor(num);
+                },
+            };
             config.params.name = name;
             config.params.total = shardCount;//总片数
-            config.params.fkey = fkey;//当前是第几片
+            config.params.fkey = fkey;//一个文件一个key
             config.params.fid = 0;//当前是第几片
             config.params.fjkey = this.cds?this.cds.ccells.obj_id:'aaa';
             config.params.updid = '33';
@@ -170,27 +183,30 @@ export default class BipFileInfo extends Vue {
             // form.append("fjroot",this.root?this.root:'');//fj_500301
             form.append("fjroot",this.upLoadDid);
             form.append("data", file.slice(start,end)); 
-
             this.$axios.post(this.uri,form,config).then((res)=>{
-            if(res.data.id==-1){
-                this.$notify.error("上传失败！");
-            }else{
-                succeed++;
-                if(res.data.id==0){
-                    this.$notify.success( "上传完成！")
-                    param.onSuccess(res)
-                    let dir = res.data.data.fj_root;
-                    if(!this.upLoadDid){
-                        this.upLoadDid = dir
+                if(res.data.id==-1){
+                    this.$notify.error("上传失败！");
+                }else{
+                    succeed++;
+                    if(res.data.id==0){
+                        this.$notify.success( "上传完成！")
+                        param.onSuccess(res)
+                        let dir = res.data.data.fj_root;
+                        if(!this.upLoadDid){
+                            this.upLoadDid = dir
+                        }
+                        let name = res.data.data.fname;
+                        let f1 = {name:name,url:this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101",status:'success'}
+                        this.fileList.push(f1)
                     }
-                    let name = res.data.data.fname;
-                    let f1 = {name:name,url:this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101",status:'success'}
-                    this.fileList.push(f1)
                 }
-            }
             });
         } 
+    }
 
+    
+    uploadVideoProcess(){
+        console.log("uploadVideoProcess")
     }
     makePath(){
         const key = 999;
@@ -210,22 +226,22 @@ export default class BipFileInfo extends Vue {
     async handleRemove(file: any, fileList: any) {
         var name = file.name;
         var params = {
-        snkey: JSON.parse(window.sessionStorage.getItem('snkey')+''),
-        fjroot: this.upLoadDid,
-        fjname: name,
-        updid: '34'
-      }
-      if(file&&file.name){
+            snkey: JSON.parse(window.sessionStorage.getItem('snkey')+''),
+            fjroot: this.upLoadDid,
+            fjname: name,
+            updid: '34'
+        }
+        if(file&&file.name){
             let res = await tools.fileOPeration(params);
             if(res.data.id==0){
-                let i = this.fileList.findIndex(f1=>{
+                let i = fileList.findIndex((f1:any)=>{
                     return f1 == file
                 });
-                this.fileList.splice(i,1)
+                if(i>0){
+                    fileList.splice(i,1)
+                }
             }
-      }
-        
-       
+        }
     }
     handlePreview(file: any) {
     }
