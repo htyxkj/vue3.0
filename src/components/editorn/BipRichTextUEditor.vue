@@ -36,7 +36,7 @@ export default class BipRichTextUEditor extends Vue{
         let sk = window.sessionStorage.getItem('snkey')
         if(sk)
             this.snkey = JSON.parse(sk);
-        this.uri = BaseVariable.BaseUri
+        this.uri = BaseVariable.BaseUri+GlobalVariable.API_UPD
     }
     mounted(){
         if(this.bgrid){
@@ -47,8 +47,8 @@ export default class BipRichTextUEditor extends Vue{
         this.create();
     }
     create(){ 
-        let url = this.uri+GlobalVariable.API_UPD+"?updid=38&snkey="+this.snkey+"&uri=";
-        let uri = encodeURIComponent(this.uri+GlobalVariable.API_UPD)
+        let url = this.uri+"?updid=38&snkey="+this.snkey+"&uri=";
+        let uri = encodeURIComponent(this.uri)
         url += uri; 
         //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
         let pathName = window.document.location.pathname; 
