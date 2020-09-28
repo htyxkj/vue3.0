@@ -105,6 +105,8 @@ export default class BipRichTextUEditor extends Vue{
                 this.model1 = this.model
                 this.model1 = this.model1.replace(/snkey={BIPSNKEY}/g,'snkey='+this.snkey);
                 this.model1 = this.model1.replace(/{BIPURI}/g,this.uri)
+            }else if( this.model == null || this.model ==""){
+                this.model1 = this.model
             }
         }
     }
