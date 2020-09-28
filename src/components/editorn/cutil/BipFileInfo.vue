@@ -141,9 +141,6 @@ export default class BipFileInfo extends Vue {
      * 上传文件
      */
     uploadFile(param:any){
-        let upload:any = this.$refs.upload
-        let files:Array<any> = upload.uploadFiles
-        console.log(files)
         let file = param.file
         let name = file.name
         let size = file.size
@@ -163,13 +160,22 @@ export default class BipFileInfo extends Vue {
                     snkey:JSON.parse(window.sessionStorage.getItem('snkey')+''),
                 },
                 onUploadProgress: (progressEvent:any) => {
-                    pro[name+"_"+fkey+"_"+i] = (progressEvent.loaded/progressEvent.total)*100
+                    pro[fkey+"_"+i] = (progressEvent.loaded/progressEvent.total)*100
                     let num = 0;
                     for(let key in pro){
                         num += pro[key]
                     }
                     num = num /shardCount;
                     num = Math.floor(num);
+                    if(num == 100)
+                        num = 99;
+                    let upload:any = this.$refs.upload
+                    let files:Array<any> = upload.uploadFiles
+                    for(var j=0;j<files.length;j++){
+                        if(files[j].uid == file.uid){
+                            files[j].name = files[j].name.split("   ")[0]+"   "+num+"%"
+                        }
+                    }
                 },
             };
             config.params.name = name;
@@ -234,11 +240,11 @@ export default class BipFileInfo extends Vue {
         if(file&&file.name){
             let res = await tools.fileOPeration(params);
             if(res.data.id==0){
-                let i = fileList.findIndex((f1:any)=>{
+                let i = this.fileList.findIndex((f1:any)=>{
                     return f1 == file
                 });
-                if(i>0){
-                    fileList.splice(i,1)
+                if(i>-1){
+                    this.fileList.splice(i,1)
                 }
             }
         }
