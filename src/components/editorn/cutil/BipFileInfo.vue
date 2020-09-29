@@ -145,7 +145,7 @@ export default class BipFileInfo extends Vue {
         let name = file.name
         let size = file.size
         let succeed = 0;
-        let shardSize = 1 * 1024 * 1024,    //以2MB为一个分片
+        let shardSize = 2 * 1024 * 1024,    //以2MB为一个分片
         shardCount = Math.ceil(size / shardSize);  //总片数
         let fkey = this.makePath();
         let pro:any = {};
@@ -166,8 +166,8 @@ export default class BipFileInfo extends Vue {
                         num += pro[key]
                     }
                     num = num /shardCount;
-                    num = Math.floor(num);
-                    if(num == 100)
+                    num = Math.floor(num*100)/100;
+                    if(num >= 99)
                         num = 99;
                     let upload:any = this.$refs.upload
                     let files:Array<any> = upload.uploadFiles

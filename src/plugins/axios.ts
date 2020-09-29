@@ -11,7 +11,7 @@ const config = {
   // baseURL:BaseVariable.BaseUri,
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
   // timeout: 60 * 1000, // Timeout
-  timeout:5*60 * 1000,
+  timeout:20*60 * 1000,
 //   withCredentials: true, // Check cross-site Access-Control
 // headers: {
 //     'Content-Type': "application/json;charset=utf-8"
