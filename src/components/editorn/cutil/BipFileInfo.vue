@@ -140,12 +140,12 @@ export default class BipFileInfo extends Vue {
     /**
      * 上传文件
      */
-    uploadFile(param:any){
+    async uploadFile(param:any){
         let file = param.file
         let name = file.name
         let size = file.size
         let succeed = 0;
-        let shardSize = 4 * 1024 * 1024,    //以2MB为一个分片
+        let shardSize = 1 * 1024 * 1024,    //以2MB为一个分片
         shardCount = Math.ceil(size / shardSize);  //总片数
         let fkey = this.makePath();
         let pro:any = {};
@@ -189,7 +189,7 @@ export default class BipFileInfo extends Vue {
             // form.append("fjroot",this.root?this.root:'');//fj_500301
             form.append("fjroot",this.upLoadDid);
             form.append("data", file.slice(start,end)); 
-            this.$axios.post(this.uri,form,config).then((res)=>{
+            await this.$axios.post(this.uri,form,config).then((res)=>{
                 if(res.data.id==-1){
                     this.$notify.error("上传失败！");
                 }else{
