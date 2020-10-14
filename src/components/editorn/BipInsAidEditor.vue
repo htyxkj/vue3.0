@@ -170,7 +170,6 @@ export default class BipInsAidEditor extends Vue{
         }else{
             this.$notify.warning('没有辅助：'+this.cell.editName)
         }
-
     }
 
     selectOK(val:any,close:boolean = false){

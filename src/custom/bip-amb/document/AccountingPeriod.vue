@@ -180,10 +180,10 @@ export default class AccountingPeriod extends Vue {
         }
     }
     //修改
-    update(data:any){
+    async update(data:any){
         this.periodCell.p_cell = "100601";
         this.periodUpCell.clear();
-        this.periodUpCell.createRecord();
+        this.periodUpCell.currRecord = await this.periodUpCell.createRecord();
         this.periodUpCell.currRecord.data = data;
         this.showUpPeUpriodDialog = true;
     }

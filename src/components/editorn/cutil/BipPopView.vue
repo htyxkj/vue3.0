@@ -4,11 +4,11 @@
         <span slot="title">
             <div class="el-dialog__title" style="padding-bottom:5px">{{Title}}</div>
         </span>
-         <div @keyup.enter="searchInsAidDatas" class="search">
+        <div @keyup.enter="searchInsAidDatas" class="search" >
                 <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >
                     <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
                         <el-option label="全局匹配" value="-1"></el-option>
-                        <el-option v-for="(item,index) in showCols" :key="index" :label="item.labelString" :value="item.id"></el-option>
+                        <el-option v-for="(item,index) in 2" :key="'TJ'+index" :label="item" :value="item"></el-option>
                     </el-select>
                     <el-button slot="append" icon="el-icon-search" @click="searchInsAidDatas"></el-button>
                 </el-input>
@@ -48,7 +48,6 @@
             <el-button size="small" type="info" @click="selectOK(false)">选 中</el-button>
             <el-button size="small" type="primary" @click="selectOK(true)">选中并关闭</el-button>
         </span>
-
     </el-dialog>
 </template>
 <script lang="ts">
@@ -99,9 +98,11 @@ export default class BipPopView extends Vue{
 
     updated(){
         if(this.showCols.length==0){
-            this.showCols = this.bipInsAid.cells.cels.filter(item=>{
-                return item.isReq||item.isShow;
-            })
+            if(this.bipInsAid && this.bipInsAid.cells && this.bipInsAid.cells.cels.length>0){
+                this.showCols = this.bipInsAid.cells.cels.filter(item=>{
+                    return item.isReq||item.isShow;
+                })
+            }
         }
 
     }
