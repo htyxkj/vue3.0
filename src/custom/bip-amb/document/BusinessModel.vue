@@ -194,6 +194,9 @@ export default class BusinessModel extends Vue {
                     break;
                 }
             }
+            if(this.treeData.length == 0){ 
+                this.initModelData();
+            }
         }else{
             this.$notify.error(res.data.message)
         }
@@ -270,11 +273,13 @@ export default class BusinessModel extends Vue {
     }
     //设置Tree初始选中    
     setCurrentKey(){
-        this.$nextTick(function(){
-            let ref:any = this.$refs['modelTree']
-            let id = this.treSelData.id;
-            ref.setCurrentKey(id);
-        })
+        if(this.treSelData){
+            this.$nextTick(function(){
+                let ref:any = this.$refs['modelTree']
+                let id = this.treSelData.id;
+                ref.setCurrentKey(id);
+            })
+        }
     }
     //查询子表数据
     async ininModalAData(){

@@ -127,13 +127,16 @@ export default class BipCommEditor extends Vue{
     }
 
     @Watch('aidInfo')
-    mapChanges(){
+    async mapChanges(){
         if(!this.bipInsAid){
             if(this.assit){
                 if(this.editName){
                     let rr = this.aidInfo.get(ICL.AID_KEY+this.aidMarkKey+this.editName)
-                    if(rr)
+                    if(rr && rr.cells.cels.length>0){
                         this.bipInsAid = rr
+                    }else{
+                        await this.getInsAidInfoBy(this.editName)
+                    }
                 }
             }else{
                 if(this.editorType == this.I_EDITOR_LIST){
