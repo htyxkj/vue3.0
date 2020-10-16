@@ -48,7 +48,7 @@
             <el-main style="padding:0px;border-left: 1px solid rgb(204, 204, 204);"> 
                 <el-container>
                     <el-header class="rightHeader">
-                        <el-button type="primary" @click="saveUnit" icon="el-icon-document-add" size="small">保存</el-button>
+                        <el-button type="primary" @click="saveUnit" :disabled="!canSaveAMB" icon="el-icon-document-add" size="small">保存</el-button>
                         <div class="rightTitle">{{title}}</div>
                     </el-header>
                     <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
@@ -109,6 +109,8 @@ export default class AMBUnit extends Vue {
 
     type_name:any = {};//类型集合
     addState:any = 1;//添加状态
+
+    canSaveAMB:boolean = true;
 
     async created() {
         this.initType();
@@ -297,11 +299,13 @@ export default class AMBUnit extends Vue {
     }
     //设置Tree初始选中
     setCurrentKey(){
-        this.$nextTick(function(){
-            let ref:any = this.$refs['ambUnitTree']
-            let id = this.treSelData.id;
-            ref.setCurrentKey(id);
-        })
+        if(this.treSelData){
+            this.$nextTick(function(){
+                let ref:any = this.$refs['ambUnitTree']
+                let id = this.treSelData.id;
+                ref.setCurrentKey(id);
+            })
+        }
     }
     //修改
     update(data:any){
@@ -363,8 +367,13 @@ export default class AMBUnit extends Vue {
         let bok = this.checkNotNull(this.dsm); 
         if(!bok)
             return ;  
+        //检验是否可以保存
+        
+        
+        this.canSaveAMB = false;
         let res = await this.dsm.saveData(); 
         if(res.data.id ==0){
+            this.dsm.currRecord.c_state = 2;
             if(this.addState ==2){ 
                 this.dsm.currRecord.data.id = res.data.data.id;
                 const newChild = this.dsm.currRecord.data;
@@ -372,6 +381,9 @@ export default class AMBUnit extends Vue {
                     this.$set(this.treSelData, 'children', []);
                 }
                 this.treSelData.children.push(newChild);
+                this.treSelData = newChild;
+                this.addState =1;
+                this.setCurrentKey() 
             }else if(this.addState == 3){
                 this.initTreeData();
             }
@@ -379,6 +391,7 @@ export default class AMBUnit extends Vue {
         }else{
             this.$notify.error(res.data.message)
         }
+        this.canSaveAMB = true;
     }
 
     //节点点击事件

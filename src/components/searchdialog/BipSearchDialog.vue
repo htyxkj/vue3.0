@@ -63,7 +63,10 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
 import SearchEntity from "@/classes/SearchEntity";
-@Component({})
+import BipSearchCommEditor from '@/components/searchEditorn/BipCommEditor.vue'
+@Component({
+   components:{BipSearchCommEditor}
+})
 export default class BipSearchDialog extends Vue {
     @Prop() cds_cont!: CDataSet;
     @Provide() dialogVisible: boolean = false;
