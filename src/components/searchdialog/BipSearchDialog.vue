@@ -35,11 +35,13 @@
                         <el-row type="flex" justify="state">
                             <el-form-item  :label="sitem.name">
                                 <el-col :span="10" :xs="10" :sm="10" :md="10">
-                                    <el-input v-model="sitem.v1" size="small" :clearable="true" style="width: 100%;"></el-input>
+                                    <bip-comm-editor :cell="sitem.cell" :bgrid="false" :cds="tjCell1" :row="0" />                                    
+                                    <!-- <el-input v-model="sitem.v1" size="small" :clearable="true" style="width: 100%;"></el-input> -->
                                 </el-col>
                                 <el-col class="line" :span="1">~</el-col>
                                 <el-col :span="10" :xs="10" :sm="10" :md="10">
-                                    <el-input v-model="sitem.v2" size="small" :clearable="true" style="width: 100%;"></el-input>
+                                    <bip-comm-editor :cell="sitem.cell" :bgrid="false" :cds="tjCell2" :row="0" />
+                                    <!-- <el-input v-model="sitem.v2" size="small" :clearable="true" style="width: 100%;"></el-input> -->
                                 </el-col>
                             </el-form-item>
                         </el-row>
@@ -63,9 +65,11 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
 import SearchEntity from "@/classes/SearchEntity";
-import BipSearchCommEditor from '@/components/searchEditorn/BipCommEditor.vue'
+import { Cells } from "@/classes/pub/coob/Cells";
+import { BIPUtil } from "@/utils/Request";
+let tools = BIPUtil.ServApi;
 @Component({
-   components:{BipSearchCommEditor}
+   components:{}
 })
 export default class BipSearchDialog extends Vue {
     @Prop() cds_cont!: CDataSet;
@@ -75,9 +79,21 @@ export default class BipSearchDialog extends Vue {
     @Provide() options: Array<any> = [];
     @Provide() searchValues: Array<SearchEntity> = [];
     @Provide() cells:Array<any> = []
-    mounted() {
+
+    
+    tjCell1:CDataSet= new CDataSet("");
+    tjCell2:CDataSet= new CDataSet("");
+    async mounted() {
         if (this.cds_cont) {
-            this.cells = this.cds_cont.ccells.cels;
+            this.tjCell1 = await this.getCell(this.cds_cont.ccells.obj_id)
+            this.tjCell2 = await this.getCell(this.cds_cont.ccells.obj_id)
+            this.tjCell1.createRecord();
+            this.tjCell2.createRecord();
+            for(let k in this.tjCell2.currRecord.data){
+                this.tjCell1.currRecord.data[k] = "";
+                this.tjCell2.currRecord.data[k] = "";
+            }
+            this.cells = this.tjCell1.ccells.cels;
             this.options.slice(0);
             this.cells.forEach(item => {
                 if (item.isShow) {
@@ -94,7 +110,13 @@ export default class BipSearchDialog extends Vue {
         let nn = this.cells.filter(item=>{
             return item.id === this.model
         })[0]
-        let s1 = new SearchEntity(nn)
+        let cc = Object.assign({},nn);
+        cc.isReq = false;
+        cc.ccHorCell = this.tjCell1.ccells.widthCell
+        if((cc.attr &(0x40))>0)
+            cc.attr = cc.attr ^ (0x40)
+        let s1 = new SearchEntity(cc)
+        s1.cell.labelString="";
         this.searchValues.push(s1);
     }
 
@@ -123,6 +145,8 @@ export default class BipSearchDialog extends Vue {
         let contrecord:any = {}
         let bok:boolean = false
         this.searchValues.forEach(item=>{
+            item.v1 = this.tjCell1.currRecord.data[item.cell.id];
+            item.v2 = this.tjCell2.currRecord.data[item.cell.id];
             let con = item.v1+'~'+item.v2
             if(con !== '~'){
                 if(!con.startsWith('~')){
@@ -136,6 +160,18 @@ export default class BipSearchDialog extends Vue {
         })
         this.dialogVisible = false
         this.$emit('makeOK',bok,contrecord)
+    }
+
+    async getCell(cellid:string){
+        let res = await tools.getCCellsParams(cellid); 
+        let rtn: any = res.data; 
+        if (rtn.id == 0) {
+        let kn: Array<Cells> = rtn.data.layCels;
+        let cells = kn; 
+            return new CDataSet(cells[0]);  
+        }else{
+            return new CDataSet('');
+        }
     }
 }
 </script>
