@@ -163,7 +163,6 @@ export default class BipCommEditor extends Vue{
             //没有辅助，但是编辑器类型是下拉列表，需要处理参照信息
             let type = this.cell.type;
             if(this.cell.editType === 1 || this.cell.editType === 5){//List
-                console.log("List")
                 this.editorType = this.I_EDITOR_LIST
                 let str = this.cell.refValue
                 if(str){
@@ -243,7 +242,7 @@ export default class BipCommEditor extends Vue{
      * 获取辅助类型
      */
     async getInsAidInfoBy(editName:string,bcl:boolean = false){
-        console.log("getInsAidInfoBy")
+        console.log("getInsAidInfoBy  : " +editName)
         let str = editName
         if(bcl){
             str = ICL.AID_KEYCL+this.aidMarkKey+str;

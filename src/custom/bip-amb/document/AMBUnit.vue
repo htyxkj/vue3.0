@@ -75,6 +75,7 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
+import {BipMenuBtn} from '@/classes/BipMenuBtn'
 @Component({
     components: {
         Accounting
@@ -338,7 +339,11 @@ export default class AMBUnit extends Vue {
               
         });
     }
+    /**
+     * 进行删除
+     */
     async doRemove(node:any, data:any){
+        //检验是否可以删除
         if(!data.children || data.children.length ==0){
             this.dsm.currRecord.c_state = 4;
             this.dsm.currRecord.data = data;
@@ -362,14 +367,13 @@ export default class AMBUnit extends Vue {
 
         }
     }
-
+    /**
+     * 保存
+     */
     async saveUnit(){
         let bok = this.checkNotNull(this.dsm); 
         if(!bok)
             return ;  
-        //检验是否可以保存
-        
-        
         this.canSaveAMB = false;
         let res = await this.dsm.saveData(); 
         if(res.data.id ==0){
