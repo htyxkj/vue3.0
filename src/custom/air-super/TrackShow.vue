@@ -61,6 +61,7 @@ import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
 import { GPSUtil } from "./class/GPSUtil";
+import { set } from 'xe-utils/methods';
 let Gps = GPSUtil.GPS;
 @Component({
     components: {
@@ -197,11 +198,13 @@ export default class TrackShow extends Vue {
             let t1 = new Date().getTime();
             let cc = await tools.getBipInsAidInfo("CORRD", 210, qe);
             let t2 = new Date().getTime();
-            console.log("用时（秒）" + (t2 - t1) / 1000);
+            this.$notify.success("查询任务数据用时（秒）" + (t2 - t1) / 1000);
             if (cc.data.id == 0) {
                 let values = cc.data.data.data.values;
                 this.taskData = values;
-                this.drawTrack();
+                setTimeout(() => {
+                    this.drawTrack();
+                }, 200);
             }else{
                 this.loading = !this.loading;
             }
@@ -249,6 +252,7 @@ export default class TrackShow extends Vue {
      */
     drawTrack(){
         this.points = [];
+        let zoom = this.tMap.getZoom();
         for(var i=0;i<this.taskData.length;i++){
             let data = this.taskData[i];
             if(data){
@@ -278,18 +282,15 @@ export default class TrackShow extends Vue {
                             line2.setLngLats(points2)
                         }
                         if(this.trackType == "1" || this.trackType == "2"){
-                            let zoom = this.tMap.getZoom();
                             let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
                             let opts0 = {color:this.flightBeltColor,weight:cc*this.flightBeltWidth,opacity:this.flightBeltOpacity};
                             points.push(lgt);
                             var newLine0 = new T.Polyline(points,opts0);
-                            this.tMap.addOverLay(newLine0);
                             this.sprayLine0.push(newLine0)
                         }
 
                         let opts1 = {color:this.trackColor,weight:3,opacity:1};
                         var newLine1 = new T.Polyline(points,opts1);
-                        this.tMap.addOverLay(newLine1);     
                         this.sprayLine1.push(newLine1)
                     }else{//没有中断需要在最后一条线追加点 或重画最后一条线
                         if(this.trackType == "1" || this.trackType == "2"){
@@ -318,7 +319,6 @@ export default class TrackShow extends Vue {
                                 points.push(this.PreviousFlowPoint);
                             points.push(lgt);
                             var newLine2 = new T.Polyline(points,opts2);
-                            this.tMap.addOverLay(newLine2);     
                             this.sprayLine2.push(newLine2)
                         }
                     }
@@ -350,7 +350,15 @@ export default class TrackShow extends Vue {
             });// 将标注添加到地图中 
             this.tMap.addOverLay(this.CloudMarkerCollection);
         }
-
+        for(var i=0;i<this.sprayLine0.length;i++){
+            this.tMap.addOverLay(this.sprayLine0[i]);
+        }
+        for(var i=0;i<this.sprayLine1.length;i++){
+            this.tMap.addOverLay(this.sprayLine1[i]);
+        }
+        for(var i=0;i<this.sprayLine2.length;i++){
+            this.tMap.addOverLay(this.sprayLine2[i]);
+        }
     }
         /**
      * 初始化起降点信息
