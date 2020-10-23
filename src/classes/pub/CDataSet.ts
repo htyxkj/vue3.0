@@ -541,9 +541,11 @@ export default class CDataSet {
 
   incCalc(cell: Cells, modal: CRecord): CRecord {
     if (cell) {
-        let xinc = -1;
-        if (cell.pkindex) xinc = cell.pkindex[0];
-        if (xinc >= 0) {
+      let xinc = -1;
+      if (cell.pkindex){
+        for(var i =0;i<cell.pkindex.length;i++){
+          xinc = cell.pkindex[i];
+          if (xinc >= 0) {
             let cel = cell.cels[xinc];
             let s0 = cel.psAutoInc;
             if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
@@ -567,11 +569,14 @@ export default class CDataSet {
             s0 = x0 < 1 ? s0 : s0.substring(0, x0 + 1);
             }
             modal.data[cel.id] = s0;
-        } else {
-                let cell: Cell = this.getPKInt();
-                if (cell && cell.id !== "c_corp")
-                    modal.data[cell.id] = this.cdata.data.length + 1 + "";
+          } else {
+            let cell: Cell = this.getPKInt();
+            if (cell && cell.id !== "c_corp"){
+              modal.data[cell.id] = this.cdata.data.length + 1 + "";
+            }
+          }
         }
+      } 
     }
     return modal;
   }

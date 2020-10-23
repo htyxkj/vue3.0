@@ -1,6 +1,6 @@
 <template>
-  <div style="padding-right:10px;background-color: #e8e8e8;hegiht:100%">
-    <el-tree :node-key="keyID" lazy :load="loadNode" @node-click="handleNodeClick"
+  <div style="background-color: #e8e8e8;hegiht:100%">
+    <el-tree :node-key="keyID" style="height: 600px;overflow: scroll;" lazy :load="loadNode" @node-click="handleNodeClick"
       :props="defaultProps" :default-expanded-keys="expandedKeys" >
     </el-tree>
   </div>
@@ -54,7 +54,7 @@ export default class BipTreeLayout extends Vue{
     async loadNode(node:any, resolve:any) {
       let cont = "";
       if (node.level === 0) {
-        cont = this.fatherID+" is null "
+        cont = this.fatherID+" is null or "+ this.fatherID +" = ''"
       } else {
           let v = node.data[this.keyID]
           cont = " "+this.fatherID+" = '"+v+"' ";

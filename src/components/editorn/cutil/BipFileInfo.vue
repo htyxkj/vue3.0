@@ -29,6 +29,7 @@
             size="small"
             type="success"
             @click="submitUpload"
+            :disabled="canUpFile"
           >上传到服务器</el-button>
           <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
@@ -94,6 +95,7 @@ export default class BipFileInfo extends Vue {
     @Provide() upLoadDid:string = ''
     @Provide() fj_root_index = -1
     showUpPage:boolean = true;
+    canUpFile:boolean = true;
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
@@ -120,6 +122,7 @@ export default class BipFileInfo extends Vue {
     }
 
     open() {
+        this.canUpFile = true;
         this.fileList = [];
         if(!this.upLoadDid)
             this.upLoadDid = this.cds.currRecord.data["fj_root"];
@@ -192,9 +195,11 @@ export default class BipFileInfo extends Vue {
             await this.$axios.post(this.uri,form,config).then((res)=>{
                 if(res.data.id==-1){
                     this.$notify.error("上传失败！");
+                    this.canUpFile = true;
                 }else{
                     succeed++;
                     if(res.data.id==0){
+                        this.canUpFile = true;
                         this.$notify.success( "上传完成！")
                         param.onSuccess(res)
                         let dir = res.data.data.fj_root;
@@ -222,8 +227,13 @@ export default class BipFileInfo extends Vue {
 
 
     submitUpload() {
+        this.canUpFile = false;
         let upload: any = this.$refs.upload;
-        if (upload) upload.submit();
+        if (upload) {
+            upload.submit();
+        }else{
+            this.canUpFile = true;
+        }
     }
 
     beforeRemove(file:any, fileList:any) {

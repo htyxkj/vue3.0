@@ -136,7 +136,7 @@
                 show-footer
 
                 row-id="id"
-
+                :cell-style="cellStyle"
                 :row-class-name="getRowStyleNew"
                 @checkbox-change="checkChange"
                 @checkbox-all="checkChange"
@@ -389,16 +389,38 @@ export default class LayCelVexTable extends Vue {
         }
     }
 
+    /**
+     * 表头最加样式
+     */
     headerCellStyle(column:any){
         let columnIndex = column.columnIndex;
+        let _columnIndex = column._columnIndex
+        columnIndex = _columnIndex
         if(this.cds.ds_par){
             columnIndex--;
         }
-        let cel =this.groupCells[columnIndex];
+        // let cel =this.groupCells[columnIndex];
+        let cel:any = this.laycell.uiCels[columnIndex];
         if(cel){
-            cel =cel.cel;
             if((cel.attr & 0x2) >0){
                 return { color: 'red' }
+            }
+        }
+    }
+    /**
+     * 报表内容单元格样式
+     */
+    cellStyle(column:any){
+        let columnIndex = column.columnIndex;
+        let _columnIndex = column._columnIndex
+        columnIndex = _columnIndex - 1;
+        if((this.laycell.cells.attr & 0x40)>0){
+            columnIndex--;
+        }
+        let cel:any = this.laycell.uiCels[columnIndex];
+        if(cel){
+            if((cel.attr & (0x80000)) >0){
+                return { color: '#20a0ff',cursor:'pointer' }
             }
         }
     }
