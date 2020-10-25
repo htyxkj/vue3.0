@@ -279,7 +279,12 @@ export default class GPSRepair extends Vue {
                 if (evt.target.readyState == FileReader.DONE) {
                     let text = evt.target.result;
                     let arr = text.split('\n')
-                    _this.parsingText(arr)
+                    try{
+                        _this.parsingText(arr)
+                    }catch(e){
+                        _this.loading = false;
+                        _this.$notify.error("文件解析错误");
+                    }
                 }
             };
             // 包含中文内容用gbk编码

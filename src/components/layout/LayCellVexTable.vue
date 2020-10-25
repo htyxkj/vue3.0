@@ -413,6 +413,9 @@ export default class LayCelVexTable extends Vue {
     cellStyle(column:any){
         let columnIndex = column.columnIndex;
         let _columnIndex = column._columnIndex
+        if(!_columnIndex){
+            _columnIndex  = columnIndex
+        }
         columnIndex = _columnIndex - 1;
         if((this.laycell.cells.attr & 0x40)>0){
             columnIndex--;
