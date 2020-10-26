@@ -265,7 +265,6 @@ export default class BipCommEditor extends Vue{
         }
     }
     async getInsAidInfoValues(editName:string,bcl:boolean = false){
-        let cc:any = this.bipInsAid;
         let str = editName
         if(bcl){
             str = ICL.AID_KEYCL+this.aidMarkKey+str;
@@ -281,7 +280,7 @@ export default class BipCommEditor extends Vue{
                 let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
                 await this.fetchInsAid(vars);
             }else{
-                cc = vv
+                this.bipInsAid = vv;
             }
         }else{
             this.bipInsAid = vv;

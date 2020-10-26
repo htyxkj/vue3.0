@@ -156,8 +156,8 @@ export namespace TMapUtils {
                     let vv = await tools.getBipInsAidInfo("ROUTEOPERA", 210, qe);
                     if(vv.data.id == 0){
                         let values = vv.data.data.data.values;
-                        for(var i =0;i<values.length;i++){
-                            let vl = values[i];
+                        for(var z =0;z<values.length;z++){
+                            let vl = values[z];
                             if(vl.mergeid){
                                 let oidArr:any = vl.mergeid.split(";");
                                 for(var l =0;l<oidArr.length;l++){
