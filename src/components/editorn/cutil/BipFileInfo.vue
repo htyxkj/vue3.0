@@ -29,7 +29,7 @@
             size="small"
             type="success"
             @click="submitUpload"
-            :disabled="canUpFile"
+            :disabled="!canUpFile"
           >上传到服务器</el-button>
           <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
@@ -241,6 +241,8 @@ export default class BipFileInfo extends Vue {
     }
     async handleRemove(file: any, fileList: any) {
         var name = file.name;
+        console.log(encodeURIComponent(name))
+        name = encodeURIComponent(name);
         var params = {
             snkey: JSON.parse(window.sessionStorage.getItem('snkey')+''),
             fjroot: this.upLoadDid,
