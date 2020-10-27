@@ -104,7 +104,7 @@
                 </div>
                 <div style="height:15%">
                     <el-row type="flex" justify="center">
-                        <el-button @click="closeDrawer(false)">  取  消  </el-button>
+                        <!-- <el-button @click="closeDrawer(false)">  取  消  </el-button> -->
                         <el-button @click="closeDrawer(true)" type="primary">  确  定  </el-button> 
                     </el-row>
                 </div>
@@ -437,7 +437,7 @@ export default class LayCelVexTable extends Vue {
             }
             //判断是否是第一次新建
             if(this.cds.cdata.data.length ==0){
-                //第一次新建 判断一下sctrl 是否是需要中常量中取数
+                // 第一次新建 判断一下sctrl 是否是需要中常量中取数
                 let cc:boolean = await this.init9DData();// 返回false 继续执行之后的程序  返回true 跳出添加方法
                 if(cc){
                     if(!this.isTable)
@@ -519,6 +519,8 @@ export default class LayCelVexTable extends Vue {
                     let rem = this.removeData[j];
                     if(rem.id == data.id){
                         this.cds.cdata.data.splice(i,1); 
+                        // this.cds.removeIndex(i);
+                        // this.$emit("delIndex",1)
                         this.cds.setState(2);
                     }
                 }
@@ -1093,16 +1095,16 @@ export default class LayCelVexTable extends Vue {
         this.lay.ccells = [this.cds.ccells];
         this.lay = new BipLayout(this.lay.laystr,this.lay.ccells)
         this.addDrawer = !this.addDrawer;
-        this.drawerCurrRecord = JSON.parse(JSON.stringify(Object.assign({},this.cds.currRecord)));
+        this.drawerCurrRecord = this.cds.currRecord// JSON.parse(JSON.stringify(Object.assign({},this.cds.currRecord)));
     }
     closeDrawer(isOk:boolean){
         this.addDrawer = !this.addDrawer;
-        if(isOk == false){
-            console.log("取消")
-            this.cds.currRecord = this.drawerCurrRecord;
-            this.cds.cdata.data[this.cds.index] = this.cds.currRecord
-            this.datachange(this.cds.ccells.obj_id)
-        }
+        // if(isOk == false){
+        //     console.log("取消")
+        //     this.cds.currRecord = this.drawerCurrRecord;
+        //     this.cds.cdata.data[this.cds.index] = this.cds.currRecord
+        //     this.datachange(this.cds.ccells.obj_id)
+        // }
     }
 
     // 设置选中的方法
