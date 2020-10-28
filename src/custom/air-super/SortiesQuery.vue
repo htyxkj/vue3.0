@@ -26,6 +26,7 @@
           <vxe-table
                 :height="style1"
                 border
+                ref="jcTable"
                 resizable
                 size="small"
                 highlight-hover-row
@@ -183,6 +184,9 @@ export default class followTimesLine extends Vue {
         this.$notify.error("请选择任务名称！");
         return;
     }
+    if(sumarea == null || sumarea =='' || sumarea =='null'){
+        sumarea = "";
+    }
     let qe: QueryEntity = new QueryEntity("FW0320", "FW0320");
     qe.page = this.page;
     qe.cont = "{'tkid':'"+tkid+"','sumarea':'"+sumarea+"'}";
@@ -196,6 +200,13 @@ export default class followTimesLine extends Vue {
     //   for (let index = 0; index < _tableData.length; index++) {
     //     this.tableData.push(_tableData[index].data);
     //   }
+        let cc:any = this.$refs["jcTable"];
+        if(cc){
+            setTimeout(() => {
+                cc.clearCurrentRow() 
+                cc.refreshData();
+            }, 200);
+        }
     }
   }
     rowActive(rowInfo: any, event: any) {
