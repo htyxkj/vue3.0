@@ -178,13 +178,14 @@ export default class followTimesLine extends Vue {
   //  1.获取任务对应架次信息
   async selectCoList() {
     let tkid = this.taskTjCell.currRecord.data.sid; 
+    let sumarea = this.taskTjCell.currRecord.data.sumarea
     if(tkid == "" || tkid == null){
         this.$notify.error("请选择任务名称！");
         return;
     }
     let qe: QueryEntity = new QueryEntity("FW0320", "FW0320");
     qe.page = this.page;
-    qe.cont = "{'tkid':'"+tkid+"'}";
+    qe.cont = "{'tkid':'"+tkid+"','sumarea':'"+sumarea+"'}";
     qe.oprid = 13;
     let vv = await tools.query(qe);
     if (vv.data.id == 0) {
