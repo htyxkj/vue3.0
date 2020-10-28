@@ -98,7 +98,7 @@
             </vxe-table>
             <el-drawer append-to-body :visible.sync="addDrawer" direction="btt" size="50%" :withHeader="false" :wrapperClosable="false">
                 <div class="myDrawer">
-                    <el-scrollbar style="height:100%">
+                    <el-scrollbar  v-if="addDrawer" style="height:100%">
                         <base-layout :layout="lay" :env="env"></base-layout>
                     </el-scrollbar>
                 </div>
@@ -519,8 +519,6 @@ export default class LayCelVexTable extends Vue {
                     let rem = this.removeData[j];
                     if(rem.id == data.id){
                         this.cds.cdata.data.splice(i,1); 
-                        // this.cds.removeIndex(i);
-                        // this.$emit("delIndex",1)
                         this.cds.setState(2);
                     }
                 }
@@ -1095,16 +1093,9 @@ export default class LayCelVexTable extends Vue {
         this.lay.ccells = [this.cds.ccells];
         this.lay = new BipLayout(this.lay.laystr,this.lay.ccells)
         this.addDrawer = !this.addDrawer;
-        this.drawerCurrRecord = this.cds.currRecord// JSON.parse(JSON.stringify(Object.assign({},this.cds.currRecord)));
     }
     closeDrawer(isOk:boolean){
         this.addDrawer = !this.addDrawer;
-        // if(isOk == false){
-        //     console.log("取消")
-        //     this.cds.currRecord = this.drawerCurrRecord;
-        //     this.cds.cdata.data[this.cds.index] = this.cds.currRecord
-        //     this.datachange(this.cds.ccells.obj_id)
-        // }
     }
 
     // 设置选中的方法
