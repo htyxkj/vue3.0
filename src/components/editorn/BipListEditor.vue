@@ -63,7 +63,7 @@ export default class BipListEditor extends Vue{
 
     isDefault:boolean = false;
     mounted(){
-        // this.multiple = (this.cds.ccells.attr&0x80)>0
+        this.multiple = (this.cds.ccells.attr&0x80)>0
         this.isDefault = (this.cell.attr & 0x800) >0
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)

@@ -180,16 +180,20 @@ export default class followTimesLine extends Vue {
   async selectCoList() {
     let tkid = this.taskTjCell.currRecord.data.sid; 
     let sumarea = this.taskTjCell.currRecord.data.sumarea
-    if(tkid == "" || tkid == null){
-        this.$notify.error("请选择任务名称！");
-        return;
-    }
+    let isvalid = this.taskTjCell.currRecord.data.isvalid
+    // if(tkid == "" || tkid == null){
+    //     this.$notify.error("请选择任务名称！");
+    //     return;
+    // }
     if(sumarea == null || sumarea =='' || sumarea =='null'){
         sumarea = "";
     }
+    if(isvalid == null || isvalid =='' || isvalid =='null'){
+        isvalid = "";
+    }
     let qe: QueryEntity = new QueryEntity("FW0320", "FW0320");
     qe.page = this.page;
-    qe.cont = "{'tkid':'"+tkid+"','sumarea':'"+sumarea+"'}";
+    qe.cont = "{'tkid':'"+tkid+"','sumarea':'"+sumarea+"','isvalid':'"+isvalid+"'}";
     qe.oprid = 13;
     let vv = await tools.query(qe);
     if (vv.data.id == 0) {

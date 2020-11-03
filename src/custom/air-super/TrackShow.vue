@@ -16,6 +16,7 @@
                                     inactive-color="#ff4949">
                                 </el-switch>
                             </el-tooltip>
+                            <el-button v-if="showTKName" style="padding-left: 10px;margin-left: 10px;">{{taskTjCell.currRecord.data.taskname}}</el-button>
                         </div>
                         <t-map ref="TMap" class="myTMap"></t-map>
                     </el-main>
@@ -101,7 +102,7 @@ export default class TrackShow extends Vue {
     //起降点信息
     @Provide() takeoff:any = null;//起降点
     @Provide() takeoffRange:any = 50;//起降点范围
-
+    showTKName:boolean = false;//显示任务名称
     async created() {
         this.params = this.$route.params;
         if (this.height) {
@@ -131,6 +132,7 @@ export default class TrackShow extends Vue {
     }
     //清空地图覆盖物
     clearCover() {
+        this.showTKName = false;
         this.tMap.clearOverLays();
         this.taskData = [];
         this.sprayLine0 = [];
@@ -143,6 +145,7 @@ export default class TrackShow extends Vue {
      * 查找飞防轨迹信息
      */
     async getOneTask() {
+        this.showTKName = true;
         this.PreviousFlowPoint = null;        
         this.taskData = [];
         this.sprayLine0 = [];

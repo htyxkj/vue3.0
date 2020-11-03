@@ -80,6 +80,7 @@ import { LoginState } from '../../store/modules/login/types';
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
 const BIPTASK : string = "biptask",BIPMSG : string = "bipmsg";  
+// const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG";  
 import { Menu } from "@/classes/Menu";
 @Component({
 })
