@@ -150,7 +150,11 @@ export default class BipInsAidEditor extends Vue{
         }
     }
 
-    iconClick() {
+    iconClick(checkCell:boolean = true) {
+        if(checkCell && this.bipInsAid && this.bipInsAid.cells && this.bipInsAid.cells.cels.length ==0){
+            this.$emit("refInsAid")
+            return;
+        }
         if(this.bipInsAid){
             if (!((this.cell.attr & 0x40) > 0)) {
                 if(this.bipInsAid.bType =="CGroupEditor"){
@@ -170,6 +174,9 @@ export default class BipInsAidEditor extends Vue{
         }else{
             this.$notify.warning('没有辅助：'+this.cell.editName)
         }
+    }
+    openRefDl(){
+        this.iconClick(false);
     }
 
     selectOK(val:any,close:boolean = false){
@@ -447,10 +454,8 @@ export default class BipInsAidEditor extends Vue{
 
     @Watch('bipInsAid')
     bipInsAidChange(){
-        this.bcode = (this.cell.attr & 0x40000) > 0 || (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
-        if(this.refLink.id.length==0){
-           this.refLink = this.bipInsAid 
-        }
+        this.bcode = (this.cell.attr & 0x40000) > 0;// || (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
+        this.refLink = this.bipInsAid         
     }
 
     dataChange(value:string|number){
@@ -472,9 +477,6 @@ export default class BipInsAidEditor extends Vue{
             }
         }   
     }
-
-
-
 }
 </script>
 

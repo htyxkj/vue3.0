@@ -3,7 +3,7 @@
         <template v-if="editorType==I_EDITOR_LIST &&bipInsAid">
             <bip-list-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-list-ref>
         </template>
-        <template v-else-if="editorType == 9 && bipInsAid && (bipInsAid.bType == 'CSelectEditor' || bipInsAid.bType == 'CDynaEditor'|| bipInsAid.bType == 'CGDicEditor' || bipInsAid.bType =='CTreePopEditor')">
+        <template v-else-if="editorType == 9 && bipInsAid && (bipInsAid.bType == 'CSelectEditor' || bipInsAid.bType == 'CGroupEditor'  || bipInsAid.bType == 'CDynaEditor'|| bipInsAid.bType == 'CGDicEditor' || bipInsAid.bType =='CTreePopEditor')">
             <bip-aid-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" :cds="cds"/>
         </template>
         <template v-else>

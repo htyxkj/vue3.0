@@ -17,7 +17,7 @@
                 <bip-tree-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-tree-editor>
             </template>
             <template v-else>
-                <bip-ins-aid-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-ins-aid-editor>
+                <bip-ins-aid-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @refInsAid="refInsAid" :ref="cell.id+'insaid'"></bip-ins-aid-editor>
             </template>    
         </template>
         <template v-else>
@@ -328,6 +328,22 @@ export default class BipCommEditor extends Vue{
             this.cds.currRecord.data[this.cell.id] = this.model
             this.cds.cdata.data[this.row] = this.cds.currRecord
         }
+    }
+    //刷新辅助缓存
+    async refInsAid(){
+        if(this.bipInsAid){
+            let vars = {id:this.bipInsAid.cl?300:200,aid:this.editName,ak:this.aidMarkKey}
+            let res = await this.fetchInsAid(vars);
+            if(res.data.id==0){
+                this.bipInsAid = null;
+                this.bipInsAid = res.data.data.data
+            }
+            if(this.bipInsAid){
+                let dia: any = this.$refs[this.cell.id+'insaid'];
+                if (dia) dia.openRefDl();
+            }
+        }
+
     }
 }
 </script>

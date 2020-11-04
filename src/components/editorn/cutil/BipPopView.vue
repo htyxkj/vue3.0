@@ -108,6 +108,16 @@ export default class BipPopView extends Vue{
     }
 
     open(){
+        if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels&&this.bipInsAid.cells.cels.length>0){
+            let _indexs:number[] = this.bipInsAid.showColsIndex;
+            this.showCols = [];
+            for(var i=0;i<_indexs.length;i++){
+                let idx = _indexs[i];
+                let cel = this.bipInsAid.cells.cels[idx];
+                this.showCols.push(cel)
+            }
+            this.idKey = this.bipInsAid.cells.cels[0].id;
+        }
         this.multiple = (this.cell.attr & 0x200000)>0
         this.visibles = true
         if(this.bipInsAid.bType === 'CGroupEditor'){
