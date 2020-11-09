@@ -143,7 +143,6 @@ export default class BipSearchDialog extends Vue {
 
     searchOK(){
         let contrecord:any = {}
-        let bok:boolean = false
         this.searchValues.forEach(item=>{
             item.v1 = this.tjCell1.currRecord.data[item.cell.id];
             item.v2 = this.tjCell2.currRecord.data[item.cell.id];
@@ -155,11 +154,10 @@ export default class BipSearchDialog extends Vue {
                     }
                 }
                 contrecord[`${item.id}`] = con
-                bok = true
             }
         })
         this.dialogVisible = false
-        this.$emit('makeOK',bok,contrecord)
+        this.$emit('makeOK',contrecord)
     }
 
     async getCell(cellid:string){

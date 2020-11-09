@@ -19,6 +19,7 @@
         <template>
             <bip-menu-btn-dlg ref="bip_base_dlg" @selData="refreshCurrent" @saveData="saveData"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
             <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
+            <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @Recheck="Recheck"></im-ex-file>
         </template>
     </el-row>
     
@@ -26,6 +27,7 @@
 <script lang="ts">
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import ImExFile from '@/components/file/ImExFile.vue';
 import { BIPUtil } from "@/utils/Request";
 import { CommICL } from "@/utils/CommICL";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
@@ -53,7 +55,7 @@ import { t } from 'vxe-table';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
-    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg}
+    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg,ImExFile}
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
@@ -167,7 +169,7 @@ export default class BaseApplet extends Vue{
                                     }
                                 } else {
                                     if(this.dsm.page.index >= this.dsm.cdata.data.length){
-                                        this.findData(true,this.dsm.cont)
+                                        this.findData(this.dsm.cont)
                                     }else{
                                         this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                                     }
@@ -266,6 +268,9 @@ export default class BaseApplet extends Vue{
                 // }
                 // this.dsm.cdata.data.push(this.dsm.currRecord)
             }
+        }else if(cmd === icl.B_CMD_UPFILE){
+            let file:any = this.$refs.imExFile
+            file.open()
         }
     }
 
@@ -449,9 +454,20 @@ export default class BaseApplet extends Vue{
         }
     }
     
-    async searchfindData(bok: boolean, cont: any) {
+    async searchfindData(cont: any) {
         this.oprid = 13;
-        await this.findData(bok, cont); 
+        if(JSON.stringify(cont) == '{}'){
+            if(this.uriParams && this.uriParams.pdata){
+                this.oprid = 14;
+                cont = this.uriParams.pdata
+            }
+        }
+        await this.findData(cont); 
+    }
+    Recheck(){
+        setTimeout(() => {
+            this.searchfindData({}); 
+        }, 500);
     }
     /**
      * 点击按钮执行后端程序后刷新当前单据
@@ -467,7 +483,7 @@ export default class BaseApplet extends Vue{
                 cont[cel.id]= this.dsm.currRecord.data[cel.id];
             }
         }
-        await this.findData(true,cont);
+        await this.findData(cont);
         // this.JumpToIndexCRecord(0);
     }
 //#endregion
@@ -477,7 +493,7 @@ export default class BaseApplet extends Vue{
      * @param bok 是否确定查询
      * @param cont 查询条件对象
      */
-    async findData(bok: boolean, cont: any) {
+    async findData(cont: any) {
         console.log("单据查询！")
         // console.log(bok,cont,this.dsm.ccells.obj_id)
         this.dsm.clear();
@@ -485,9 +501,6 @@ export default class BaseApplet extends Vue{
             for(var i=0;i<this.dsm.ds_sub.length;i++){
                 this.dsm.ds_sub[i].clear();
             } 
-        }
-        if (!bok) {
-            return;
         }
         // this.dsm.cont = cont;
         this.qe.oprid = this.oprid;
@@ -511,10 +524,9 @@ export default class BaseApplet extends Vue{
             // this.qe.values = vv.data;
             this.qe.page = vv.page;
             console.log('服务器获取数据',vv)
-            this.dataLoaded(this.qe,vv);
+            await this.dataLoaded(this.qe,vv);
             this.setListMenuName();
             this.$bus.$emit('dataloadchange')
-            
             this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
             if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
                 for(var i=0;i<this.dsm.ds_sub.length;i++){
@@ -545,11 +557,11 @@ export default class BaseApplet extends Vue{
      * @description 数据从新加载
      * @param vv 查询返回的结果集
      */
-    dataLoaded(vv: QueryEntity,cd:CData) {
+    async dataLoaded(vv: QueryEntity,cd:CData) {
         if ((vv.oprid == 13) || (vv.oprid == 14)) {
             let page = cd.page;
             if(page.total >0){
-                this.dsm.setCData(cd);
+                await this.dsm.setCData(cd);
                 this.dsm.index = page.index;
                 this.setSubData()
             }
@@ -863,6 +875,11 @@ export default class BaseApplet extends Vue{
                     this.ds_ext[i - 1] = new CDataSet(this.cells[i]);
                 }
                 this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm);
+                if(this.uriParams && this.uriParams.pbds.importCellId){
+                    let btn = new BipMenuBtn(icl.B_CMD_UPFILE,"导入")
+                    btn.setIconFontIcon('ruku');
+                    this.mbs.menuList.push(btn)
+                }
                 // console.log(this.mbs, "mbs");
                 this.listIndex = this.findListMenuIndex("LIST");
                 let bipLay = new BipLayout(this.uriParams.playout, this.cells);
@@ -960,7 +977,7 @@ export default class BaseApplet extends Vue{
             if(this.uriParams && this.uriParams.pdata && this.uriParams.pdata.length>1){ 
                 this.oprid = 14;
                 this.dsm.cont = this.uriParams.pdata;
-                await this.findData(true,this.uriParams.pdata); 
+                await this.findData(this.uriParams.pdata); 
             }else{
                 this.dsm.createRecord();
                 this.dsm.currRecord.c_state = 1
@@ -1073,38 +1090,39 @@ export default class BaseApplet extends Vue{
             if(this.params.method =='pkfld'){
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value
-                this.findData(true,data);
+                this.findData(data);
             }else if(this.params.method =='dlg'){
                 console.log(this.params)
-                if(JSON.stringify(this.params.jsontj).length >2)
-                var cData  = await this.findData(true,this.params.jsontj);
-                if(!cData || (cData && cData.page && cData.page.total ==0)){
-                    this.dsm.currRecord = new CRecord();
-                    this.dsm.createRecord();                   
-                    let cell:any = this.dsm.getCdsByObjID(this.params.cellid);
-                    if(cell){
-                        cell.clear();
-                        let cont = this.params.jsoncont;
-                        for(var i=0;i<cont.length;i++){
-                            let dvl = cont[i];
-                            let data:any=cell.createRecord();
-                        　　for(var key in dvl){ 
-                                data.data[key] = dvl[key]
-                        　　}
+                if(JSON.stringify(this.params.jsontj).length >2){
+                    let cData:any  = await this.findData(this.params.jsontj);
+                    if(!cData || (cData && cData.page && cData.page.total ==0)){
+                        this.dsm.currRecord = new CRecord();
+                        this.dsm.createRecord();                   
+                        let cell:any = this.dsm.getCdsByObjID(this.params.cellid);
+                        if(cell){
+                            cell.clear();
+                            let cont = this.params.jsoncont;
+                            for(var i=0;i<cont.length;i++){
+                                let dvl = cont[i];
+                                let data:any=cell.createRecord();
+                            　　for(var key in dvl){ 
+                                    data.data[key] = dvl[key]
+                            　　}
+                            }
                         }
-                    }
-                    this.$bus.$emit("datachange",cell.ccells.obj_id)
-                    let pk = this.dsm.ccells.pkindex
-                    for(var i=0;i<pk.length;i++){
-                        let cel = this.dsm.ccells.cels[pk[i]];
-                        if((cel.attr & 0x80 )>0){
-                            this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
+                        this.$bus.$emit("datachange",cell.ccells.obj_id)
+                        let pk = this.dsm.ccells.pkindex
+                        for(var i=0;i<pk.length;i++){
+                            let cel = this.dsm.ccells.cels[pk[i]];
+                            if((cel.attr & 0x80 )>0){
+                                this.env.dsm.incCalc(this.dsm.ccells,this.dsm.currRecord);
+                            }
                         }
                     }
                 }
             }else if(this.params.method =='BL'){
                 if(JSON.stringify(this.params.jsontj).length >2)
-                await this.findData(true,this.params.jsontj);
+                await this.findData(this.params.jsontj);
             }
         }
     }

@@ -732,14 +732,14 @@ export default class CDataSet {
     });
   }
 
-  setCData(data: CData) {
+  async setCData(data: CData) {
     this.clear();
     this.cdata = data; // Object.assign({},data);
     this.page = data.page;
     this.currRecord = data.getDataAtIndex(0);
     if (this.currRecord) {
       if (this.currRecord.subs.length > 0) {
-        this.ds_sub.forEach(cd0 => {
+        await this.ds_sub.forEach(cd0 => {
           let _i = this.currRecord.subs.findIndex(item => {
             return (item.obj_id = cd0.cdata.obj_id);
           });

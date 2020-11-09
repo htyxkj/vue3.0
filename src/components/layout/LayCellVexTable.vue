@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :custom="{storage: true,immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -830,15 +830,16 @@ export default class LayCelVexTable extends Vue {
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 if(this.cds.currRecord && Object.keys(this.cds.currRecord.data).length>0){
-                    setTimeout(() => {
+                    // setTimeout(() => {
                         // cc.loadData(this.cds.cdata.data)
-                        cc.clearCurrentRow()
+                        cc.clearCurrentRow();
                         cc.setCurrentRow(this.cds.currRecord);
-                        // cc.syncData();
-                        // cc.refreshData();
+                        cc.syncData();
                         // cc.toggleRowSelection(this.cds.currRecord);
                         // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
-                    }, 200);
+                    // }, 200);
+                }else{
+                    cc.clearCurrentRow();
                 }
             }
         }
