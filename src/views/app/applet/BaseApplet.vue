@@ -51,7 +51,6 @@ import { stringify } from 'querystring';
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
 import { clear } from 'xe-utils/methods';
-import { t } from 'vxe-table';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
@@ -465,9 +464,7 @@ export default class BaseApplet extends Vue{
         await this.findData(cont); 
     }
     Recheck(){
-        setTimeout(() => {
-            this.searchfindData({}); 
-        }, 500);
+        this.searchfindData({}); 
     }
     /**
      * 点击按钮执行后端程序后刷新当前单据
@@ -495,14 +492,12 @@ export default class BaseApplet extends Vue{
      */
     async findData(cont: any) {
         console.log("单据查询！")
-        // console.log(bok,cont,this.dsm.ccells.obj_id)
         this.dsm.clear();
         if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
             for(var i=0;i<this.dsm.ds_sub.length;i++){
                 this.dsm.ds_sub[i].clear();
             } 
         }
-        // this.dsm.cont = cont;
         this.qe.oprid = this.oprid;
         if (!this.qe.pcell || this.qe.pcell === "")
             this.qe = new QueryEntity(
@@ -517,11 +512,8 @@ export default class BaseApplet extends Vue{
             this.qe.oprid = this.oprid;
             this.qe.cont = cont;
         }
-        // console.log(this.qe,'qe')
-        // this.dataCache = []
         let vv:CData = await this.findDataFromServe(this.qe);
         if (vv != null) { 
-            // this.qe.values = vv.data;
             this.qe.page = vv.page;
             console.log('服务器获取数据',vv)
             await this.dataLoaded(this.qe,vv);

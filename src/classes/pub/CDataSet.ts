@@ -733,6 +733,7 @@ export default class CDataSet {
   }
 
   async setCData(data: CData) {
+    console.log("setCData")
     this.clear();
     this.cdata = data; // Object.assign({},data);
     this.page = data.page;

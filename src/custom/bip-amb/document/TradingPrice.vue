@@ -42,7 +42,7 @@
 
                 <div class="topdiv2"><!-- 刷新 -->
                     <el-button style="border:0px" @click="showPriceCategories">      
-                        <i class="el-icon-refresh-right"></i>
+                        <i class="el-icon-setting"></i>
                         <span>管理价表</span>
                     </el-button>
                 </div> 

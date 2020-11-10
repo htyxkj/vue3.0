@@ -78,7 +78,6 @@ let tools = BIPUtil.ServApi
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import { GlobalVariable } from '@/utils/ICL';
-import { t } from 'vxe-table';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({})
 export default class BipFileInfo extends Vue {

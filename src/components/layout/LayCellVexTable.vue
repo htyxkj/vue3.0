@@ -830,14 +830,14 @@ export default class LayCelVexTable extends Vue {
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 if(this.cds.currRecord && Object.keys(this.cds.currRecord.data).length>0){
-                    // setTimeout(() => {
-                        // cc.loadData(this.cds.cdata.data)
+                    setTimeout(() => {
+                        // cc.syncData();
+                        // cc.reloadData(this.cds.cdata.data)
                         cc.clearCurrentRow();
                         cc.setCurrentRow(this.cds.currRecord);
-                        cc.syncData();
                         // cc.toggleRowSelection(this.cds.currRecord);
                         // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
-                    // }, 200);
+                    }, 200);
                 }else{
                     cc.clearCurrentRow();
                 }

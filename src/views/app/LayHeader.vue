@@ -38,7 +38,7 @@
                                         <el-button slot="reference" type="text" class="user_button">切换公司</el-button>
                                     </el-popover>
                                 </el-row>
-                                <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">注销</el-button></el-row>
+                                <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">退出登录</el-button></el-row>
                             </el-col>
                         </el-row>  
                         <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
