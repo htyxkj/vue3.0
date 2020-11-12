@@ -14,6 +14,12 @@
                     <span>刷新</span>
                 </el-button>
             </div> 
+            <div class="topdiv2"><!-- 导入 -->
+                <el-button style="border:0px" @click="impExcel">      
+                    <i class="iconfont icon-bip-ruku" ></i>
+                    <span>导入</span>
+                </el-button>
+            </div> 
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
             <el-aside width="350px">
@@ -88,6 +94,7 @@
                 <el-button type="primary" @click="addModelA" size="mini">确 定</el-button>
             </span>
         </el-dialog>
+        <im-ex-file :cellID="'IMP300104WEB;IMP300104A2WEB'" ref="imExFile" @Recheck="initModelData"></im-ex-file>
     </el-container>
 </template>
 <script lang="ts">
@@ -98,13 +105,15 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import QueryEntity from "@/classes/search/QueryEntity";
 
+import ImExFile from '@/components/file/ImExFile.vue';
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 @Component({
     components: {
         Accounting,
-        BipGridInfo
+        BipGridInfo,
+        ImExFile
     }
 })
 /**
@@ -424,6 +433,11 @@ export default class BusinessModel extends Vue {
             }
         }); 
         return bok;
+    }
+    //导入
+    impExcel(){
+        let file:any = this.$refs.imExFile
+        file.open()
     }
     @Watch("height")
     heightChange() {

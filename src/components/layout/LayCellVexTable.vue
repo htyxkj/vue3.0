@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :id="this.cds.ccells.obj_id+'toolbar'" :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -112,7 +112,6 @@
         </template>
         <!-- 报表展示表格-->
         <template v-else>
-            
             <vxe-table
                 :ref="this.cds.ccells.obj_id"
                 v-if="isTable"
@@ -130,11 +129,9 @@
                 @cell-dblclick="openrefs"
                 @cell-click="table_cell_click"
                 @sort-change="sortChange"
-                remote-sort
-                :sort-config="{trigger: 'cell'}"
+                :sort-config="{trigger: 'cell',remote:true}"
                 :span-method="rowspanMethod"
                 show-footer
-
                 row-id="id"
                 :cell-style="cellStyle"
                 :row-class-name="getRowStyleNew"
@@ -149,7 +146,7 @@
                 <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
                 <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
                 <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
-                <vxe-table-column type="index" width="60" fixed="left"></vxe-table-column>
+                <vxe-table-column type="seq" width="60" fixed="left"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
                     <template v-if="item.type == ''">
                         <vxe-table-column :key="index" header-align="center" align="center" :field="item.cel.id"
@@ -174,29 +171,6 @@
                         </vxe-table-column>
                     </template>
                 </template>
-
-                <!-- <vxe-table-column
-                    header-align="center"
-                    align="center"
-                    v-for="(cel,index) in laycell.uiCels"
-                    :key="index"
-                    :field="cel.id"
-                    :width="widths[index]"
-                    :title="cel.labelString"
-                    show-header-overflow
-                    show-overflow
-                    :sortable ="(cel.attr&0x400000)>0"
-                    :fixed="isFixed(index)"
-                >
-                    <template v-slot="{row,rowIndex}"> 
-                        <bip-grid-info
-                            :cds="cds"
-                            :cell="cel"
-                            :row="rowIndex"
-                            :bgrid="true"
-                        ></bip-grid-info>
-                    </template>
-                </vxe-table-column> -->
             </vxe-table>
             <template v-else>
                 <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex" class="accdiv">

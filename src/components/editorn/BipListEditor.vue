@@ -113,6 +113,9 @@ export default class BipListEditor extends Vue{
     dataChange(value:any){
         let str = ""
         if(this.multiple){
+            if(!Array.isArray(value)){
+                value = value.split(";")
+            }
             this.model1 = []
             value.forEach((item:string)=>{
                 if(item!==''){

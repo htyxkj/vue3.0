@@ -28,7 +28,7 @@
     "vue-ueditor-wrap": "^2.4.4",
     "vuex": "^3.1.1",
     "vuex-class": "^0.3.2",
-    "vxe-table": "^1.15.31",
+    "vxe-table": "^1.15.30",
     "vxe-table-plugin-element": "^1.5.6",
     "vxe-table-plugin-export-xlsx": "^1.6.0",
     "wangeditor": "^3.1.1",
