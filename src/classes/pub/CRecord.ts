@@ -1,11 +1,11 @@
 import CData from './CData';
 
 export default class CRecord {
-    c_state:number = 0
-    data:any
-    subs:Array<CData> = []
-    id:string = ''
-    oldpk:Array<any> = [];
+    c_state:number = 0 //行状态
+    data:any    //行数据
+    subs:Array<CData> = []  //子对象信息
+    id:string = ''  //行id
+    oldpk:Array<any> = [];  //主键修改储存旧主键值
     constructor(state:number=0){
         this.data = {}
         this.c_state = state

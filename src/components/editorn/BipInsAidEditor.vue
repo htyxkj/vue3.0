@@ -219,6 +219,10 @@ export default class BipInsAidEditor extends Vue{
             // this.$bus.$emit('cell_edit')
             this.getRefValues()
             this.cds.checkGS(this.cell);
+            this.cds.currRecord.c_state |= 2;
+            if(this.cds.ds_par){
+                this.cds.ds_par.currRecord.c_state |= 2;
+            }
         }
         if(close){
             setTimeout(() => {
