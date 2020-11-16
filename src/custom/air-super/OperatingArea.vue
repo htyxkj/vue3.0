@@ -125,6 +125,7 @@
                         <el-tabs v-model="activeName2" type="card">
                             <el-tab-pane label="春季" name="c" :style="activeName2Style">
                                 <el-checkbox :indeterminate="cIsIndeterminate" v-model="cCheckAll" @change="cCheckAllChange">全选</el-checkbox>
+                                <el-checkbox v-model="jqShowText" @change="jqShowTextChange">显示文字标注</el-checkbox>
                                 <el-checkbox-group class="opera" v-model="jqSelList" @change="checkBoxChange">
                                     <el-row v-for="(item,index) in operaCData" :key="index">
                                         <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -187,6 +188,7 @@
                             </el-tab-pane>
                             <el-tab-pane label="夏季" name="x" :style="activeName2Style">
                                 <el-checkbox :indeterminate="xIsIndeterminate" v-model="xCheckAll" @change="xCheckAllChange">全选</el-checkbox>
+                                <el-checkbox v-model="jqShowText" @change="jqShowTextChange">显示文字标注</el-checkbox>
                                 <el-checkbox-group class="opera" v-model="jqSelList" @change="checkBoxChange">
                                     <el-row v-for="(item,index) in operaXData" :key="index">
                                         <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -249,6 +251,7 @@
                             </el-tab-pane>
                             <el-tab-pane label="秋季" name="q" :style="activeName2Style">
                                 <el-checkbox :indeterminate="qIsIndeterminate" v-model="qCheckAll" @change="qCheckAllChange">全选</el-checkbox>
+                                <el-checkbox v-model="jqShowText" @change="jqShowTextChange">显示文字标注</el-checkbox>
                                 <el-checkbox-group class="opera" v-model="jqSelList" @change="checkBoxChange">
                                     <el-row v-for="(item,index) in operaQData" :key="index">
                                         <el-row style="padding-top:5px;border-top: 1px solid #f1f1f1;margin-bottom: 5px;">
@@ -464,129 +467,130 @@ import { GlobalVariable } from '@/utils/ICL';
 })
 export default class OperatingArea extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
-    @Provide() loading:any =0;
-    @Provide() style: string ="height:" + (this.height ? this.height - 20 : "400") + "px";
+    loading:any =0;
+    style: string ="height:" + (this.height ? this.height - 20 : "400") + "px";
     
-    @Provide() zyqSbuid:any = "F2005";
-    @Provide() jqSbuid:any = "F2015";
+    zyqSbuid:any = "F2005";
+    jqSbuid:any = "F2015";
 
-    @Provide() tMap:any = null;//地图对象
-    @Provide() editKid:any =null;//当前正在编辑的地图对象id
+    tMap:any = null;//地图对象
+    editKid:any =null;//当前正在编辑的地图对象id
 
     //左侧地址框
-    @Provide() localsearch: any = null; //地址搜索对象
-    @Provide() addressInput: any = null; //地址框
-    @Provide() cityColor:string = "#FBFF00";//区县边界颜色
-    @Provide() areaWidth:any = 0;//左侧行政区区县宽度
-    @Provide() expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
-    @Provide() keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
-    @Provide() expandedLevel: any = -1; //默认展开级次数
-    @Provide() fatherID: any = "parid"; //树状结构上下级关系字段
-    @Provide() defaultProps: any = { label: "name", children: 'children', };
-    @Provide() treeData:any=[];//行政区树状数据
-    @Provide() areaMap:any ={};//行政区地图覆盖物
-    @Provide() areaKv:any={};//行政区域  值  key  集合
-    @Provide() areaBtnOpen:boolean = false;//行政区是否展开
+    localsearch: any = null; //地址搜索对象
+    addressInput: any = null; //地址框
+    cityColor:string = "#FBFF00";//区县边界颜色
+    areaWidth:any = 0;//左侧行政区区县宽度
+    expandedKeys: any = []; //行政区默认展开的节点的 key 的数组
+    keyID: any = "id"; //每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
+    expandedLevel: any = -1; //默认展开级次数
+    fatherID: any = "parid"; //树状结构上下级关系字段
+    defaultProps: any = { label: "name", children: 'children', };
+    treeData:any=[];//行政区树状数据
+    areaMap:any ={};//行政区地图覆盖物
+    areaKv:any={};//行政区域  值  key  集合
+    areaBtnOpen:boolean = false;//行政区是否展开
 
 
     //右侧作业区
-    @Provide() activeName1: string = "first";//右侧选项卡默认选中卡片
-    @Provide() activeName1Style:string ="height:" + (this.height ? this.height - 65 : "400") + "px;";//作业区，起降点高度样式
-    @Provide() activeName2:string ='c'//春夏秋默认选中卡
-    @Provide() activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";//架区高度样式
-    @Provide() operaBtnOpen:boolean = false;//右侧是否展开
-    @Provide() operaWidth:any =0;//右侧作业区集合列表宽度
+    activeName1: string = "first";//右侧选项卡默认选中卡片
+    activeName1Style:string ="height:" + (this.height ? this.height - 65 : "400") + "px;";//作业区，起降点高度样式
+    activeName2:string ='c'//春夏秋默认选中卡
+    activeName2Style:string ="height:" + (this.height ? this.height - 95 : "400") + "px";//架区高度样式
+    operaBtnOpen:boolean = false;//右侧是否展开
+    operaWidth:any =0;//右侧作业区集合列表宽度
 
 
     //查找
-    @Provide() TJCELL:string = "FW2015TJ";//作业区查询条件对象
-    @Provide() showOperaDia:boolean = false;//是否显示查找对象窗口
-    @Provide() operaSelCell:CDataSet = new CDataSet(""); //作业区对象(查询条件)
+    TJCELL:string = "FW2015TJ";//作业区查询条件对象
+    showOperaDia:boolean = false;//是否显示查找对象窗口
+    operaSelCell:CDataSet = new CDataSet(""); //作业区对象(查询条件)
     
     //架区
-    @Provide() showSaveOperaDia:boolean = false;//架区保存弹出框是否显示
-    @Provide() operaCellID:string ="FW2015";//架区对象码
-    @Provide() operaTJCellID:string ="FW2015TJ";//起降点对象码
-    @Provide() operaSaveCellID:string = "F2045";//架区对象
-    @Provide() operaSaveCell:CDataSet = new CDataSet(""); //架区对象(保存)
-    @Provide() operaCData:any ={};//架区春季数据集合
-    @Provide() cIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
-    @Provide() cCheckAll = false;//春季架区全选
-    @Provide() operaXData:any ={};//架区夏季数据集合
-    @Provide() xIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
-    @Provide() xCheckAll = false;//夏季架区全选
-    @Provide() operaQData:any ={};//架区秋季数据集合
-    @Provide() qIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
-    @Provide() qCheckAll = false;//秋季架区全选
-    @Provide() jqSelList:any =[];//架区选中集合
-    @Provide() jqMapData:any = {};//架区地图覆盖物对象
-    @Provide() jqMapTextData:any = {};//架区地图文字对象
-    @Provide() operaLine:any =null;//天地图架区 画线对象
-    @Provide() operaPolygon:any =null;//天地图架区 画面对象
-    @Provide() checkkid:any = null;//当前页选中的作业区ID 在勾选避让区域时用到
+    showSaveOperaDia:boolean = false;//架区保存弹出框是否显示
+    operaCellID:string ="FW2015";//架区对象码
+    operaTJCellID:string ="FW2015TJ";//起降点对象码
+    operaSaveCellID:string = "F2045";//架区对象
+    operaSaveCell:CDataSet = new CDataSet(""); //架区对象(保存)
+    operaCData:any ={};//架区春季数据集合
+    cIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
+    cCheckAll = false;//春季架区全选
+    operaXData:any ={};//架区夏季数据集合
+    xIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
+    xCheckAll = false;//夏季架区全选
+    operaQData:any ={};//架区秋季数据集合
+    qIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
+    qCheckAll = false;//秋季架区全选
+    jqSelList:any =[];//架区选中集合
+    jqMapData:any = {};//架区地图覆盖物对象
+    jqMapTextData:any = {};//架区地图文字对象
+    operaLine:any =null;//天地图架区 画线对象
+    operaPolygon:any =null;//天地图架区 画面对象
+    checkkid:any = null;//当前页选中的作业区ID 在勾选避让区域时用到
+    jqShowText:any = true;//架区是否显示名字
 
     //架区合并
-    @Provide() jqMergeCell:CDataSet = new CDataSet(""); //架区合并对象(保存)
-    @Provide() jqMergeCellID:string = "F2046";
-    @Provide() showSaveHBOperaDia:boolean = false;//是否显示合并弹框
+    jqMergeCell:CDataSet = new CDataSet(""); //架区合并对象(保存)
+    jqMergeCellID:string = "F2046";
+    showSaveHBOperaDia:boolean = false;//是否显示合并弹框
 
 
     //避让点
-    @Provide() showSaveOperaBrDia:boolean = false;//显示比避让区 保存弹框
-    @Provide() operaBrCellID:string ="F2015A";//避让
-    @Provide() operaBrCell:CDataSet = new CDataSet(""); //避让对象(保存)
-    @Provide() operaBrLine:any =null;//天地图架区避让点 画线对象
-    @Provide() operaBrPolygon:any = null;//天地图架区避让点 画面对象
-    @Provide() operaBrCircle:any = null;//天地图架区避让点 画圆对象
-    @Provide() operaBrMarker:any = null;//天地图架区避让点 画点对象
-    @Provide() brMapData:any = {};//必让地图标注对象
-    @Provide() brMapTextData:any = null;//必让点地图标注对象
-    @Provide() editBrk:any = null;//当前正在进行保存的避让点 已经弹出保存框了
-    @Provide() operaBrData: any = {}; //避让区数据{架区：避让区集合}
-    @Provide() operaBrJSON: any = {}; //避让区数据每一条{key : 避让区}
+    showSaveOperaBrDia:boolean = false;//显示比避让区 保存弹框
+    operaBrCellID:string ="F2015A";//避让
+    operaBrCell:CDataSet = new CDataSet(""); //避让对象(保存)
+    operaBrLine:any =null;//天地图架区避让点 画线对象
+    operaBrPolygon:any = null;//天地图架区避让点 画面对象
+    operaBrCircle:any = null;//天地图架区避让点 画圆对象
+    operaBrMarker:any = null;//天地图架区避让点 画点对象
+    brMapData:any = {};//必让地图标注对象
+    brMapTextData:any = null;//必让点地图标注对象
+    editBrk:any = null;//当前正在进行保存的避让点 已经弹出保存框了
+    operaBrData: any = {}; //避让区数据{架区：避让区集合}
+    operaBrJSON: any = {}; //避让区数据每一条{key : 避让区}
     
 
 
     //作业区
-    @Provide() zyqCelID:string = "F2015"
-    @Provide() zyqCell:CDataSet = new CDataSet("");//作业区区对象
-    @Provide() showSavezyqDia:boolean = false;//是否显示作业区保存dia
-    @Provide() zyqJsonData:any = {};//作业区json格式数据
-    @Provide() zyqIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
-    @Provide() zyqCheckAll:boolean = false;//作业区全选
-    @Provide() zyqSelList:any =[];//作业区选中列表
-    @Provide() zyqMapData:any ={};//作业区地图数据
-    @Provide() zyqMapTextData:any ={};//作业区地图文字数据
-    @Provide() letter:any = ['A','B','C','D','E','F','G','H','I','G','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']//作业区点
-    @Provide() makeABCD:any={};//作业区四角标识
-    @Provide() checkedABCD:any = [];//新填作业区四角坐标
-    @Provide() ckABCDCallout:any=[];//新增作业区地图标注点
-    @Provide() sbqMarkerPoint:any = null;//作业区标注点对象
-    @Provide() zyqPointABCD:any=[];//已勾选的作业区的四角坐标集合
+    zyqCelID:string = "F2015"
+    zyqCell:CDataSet = new CDataSet("");//作业区区对象
+    showSavezyqDia:boolean = false;//是否显示作业区保存dia
+    zyqJsonData:any = {};//作业区json格式数据
+    zyqIsIndeterminate:boolean = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
+    zyqCheckAll:boolean = false;//作业区全选
+    zyqSelList:any =[];//作业区选中列表
+    zyqMapData:any ={};//作业区地图数据
+    zyqMapTextData:any ={};//作业区地图文字数据
+    letter:any = ['A','B','C','D','E','F','G','H','I','G','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']//作业区点
+    makeABCD:any={};//作业区四角标识
+    checkedABCD:any = [];//新填作业区四角坐标
+    ckABCDCallout:any=[];//新增作业区地图标注点
+    sbqMarkerPoint:any = null;//作业区标注点对象
+    zyqPointABCD:any=[];//已勾选的作业区的四角坐标集合
 
     //起降点
-    @Provide() liftIsIndeterminate = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
-    @Provide() liftCheckAll = false;//起降点全选
-    @Provide() liftLableCheck = true;//起降点是否显示文字标识
-    @Provide() liftSelList:any = [];//起降点选中列表
-    @Provide() liftCellID:string ="20200203";//起降点对象码
-    @Provide() liftTJCellID:string ="20200203TJ";//起降点对象码
-    @Provide() liftCell:CDataSet = new CDataSet(""); //起降点对象
-    @Provide() liftJsonData:any ={};//起降点json格式集合
-    @Provide() liftMapData:any ={};//起降点地图数据
-    @Provide() liftMapTextData:any ={};//起降点地图文字数据
-    @Provide() liftLineTool:any =null;//起降点编辑工具
-    @Provide() showLiftDialog:any =false;//起降点保存对象弹框
+    liftIsIndeterminate = false; //用以表示 checkbox 的不确定状态，一般用于实现全选的效果
+    liftCheckAll = false;//起降点全选
+    liftLableCheck = true;//起降点是否显示文字标识
+    liftSelList:any = [];//起降点选中列表
+    liftCellID:string ="20200203";//起降点对象码
+    liftTJCellID:string ="20200203TJ";//起降点对象码
+    liftCell:CDataSet = new CDataSet(""); //起降点对象
+    liftJsonData:any ={};//起降点json格式集合
+    liftMapData:any ={};//起降点地图数据
+    liftMapTextData:any ={};//起降点地图文字数据
+    liftLineTool:any =null;//起降点编辑工具
+    showLiftDialog:any =false;//起降点保存对象弹框
     
 
     
     //防治计划上报
-    @Provide() planCelID:string ="F2030";
-    @Provide() planCell:CDataSet = new CDataSet("");//防治计划上报
+    planCelID:string ="F2030";
+    planCell:CDataSet = new CDataSet("");//防治计划上报
 
     //作业区地图
-    @Provide() tmap1Style:string ="width:7000px;height:7000px";
-    @Provide() TMap1:any = null;//作业区截图地图对象
+    tmap1Style:string ="width:7000px;height:7000px";
+    TMap1:any = null;//作业区截图地图对象
 
     async created() {
         if (this.height) {
@@ -1162,6 +1166,7 @@ export default class OperatingArea extends Vue {
             }
         }
         data = data.concat(merID)
+        let points:any =[];
         for (let key in this.jqMapData) {
             let ka = key.split("|")[0];
             if (data.indexOf(ka) == -1) {
@@ -1177,6 +1182,15 @@ export default class OperatingArea extends Vue {
                     this.delAllBr(key);
                 }
             }
+            let md = this.jqMapData[key];
+            let ht = md.ht
+            if(Array.isArray(ht))
+                ht = ht[0];
+            points = points.concat(ht)
+        }
+        if(points.length>0){
+            let t1 = this.tMap.getViewport(points);
+            this.tMap.panTo(t1.center, t1.zoom);
         }
     }
     /**
@@ -1523,8 +1537,6 @@ export default class OperatingArea extends Vue {
         let points = cc[1];
         //向地图上添加面
         this.tMap.addOverLay(polygon);
-        let t1 = this.tMap.getViewport(points);
-        this.tMap.panTo(t1.center, t1.zoom);
         this.jqMapData[operid] = polygon;
         let text = d1.name;  
         if (d1.area != 0 && d1.sbuid != 'F2005') {
@@ -1532,6 +1544,7 @@ export default class OperatingArea extends Vue {
         }
         let index = parseInt((points.length/2)+"")
         let label = this.makeOperaLableTXT(points[index],text,15);
+        if(this.jqShowText)
         this.tMap.addOverLay(label);
         this.jqMapTextData[operid] = label;
         if(edit){
@@ -1926,6 +1939,17 @@ export default class OperatingArea extends Vue {
             }
         }
         this.$forceUpdate();
+    }
+    //是否显示架区文字提示发生变化
+    jqShowTextChange(val:any){
+        for(var key in this.jqMapTextData){
+            let lable = this.jqMapTextData[key];
+            if(val){
+                this.tMap.addOverLay(lable);
+            }else{
+                this.tMap.removeOverLay(lable);
+            }
+        }
     }
 
 /*********************** 避让点END **********************************/

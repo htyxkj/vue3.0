@@ -21,6 +21,12 @@
                     <span>刷新</span>
                 </el-button>
             </div> 
+            <div class="topdiv2"><!-- 导入 -->
+                <el-button style="border:0px" @click="impExcel">      
+                    <i class="iconfont icon-bip-ruku" ></i>
+                    <span>导入</span>
+                </el-button>
+            </div> 
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
             <el-header style="height: auto;">
@@ -167,6 +173,7 @@
                 <el-button type="primary" @click="saveNewDate" size="mini">确 定</el-button>
             </span>
         </el-dialog>
+        <im-ex-file :cellID="'IMP3002B05WEB'" ref="imExFile" @Recheck="initDataPrice"></im-ex-file>
     </el-container>
 </template>
 <script lang="ts">
@@ -183,10 +190,12 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import moment from 'moment'
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
+import ImExFile from '@/components/file/ImExFile.vue';
 @Component({
     components: {
         Accounting,
-        BipGridInfo
+        BipGridInfo,
+        ImExFile
     }
 })
 /**
@@ -613,6 +622,11 @@ export default class TradingPrice extends Vue {
 
         })
         return isok;
+    }
+    //导入
+    impExcel(){
+        let file:any = this.$refs.imExFile
+        file.open()
     }
     @Watch("height")
     heightChange() {

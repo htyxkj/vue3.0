@@ -94,7 +94,7 @@
                 <el-button type="primary" @click="addModelA" size="mini">确 定</el-button>
             </span>
         </el-dialog>
-        <im-ex-file :cellID="'IMP300104WEB;IMP300104A2WEB'" ref="imExFile" @Recheck="initModelData"></im-ex-file>
+        <im-ex-file :cellID="'IMP300104A2WEB'" ref="imExFile" @Recheck="initModelData"></im-ex-file>
     </el-container>
 </template>
 <script lang="ts">
