@@ -4,14 +4,14 @@
         <span slot="title">
             <div class="el-dialog__title" style="padding-bottom:5px">{{Title}}</div>
         </span>
-        <div @keyup.enter="searchInsAidDatas" class="search" >
-                <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >
-                    <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
-                        <el-option label="全局匹配" value="-1"></el-option>
-                        <el-option v-for="(item,index) in 2" :key="'TJ'+index" :label="item" :value="item"></el-option>
-                    </el-select>
-                    <el-button slot="append" icon="el-icon-search" @click="searchInsAidDatas"></el-button>
-                </el-input>
+        <div @keyup.enter="searchInsAidDatasByCon" class="search" >
+            <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >
+                <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
+                    <el-option label="全局匹配" value="-1"></el-option>
+                    <el-option v-for="(item,index) in 2" :key="'TJ'+index" :label="item" :value="item"></el-option>
+                </el-select>
+                <el-button slot="append" icon="el-icon-search" @click="searchInsAidDatasByCon"></el-button>
+            </el-input>
         </div>
         <el-table ref="assTable" height="250"
             :data="datas" size="mini" border stripe
@@ -211,6 +211,13 @@ export default class BipPopView extends Vue{
         }
         if(cc)
             this.$emit('select',cc,close)
+    }
+    /**
+     * 输入条件点击查找
+     */
+    searchInsAidDatasByCon(){
+        this.qe.page.currPage = 1;
+        this.searchInsAidDatas();
     }
 
     async searchInsAidDatas(){
