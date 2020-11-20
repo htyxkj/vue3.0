@@ -513,8 +513,10 @@ export default class BipMenuBtnDlg extends Vue {
                 data0.data[cel.id] = newData.data[cel.id]
             }
         }
-        for (var obj in data[0].data) {
-           data1.data[obj] = data[0].data[obj];
+        if(data && data.length>0){
+            for (var obj in data[0].data) {
+            data1.data[obj] = data[0].data[obj];
+            }
         }
         for (var obj in data0.data) {
            data1.data[obj] = data0.data[obj];
