@@ -219,9 +219,10 @@ export default class BipFileInfo extends Vue {
         console.log("uploadVideoProcess")
     }
     makePath(){
+        let time = new Date().getTime();
         const key = 999;
         let add1 = Math.floor(Math.random() * (key));
-        return add1;
+        return add1+"_"+time;
     }
 
 
