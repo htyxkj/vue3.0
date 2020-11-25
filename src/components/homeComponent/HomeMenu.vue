@@ -40,7 +40,7 @@
         </el-scrollbar>
       </template>
     </div>
-    <el-dialog title="菜单选择"  class="bipinsaid" :visible.sync="showMenuList" width="40%"  :append-to-body="true" >
+    <el-dialog title="菜单选择"  class="bipinsaid" :visible.sync="showMenuList" width="50%"  :append-to-body="true" >
         <el-transfer :titles="['可选菜单', '已选菜单']" v-model="selection" :props="{key: 'menuId',label: 'menuName'}" 
         :data="optionalMenu" filterable style="margin: 20px 0px 5px 26px;" @change="selectionChange">
         </el-transfer>

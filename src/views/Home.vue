@@ -16,7 +16,7 @@
         </template>
       </grid-layout>
     </el-scrollbar>
-    <el-dialog title="组件选择"  class="bipinsaid" :visible.sync="showCoList" width="40%"  :append-to-body="true" >
+    <el-dialog title="组件选择"  class="bipinsaid" :visible.sync="showCoList" width="50%"  :append-to-body="true" >
       <el-transfer :titles="['可选组件', '已选组件']" v-model="selection" :props="{key: 'sid',label: 'sname'}" 
       :data="CoList" filterable style="margin: 20px 0px 5px 26px;"></el-transfer>
       <hr/>
