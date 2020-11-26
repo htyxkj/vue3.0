@@ -230,11 +230,11 @@ export default class Home extends Vue {
         }
         let bh = false;
         for(var j= this.layout.length-1 ;j>=0;j--){
-          let dd = this.layout[j];
-          dd.i=i;
-          if(dd.sid == cc.sid){
-            dd.state=2;
-            newLayout.push(dd);
+          let zz = this.layout[j];
+          zz.i=i;
+          if(zz.sid == cc.sid){
+            zz.state=2;
+            newLayout.push(zz);
             bh =true;
             this.layout.splice(j,1);
           }

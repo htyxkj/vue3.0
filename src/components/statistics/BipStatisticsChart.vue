@@ -103,7 +103,6 @@ export default class BipStatisticsDialog extends Vue {
     }
 
     async searchData() {
-        console.log(this.stat)
         this.tjcell=null;
         this.fullscreenLoading = true;
         this.selValue = this.stat.selValue;
@@ -1533,7 +1532,7 @@ export default class BipStatisticsDialog extends Vue {
     @Watch("height")
     chartHeightChange(){
         if(this.height){
-            this.chartStyle = "height :"+(this.height-50)+"px;";
+            this.chartStyle = "height :"+(this.height-2)+"px;";
         }else{
             this.chartStyle = "height :400px;";
         }
