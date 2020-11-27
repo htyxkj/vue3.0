@@ -158,8 +158,8 @@ export namespace BIPUtil {
      * @description 导出Excel文件
      * @param qe QueryEntity对象
      */
-    queryExcel(qe:QueryEntity){
-        let param = tool.getExcelParams(JSON.stringify(qe));
+    queryExcel(qe:QueryEntity,biType:any){
+        let param = tool.getExcelParams(JSON.stringify(qe),biType);
         return this.fileDown(param);
     }
     /**

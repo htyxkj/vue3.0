@@ -146,13 +146,14 @@ export namespace BIPUtils {
      * @param qe 查询条件
      * @returns 返回的是一个Object{xxx:xxx}
      */
-    getExcelParams(qe: string) {
+    getExcelParams(qe: string,biType:any) {
       return Object.assign({
         apiId: GlobalVariable.APIID_EXPDATA,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID,
         usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
           .userCode,
-        qe: qe
+        qe: qe,
+        biType:biType
       });
     }
     /**

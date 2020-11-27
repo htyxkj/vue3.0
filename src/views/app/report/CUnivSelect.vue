@@ -309,18 +309,19 @@ export default class CUnivSelect extends Vue {
         this.fullscreenLoading=true;
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
+        this.qe.type = 1
         if(this.biType == "SEL")
             this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
         else if(this.biType == "RPT" || this.biType == "SQL"){
+            this.qe.type = 2
             this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
         }
         this.qe.oprid = 13
-        this.qe.type = 1
         this.qe.page.pageSize = 20
         setTimeout(() => {
             this.fullscreenLoading=false;
         }, 6000);
-        var res = await tools.queryExcel(this.qe);
+        var res = await tools.queryExcel(this.qe,this.biType);
         this.fullscreenLoading=false;
         const content = res.data;
         let me:Menu = baseTool.findMenu(this.$route.query.pmenuid+'');

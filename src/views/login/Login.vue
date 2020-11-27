@@ -184,7 +184,7 @@ export default class Login extends Vue {
 }
 .login-card {
   height: 350px;
-  width: 480px;
+  width: 500px;
   position: fixed;
   left: 50%;
   top: 50%;
