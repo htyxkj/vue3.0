@@ -1,34 +1,42 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
+        
         <div class="bip-main-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
-                <template v-if="!initShowChar">
-                    <template v-if="!TJ">
-                        <div class="bip-main-container" v-if="lay.binit">
-                            <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
-                                <div ref="se" @keyup.enter="find">
-                                    <bip-search-cont :env="env" ></bip-search-cont>
-                                </div>
-                                <el-form @submit.native.prevent label-position="right" label-width="120px">
-                                    <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
-                                </el-form>
-                            </el-scrollbar>
-                        </div>
+                <template v-if="!isShowMap">
+                    <template v-if="!initShowChar">
+                        <template v-if="!TJ">
+                            <div class="bip-main-container" v-if="lay.binit">
+                                <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+                                    <div ref="se" @keyup.enter="find">
+                                        <bip-search-cont :env="env" ></bip-search-cont>
+                                    </div>
+                                    <el-form @submit.native.prevent label-position="right" label-width="120px">
+                                        <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                                    </el-form>
+                                </el-scrollbar>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <!-- 统计结果展示 -->
+                            <bip-statistics-chart :stat="Statistics" :env="env" :showBack="true" :showTable="true" @goTable="goTable"></bip-statistics-chart>
+                        </template>
                     </template>
                     <template v-else>
-                        <!-- 统计结果展示 -->
-                        <bip-statistics-chart :stat="Statistics" :env="env" :showBack="true" :showTable="true" @goTable="goTable"></bip-statistics-chart>
+                        <template v-if="env && env.dsm && env.dsm.ccells">
+                            <el-row :gutter="10">
+                                <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
+                                    <bip-statistics-chart ref="childChart" :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
+                                </el-col>
+                            </el-row>
+                        </template>
                     </template>
                 </template>
                 <template v-else>
-                    <template v-if="env && env.dsm && env.dsm.ccells">
-                        <el-row :gutter="10">
-                            <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                <bip-statistics-chart ref="childChart" :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
-                            </el-col>
-                        </el-row>
-                    </template>
+                    123
+                    <bip-map-show></bip-map-show>
+                    123
                 </template>
                 <template v-if="TJDlog">
                     <!-- 统计项弹框选择 -->
@@ -49,6 +57,7 @@ import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
 import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
 import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
 import ImExFile from '@/components/file/ImExFile.vue';
+import BipMapShow from '@/components/map/ui/BipMapShow.vue';
 
 import { URIParams } from "@/classes/URIParams";
 import { BIPUtil } from "@/utils/Request";
@@ -77,7 +86,7 @@ import { Menu } from '../../../classes/Menu';
 // import BipLayConf from '../../../classes/ui/BipLayConf';
 // import { truncate } from 'fs';
 @Component({
-    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg,ImExFile}
+    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg,ImExFile,BipMapShow}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
@@ -102,6 +111,9 @@ export default class CUnivSelect extends Vue {
     @Provide() biType?:string;
     @Provide() config:any={};
 
+    isMap:boolean = false;      //是否是地图页面
+    isShowMap:boolean = false;  //是否是显示地图
+
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -125,6 +137,17 @@ export default class CUnivSelect extends Vue {
                 if(this.uriParams && this.uriParams.pbds.importCellId){
                     let btn = new BipMenuBtn(ICL.B_CMD_UPFILE,"导入")
                     btn.setIconFontIcon('ruku');
+                    this.mbs.menuList.push(btn)
+                }
+                let _isMp = false;
+                if(this.uriParams && this.uriParams.pbds.ismap){
+                    _isMp = JSON.parse(this.uriParams.pbds.ismap)
+                }
+                if(_isMp){
+                    this.isMap = true;
+                    this.isShowMap = true;
+                    let btn = new BipMenuBtn(ICL.B_CMD_SHOWMAP,"地图/列表")
+                    btn.setIconFontIcon('icon-ditu');
                     this.mbs.menuList.push(btn)
                 }
                 this.listIndex = this.findListMenuIndex("LIST");
@@ -300,6 +323,11 @@ export default class CUnivSelect extends Vue {
                     }
                 }
             }
+        }else if(cmd === 'SHOWMAP'){
+            this.isShowMap = !this.isShowMap;
+        }
+        if(cmd != 'SHOWMAP'){
+            this.isShowMap = false;
         }
     }
     /**导出Excel */
