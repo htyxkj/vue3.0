@@ -19,6 +19,7 @@
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator" 
 import CCliEnv from "@/classes/cenv/CCliEnv";
+import CDataSet from "@/classes/pub/CdataSet"
 import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 @Component({})
@@ -82,43 +83,43 @@ export default class BipYGXZDia extends Vue{
         let b = JSON.stringify(this.btn);
         let jsonv = {users:this.checkUser,lbno:this.lbno,yymm:this.yymm}
         let v = JSON.stringify(jsonv); 
-        await tools.getDlgRunClass(v,b).then(res =>{
-            if(res.data.id==0 && this.env.dsm.canEdit){
-                let values = res.data.data.values;
-                let dsm:any = this.env.dsm.ds_sub[0];
-                dsm.clear();
-                dsm.currRecord = null;
-                this.$bus.$emit('datachange',dsm.ccells.obj_id);
-                for(var i=0;i<values.length;i++){
-                    dsm.createRecord();
-                    dsm.currRecord.c_state |= 2;
-                    if(dsm.ds_par){
-                        dsm.ds_par.currRecord.c_state |= 2;
-                    }
-                    let vl = values[i];
-                    let userID = vl.userid;
-                    let ygdata = this.jsonVal[userID];
-                    for(var rkey in this.refer){
-                        let to =rkey;
-                        let fm = this.refer[rkey];
-                        dsm.currRecord.data[to] = ygdata[fm];
-                    }
-                    for(var vkey in vl){
-                        if(vkey !='userid'){
-                            dsm.currRecord.data[vkey] = vl[vkey];
-                        }
+        let res = await tools.getDlgRunClass(v,b);//.then(res =>{
+        if(res.data.id==0 && this.env.dsm.canEdit){
+            let values = res.data.data.values;
+            let dsm:CDataSet = this.env.dsm.ds_sub[0];
+            dsm.clear();
+            for(var i=0;i<values.length;i++){
+                dsm.createRecord();
+                dsm.currRecord.c_state |= 2;
+                if(dsm.ds_par){
+                    dsm.ds_par.currRecord.c_state |= 2;
+                }
+                let vl = values[i];
+                let userID = vl.userid;
+                let ygdata = this.jsonVal[userID];
+                for(var rkey in this.refer){
+                    let to =rkey;
+                    let fm = this.refer[rkey];
+                    dsm.currRecord.data[to] = ygdata[fm];
+                }
+                for(var vkey in vl){
+                    if(vkey !='userid'){
+                        dsm.currRecord.data[vkey] = vl[vkey];
                     }
                 }
-            }else{ 
-                this.$notify.error(res.data.message)
+                await dsm.checkAllGS();
             }
-            this.visibles = false;
-            loading.close();
-        }).catch(err=>{
-            this.$notify.error(err+";BipYGXZDia selectOK")
-        }).finally(()=>{
-            loading.close();
-        })
+            this.$bus.$emit('datachange',dsm.ccells.obj_id);
+        }else{ 
+            this.$notify.error(res.data.message)
+        }
+        this.visibles = false;
+        loading.close();
+        // }).catch(err=>{
+        //     this.$notify.error(err+";BipYGXZDia selectOK")
+        // }).finally(()=>{
+        //     loading.close();
+        // })
     }
  
 }

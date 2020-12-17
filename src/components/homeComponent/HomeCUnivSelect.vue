@@ -5,6 +5,7 @@
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
                         <div v-if="lay.binit">
+                            <template v-if="_cont">{{_cont.name}}</template>
                             <el-form @submit.native.prevent label-position="right" label-width="120px">
                                 <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                             </el-form>
@@ -55,6 +56,7 @@ import CData from '../../classes/pub/CData';
 export default class HomeCUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
+    @Prop() cont:any;
     @Prop() height!:number;
     @Provide() fullscreenLoading: boolean = false;
     @Provide() cells: Array<Cells> = new Array<Cells>();
@@ -78,6 +80,7 @@ export default class HomeCUnivSelect extends Vue {
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
+    _cont:any = {};
     async initUI() {
         if (this.uriParams&&this.uriParams.pcell) {
             let pcell = this.uriParams.pcell
@@ -125,6 +128,9 @@ export default class HomeCUnivSelect extends Vue {
     }
 
     async mounted(){
+        if(this.cont){
+            this._cont = JSON.parse(this.cont);
+        }
         this.biType="SEL" 
         if(this.uriParams){
             if(this.uriParams.pclass=='inetbas.cli.systool.CRptTool'){
@@ -478,6 +484,7 @@ export default class HomeCUnivSelect extends Vue {
 </script>
 <style  lang="scss" scoped>
 .bip-home-container {
+    background-color: white;
     position: fixed; 
     height: calc(100%)  !important;
     z-index: 1;

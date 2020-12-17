@@ -5,6 +5,8 @@ export class Cells {
   canAppend: boolean = true;
   cels: Array<Cell> = [];
   desc: string = "";
+  exTbName:string = "";//关联表
+  tbName:string = "";//当前表
   editble: boolean = true;
   haveChild: boolean = true;
   index: number = 0;

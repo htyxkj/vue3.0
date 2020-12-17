@@ -333,6 +333,8 @@ export default class Home extends Vue {
             let res = await this.myDesktop.saveData()
             if(res.data.id == 0 ){
                 state++;
+            }else {
+              console.log(res)
             }
             cc.state =2;
         }
@@ -549,7 +551,7 @@ export default class Home extends Vue {
     position: absolute;
     top: 0;
     left: 0;
-    margin: 8px;
+    margin: 0px 8px;
     width: 70%;
   }
   .inner > div > i{

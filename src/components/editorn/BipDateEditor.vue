@@ -136,6 +136,11 @@ export default class BipDateEditor extends Vue{
                 this.dateFormat = 'yyyy-MM-dd HH:mm:ss'
                 if(!this.bgrid && this.condition)
                     this.dateType = "datetimerange";
+            }else if(this.cell.type===91){
+                this.dateType = 'date'
+                this.dateFormat = 'yyyy-MM-dd'
+                if(!this.bgrid && this.condition)
+                    this.dateType = "daterange";
             }else if(this.cell.editName == 'YM'){
                 this.dateType = 'month';
                 this.dateFormat = 'yyyyMM'
@@ -345,9 +350,11 @@ export default class BipDateEditor extends Vue{
     }
     @Watch("model")
     cdataSetRecordChange(){
-        if(this.cds&&this.cell){
-            if( this.model1 != this.model){
-                this.model1 = this.model
+        if(this.model != 'Invalid date'){
+            if(this.cds&&this.cell){
+                if( this.model1 != this.model){
+                    this.model1 = this.model
+                }
             }
         }
     }

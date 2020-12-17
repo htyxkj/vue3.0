@@ -80,6 +80,25 @@
                 </span>
             </el-dialog>
         </el-dialog>
+
+        <el-dialog title="桌面报表" class="bip-search " width="35%" :visible.sync="desktopListDlg" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+            <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
+                <el-row style="padding:10px 45px 0px 25px">
+                    <el-form-item class="bip-form-item" label="方案名称" :required="true">
+                        <el-input v-model="dlProgram.name" placeholder="请输入内容"></el-input>
+                    </el-form-item>  
+                    <el-form-item class="bip-form-item" label="显示条件项" :required="true">
+                        <el-radio v-model="dlProgram.ishowtj"  :label='true' style="margin-left: 20px;" >是</el-radio>
+                        <el-radio v-model="dlProgram.ishowtj"  :label='false' >否</el-radio>
+                    </el-form-item>        
+                </el-row> 
+            </el-form> 
+            <hr/>
+            <span slot="footer" class="dialog-footer" style="padding-top:0px">
+                <el-button @click="desktopListDlg=false" size="mini">取  消</el-button>
+                <el-button @click="desktopSave" type="primary" size="mini">保存组件</el-button>    
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts">
@@ -96,32 +115,36 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 @Component({
     components:{BipFigureTypeDialog}
 })
 export default class BipStatisticsDialog extends Vue {
     @Prop() env!:CCliEnv;
-    @Provide() dialogVisible: boolean = false;
-    @Provide() saveProgram: boolean = false;
-    @Provide() selX1:any = null;
-    @Provide() selX2:any = null;
-    @Provide() selGroup:any =[];
-    @Provide() selValue:any = null;
-    @Provide() chartTypeValue:any=0;
-    @Provide() showChart:boolean = true;
-    @Provide() groupCells:Array<Cell>=[]
-    @Provide() valuesCells:Array<Cell>=[]
-    @Provide() program:any={name:"",state:"save",isdesktop:false};
-    @Provide() programEnv:any=null;
-    @Provide() showSelX2:boolean=false;//是否是堆叠系列
-    @Provide() ProgramList :Array<any> = new Array<any>()
-    @Provide() programModel:any = -1;
-    @Provide() chartT:any = {
+    dialogVisible: boolean = false;
+    saveProgram: boolean = false;
+    selX1:any = null;
+    selX2:any = null;
+    selGroup:any =[];
+    selValue:any = null;
+    chartTypeValue:any=0;
+    showChart:boolean = true;
+    groupCells:Array<Cell>=[]
+    valuesCells:Array<Cell>=[]
+    program:any={name:"",state:"save",isdesktop:false};
+    programEnv:any=null;
+    showSelX2:boolean=false;//是否是堆叠系列
+    ProgramList :Array<any> = new Array<any>()
+    programModel:any = -1;
+    chartT:any = {
         'line-0':'折线图', 'line-1':'折线面积图', 'line-2':'平滑折线图', 'line-3':'平滑面积折线图', 'line-4':'堆叠折线图',
         'line-5':'堆叠面积折线图', 'line-6':'平滑堆叠折线图', 'line-7':'平滑堆叠面积折线图',
         'bar-0':'柱状图','bar-1':'条形图','bar-2':'堆叠柱状图','bar-3':'堆叠条形图','bar-4':'堆叠柱状图','bar-5':'堆叠条形图',
         'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图',
     };
+    desktopListDlg:boolean = false;
+    dlProgram:any={name:"",menuid:'',ishowtj:false};
     mounted() {
         this.chartTypeValue = "line-0"; 
         this.groupCells = this.env.dsm.ccells.cels.filter(item=>{
@@ -136,6 +159,41 @@ export default class BipStatisticsDialog extends Vue {
         this.getProgram();
         this.dialogVisible = true;
     }
+
+    //将报表界面保存为桌面组件
+    openDesktopList(){
+        let MID_  = this.$route.query.pmenuid + "";
+        let menu = baseTool.findMenu(MID_);
+        if(menu){
+            this.dlProgram.name = menu.menuName;
+            this.dlProgram.menuid = MID_;
+        }
+        this.desktopListDlg=true;
+    }
+    //将报表保存为桌面组件
+    async desktopSave(){
+        let cds1:any = await this.getCell("INSDESK");
+        if(cds1 !=null){
+            let cell:CDataSet = cds1; 
+            cell.currRecord = cell.createOne();
+            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+            if(userAttr <=1){
+                cell.currRecord.data.usrcode = "*";
+            }
+            cell.currRecord.data.rech="{}"
+            cell.currRecord.data.comtype= "ReportList";
+            cell.currRecord.data.cont = JSON.stringify(this.dlProgram);
+            cell.currRecord.data.sname= this.dlProgram.name;
+            let res = await cell.saveData();
+            if(res.data.id == 0 ){
+                this.$notify.success("桌面组件保存成功！");
+            }else{
+                this.$notify.success("桌面组件保存失败！");
+            }
+        }
+        this.desktopListDlg=false;
+    }
+
     close(){
         this.dialogVisible = false;
     }

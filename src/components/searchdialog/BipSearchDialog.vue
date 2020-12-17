@@ -63,6 +63,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { State, Action, Getter, Mutation } from "vuex-class";
 import CDataSet from "@/classes/pub/CDataSet";
 import SearchEntity from "@/classes/SearchEntity";
 import { Cells } from "@/classes/pub/coob/Cells";
@@ -79,6 +80,7 @@ export default class BipSearchDialog extends Vue {
     @Provide() options: Array<any> = [];
     @Provide() searchValues: Array<SearchEntity> = [];
     @Provide() cells:Array<any> = []
+    @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
 
     
     tjCell1:CDataSet= new CDataSet("");
@@ -106,7 +108,7 @@ export default class BipSearchDialog extends Vue {
     open() {
         this.dialogVisible = true;
     }
-    addTJ(){
+    async addTJ(){
         let nn = this.cells.filter(item=>{
             return item.id === this.model
         })[0]
@@ -117,10 +119,38 @@ export default class BipSearchDialog extends Vue {
             cc.attr = cc.attr ^ (0x40)
         let s1 = new SearchEntity(cc)
         s1.cell.labelString="";
+        let str = s1.cell.refValue
+        if(str){
+           if(str.indexOf('&')>0){
+                str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
+                let aidMarkKey = this.cds_cont.ccells.obj_id + "_" + s1.cell.id+'_'+str;
+                let vars = {id:200,aid:str,ak:aidMarkKey}
+                let res = await this.fetchInsAid(vars);
+                if(res.data.id ==0){
+                    let bType = res.data.data.data.bType
+                    if(bType == 'CGroupEditor'){
+                        let groupFld = res.data.data.data.groupFld
+                        let grcell = this.cells.filter(item=>{
+                            return item.id === groupFld
+                        })[0]
+                        let _grcell = Object.assign({},grcell);
+                        _grcell.isReq = false;
+                        _grcell.ccHorCell = this.tjCell1.ccells.widthCell
+                        if((_grcell.attr &(0x40))>0)
+                            _grcell.attr = _grcell.attr ^ (0x40)
+                        let sgr = new SearchEntity(_grcell)
+                        sgr.cell.labelString="";
+                        this.searchValues.push(sgr);
+                    }
+                }
+           }
+        }
         this.searchValues.push(s1);
     }
 
     deleteItem(sitem:any){
+        this.tjCell1.currRecord.data[sitem.id] = null;
+        this.tjCell2.currRecord.data[sitem.id] = null;
         this.searchValues = this.searchValues.filter(item=>{return item.id != sitem.id})
     }
 

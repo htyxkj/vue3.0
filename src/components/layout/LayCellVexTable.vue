@@ -367,19 +367,35 @@ export default class LayCelVexTable extends Vue {
      * 表头最加样式
      */
     headerCellStyle(column:any){
-        let columnIndex = column.columnIndex;
-        let _columnIndex = column._columnIndex
-        columnIndex = _columnIndex
-        if(this.cds.ds_par){
-            columnIndex--;
-        }
-        // let cel =this.groupCells[columnIndex];
-        let cel:any = this.laycell.uiCels[columnIndex];
-        if(cel){
-            if((cel.attr & 0x2) >0){
-                return { color: 'red' }
+        let celid = column.column.property;
+        for(var i=0;i<this.laycell.uiCels.length;i++){
+            let cel:any = this.laycell.uiCels[i];
+            if(cel && cel.id == celid){
+                if((cel.attr & 0x2) >0){
+                    console.log("必填项")
+                    return { color: 'red' }
+                }
             }
         }
+        // if(column.column.children && column.column.children.length>0){
+        //     return;
+        // }
+        // let columnIndex = column.columnIndex;
+        // let _columnIndex = column._columnIndex
+        // if(!_columnIndex){
+        //     _columnIndex  = columnIndex
+        // }
+        // if(this.cds.ds_par){
+        //     columnIndex--;
+        // }
+        // // let cel =this.groupCells[columnIndex];
+        // let cel:any = this.laycell.uiCels[columnIndex];
+        // if(cel){
+        //     if((cel.attr & 0x2) >0){
+        //         console.log("必填项")
+        //         return { color: 'red' }
+        //     }
+        // }
     }
     /**
      * 报表内容单元格样式
@@ -820,17 +836,28 @@ export default class LayCelVexTable extends Vue {
         
         // this.rowCheckGS();
     }
-    rowCheckGS(){
+    async rowCheckGS(){
         console.log("CheckGS")
         for(var i=0;i<this.cds.cdata.data.length;i++){
             let crd = this.cds.getRecordAtIndex(i);
             let scriptProc = new BipScriptProc(crd, this.cds.ccells);
-            this.cds.ccells.cels.forEach(col => {
+            for(var i =0;i< this.cds.ccells.cels.length;i++){
+                let col:any = this.cds.ccells.cels[i];
                 let scstr = col.script;
                 if (scstr && scstr.indexOf("=:") === 0) {
                     scstr = scstr.replace("=:", "");
                     // 公式计算
-                    var vl = scriptProc.execute(scstr, "", col);
+                    var vl:any = "";
+                    if(scstr.indexOf("=:sql")>0){
+                        let res:any = await BIPUtil.ServApi.execClientGsSQL(this.cds.ccells.obj_id,this.cds.currRecord,col.id)
+                        if(res.data.id == 0){
+                            vl =  res.data.data.data
+                        }else{
+                            vl =  "";
+                        }
+                    }else{
+                        vl  = scriptProc.execute(scstr, "", col);
+                    }
                     if (vl instanceof Array) {
                     } else {
                         if (vl == "Invalid date") {
@@ -858,7 +885,8 @@ export default class LayCelVexTable extends Vue {
                         }
                     }
                 }
-            }); 
+            }
+            // }); 
         }
     }
     /**解析分组字段 目前只解析了固定表头 */

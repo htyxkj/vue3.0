@@ -6,7 +6,7 @@
             </div>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
-            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight' @openMenu="openMenu"></home-c-univ-select>
+            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight' :cont="cont" @openMenu="openMenu"></home-c-univ-select>
         </template>
     </el-row>
 </template>
@@ -29,6 +29,7 @@ export default class HomeReport extends Vue {
     @Prop() cont!:string;
     @Prop() rech!:string;
     @Prop() sid!:string;
+    @Prop() type!:string;
     @Provide() menuid:string = '';
     @Provide() uriParams: URIParams = new URIParams();
     @Provide() message:any = null;
@@ -45,7 +46,10 @@ export default class HomeReport extends Vue {
     }
     async init(){
         let cont = JSON.parse(this.cont) 
-        let rech = JSON.parse(this.rech)
+        let rech:any = {};
+        if(this.rech){
+            rech = JSON.parse(this.rech)
+        }
         this.menuid = cont.menuid;
         let menu = baseTool.findMenu(this.menuid); 
         if(menu ==  null){
@@ -55,25 +59,27 @@ export default class HomeReport extends Vue {
         }
         let pbuid = menu.command.split("&")[0].split("=")[1];
         let res = await tools.getMenuParams(pbuid,this.menuid);
-        if (res.data.id === 0) {
+        if (res.data.id === 0 ) {
             let uri = res.data.data.mparams;
-            uri.bgroupList = [];
-            let cc = {selGroup:"",selValue:"",chartTypeValue:'',showChart:false,width:24,title:''};
-            cc.selGroup = cont.spbds.split(",");
-            cc.selValue = cont.spflds.split(",");
-            cc.title = cont.sname;
-            cc.chartTypeValue = cont.charttype;
-            cc.showChart = cont.showchart ==1?true:false;
-            uri.bgroupList.push(cc);
-            uri.bgroup = cont.showchart ==1?true:false;
-            let ptran = "";
-            for(var key in rech){
-                ptran+= key+"="+rech[key]+"&"
-            };
-            if(ptran.length>1)
-            ptran = ptran.substring(0,ptran.length-1);
-            let pbds = {ptran:ptran};
-            uri.pbds = pbds
+            if(this.type == "Report"){//报表统计模式
+                uri.bgroupList = [];
+                let cc = {selGroup:"",selValue:"",chartTypeValue:'',showChart:false,width:24,title:''};
+                cc.selGroup = cont.spbds.split(",");
+                cc.selValue = cont.spflds.split(",");
+                cc.title = cont.sname;
+                cc.chartTypeValue = cont.charttype;
+                cc.showChart = cont.showchart ==1?true:false;
+                uri.bgroupList.push(cc);
+                uri.bgroup = cont.showchart ==1?true:false;
+                let ptran = "";
+                for(var key in rech){
+                    ptran+= key+"="+rech[key]+"&"
+                };
+                if(ptran.length>1)
+                ptran = ptran.substring(0,ptran.length-1);
+                let pbds = {ptran:ptran};
+                uri.pbds = pbds
+            }
             this.uriParams = uri;
         } else {
             console.log(res);

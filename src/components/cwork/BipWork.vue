@@ -176,7 +176,15 @@ export default class BipWork extends Vue{
                     this.stateId = this.chkInfos.list[0].stateId
                     this.chkInfos.list.forEach((item:any) => {
                         if(!item.users && item.stateId !='6'){
-                            this.$notify.error("节点："+item.stateName+" 未定义审批人！"); 
+                            if(!item.cnodes){
+                                this.$notify.error("节点："+item.stateName+" 未定义审批人！"); 
+                            }else{
+                                item.cnodes.forEach((item_n:any) => {
+                                    if(!item_n.users){
+                                        this.$notify.error("节点："+item_n.stateName+" 未定义审批人！"); 
+                                    }
+                                });
+                            }
                         }
                     });
                 }

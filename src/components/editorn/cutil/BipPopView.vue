@@ -121,6 +121,7 @@ export default class BipPopView extends Vue{
         this.multiple = (this.cell.attr & 0x200000)>0
         this.visibles = true
         if(this.bipInsAid.bType === 'CGroupEditor'){
+            console.log("CGroupEditor")
             let gfld = this.bipInsAid.sref;
             if(gfld){
                 let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);

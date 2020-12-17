@@ -11,9 +11,9 @@
                     <el-badge :value="taskNum" class="header_badge_item">
                         <i class="el-icon-mobile pointer" @click="myTask"></i>    
                     </el-badge>
-                    <el-badge :value="msgNum" class="header_badge_item">
+                    <!-- <el-badge :value="msgNum" class="header_badge_item">
                         <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
-                    </el-badge> 
+                    </el-badge>  -->
                     <el-badge    class="header_badge_item">
                         <i :class="icon "  @click="isQP"></i>    
                     </el-badge> 
@@ -79,8 +79,7 @@ import { LoginState } from '../../store/modules/login/types';
 
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
-const BIPTASK : string = "biptask",BIPMSG : string = "bipmsg";  
-// const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG";  
+const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG";  
 import { Menu } from "@/classes/Menu";
 @Component({
 })

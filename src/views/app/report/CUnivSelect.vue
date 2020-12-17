@@ -1,7 +1,6 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
-        
         <div class="bip-main-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <template v-if="!isShowMap">
@@ -34,9 +33,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    123
-                    <bip-map-show></bip-map-show>
-                    123
+                    <bip-map-show :cels="dsm.ccells.cels" :pdList="dsm.cdata.data"></bip-map-show>
                 </template>
                 <template v-if="TJDlog">
                     <!-- 统计项弹框选择 -->
@@ -324,7 +321,15 @@ export default class CUnivSelect extends Vue {
                 }
             }
         }else if(cmd === 'SHOWMAP'){
+            await this.find();
             this.isShowMap = !this.isShowMap;
+            
+        }else if(cmd === ICL.B_CMD_DESKTOPLIST){
+            this.TJDlog = true;
+            setTimeout(() => {
+                let dia: any = this.$refs.bi_tj;
+                dia.openDesktopList();
+            }, 200);
         }
         if(cmd != 'SHOWMAP'){
             this.isShowMap = false;
@@ -390,6 +395,10 @@ export default class CUnivSelect extends Vue {
         this.qe.oprid = 13
         this.qe.type = 1
         this.qe.page.pageSize = 20
+        if(this.isMap){
+            this.qe.page.pageSize = 50000;
+            this.qe.page.currPage = 1;
+        }
         this.findServerData(this.qe);
     }
     //条件非空校验

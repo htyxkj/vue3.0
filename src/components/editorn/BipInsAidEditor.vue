@@ -151,6 +151,7 @@ export default class BipInsAidEditor extends Vue{
     }
 
     iconClick(checkCell:boolean = true) {
+        console.log("iconClick")
         if(checkCell && this.bipInsAid && this.bipInsAid.cells && this.bipInsAid.cells.cels.length ==0){
             this.$emit("refInsAid")
             return;
@@ -159,11 +160,28 @@ export default class BipInsAidEditor extends Vue{
             if (!((this.cell.attr & 0x40) > 0)) {
                 if(this.bipInsAid.bType =="CGroupEditor"){
                     let groupFld = this.bipInsAid.groupFld;
-                    if(!this.cds.currRecord.data[groupFld]){
-                        let cel:any = this.cds.getCell(groupFld)
-                        if(cel)
-                            this.$notify.warning('请先填写：'+cel.labelString)
-                        return;
+                    if(this.cds.ccells.exTbName){
+                        let tname = this.cds.ccells.exTbName.split(",")
+                        tname.push(this.cds.ccells.tbName)
+                        for(var i=0;i<tname.length;i++){
+                            let _groupFld = groupFld;
+                            if(groupFld.indexOf( tname[i]) ==-1)
+                                _groupFld = tname[i]+"."+groupFld
+                            if(!this.cds.currRecord.data[_groupFld]){
+                                let cel:any = this.cds.getCell(_groupFld)
+                                if(cel){
+                                    this.$notify.warning('请先填写：'+cel.labelString)
+                                    return;
+                                }
+                            }
+                        }
+                    }else{
+                        if(!this.cds.currRecord.data[groupFld]){
+                            let cel:any = this.cds.getCell(groupFld)
+                            if(cel)
+                                this.$notify.warning('请先填写：'+cel.labelString)
+                            return;
+                        }
                     }
                 }
                 setTimeout(() => {

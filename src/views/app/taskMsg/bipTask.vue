@@ -3,7 +3,9 @@
         <vxe-table
             ref="SYRW_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
             show-header-all-overflow class="vxe-table-element" :data.sync="this.cds.cdata.data"
-            :optimized="true" height="550px" @cell-dblclick="openrefs">
+            :optimized="true" height="550px" @cell-dblclick="openrefs"
+            :cell-style="cellStyle"
+            >
             <vxe-table-column type="index" width="60"></vxe-table-column>
             <vxe-table-column 
               min-width="200"
@@ -248,7 +250,23 @@ export default class bipTask extends Vue {
         }
         return this.aidValues.get(str);
     }
-
+    cellStyle(column:any){
+      let columnIndex = column.columnIndex;
+      let _columnIndex = column._columnIndex
+      if(!_columnIndex){
+          _columnIndex  = columnIndex
+      }
+      columnIndex = _columnIndex - 1;
+      if((this.laycell.cells.attr & 0x40)>0){
+          columnIndex--;
+      }
+      let cel:any = this.laycell.uiCels[columnIndex];
+      if(cel){
+          if((cel.attr & (0x80000)) >0){
+              return { color: '#20a0ff',cursor:'pointer' }
+          }
+      }
+    }
     @Watch("$route")
     routerChange(to: Route, from: Route) { 
         if (to.name === "myTask") {

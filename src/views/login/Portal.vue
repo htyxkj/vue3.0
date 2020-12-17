@@ -204,8 +204,8 @@ export default class Portal extends Vue {
         loading.close();
         if(this.layout.length ==0){//跳转至登陆页面
           this.$router.push({
-            path:'/login',
-            name:'login',
+            path:'/wlogin',
+            name:'wlogin',
           })
         }        
       }

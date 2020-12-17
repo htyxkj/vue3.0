@@ -44,6 +44,7 @@ export default class MyTianMap extends Vue {
         var ctrl = new T.Control.MapType();
         //添加控件
         this.tMap.addControl(ctrl);
+        console.log("天地图初始化完成")
     }
     //添加鼠标滑过事件
     addMapMousemove(){

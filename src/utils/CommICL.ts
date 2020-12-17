@@ -52,6 +52,7 @@ export const CommICL = Object.assign({
     B_CMD_UPFILE:'UPLOADFILE',//文件
     B_CMD_ROWCOLUMN:'ROWCOLUMN',//行转列
     B_CMD_SHOWMAP:'SHOWMAP',//显示地图页面
+    B_CMD_DESKTOPLIST:'DESKTOPLIST',//将报表界面保存为桌面组件
     //#region 输入框常量
     I_EDITOR_COMM:0,//普通输入框
     I_EDITOR_LIST:1,//下拉框
@@ -59,13 +60,14 @@ export const CommICL = Object.assign({
     I_EDITOR_CHECK:3,//多选输入框
     I_EDITOR_RADIO:4,//单选输入框
     I_EDITOR_GDIC:5,//商品辅助输入
-    I_EDITOR_NUM:6,//商品辅助输入
+    I_EDITOR_NUM:'NUM',//数值型
     I_EDITOR_COPY:9,//拷贝定义
     I_EDITOR_TREE:10,//树
     I_EDITOR_RTEXT:11,//富文本编辑器
     I_EDITOR_AUTOGRAPH:13,//switch开关
     I_EDITOR_SWITCH:14,//switch开关
     I_EDITOR_COLOR:15,//颜色
+    I_EDITOR_IMG:6,//图片
 //#endregion
     //#region 数据记录状态值
     R_EDITCTRL:0x1F,//-编辑控制属性和。

@@ -13,11 +13,11 @@ export default class BipScriptProc {
     this.data = data;
     this.cells = cells;
   }
-  execute(ogs: string | Array<any>, flag: string, cell: Cell): any {
-    return this.executea(ogs, flag, cell);
+  execute(ogs: string | Array<any>, flag: string, cell: Cell) {
+    return  this.executea(ogs, flag, cell);
   }
 
-  executea(ogs: string | Array<string>, flag: string, cell: Cell): any {
+  executea(ogs: string | Array<string>, flag: string, cell: Cell) {
     if (!ogs) return null;
     if (typeof ogs === "string") {
       let s0: any = ogs;
@@ -32,7 +32,7 @@ export default class BipScriptProc {
       } else if (xlf > 0) {
         // TODO 后续处理
       } else {
-        s0 = this.expcalc(s0, true, cell);
+        s0 =  this.expcalc(s0, true, cell);
         if (s0 instanceof Array) {
           return s0;
         } else return this.keepRound(s0, cell); //;--单行公式
@@ -41,14 +41,14 @@ export default class BipScriptProc {
     return ""; //处理其他运算
   }
 
-  expcalc(ogs: string | Array<string>, bds: boolean, cell: Cell): any {
+  expcalc(ogs: string | Array<string>, bds: boolean, cell: Cell) {
     let s0 = ogs;
     if (typeof s0 === "string") {
       s0 = this.bdstovec(s0);
     }
     if (typeof s0 === "object") {
       let bb: any = [];
-      return this.expcalc1(s0, bb, 0, s0.length, cell)[0];
+      return  this.expcalc1(s0, bb, 0, s0.length, cell)[0];
     }
     return s0;
   }
@@ -81,15 +81,15 @@ export default class BipScriptProc {
     if (bds) {
       if (c0 === "'" && x1 === 2) {
         if (x1 === 2) return s0.charAt(1);
-        return this.expItem2(s0, null,cell);
+        return  this.expItem2(s0, null,cell);
       }
       if (c0 === '"') {
         if (s0.charAt(x1) === '"') {
           return s0.substring(1, x1);
         }
-        return this.expItem2(s0, null,cell);
+        return  this.expItem2(s0, null,cell);
       }
-      return this.expItem2(s0, null,cell);
+      return  this.expItem2(s0, null,cell);
     }
     x1 = c0 >= "A" ? s0.indexOf(".") : 0;
     if (x1 > 0) console.log("varfield");
@@ -107,7 +107,7 @@ export default class BipScriptProc {
     ) {
       return s0.substring(2, x0);
     }
-    let o0 = this.expItema(s0,cell);
+    let o0 =  this.expItema(s0,cell);
     let s1 = "",
       idx = -1,
       b10 = true,
@@ -133,7 +133,7 @@ export default class BipScriptProc {
     if (x0 < 1) {
       if (bf) {
         let fps1: any = fps;
-        oins = this.invokefun(s0, fps1,cell);
+        oins =  this.invokefun(s0, fps1,cell);
         return oins;
       }
     }
@@ -188,7 +188,7 @@ export default class BipScriptProc {
     if (x0 < 0) {
       let fn = eval("this.f_" + scf);
       if (fn) {
-        let vl = this.doCallBackFn(fn, [fps]);
+        let vl =  this.doCallBackFn(fn, [fps]);
         return vl;
       } else {
         console.log("没有这个方法:" + scf);
@@ -270,7 +270,7 @@ export default class BipScriptProc {
   }
 
   doCallBackFn(fn: Function, args: any) {
-    var o0 = fn.apply(this, args);
+    var o0 =  fn.apply(this, args);
     return o0;
   }
 
@@ -292,7 +292,7 @@ export default class BipScriptProc {
     let x1 = baseTool.nextBarcket4(cs0, x0, il0, c0);
     let s1 = s0.substring(x0+1,x1).replace(/(^\s*)|(\s*$)/g, "");
     if (s1.length > 0)
-      ors[2] = this.procexpret(s1,cell);//;--参数值
+      ors[2] =  this.procexpret(s1,cell);//;--参数值
       x1 += 1;
       if (x1 < il0) {
         if (s0.charAt(x1) === '.')
@@ -306,18 +306,18 @@ export default class BipScriptProc {
    * 处理表达式
    */
   procexpret(s1: string, cell: Cell) {
-    var ov = this.bdstovec(s1);
+    var ov:any = this.bdstovec(s1);
     let fps = [];
     let k = 0;
     if (!(ov instanceof String)) {
       let x0 = 0,
         x1 = 0,
         rr = ov.length;
-      let bufs = [];
+      let bufs:any = [];
       while (x1 < rr) {
         let o = ov[x1++];
         if (o === ",") {
-          bufs = this.expcalc1(ov, bufs, x0, x1 - 1,cell);
+          bufs =  this.expcalc1(ov, bufs, x0, x1 - 1,cell);
           let cc = bufs[0];
           if (cc) {
             fps[k] = cc;
@@ -328,8 +328,9 @@ export default class BipScriptProc {
           k++;
         }
       }
-      ov = this.expcalc1(ov, bufs, x0, x1,cell)[0];
-    } else ov = this.expItem(ov.toString(), false,cell);
+      let res:any  =  this.expcalc1(ov, bufs, x0, x1,cell);
+      ov = res[0];
+    } else ov =  this.expItem(ov.toString(), false,cell);
     fps[k] = ov;
     return fps;
   }
@@ -397,7 +398,7 @@ export default class BipScriptProc {
             }
             bufs[idx] = ov;
           } else {
-            bufs[idx] = this.expItem(sv0, true,cell);
+            bufs[idx] =  this.expItem(sv0, true,cell);
           }
         } else {
           bufs[idx] = ov;
@@ -531,7 +532,7 @@ export default class BipScriptProc {
       if (isNaN(v0)) {
         v0 = "";
       }
-    }else if(cell.type == 91){
+    }else if(cell.type == 91 && v0){
         v0 = moment(v0).format(GlobalVariable.DATE_FMT_YMD)
     }
     this.data.data[cell.id] = v0;

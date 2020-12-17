@@ -92,9 +92,9 @@ export default class BipFileInfo extends Vue {
     @Provide() activeName: string = "file-up";
     @Provide() uri:string=GlobalVariable.API_UPD//附件操作接口
     @Provide() upLoadDid:string = ''
-    @Provide() fj_root_index = -1
     showUpPage:boolean = true;
     canUpFile:boolean = true;
+    fjrootCell:Cell = new Cell();//附件路径对象
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
@@ -107,24 +107,26 @@ export default class BipFileInfo extends Vue {
     }
     mounted() {
         if(this.cds&&this.cell){
-            this.findFJRootIndex()
-            if(this.fj_root_index>-1)
-                this.makefjRoot()
+            if(this.cds){
+                let cels = this.cds.ccells.cels;
+                for(var i=0;i<cels.length;i++){
+                    let cel = cels[i];
+                    if(cel.id == this.cell.id){
+                        this.fjrootCell = cels[i-1];
+                        break;
+                    }
+                }
+            }
+            this.makefjRoot()
         }
     }
 
-    findFJRootIndex(){
-        if(this.cds){
-            let cels:Array<any> = this.cds.ccells.cels
-            this.fj_root_index = cels.findIndex(cell=>cell.id==='fj_root')
-        }
-    }
 
     open() {
         this.canUpFile = true;
         this.fileList = [];
         if(!this.upLoadDid)
-            this.upLoadDid = this.cds.currRecord.data["fj_root"];
+            this.upLoadDid = this.cds.currRecord.data[this.fjrootCell.id];
         if(!this.upLoadDid)
             this.upLoadDid = "";
         let fileName = this.cds.currRecord.data[this.cell.id];
@@ -201,7 +203,7 @@ export default class BipFileInfo extends Vue {
                         this.canUpFile = true;
                         this.$notify.success( "上传完成！")
                         param.onSuccess(res)
-                        let dir = res.data.data.fj_root;
+                        let dir = res.data.data[this.fjrootCell.id];
                         if(!this.upLoadDid){
                             this.upLoadDid = dir
                         }
@@ -280,9 +282,7 @@ export default class BipFileInfo extends Vue {
                 }
                 if(this.cds&&this.cell){
                     let record:any = this.cds.currRecord
-                    if(this.fj_root_index>0){
-                        record.data['fj_root'] = this.upLoadDid
-                    }
+                    record.data[this.fjrootCell.id] = this.upLoadDid
                     let fis = ''
                     this.fileList.forEach(file => {
                         fis += file.name+';'
@@ -296,9 +296,7 @@ export default class BipFileInfo extends Vue {
             }else{
                 if(this.cds&&this.cell){
                     let record:any = this.cds.currRecord
-                    if(this.fj_root_index>0){
-                        record.data['fj_root'] = this.upLoadDid
-                    }
+                    record.data[this.fjrootCell.id] = this.upLoadDid
                     let fis = ''
                     this.fileList.forEach(file => {
                         fis += file.name+';'
@@ -340,7 +338,7 @@ export default class BipFileInfo extends Vue {
             }else{
                 record = this.cds.currRecord
             }
-            this.upLoadDid = record?record.data['fj_root']:'';
+            this.upLoadDid = record?record.data[this.fjrootCell.id]:'';
             if(!this.upLoadDid){
                 this.upLoadDid = ''
             }

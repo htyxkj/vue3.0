@@ -331,6 +331,7 @@ export default class AttendanceMonthly extends Vue {
   }
   //组成table数据
   assemblyTableData(){
+    console.log("组成table数据")
     this.tableData=[];
     let sopr = "";
     let name = "";
@@ -345,6 +346,7 @@ export default class AttendanceMonthly extends Vue {
       let name1 = v1.name;
       if(sopr !="" && sopr !=sopr1){
         data["name"] = name;
+        data["sorg"] = v1.sorgname;
         for(var j=0;j<this.dateYMArr.length;j++){
           let ym = this.dateYMArr[j]
           data= Object.assign(data,this.kq_ybstate[ym+""+sopr]);
@@ -361,6 +363,7 @@ export default class AttendanceMonthly extends Vue {
       name = name1; 
       if(i == this.kq_state.length-1){
         data["name"] = v1.name;
+        data["sorg"] = v1.sorgname;
         for(var j=0;j<this.dateYMArr.length;j++){
           let ym = this.dateYMArr[j]
           data= Object.assign(data,this.kq_ybstate[ym+""+v1.sopr]);

@@ -587,6 +587,9 @@ export namespace BIPUtils {
      */
     dateAdd(fps: Array<any>) {
       let d1 = fps[0];
+      if(d1 == 0){
+        return "";
+      }
       var day1 = moment(d1);
       const day = fps[1];
       const mon = fps[2];

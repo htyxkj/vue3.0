@@ -19,7 +19,7 @@ VXETable.interceptor.add('event.clear_actived', (params, event) => {
     ||event.target.className=='number'|| event.target.className.indexOf("empty")>-1 
     ||event.target.className.indexOf("body")>-1 || event.target.className.indexOf("setting-btn")>-1
     ||event.target.className.indexOf("vxe-icon--menu")>-1 ||event.target.className.indexOf("vxe-checkbox") >-1
-    ||event.target.className.indexOf("vxe-custom") >-1
+    ||event.target.className.indexOf("vxe-custom") >-1 ||event.target.className.indexOf("btn-next") >-1
     ) {
       return false
     }

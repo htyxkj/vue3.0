@@ -198,6 +198,9 @@ export default class CDataSet {
           let cell = this.ccells.cels[this.i_state];
           let statestr = crd.data[cell.id];
           let state: number = parseInt(statestr);
+          if(isNaN(state)){
+            state = 0;
+          }
           // if (state == 0) crd.c_state |= 2;
           return state == 0;
         } else {
@@ -281,7 +284,16 @@ export default class CDataSet {
                           if(this.scriptProc.data.id != this.currRecord.id){
                             this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
                           }
-                          vl = await this.scriptProc.execute(scstr, "", col);
+                          if(scstr.startsWith("sql")){
+                            let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
+                            if(res.data.id == 0){
+                              vl =  res.data.data.data
+                            }else{
+                              vl =  "";
+                            }
+                          }else{
+                            vl = await this.scriptProc.execute(scstr, "", col);
+                          }
                           if(vl && (vl.isNaN || vl == 'NaN'))
                             vl = 0;
                         }
@@ -345,7 +357,16 @@ export default class CDataSet {
             if(this.scriptProc.data.id != this.currRecord.id){
               this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
             }
-            vl = await this.scriptProc.execute(scstr, "", col);
+            if(scstr.startsWith("sql")){
+              let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
+              if(res.data.id == 0){
+                vl =  res.data.data.data
+              }else{
+                vl =  "";
+              }
+            }else{
+              vl = await this.scriptProc.execute(scstr, "", col);
+            }
             if(vl && (vl.isNaN || vl == 'NaN'))
               vl = 0;
           }

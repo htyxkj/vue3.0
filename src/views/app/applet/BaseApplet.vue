@@ -685,7 +685,12 @@ export default class BaseApplet extends Vue{
     async saveData() {
         let bok = this.checkNotNull(this.dsm); 
         if(!bok)
-            return ;        
+            return ;
+        //检查对象字段 规则中  0~50 定义
+        bok = this.checkAccessRange(this.dsm); 
+        if(!bok)
+            return ;
+
         //保存数据
         if ((this.dsm.currRecord.c_state & icl.R_EDITED) > 0) {
             this.fullscreenLoading = true;
@@ -717,7 +722,7 @@ export default class BaseApplet extends Vue{
                                     }
                                 }
                             }
-                            if(canSubmit && (this.uriParams.pattr & CommICL.B_IWORKEA)>0){
+                            if(canSubmit && (this.uriParams.pattr & CommICL.B_IWORKEA)>0 && this.uriParams.pbds.sToSubmit){
                                 this.submint();
                             }
                         }
@@ -831,7 +836,7 @@ export default class BaseApplet extends Vue{
                         let crd = cd0.getRecordAtIndex(i);
                         cd0.ccells.cels.forEach(item=>{
                             if(isok&&item.unNull){
-                                let vl = crd.data[item.id];+'';
+                                let vl = crd.data[item.id]+'';
                                 if (!vl) {
                                     this.$notify.warning( "子表第"+(i+1)+"行"+item.id+"【" + item.labelString + "】不能为空!");
                                     isok =  false;
@@ -849,6 +854,122 @@ export default class BaseApplet extends Vue{
         })
         return isok;
     }
+
+    /**
+     * 检查对象字段规则中的 ~  XXX~XXX 定义
+     */
+    checkAccessRange(cds:CDataSet):boolean{
+        let bok = true;
+        cds.ccells.cels.forEach(item => {
+            if (item.editName && bok) {
+                let edName = item.editName.split(";");
+                for(var i=0;i<edName.length;i++){
+                    let ename = edName[i];
+                    if(ename.indexOf("~") !=-1){
+                        let vl = cds.currRecord.data[item.id];
+                        vl = parseFloat(vl);
+                        let numArr = ename.split("~");
+                        if(numArr.length <2){
+                            if(ename.indexOf("~") == 0){//小于某个数
+                                if(vl > numArr[0]){
+                                    this.$notify.warning( "【" + item.labelString + "】值应小于等于："+numArr[1]);
+                                    bok =  false;
+                                    return false;
+                                }
+                            }else{//大于某个数
+                                if(vl < numArr[0]){
+                                    this.$notify.warning( "【" + item.labelString + "】值应大于等于："+numArr[0]);
+                                    bok =  false;
+                                    return false;
+                                }
+                            }
+                        }else if(numArr.length == 2){
+                            if(vl > numArr[1]){
+                                this.$notify.warning( "【" + item.labelString + "】值应小于等于："+numArr[1]);
+                                bok =  false;
+                                return false;
+                            }
+                            if(vl < numArr[0]){
+                                this.$notify.warning( "【" + item.labelString + "】值应大于等于："+numArr[0]);
+                                bok =  false;
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if(bok){
+            if (cds.ds_sub.length>0) {
+                return this.checkChildAccessRange(cds);
+            }
+        }
+        return bok;
+    }
+
+    /**
+     * 检查子对象字段规则中的 ~  XXX~XXX 定义
+     */
+    checkChildAccessRange(cds:CDataSet):boolean{
+        let isok = true;
+        cds.ds_sub.forEach(cd0=>{
+            if(isok){
+                if(cd0.cdata.data.length===0 && !cd0.ccells.unNull){
+                    this.$notify.warning( "【" + cd0.ccells.desc + "】不能为空!");
+                    isok =  false;
+                    return false;
+                }else{
+                    for(let i=0;i<cd0.cdata.data.length;i++){
+                        let crd = cd0.getRecordAtIndex(i);
+                        cd0.ccells.cels.forEach(item=>{
+                            if (item.editName && isok) {
+                                let edName = item.editName.split(";");
+                                for(var i=0;i<edName.length;i++){
+                                    let ename = edName[i];
+                                    if(ename.indexOf("~") !=-1){
+                                        let vl = crd.data[item.id];
+                                        let numArr = ename.split("~");
+                                        if(numArr.length <2){
+                                            if(ename.indexOf("~") == 0){//小于某个数
+                                                if(vl > numArr[0]){
+                                                    this.$notify.warning( "【" + item.labelString + "】值应小于等于："+numArr[1]);
+                                                    isok =  false;
+                                                    return false;
+                                                }
+                                            }else{//大于某个数
+                                                if(vl < numArr[0]){
+                                                    this.$notify.warning( "【" + item.labelString + "】值应大于等于："+numArr[0]);
+                                                    isok =  false;
+                                                    return false;
+                                                }
+                                            }
+                                        }else if(numArr.length == 2){
+                                            if(vl > numArr[1]){
+                                                this.$notify.warning( "【" + item.labelString + "】值应小于等于："+numArr[1]);
+                                                isok =  false;
+                                                return false;
+                                            }
+                                            if(vl < numArr[0]){
+                                                this.$notify.warning( "【" + item.labelString + "】值应大于等于："+numArr[0]);
+                                                isok =  false;
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+            if(cd0.ds_sub.length>0){
+                isok = this.checkChildAccessRange(cd0);
+            }
+
+        })
+        return isok;
+    }
+
 //#endregion
 //#region 监听URIParams
     // @Watch("uriParams",{deep:true})
@@ -1085,9 +1206,11 @@ export default class BaseApplet extends Vue{
                 data[this.params.pkfld] = this.params.value
                 this.findData(data);
             }else if(this.params.method =='dlg'){
-                console.log(this.params)
-                if(JSON.stringify(this.params.jsontj).length >2){
-                    let cData:any  = await this.findData(this.params.jsontj);
+                if(JSON.stringify(this.params.jsontj).length >=2){
+                    let cData:any  = null
+                    if(JSON.stringify(this.params.jsontj).length >2){
+                        cData= await this.findData(this.params.jsontj);
+                    }
                     if(!cData || (cData && cData.page && cData.page.total ==0)){
                         this.dsm.currRecord = new CRecord();
                         this.dsm.createRecord();                   

@@ -31,6 +31,7 @@ export default class BipRichTextUEditor extends Vue{
     @Provide() id :any = ""
     @Provide() upLoadDid:string = ''//附件路径
     @Provide() uri:string=GlobalVariable.API_UPD//附件操作接口
+    haveDateChange:boolean = false;
     created(){
         this.id = this.cell.id;
         let sk = window.sessionStorage.getItem('snkey')
@@ -95,18 +96,22 @@ export default class BipRichTextUEditor extends Vue{
     }
     @Watch("model1")
     dataVlaueChange(){
-        this.dataChange(this.model1);
+        if(this.haveDateChange){
+            this.dataChange(this.model1);
+        }else{
+            this.haveDateChange = true;
+        }
     }
 
     @Watch("model")
     cdataSetRecordChange(){
         if(this.cds&&this.cell){
-            if( this.model !== this.model1 && this.model1 == null){
-                this.model1 = this.model
-                this.model1 = this.model1.replace(/snkey={BIPSNKEY}/g,'snkey='+this.snkey);
-                this.model1 = this.model1.replace(/{BIPURI}/g,this.uri)
-            }else if( this.model == null || this.model ==""){
-                this.model1 = this.model
+            if( this.model !== this.model1){
+                let str = this.model
+                str = str.replace(/snkey={BIPSNKEY}/g,'snkey='+this.snkey);
+                str = str.replace(/{BIPURI}/g,this.uri)
+                this.haveDateChange = false;
+                this.model1 = str;
             }
         }
     }
