@@ -202,7 +202,7 @@ export default class CDataSet {
             state = 0;
           }
           // if (state == 0) crd.c_state |= 2;
-          return state == 0;
+          return state == 0 || state == 1;
         } else {
           // crd.c_state |= 2;
           return true;
