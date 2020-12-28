@@ -61,6 +61,8 @@ export default class BipMapShow extends Vue {
                 this.tMap = refT.getMap();
             }
 		})
+		let wd:any = window;
+		wd.showOrHeiding = this.showOrHeiding;    // 方法赋值给window
 	}
 	async initMapData(){
 		this.tMap.clearOverLays();
@@ -101,9 +103,9 @@ export default class BipMapShow extends Vue {
 								var imgReg = /\.(png|jpg|gif|jpeg|webp|tiff|psd)$/; //图片名为汉字的也可以匹配到
 								let isImg:boolean = imgReg.test(name); //返回true ,false
 								if(isImg){
-									// console.log(url)
-									let img = "<img style='width: 200px;' src='"+url+"'>";
-									msg+= (img+"<br/>");
+									let text = '<a onClick="showOrHeiding('+"'"+name+"'"+')">显示/隐藏图片</a><br/>';
+									let img = "<img id='"+name+"' style='width: 200px;display:none' src='"+url+"'>";
+									msg+= (text+img+"<br/>");
 								}
 								j = nameArr.length;
 							}
@@ -172,6 +174,14 @@ export default class BipMapShow extends Vue {
 			// 	});// 将标注添加到地图中 
 			// 	this.tMap.addOverLay(this.CloudMarkerCollection);
 			// }
+		}
+	}
+	showOrHeiding(id:any){
+		var elem:any=document.getElementById(id);
+		if(elem.style.display!='none'){
+			elem.style.display='none'
+		}else{
+			elem.style.display='inline'
 		}
 	}
 	async makeRef(val:any,cell:Cell){
