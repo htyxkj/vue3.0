@@ -111,9 +111,12 @@ export default class BipFileInfo extends Vue {
                 let cels = this.cds.ccells.cels;
                 for(var i=0;i<cels.length;i++){
                     let cel = cels[i];
+                    if(cel.id == 'fj_root'){
+                        this.fjrootCell = cel;
+                        break;
+                    }
                     if(cel.id == this.cell.id){
                         this.fjrootCell = cels[i-1];
-                        break;
                     }
                 }
             }
