@@ -96,6 +96,11 @@ export default class BipMapShow extends Vue {
 						let fj_name = data[this.fj_name_cell.id];
 						if(fj_root && fj_name){
 							let nameArr = fj_name.split(";");
+							if(nameArr.length>0){
+								let text = '<a onClick="showOrHeiding('+"'"+fj_name+"'"+')">显示/隐藏图片('+nameArr.length+')</a><br/>';
+								msg+= (text+"<br/>");
+							}
+							msg +="<div style='display:none;width:200px;height:260px;overflow-y: auto;' id='"+fj_name+"' >"
 							for(var j=0;j<nameArr.length;j++){
 								let name = nameArr[j];
 								name = encodeURI(name)
@@ -103,12 +108,11 @@ export default class BipMapShow extends Vue {
 								var imgReg = /\.(png|jpg|gif|jpeg|webp|tiff|psd)$/; //图片名为汉字的也可以匹配到
 								let isImg:boolean = imgReg.test(name); //返回true ,false
 								if(isImg){
-									let text = '<a onClick="showOrHeiding('+"'"+name+"'"+')">显示/隐藏图片</a><br/>';
-									let img = "<img id='"+name+"' style='width: 200px;display:none' src='"+url+"'>";
-									msg+= (text+img+"<br/>");
+									let img = "<img style='width: 200px;' src='"+url+"'>";
+									msg+= (img+"<br/>");
 								}
-								j = nameArr.length;
 							}
+							msg+="</div>"
 						}
 					}
 					this.pointMsg[key]= msg;
@@ -181,7 +185,7 @@ export default class BipMapShow extends Vue {
 		if(elem.style.display!='none'){
 			elem.style.display='none'
 		}else{
-			elem.style.display='inline'
+			elem.style.display='block'
 		}
 	}
 	async makeRef(val:any,cell:Cell){
