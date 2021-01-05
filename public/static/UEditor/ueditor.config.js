@@ -139,9 +139,9 @@
         // 'webapp':'百度应用','touppercase':'字母大写', 'tolowercase':'字母小写','background':'背景','template':'模板','scrawl':'涂鸦',
         // 'music':'音乐','inserttable':'插入表格','drafts': '从草稿箱加载', 'charts': '图表'
         //当鼠标放在工具栏上时显示的tooltip提示,留空支持自动多语言配置，否则以配置值为准
-        //,labelMap:{
-        //    'anchor':'', 'undo':''
-        //}
+        // ,labelMap:{
+        //    'previewmobile':'手机预览'
+        // }
 
         //语言配置项,默认是zh-cn。有需要的话也可以使用如下这样的方式来自动多语言切换，当然，前提条件是lang文件夹下存在对应的语言文件：
         //lang值也可以通过自动获取 (navigator.language||navigator.browserLanguage ||navigator.userLanguage).toLowerCase()

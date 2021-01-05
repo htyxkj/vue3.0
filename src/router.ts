@@ -235,8 +235,13 @@ export default new Router({
           path: '/InterfaceGetData',
           name: 'InterfaceGetData',
           component :()=> import('./custom/bip-amb/report/InterfaceGetData.vue')
+      },
+      {
+          //张矿文章预览
+          path: '/PreviewArticle',
+          name: '/PreviewArticle',
+          component :()=> import('./custom/bip-mine/article/PreviewArticle.vue')
       }
-      
       
   ]
 })

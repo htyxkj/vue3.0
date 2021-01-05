@@ -33,9 +33,6 @@
                     :lazy="true"
                     :style="style"
                 >    
-                    <!-- <span slot="label">
-                        {{item.title}}
-                    </span> -->
                     <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
                     </lay-out>
                 </el-tab-pane>
@@ -144,7 +141,7 @@ export default class App extends Vue {
         if(this.height){
             this.style = "height:"+(this.height)+"px";
         }
-
+        alert(this.$route.name)
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
             if(this.editableTabs2.length==0){
@@ -208,7 +205,7 @@ export default class App extends Vue {
             this.addIndex();
     }
     @Watch("$route")
-    routerChange(to: Route, from: Route) { 
+    routerChange(to: Route, from: Route) {
         if(this.$route.name == "registered"){
             this.isLoginPage = 1;
             return;
@@ -222,7 +219,6 @@ export default class App extends Vue {
             this.setIsLogin(false);
             return;
         }
-        // console.log(to,from)
         if (to.name === 'index') {
             this.$bus.$emit('componentsizechange','')
             this.editableTabsValue2 = 'index';

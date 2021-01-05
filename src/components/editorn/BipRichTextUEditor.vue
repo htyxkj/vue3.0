@@ -1,7 +1,7 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span" style="padding-bottom:8px">
         <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-            <vue-ueditor-wrap v-if="myConfig != null" :id="id" v-model="model1" :config="myConfig"></vue-ueditor-wrap>
+            <vue-ueditor-wrap v-if="myConfig != null" :id="id" v-model="model1" :config="myConfig"  @before-init="addCustomDialog"></vue-ueditor-wrap>
         </el-form-item>
     </el-col>
 </template>
@@ -94,6 +94,52 @@ export default class BipRichTextUEditor extends Vue{
             }
         }   
     }
+
+    // 添加自定义弹窗
+    addCustomDialog (editorId:any) {
+        let pathName = window.document.location.pathname;
+        console.log(window.document.location)
+        let origin=window.document.location.origin
+        let projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+        window.UE.registerUI('previewmobile-dialog', function (editor:any, uiName:any) {
+        // 创建 dialog
+        var dialog = new window.UE.ui.Dialog({
+          // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
+          iframeUrl:'/PreviewArticle',
+          // 需要指定当前的编辑器实例
+          editor: editor,
+          // 指定 dialog 的名字
+          name: uiName,
+          // dialog 的标题
+          title: '预览',
+          // 指定 dialog 的外围样式
+          cssRules: 'width:400px;height:600px;',
+          // 如果给出了 buttons 就代表 dialog 有确定和取消
+          buttons: [
+            {
+              className: 'edui-okbutton',
+              label: '确定',
+              onclick: function () {
+                dialog.close(true);
+              }
+            }
+          ]
+        });
+        // 参考上面的自定义按钮
+        var btn = new window.UE.ui.Button({
+          name: 'previewmobile',
+          cssRules: `background-image: url(`+projectName+`'/static/UEditor/themes/default/images/previewmobile.png') !important;background-size: cover;`,
+          title: '手机预览',
+          onclick: function () {
+            // 渲染dialog
+            dialog.render();
+            dialog.open();
+          }
+        });
+        return btn;
+      }, editorId);
+    }
+
     @Watch("model1")
     dataVlaueChange(){
         if(this.haveDateChange){
