@@ -141,7 +141,6 @@ export default class App extends Vue {
         if(this.height){
             this.style = "height:"+(this.height)+"px";
         }
-        alert(this.$route.name)
         if(this.isLogin){
             this.$router.push({ path: "/" }); 
             if(this.editableTabs2.length==0){

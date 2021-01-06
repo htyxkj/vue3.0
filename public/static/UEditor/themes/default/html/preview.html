@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="format-detection" content="telephone=no" />
+  <!--页面中一定要引入internal.js为了能直接使用当前打开dialog的实例变量-->
+  <!--internal.js默认是放到 UEditor/dialogs 目录下的-->
+  <script type="text/javascript" src="../.../../../../dialogs/internal.js"></script>
+  <style>
+    img {
+      -ms-interpolation-mode: bicubic;
+    }
+    img {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+	<div id="phone_preview_div"></div>
+	<script>
+		//可以直接使用以下全局变量
+		//当前打开dialog的实例变量
+		// console.log(editor);
+		//一些常用工具
+		// console.log(domUtils);
+		// console.log(utils);
+    // console.log(browser);
+    var ifr_content = document.getElementById("phone_preview_div");
+    ifr_content.innerHTML = editor.getContent() == null ? "" : editor.getContent(); // 富文本编辑器内容填充
+	</script>  
+</body>
+</html>

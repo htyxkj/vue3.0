@@ -98,14 +98,12 @@ export default class BipRichTextUEditor extends Vue{
     // 添加自定义弹窗
     addCustomDialog (editorId:any) {
         let pathName = window.document.location.pathname;
-        console.log(window.document.location)
-        let origin=window.document.location.origin
         let projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
-        window.UE.registerUI('previewmobile-dialog', function (editor:any, uiName:any) {
+        (window as any).UE.registerUI('previewmobile-dialog', function (editor:any, uiName:any) {
         // 创建 dialog
-        var dialog = new window.UE.ui.Dialog({
+        var dialog = new (window as any).UE.ui.Dialog({
           // 指定弹出层中页面的路径，这里只能支持页面，路径参考常见问题 2
-          iframeUrl:'/PreviewArticle',
+          iframeUrl:projectName+'/static/UEditor/themes/default/html/preview.html',
           // 需要指定当前的编辑器实例
           editor: editor,
           // 指定 dialog 的名字
@@ -126,7 +124,7 @@ export default class BipRichTextUEditor extends Vue{
           ]
         });
         // 参考上面的自定义按钮
-        var btn = new window.UE.ui.Button({
+        var btn = new (window as any).UE.ui.Button({
           name: 'previewmobile',
           cssRules: `background-image: url(`+projectName+`'/static/UEditor/themes/default/images/previewmobile.png') !important;background-size: cover;`,
           title: '手机预览',
