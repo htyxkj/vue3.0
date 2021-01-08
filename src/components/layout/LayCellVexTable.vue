@@ -1102,7 +1102,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     // 设置选中的方法
-    @Watch("cds",{deep:true})
+    @Watch("cds")//,{deep:true}
     cdsChageSetSelectRow(){
         if(this.multiple){
             this.checkSelected = this.multipleSelectionAll;
