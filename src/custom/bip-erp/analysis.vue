@@ -784,8 +784,8 @@ export default class followTimesLine extends Vue {
         // formatter: "{b}-公司数量：{c}",
         formatter:function(params:any){
            var tipHtml = '';
-            tipHtml = '<div style="width:280px;height:120px;background:rgba(22,80,158,0.8);border:1px solid rgba(7,166,255,0.7)">'
-            +'<div style="width:100%;height:40px;line-height:40px;border-bottom:2px solid rgba(7,166,255,0.7);padding:0 20px">'+'<i style="display:inline-block;width:8px;height:8px;background:#16d6ff;border-radius:40px;">'+'</i>'
+            tipHtml = '<div style="width:300px;height:140px;background:rgba(22,80,158,0.8);border:1px solid rgba(7,166,255,0.7)">'
+            +'<div style="width:100%;height:40px;line-height:40px;border-bottom:2px solid rgba(7,166,255,0.7);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<i style="display:inline-block;width:8px;height:8px;background:#16d6ff;border-radius:40px;">'+'</i>'
             +'<span style="margin-left:10px;color:#fff;font-size:16px;">'+params.data.name+'</span>'+'</div>'
             +'<div style="padding:20px">'
             +'<p style="color:#fff;font-size:12px;">'+'<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">'+'</i>'

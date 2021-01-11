@@ -6,6 +6,7 @@ import "./plugins/element.js";
 import "./plugins/vxetable.js";
 // import layout from  "@/plugins/mylayout.js";
 import './assets/icon/iconfont.css'
+import './assets/bip-erp/css/font.css'
 import "./scss/element-variables.scss";
 import './utils/Request'
 import store from './store'
