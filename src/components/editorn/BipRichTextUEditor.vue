@@ -126,7 +126,7 @@ export default class BipRichTextUEditor extends Vue{
         // 参考上面的自定义按钮
         var btn = new (window as any).UE.ui.Button({
           name: 'previewmobile',
-          cssRules: `background-image: url(`+projectName+`'/static/UEditor/themes/default/images/previewmobile.png') !important;background-size: cover;`,
+          cssRules: `background-image: url('`+projectName+`/static/UEditor/themes/default/images/previewmobile.png') !important;background-size: cover;`,
           title: '手机预览',
           onclick: function () {
             // 渲染dialog
