@@ -69,13 +69,6 @@ export default class Portal extends Vue {
     @Provide() cc:Array<any> = new Array<any>();
     showPortal:boolean = false;
     async mounted() {
-      if(!BaseVariable.SHOWPORTAL){
-        this.$router.push({
-          path:'/wlogin',
-          name:'wlogin',
-        })
-        return;
-      }      
       this.initHeight();
       this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
       this.isDraggable = false;

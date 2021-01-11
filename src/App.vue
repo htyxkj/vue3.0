@@ -2,8 +2,10 @@
   <div id="app" v-if="configT">
     <template v-if="!isLogin"> 
         <template v-if="isLoginPage == 0">
-            <!-- <login></login> -->
             <portal></portal>
+        </template>
+        <template v-else-if="isLoginPage == 2">
+            <analysis></analysis>
         </template>
         <template v-else>
             <router-view />
@@ -48,6 +50,7 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import Login from "@/views/login/Login.vue";
 import Portal from "@/views/login/Portal.vue";
+import Analysis from "@/custom/bip-erp/analysis.vue";
 import BipAside from "@/views/app/BipAside.vue";
 import LayOut from "@/views/app/LayOut.vue";
 import LayHeader from "@/views/app/LayHeader.vue";
@@ -68,7 +71,8 @@ import { BIPUtil } from "@/utils/Request";
     Portal,
     BipAside,
     LayOut,
-    LayHeader
+    LayHeader,
+    Analysis
   }
 })
 export default class App extends Vue {
@@ -108,7 +112,7 @@ export default class App extends Vue {
             BaseVariable.Project_Name = res.data.Project_Name;
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
-            BaseVariable.SHOWPORTAL = res.data.SHOWPORTAL;
+            BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
             
         }).catch((err:any) => {
             console.log(err)
@@ -132,7 +136,7 @@ export default class App extends Vue {
             BaseVariable.Project_Name = res.data.Project_Name;
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
-            BaseVariable.SHOWPORTAL = res.data.SHOWPORTAL;
+            BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -152,6 +156,12 @@ export default class App extends Vue {
                 if(this.query.isLoginPage){
                     this.isLoginPage = parseInt(this.query.isLoginPage+'');
                 }
+                if(BaseVariable.ITEMTYPE == 'bip-flexible'){
+                    this.isLoginPage = 0;
+                }
+                if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
+                    this.isLoginPage = 2;
+                }    
             } else{
                 this.$router.push({ path: "/" });
             }

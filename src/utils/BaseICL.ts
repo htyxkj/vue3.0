@@ -13,5 +13,5 @@ export const BaseVariable = Object.assign({
     Project_Name:'',
     COPYRIGHT:"",
     SMSURL : "",
-    SHOWPORTAL:false
+    ITEMTYPE:""
   });
