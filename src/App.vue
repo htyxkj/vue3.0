@@ -83,7 +83,7 @@ export default class App extends Vue {
     @Provide() dialogVisible = false;
     @Provide() menu1:string = "menu menu1";
     @Provide() menu2:string = "menu menu2";
-    @Provide() isLoginPage:number = 0;
+    @Provide() isLoginPage:number = -1;
     @Provide() query:any=null;
     @Provide() configT:boolean = false;
     @State('login') profile!: LoginState
@@ -151,6 +151,7 @@ export default class App extends Vue {
                 this.addIndex();
             }  
         }else{
+            this.isLoginPage = -1;
             if (this.$route.query) {
                 this.query = this.$route.query;
                 if(this.query.isLoginPage){
@@ -161,7 +162,7 @@ export default class App extends Vue {
                 }
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
-                }    
+                }
             } else{
                 this.$router.push({ path: "/" });
             }
@@ -219,12 +220,12 @@ export default class App extends Vue {
             this.isLoginPage = 1;
             return;
         }
-        if(this.$route.name == "portal"){
-            this.isLoginPage = 0;
-            return;
-        }
+        // if(this.$route.name == "portal"){
+        //     this.isLoginPage = 0;
+        //     return;
+        // }
         if (to.name === "wlogin") {
-            this.isLoginPage = 2;
+            this.isLoginPage = -1;
             this.setIsLogin(false);
             return;
         }

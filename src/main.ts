@@ -45,15 +45,20 @@ Component.registerHooks([
     'beforeRouteUpdate',
 ]);
 
-// import {ElMessageBox} from 'element-ui/types/message-box'
+import {ElLoadingComponent} from 'element-ui/types/loading'
+import {LoadingServiceOptions} from 'element-ui/types/loading'
+import {ElMessageBox} from 'element-ui/types/message-box'
+import {ElMessageBoxShortcutMethod} from 'element-ui/types/message-box'
+import {ElNotification} from 'element-ui/types/notification'
+import {ElMessage} from 'element-ui/types/message'
 declare module "vue/types/vue" {
   interface Vue {
-    $loading: any,
-    $msgbox: any,
-    $alert: any,
-    $confirm: any,
-    $prompt: any,
-    $notify: any,
-    $message: any
+    $loading: (options: LoadingServiceOptions) => ElLoadingComponent,
+    $msgbox: ElMessageBox,
+    $alert: ElMessageBoxShortcutMethod,
+    $confirm: ElMessageBoxShortcutMethod,
+    $prompt: ElMessageBoxShortcutMethod,
+    $notify: ElNotification,
+    $message: ElMessage
   }
 }
