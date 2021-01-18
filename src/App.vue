@@ -163,6 +163,13 @@ export default class App extends Vue {
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
                 }
+                if(this.isLoginPage == -1){
+                    this.$router.push({
+                        path:'/wlogin',
+                        name:'wlogin',
+                    })
+                    return;
+                }
             } else{
                 this.$router.push({ path: "/" });
             }
@@ -196,7 +203,7 @@ export default class App extends Vue {
         this.editableTabs2=[];
         this.setIsLogin(false);
         sessionStorage.clear(); 
-        this.isLoginPage = 0
+        this.isLoginPage = -1
     } 
     @Watch('isLogin')
     logined(){ 
@@ -220,10 +227,6 @@ export default class App extends Vue {
             this.isLoginPage = 1;
             return;
         }
-        // if(this.$route.name == "portal"){
-        //     this.isLoginPage = 0;
-        //     return;
-        // }
         if (to.name === "wlogin") {
             this.isLoginPage = -1;
             this.setIsLogin(false);
