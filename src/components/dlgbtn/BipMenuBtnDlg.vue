@@ -171,7 +171,11 @@ export default class BipMenuBtnDlg extends Vue {
                 cont2 = cont[2]; //条件值
             }
             let cell = cont1.substring(0,cont1.indexOf(",")).split("=")
-            cont1 = cont1.substring(cont1.indexOf(",")+1)
+            if(cont1.indexOf(",") !=-1){
+				cont1 = cont1.substring(cont1.indexOf(",")+1)
+			}else{
+				cell = cont1.split("=");
+			}
             let data = this.finCellData(this.env.dsm,cell[0])
             if(data.length ==0){
                 this.$message.warning("请勾选数据！")
