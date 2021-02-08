@@ -27,7 +27,7 @@
                 ref="SortiesTable"
                 :data="tableData">
                 <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                <vxe-table-column type="index" title="序号" width="60" ></vxe-table-column> >
+                <vxe-table-column type="index" title="序号" width="60" ></vxe-table-column>
                 <vxe-table-column field="statTime" title="开始时间"></vxe-table-column>
                 <vxe-table-column field="endTime" title="结束时间" ></vxe-table-column>
                 <vxe-table-column field="avgHigh" title="平均海拔(m)"></vxe-table-column>
