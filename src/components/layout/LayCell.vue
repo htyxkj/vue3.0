@@ -1,7 +1,17 @@
 <template>
     <div v-if="laycell" class="bip-lay">
         <template v-if="laycell&&!laycell.btable">
-            <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
+            <template v-if="uiCels.length == 0">
+                <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
+            </template>
+            <template v-else>
+                <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
+                    <div>
+                        <span>{{item.title}}</span>
+                        <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
+                    </div>
+                </el-card>
+            </template>
         </template>
         <template v-else>
             <lay-cell-vex-table :laycell="laycell" :cds="cds" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :beBill="beBill" :pbuid="pbuid" :env="env" :config="config" @invokecmd="invokecmd"></lay-cell-vex-table>
@@ -16,7 +26,6 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
 import LayCellVexTable from './LayCellVexTable.vue'
 import CData from '../../classes/pub/CData';
-import CRecord from '../../classes/pub/CRecord';
 @Component({
     components:{LayCellVexTable}
 })
@@ -32,9 +41,11 @@ export default class LayCell extends Vue{
     @Provide() beBill:boolean = true
     @Provide() cdata:CData = new CData("")
     @Provide() pbuid:string = "";
+    uiCels:Array<any> = new Array<any>();
 
     created(){
         this.initWidth();
+        this.initSfix();
         this.cds = this.env.getDataSet(this.laycell.obj_id);
         this.beBill = this.env.uriParams.beBill
         this.cdata = this.cds.cdata
@@ -59,6 +70,38 @@ export default class LayCell extends Vue{
                     this.widths.push(w+'')
                 }
             });          
+        }
+    }
+
+    initSfix(){
+        if(this.laycell){
+            let sfix = this.laycell.cells.sfix;
+            if(sfix && sfix.startsWith("[R]")){
+                sfix = sfix.replace("[R]","")
+                let sfixs =  sfix.split(";");
+                for(var i=0;i<sfixs.length;i++){
+                    let json:any = {title:"",cells:[]};
+                    let onesf = sfixs[i].split("&");
+                    let zd = onesf[0];
+                    json.title = onesf[2];
+                    let stzd = zd.split("-")[0];
+                    let edzd = zd.split("-")[1];
+                    let isadd = false;
+                    for(var z=0;z<this.laycell.uiCels.length;z++){
+                        let cel = this.laycell.uiCels[z];
+                        if(cel.id == stzd || isadd ){
+                            json.cells.push(cel)
+                            isadd = true;
+                        }
+                        if(cel.id == edzd){
+                            break;
+                        }
+                    }
+                    this.uiCels.push(json)
+                }
+            }else{
+                // this.uiCels[0] = {title:"",cells:this.laycell.uiCels};
+            }
         }
     }
 
@@ -97,6 +140,12 @@ export default class LayCell extends Vue{
 }
 .bip-req{
     color: rgb(167, 8, 8)
+}
+.my-lay-card{
+    margin-bottom: 5px;
+    .el-card__body{
+        padding: 5px;
+    }
 }
 </style>
 
