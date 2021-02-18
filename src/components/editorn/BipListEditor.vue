@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" :required="cell.isReq">
-                <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="small" 
+                <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" 
                 :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                     <el-option
                         v-for="item in options"
@@ -21,7 +21,7 @@
             </el-form-item>
         </template>
         <template v-else>
-            <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="small" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
+            <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                 <el-option
                     v-for="item in options"
                     :key="item[cels[0].id]"

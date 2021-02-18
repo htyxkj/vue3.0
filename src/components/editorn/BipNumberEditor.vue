@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
          <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input size="small" v-model="model1" :clearable="clearable" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                <el-input size="medium" v-model="model1" :clearable="clearable" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                 :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"
                 >
                 <el-button slot="append" icon="iconfont icon-bip-calculator" :disabled="(cell.attr&0x40)>0" @click="calculatorClick($event)" :id="cell.id" ></el-button>
@@ -22,7 +22,7 @@
             </el-form-item>
          </template>
          <template v-else>
-             <el-input size="small" v-model="model1" :clearable="clearable" 
+             <el-input size="medium" v-model="model1" :clearable="clearable" 
                 :disabled="(cell.attr&0x40)>0" @change="dataChange" :precision="ccPoint" controls-position="right"></el-input>
          </template>
         <div></div>

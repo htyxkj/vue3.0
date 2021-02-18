@@ -1,6 +1,6 @@
 <template>
     <el-card style="height:100% ; margin-bottom:5px;" :body-style="{ padding: '10px 10px 0 0' }" >
-        <el-row class="bip-lay" >
+        <el-row class="bip-lay"  :gutter="10">
             <el-form @submit.native.prevent label-position="right" label-width="120px">
                 <template v-for="(cel,index) in cells" >
                     <bip-comm-editor v-show="(cel.attr&0x400) == 0" :key="index" :cell="cel" :cds="cds" :cdsCount="cdsCount" :row="0" :bgrid="false" :env="env"/>

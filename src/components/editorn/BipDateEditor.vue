@@ -4,7 +4,7 @@
             <template v-if="!bgrid">
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
                     <template v-if="condition"><!-- 报表条件 -->
-                        <el-date-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                        <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
                             :picker-options="pickerOptions"
                             :type="dateType"
@@ -17,7 +17,7 @@
                             </el-date-picker>
                     </template>
                     <template v-else>
-                        <el-date-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                        <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
                             :type="dateType"
                             :format="dateFormat"
@@ -36,7 +36,7 @@
                 </el-form-item>
             </template>
             <template v-else>
-                <el-date-picker size="small" style="width:100%"
+                <el-date-picker size="medium" style="width:100%"
                     v-model="model1"
                     :type="dateType"
                     :format="dateFormat"
@@ -50,7 +50,7 @@
             <template v-if="!bgrid">
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
                     <template v-if="condition"><!-- 报表条件 -->
-                        <el-time-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                        <el-time-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
                             :picker-options="pickerOptions"
                             range-separator="~"
@@ -62,7 +62,7 @@
                             </el-time-picker>
                     </template>
                     <template v-else>
-                        <el-time-picker size="small" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                        <el-time-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
                             :format="dateFormat"
                             :value-format="dateFormat"
@@ -80,7 +80,7 @@
                 </el-form-item>
             </template>
             <template v-else>
-                <el-time-picker size="small" style="width:100%"
+                <el-time-picker size="medium" style="width:100%"
                     v-model="model1"
                     :format="dateFormat"
                     :value-format="dateFormat"

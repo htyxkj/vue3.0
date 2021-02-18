@@ -1,17 +1,17 @@
 <template>
 <div class="bip-border-lay">
     <template v-if="btop">
-        <el-card v-if="!laycfg[0].bcells" style="height:100%; margin-bottom:10px;padding-bottom: 10px;">
+        <el-card v-if="!laycfg[0].bcells" style="height:100%; margin-bottom:10px;">
             <base-layout :layout="laycfg[0].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
         </el-card>
-        <el-card v-else style="height:100% ; margin-bottom:10px;padding-bottom: 10px;">
-            <!-- <el-row class="bip-row" :gutter="10"> -->
+        <el-card v-else style="height:100% ; margin-bottom:10px;">
+            <el-row class="bip-row" :gutter="10">
                 <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
-            <!-- </el-row> -->
+            </el-row>
         </el-card>
     </template>
     <template v-if="bcenter">
-        <!-- <el-row class="bip-row" :gutter="10"> -->
+        <el-row class="bip-row" :gutter="10">
             <template v-if="bleft">
                 <el-col :span="wleft">
                     <el-card v-if="!laycfg[3].bcells">
@@ -23,10 +23,10 @@
                 </el-col>
             </template>
             <template v-if="bcenter">
-                <el-card v-if="!laycfg[wcenterIndex].bcells"  style="height:100% ; margin-bottom:10px;padding-bottom: 10px;">
+                <el-card v-if="!laycfg[wcenterIndex].bcells"  style="height:100% ; margin-bottom:10px;">
                     <base-layout :layout="laycfg[wcenterIndex].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
                 </el-card>
-                <el-card v-else style="height:100% ; margin-bottom:10px;padding-bottom: 10px;">
+                <el-card v-else style="height:100% ; margin-bottom:10px;">
                     <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell></el-col>
                 </el-card>
             </template>
@@ -40,18 +40,18 @@
                     </el-card>
                 </el-col>
             </template>
-        <!-- </el-row> -->
+        </el-row>
     </template>
     <template v-if="bbuttom">
-        <!-- <el-row class="bip-row" :gutter="10"> -->
+        <el-row class="bip-row" :gutter="10">
             <el-card v-if="!laycfg[2].bcells">
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env" :config="config" @invokecmd="invokecmd"></bip-comm-lay >
             </el-card>
-            <el-card v-else style="height:100% ; margin-bottom:10px;padding-bottom: 10px;">
+            <el-card v-else style="height:100% ; margin-bottom:10px;">
                 <lay-cell :laycell="laycfg[2].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
             </el-card>
             
-        <!-- </el-row> -->
+        </el-row>
     </template>
 </div>
 
