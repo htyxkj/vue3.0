@@ -8,7 +8,7 @@
                 <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >
                     <el-select v-model="conditionItem" slot="prepend" placeholder="请选择" style="width:120px">
                         <el-option label="全局匹配" value="-1"></el-option>
-                        <el-option v-for="(item,index) in 2" :key="'TJ'+index" :label="item" :value="item"></el-option>
+                        <el-option v-for="(item,index) in showCols" :key="'TJ'+index" :label="item.labelString" :value="item.id"></el-option>
                     </el-select>
                     <el-button slot="append" icon="el-icon-search" @click="searchInsAidDatasByCon"></el-button>
                 </el-input>
