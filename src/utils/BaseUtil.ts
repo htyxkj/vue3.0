@@ -520,8 +520,17 @@ export namespace BIPUtils {
     calcTwoItem(o0: any, o1: any, cfh: number): any {
       var c0 = String.fromCharCode(cfh & 0xff),
         c1 = String.fromCharCode(cfh >>> 8);
-      if (c1 === "=" || c0 === "<" || c0 === ">") {
+      if (c1 === "=" || c1 === "<" || c1 === ">") {
         // 逻辑比较值
+        if(c1 === '='){
+          return o0 == o1;
+        }
+        if(c1 === '<'){
+          return o0 < o1;
+        }
+        if(c1 === '>'){
+          return o0 > o1;
+        }
         return true;
       }
       return this.calcTwoValue(o0, o1, c0);

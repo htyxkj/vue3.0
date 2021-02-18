@@ -202,7 +202,7 @@ export default class BipScriptProc {
     return ov;
   }
   f_ifelse(s0:any){
-    if(s0[1]){
+    if(s0[0]){
       return s0[1]
     }else{
       return s0[2]
