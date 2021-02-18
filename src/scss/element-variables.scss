@@ -157,6 +157,15 @@ $--bip-comm-color:#ffffff;//f4f6fb
     color:$--bip-input-color-dis;
 }
 
+
+// 分组页签样式
+.el-card__header {
+    padding: 8px 20px;
+}
+
+
+
+
 /**拷贝定义*/
 .bip-copy {
     .el-dialog__body{

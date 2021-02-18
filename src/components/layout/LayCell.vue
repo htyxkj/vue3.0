@@ -6,8 +6,10 @@
             </template>
             <template v-else>
                 <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
-                    <div>
+                    <div slot="header" class="clearfix">
                         <span>{{item.title}}</span>
+                    </div>
+                    <div>
                         <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
                     </div>
                 </el-card>
