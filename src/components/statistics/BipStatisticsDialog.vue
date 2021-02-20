@@ -5,7 +5,7 @@
                 <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">统计</div>
             </span> -->
             <el-row style="padding:10px 25px 0px 25px">
-                <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
+                <el-form @submit.native.prevent ref="form" label-width="120px" size="medium">
                     <el-form-item class="bip-form-item" label="已保存方案">
                         <el-select v-model="programModel" collapse-tags class="bip-form-input" placeholder="请选择">
                             <el-option key="-1" label=" 　" :value="-1"> </el-option>
@@ -105,7 +105,6 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import  BipFigureTypeDialog  from "./BipFigureTypeDialog.vue";
 import CDataSet from "@/classes/pub/CDataSet";
-import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import QueryEntity from '@/classes/search/QueryEntity';
 import QueryCont from '@/classes/search/QueryCont';
@@ -414,7 +413,7 @@ export default class BipStatisticsDialog extends Vue {
   margin-bottom: 22px !important;
 }
 .bip-form-input {
-    margin-left: 20px;
+    // margin-left: 20px;
     width: 70%
 }
 </style>

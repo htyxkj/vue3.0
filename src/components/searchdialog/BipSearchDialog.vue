@@ -10,7 +10,7 @@
                     <el-col :span="10">
                         <el-row type="flex" justify="state">
                             <el-form-item label="查询条件">
-                                <el-select v-model="model" placeholder="请选择查询条件" size="small">
+                                <el-select v-model="model" placeholder="请选择查询条件" size="medium">
                                     <el-option
                                         v-for="(item,index) in options"
                                         :key="index"
