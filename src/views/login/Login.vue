@@ -1,7 +1,7 @@
 <template>
   <div class="login-img">
        <div class="login-card">
-      <div class="login-title">欢迎登陆{{loginTitle}}</div>
+      <div class="login-title">{{loginTitle}}</div>
       <div class="login-cont" @keyup.enter="login">
 
         <el-form @submit.native.prevent label-position="left" label-width="70px" >
@@ -240,6 +240,9 @@ address {
   font-weight: 500;
   font-size: 14px;
   color: #a0a0a0;
+}
+.el-form-item__label{
+  background-color: #0ea0b9 I !important;
 }
 </style>
 

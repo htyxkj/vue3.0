@@ -235,6 +235,12 @@ export default new Router({
           path: '/InterfaceGetData',
           name: 'InterfaceGetData',
           component :()=> import('./custom/bip-amb/report/InterfaceGetData.vue')
+      },
+      {
+          //融通甘特图
+          path: '/ItemKanban',
+          name: 'ItemKanban',
+          component :()=> import('./custom/item-ctrl/ItemKanban.vue')
       }
   ]
 })

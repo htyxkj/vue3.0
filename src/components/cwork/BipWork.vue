@@ -278,6 +278,10 @@ export default class BipWork extends Vue{
                             let u = {node:null,users:[],hq:false}
                             let usrCode:any =[];
                             let users:any =[];
+                            if(!item.users){
+                                this.$notify.error("审批人未定义！");
+                                return;
+                            }
                             item.users.forEach((u:any)=>{
                                 if(usrCode.indexOf(u.userCode) == -1 ){
                                     usrCode.push(u.userCode);

@@ -4,7 +4,7 @@
             <div class="progress" @mousedown.stop="mousedownHandler" @mouseover.stop="mouseoverHandler"
                 @mousemove.stop="mousemoveHandler" @mouseup.stop="mouseupHandler" @mouseout.stop="mouseoutHandler" :style="pBarStyle">
                 <div class="left" :style="leftStyle">
-                    <div class="ball" :style="ballStyle"></div>
+                    <div class="ball" v-if="canDrag == undefined || canDrag==true" :style="ballStyle"></div>
                 </div>
             </div>
         </div>
@@ -14,7 +14,6 @@
     </div>
 </template>
 <script lang="ts">
-import { State, Action, Getter, Mutation } from "vuex-class";
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 @Component({
     components: {}
@@ -27,6 +26,7 @@ export default class ProgressBar extends Vue {
     @Prop() width!:string;//宽度
     @Prop() percent!:number;//当前点数%
     @Prop() pointNum!:number;//总点数
+    @Prop() canDrag!:boolean;
     @Provide() wrapStyle: any = {width: this.width};
     @Provide() pBarStyle: any = {backgroundColor: "#ccc",height:this.height};
     @Provide() leftStyle: any = {width: this.percent + '%',backgroundColor: "greenyellow",height: this.height};
@@ -61,12 +61,18 @@ export default class ProgressBar extends Vue {
         
  
     mousedownHandler(e:any){ 
+        if(this.canDrag == false){
+            return;
+        }
         if(e.which === 1){
             this.isMouseDownOnBall = true;
             this.isCurrentProgress = true;
         }
     }
     mousemoveHandler(e:any){
+        if(this.canDrag == false){
+            return;
+        }
         let el:any = this.$el;
         //拖拽
         if(this.isMouseDownOnBall && this.isCurrentProgress){
@@ -87,6 +93,9 @@ export default class ProgressBar extends Vue {
         }
     }
     mouseupHandler(e:any){ 
+        if(this.canDrag == false){
+            return;
+        }
         let el:any = this.$el;
         if(this.isMouseDownOnBall && this.isCurrentProgress){
             let decimal = (e.clientX - el.offsetLeft-15) / this.progressElement.clientWidth;
@@ -98,12 +107,18 @@ export default class ProgressBar extends Vue {
         }
     }
     mouseoverHandler(e:any){ 
+        if(this.canDrag == false){
+            return;
+        }
         // 没有按左键进入进度条
         if(e.which === 0){
             this.isMouseDownOnBall = false;
         }
     }
     mouseoutHandler(e:any){ 
+        if(this.canDrag == false){
+            return;
+        }
         if(e.which === 1 && this.isCurrentProgress){
             this.outProgressClientX = e.clientX;
             this.isMouseDownOnBody = true;

@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar v-if="tableToolbar" :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -254,7 +254,7 @@
             </el-row>
         </template>
         <template v-else>
-            <el-row style="margin-bottom:7px;">
+            <el-row style="margin-bottom:7px;" v-if="tablePage">
                 <el-pagination  
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
@@ -272,13 +272,11 @@
     </div>
 </template>
 <script lang="ts">
-import XEUtils from 'xe-utils'
 import { DateUtils } from "../../utils/DateUtils";
 import { GlobalVariable } from "../../utils/ICL";
 import BipScriptProc from "../../classes/pub/BipScriptProc";
-import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Provide, Prop, Watch ,Inject} from "vue-property-decorator";
 import BipLayCells from "@/classes/ui/BipLayCells";
-import { Cell } from "@/classes/pub/coob/Cell";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
@@ -290,12 +288,8 @@ import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request"; 
 let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
-import { Menu } from "@/classes/Menu";
 import CRecord from '../../classes/pub/CRecord';
 import { BIPUtils } from "@/utils/BaseUtil";
-import { connect } from 'echarts';
-import { on } from 'cluster';
-import { values } from 'xe-utils/methods';
 let baseTool = BIPUtils.baseUtil;
 @Component({
     components: {  BipGridInfo,Accordion }
@@ -339,6 +333,9 @@ export default class LayCelVexTable extends Vue {
     @Provide() multiple:boolean = false;//是否是多选
     @Provide() checkSelected:any = [];//当前页选中行集合
     @Provide() multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
+
+    @Inject('tablePage') tablePage!:boolean;
+    @Inject('tableToolbar') tableToolbar!:boolean;
     created() {
         if((this.laycell.cells.attr & 0x40)>0){
             this.multiple = true;

@@ -62,7 +62,6 @@ import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
 import { GPSUtil } from "./class/GPSUtil";
-import { set } from 'xe-utils/methods';
 let Gps = GPSUtil.GPS;
 @Component({
     components: {

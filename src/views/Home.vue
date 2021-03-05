@@ -214,18 +214,22 @@ export default class Home extends Vue {
           layout.maxh = cc.maxh;
           layout.sid = cc.sid;
           layout.rech = cc.rech;
-          cc.cont = JSON.parse(cc.cont)
-          cc.cont.sname = cc.sname;
-          layout.cont = JSON.stringify(cc.cont);
-          layout.comtype = cc.comtype; 
-          let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-          if(userAttr <=1){
-            layout.usrcode = "*"
-          }else{
-            if(this.user)
-              layout.usrcode = this.user.userCode 
-          }
-          newLayout.push(layout);
+          try{
+            if( typeof(cc.cont)=='string'){
+              cc.cont = JSON.parse(cc.cont)
+            }
+            cc.cont.sname = cc.sname;
+            layout.cont = JSON.stringify(cc.cont);
+            layout.comtype = cc.comtype; 
+            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+            if(userAttr <=1){
+              layout.usrcode = "*"
+            }else{
+              if(this.user)
+                layout.usrcode = this.user.userCode 
+            }
+            newLayout.push(layout);
+          }catch(e){console.log(cc.cont)}
           continue;
         }
         let bh = false;

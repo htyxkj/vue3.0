@@ -2,8 +2,11 @@
     <div>
         <el-row style="margin-bottom:0px"> 
             <el-col :span="4"> 
-                <el-row style="text-align:start;margin: 16px 0px;"> 
-                    <i class="iconfont icon-bip-menu menuicon pointer" @click="showMenu"></i>
+                <el-row style="text-align:start;margin: 6px 0px;"> 
+                    <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer" aria-hidden="true" @click="showMenu" style="width:1em;height: 1em;">
+                        <use xlink:href="#icon-bip-rongtong "></use>
+                     </svg>
+                    <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu"></i>
                 </el-row>
             </el-col>
             <el-col :span="20">
@@ -73,17 +76,16 @@ import { User } from '@/classes/User';
 import { Component, Vue, Provide, Prop ,Watch} from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import  Stomp  from 'stompjs';
-import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
 import { LoginState } from '../../store/modules/login/types'; 
 
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
-const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG";  
-import { Menu } from "@/classes/Menu";
+const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG"; 
 @Component({
 })
 export default class LayHeader extends Vue { 
+    base_variable = BaseVariable;
     @Provide() haveTask:boolean = false;
     @Provide() client:any = null;
     @Provide() taskNum:Number = 0;
@@ -141,10 +143,10 @@ export default class LayHeader extends Vue {
                 this.client.disconnect();
                 this.client = null;
             }
+            this.$emit('loginOut');
         } catch (error) {
             this.$emit('loginOut');
         }
-        this.$emit('loginOut');
     }
     //切换公司
     async switchCMC(item:any){ 
@@ -363,7 +365,7 @@ export default class LayHeader extends Vue {
 <style scoped>
 .menuicon{
     color: #fff;
-    font-size: 28px; 
+    font-size: 46px; 
 }
 .pointer{
     cursor:pointer;

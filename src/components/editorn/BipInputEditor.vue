@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange"></el-input>
+                <el-input :type="cell.ccVerCell>1?'textarea':'text'" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange"></el-input>
                 <template v-if="cell.desc">
                     <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
                         <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">

@@ -63,7 +63,6 @@ import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
-const namespace: string = 'login'; 
 import { BIPUtil } from "@/utils/Request";
 @Component({
   components: {
@@ -96,6 +95,8 @@ export default class App extends Vue {
     @Mutation("user", { namespace:'login' }) setUserInfo: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
+    @Provide('tablePage') tablePage:boolean = true;
+    @Provide('tableToolbar') tableToolbar:boolean = true;
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
@@ -213,6 +214,27 @@ export default class App extends Vue {
                 this.addIndex();
         }else{
             this.editableTabs2=[];
+            if (this.$route.query) {
+                this.query = this.$route.query;
+                if(this.query.isLoginPage){
+                    this.isLoginPage = parseInt(this.query.isLoginPage+'');
+                }
+                if(BaseVariable.ITEMTYPE == 'bip-flexible'){
+                    this.isLoginPage = 0;
+                }
+                if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
+                    this.isLoginPage = 2;
+                }
+                if(this.isLoginPage == -1){
+                    this.$router.push({
+                        path:'/wlogin',
+                        name:'wlogin',
+                    })
+                    return;
+                }
+            } else{
+                this.$router.push({ path: "/" });
+            }
         }
     } 
 

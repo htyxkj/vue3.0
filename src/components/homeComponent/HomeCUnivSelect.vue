@@ -4,8 +4,8 @@
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
-                        <div v-if="lay.binit">
-                            <template v-if="_cont">{{_cont.name}}</template>
+                        <div v-if="lay.binit" class="home-table">
+                            <div class="table-title" v-if="_cont">{{_cont.name}}</div>
                             <el-form @submit.native.prevent label-position="right" label-width="120px">
                                 <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                             </el-form>
@@ -80,6 +80,9 @@ export default class HomeCUnivSelect extends Vue {
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
+    
+	@Provide('tablePage') tablePage:boolean = false;
+    @Provide('tableToolbar') tableToolbar:boolean = false;
     _cont:any = {};
     async initUI() {
         if (this.uriParams&&this.uriParams.pcell) {
@@ -145,7 +148,6 @@ export default class HomeCUnivSelect extends Vue {
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         let he = document.documentElement.clientHeight;
-        console.log('height:'+he)
         if(!this.params || !this.params.method){ 
             this.initData(); 
         }else{
@@ -215,7 +217,7 @@ export default class HomeCUnivSelect extends Vue {
         }
         this.qe.oprid = 13
         this.qe.type = 1
-        this.qe.page.pageSize = 20
+        this.qe.page.pageSize = 500
         this.findServerData(this.qe);
     }
     findListMenuIndex(cmd: string): number {
@@ -501,6 +503,23 @@ export default class HomeCUnivSelect extends Vue {
         }
         .scrollbar-wrapper{
           overflow-x: hidden !important;
+        }
+    }
+}
+.table-title{
+    padding: 0px 0px 0px 5px;
+    line-height: 30px;
+    height: 30px;
+}
+</style>
+<style lang="scss">
+.home-table{
+    .el-card {
+        box-shadow:0 0 0 0 rgba(0,0,0,.1) !important;
+        -webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1) !important;
+        .is-always-shadow{
+            box-shadow:0 0 0 0 rgba(0,0,0,.1) !important;
+            -webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1)  !important;
         }
     }
 }

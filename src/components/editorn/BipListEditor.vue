@@ -87,7 +87,7 @@ export default class BipListEditor extends Vue{
     initOPtions(){
         console.log("list init options")
         this.options = [];
-        if(this.bipInsAid){
+        if(this.bipInsAid && this.bipInsAid.cells){
             this.cels = this.bipInsAid.cells.cels
             if(!this.cell.isReq){
             let nullVal:any = {}

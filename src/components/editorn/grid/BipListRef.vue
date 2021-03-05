@@ -50,7 +50,7 @@ export default class BipListRef extends Vue{
             return m
         }
         if(this.bipInsAid){
-            if(this.bipInsAid&&this.bipInsAid.values){
+            if(this.bipInsAid&&this.bipInsAid.cells&&this.bipInsAid.values){
                 let id = this.bipInsAid.cells.cels[0].id
                 let name = this.bipInsAid.cells.cels[1].id
                 this.bipInsAid.values.forEach(item=>{

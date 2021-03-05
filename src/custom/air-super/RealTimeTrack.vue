@@ -380,9 +380,10 @@ export default class RealTimeTrack extends Vue {
             this.loading = !this.loading;
             this.airPoint=[];
             await this.initTask();
-            for(var k in this.taskData){
-                await this.initOperDevice(this.taskData[k]);
-            }
+            // for(var k in this.taskData){
+            //     await this.initOperDevice(this.taskData[k]);
+            // }
+            await this.initAllDev();
             let t1 = this.tMap.getViewport(this.airPoint);
             if(t1)
                 this.tMap.panTo(t1.center, t1.zoom);
@@ -506,6 +507,56 @@ export default class RealTimeTrack extends Vue {
             }
         } 
     }
+
+    /** 
+     * 查询全部设备
+    */
+    async initAllDev(){
+        let userCode = JSON.parse(window.sessionStorage.getItem("user") + "").userCode;
+        let condition ={userCode:userCode};
+        let data = {
+            apiId: GlobalVariable.APIID_MPARAMS,
+            dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+            usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+            condition:JSON.stringify(condition),
+            oprid:220,
+        }
+        let data1 = qs.stringify(data);
+        let res = await Vue.$axios.post("/realTimeServlet", data1);
+        if(res.data.id ==0){
+            let values = res.data.data.data;
+            for(var i=0;i<values.length;i++){
+                let v = values[i]
+                let key = v.taskid+"_"+v.sbid+"_"+v.offline;
+                if(v.latitude<=0 || v.longitude<=0){
+                    break;
+                }
+                let lnglat = [v.latitude,v.longitude];
+                let offline = false;
+                if(v.sbtype =='0'){
+                    lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+                }
+                if(v.offline+'' == '1'){
+                    offline = true;
+                }
+                let cc = lnglat[1]+","+lnglat[0]
+                let poin = new T.LngLat(lnglat[1], lnglat[0]);
+                this.airPoint.push(poin);
+                v.speedtime = new Date(v.speedtime)
+                v.speedtime = moment(v.speedtime).format("YYYY-MM-DD HH:mm:ss")
+                let msg = "<div>任务编码："+v.taskid+"<br/>任务名称："+v.taskname+"<br/>设备编码："+v.sbid+"<br/>定位信息:"+lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+v.time
+                if(offline){//离线
+                    msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:red;'>离线</span>"
+                }else{//在线
+                    msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:green;'>在线</span>"
+                }
+                msg +="</div>";
+                TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
+            }
+        } 
+    }
+
+
     // 点击右侧任务跳转至详情页面
     detailTask(tkid:String){
         let data1 = {target:{key:tkid}}
@@ -865,10 +916,11 @@ export default class RealTimeTrack extends Vue {
             this.airPoint=[];
             this.sumtime = 0;
             this.sumtimeflow = 0;
-            await this.initTask();
-            for(var k in this.taskData){
-                await this.initOperDevice(this.taskData[k]);
-            }
+            // await this.initTask();
+            // for(var k in this.taskData){
+            //     await this.initOperDevice(this.taskData[k]);
+            // }
+            await this.initAllDev()
             let t1 = this.tMap.getViewport(this.airPoint);
             if(t1)
                 this.tMap.panTo(t1.center, t1.zoom);

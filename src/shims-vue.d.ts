@@ -36,3 +36,4 @@ declare module 'vue-ueditor-wrap'{
   const vue_ueditor_wrap:any;
   export default vue_ueditor_wrap;
 }
+declare module '*'

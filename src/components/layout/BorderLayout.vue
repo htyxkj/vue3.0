@@ -137,10 +137,13 @@ export default class BorderLayout extends Vue{
 }
 </script>
 
-<style>
+<style lang="scss">
 .bip-border-lay{
     width: 100%;
     height: 100%;
+    .el-card__body{
+        padding: 5px;
+    }
 }
 </style>
 
