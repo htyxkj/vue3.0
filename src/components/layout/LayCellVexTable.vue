@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar v-if="tableToolbar" :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar v-if="isNoHomeTable" :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -146,11 +146,11 @@
                 <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
                 <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
                 <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
-                <vxe-table-column type="seq" width="60" fixed="left"></vxe-table-column>
+                <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
                     <template v-if="item.type == ''">
                         <vxe-table-column :key="index" header-align="center" align="center" :field="item.cel.id"
-                            :width="widths[item.cel.widthIndex]" :title="item.cel.labelString" show-header-overflow 
+                            :min-width="widths[item.cel.widthIndex]" :title="item.cel.labelString" show-header-overflow 
                             show-overflow :sortable ="(item.cel.attr&0x400000)>0" :fixed="isFixed(item.cel.widthIndex)" >
                             <template v-slot="{row,rowIndex}"> 
                                 <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
@@ -254,7 +254,7 @@
             </el-row>
         </template>
         <template v-else>
-            <el-row style="margin-bottom:7px;" v-if="tablePage">
+            <el-row style="margin-bottom:7px;" v-if="isNoHomeTable">
                 <el-pagination  
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
@@ -334,8 +334,7 @@ export default class LayCelVexTable extends Vue {
     @Provide() checkSelected:any = [];//当前页选中行集合
     @Provide() multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
 
-    @Inject('tablePage') tablePage!:boolean;
-    @Inject('tableToolbar') tableToolbar!:boolean;
+    @Inject('isNoHomeTable') isNoHomeTable!:boolean;//显示分页
     created() {
         if((this.laycell.cells.attr & 0x40)>0){
             this.multiple = true;
@@ -608,6 +607,7 @@ export default class LayCelVexTable extends Vue {
      * 字段点击进行跳转操作
      */
     async openrefs(data:any,event:any){
+        console.log("openrefs")
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         let row = data.row.data
         let rowIndex = data.rowIndex
@@ -644,34 +644,7 @@ export default class LayCelVexTable extends Vue {
                     let name = "BL_"+this.pbuid+"_"+cell.id;
                     data = await this.initCL(name);
                     if(data == null){
-                        if (slkid && slkbuid) { 
-                            //获取业务定义
-                            let param = await tools.getBULinks(slkbuid);
-                            if(param.data.id ==0){
-                                let opera = param.data.data.opt;
-                                if (opera&&!opera.pmenuid) {
-                                    this.$notify.error("业务" + slkbuid + "没有绑定菜单!"); 
-                                    return false;
-                                }
-                                let me = baseTool.findMenu(opera.pmenuid);
-                                if (!me) {
-                                    this.$notify.error( "没有" + opera.pmenuid + "菜单权限!" );
-                                    return false;
-                                }else{
-                                    let command = me.command.split("&");
-                                    let pbuid = command[0].split("=");
-                                    let pmenuid = command[1].split("="); 
-                                    setTimeout(() => {
-                                        this.$router.push({
-                                            path:'/layout',
-                                            name:'layout',
-                                            params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
-                                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                                        })    
-                                    }, 600);
-                                }
-                            }  
-                        }
+                        await this.openRefsDo(slkid , slkbuid);
                     }else{
                         //BL字段点击
                         let slink = data.slink;
@@ -714,7 +687,47 @@ export default class LayCelVexTable extends Vue {
                 }else{
                     console.log('主键点击')
                 }
+            }else{
+                //判断是否是行关联
+                if(baseTool.bitOperation(this.laycell.cells.attr,0x1000000000)>0){
+                    let pk = this.laycell.cells.pkindex;
+                    cell = this.laycell.cells.cels[pk[0]]
+                    let slkid = row[cell.id];  
+                    let slkbuidCell = this.laycell.cells.cels[pk[0]+1]
+                    let slkbuid = row[slkbuidCell.id];
+                    await this.openRefsDo(slkid , slkbuid);
+                }
             }
+        }
+    }
+    async openRefsDo(slkid:any,slkbuid:any){
+        if (slkid && slkbuid) { 
+            //获取业务定义
+            let param = await tools.getBULinks(slkbuid);
+            if(param.data.id ==0){
+                let opera = param.data.data.opt;
+                if (opera&&!opera.pmenuid) {
+                    this.$notify.error("业务" + slkbuid + "没有绑定菜单!"); 
+                    return false;
+                }
+                let me = baseTool.findMenu(opera.pmenuid);
+                if (!me) {
+                    this.$notify.error( "没有" + opera.pmenuid + "菜单权限!" );
+                    return false;
+                }else{
+                    let command = me.command.split("&");
+                    let pbuid = command[0].split("=");
+                    let pmenuid = command[1].split("="); 
+                    setTimeout(() => {
+                        this.$router.push({
+                            path:'/layout',
+                            name:'layout',
+                            params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
+                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                        })    
+                    }, 600);
+                }
+            }  
         }
     }
 
@@ -820,8 +833,10 @@ export default class LayCelVexTable extends Vue {
                     setTimeout(() => {
                         // cc.syncData();
                         // cc.reloadData(this.cds.cdata.data)
-                        cc.clearCurrentRow();
-                        cc.setCurrentRow(this.cds.currRecord);
+                        if(this.isNoHomeTable){
+                            cc.clearCurrentRow();
+                            cc.setCurrentRow(this.cds.currRecord);
+                        }
                         // cc.toggleRowSelection(this.cds.currRecord);
                         // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
                     }, 200);

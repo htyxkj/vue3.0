@@ -2,7 +2,7 @@
     <div>
         <el-row style="margin-bottom:0px"> 
             <el-col :span="4"> 
-                <el-row style="text-align:start;margin: 6px 0px;"> 
+                <el-row style="text-align:start;margin: 2px 0px;"> 
                     <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer" aria-hidden="true" @click="showMenu" style="width:1em;height: 1em;">
                         <use xlink:href="#icon-bip-rongtong "></use>
                      </svg>
@@ -10,7 +10,7 @@
                 </el-row>
             </el-col>
             <el-col :span="20">
-                <el-row style="text-align:end;margin-bottom:0px" > 
+                <el-row style="text-align:end;margin: 2px 0px;height:50px" > 
                     <el-badge :value="taskNum" class="header_badge_item">
                         <i class="el-icon-mobile pointer" @click="myTask"></i>    
                     </el-badge>
@@ -371,7 +371,7 @@ export default class LayHeader extends Vue {
     cursor:pointer;
 }
 .userimg{
-    border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 10px;margin-right:10px 
+    border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 3px;margin-right:10px 
 }
 
 </style>

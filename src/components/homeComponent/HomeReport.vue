@@ -12,10 +12,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import { State, Action, Getter, Mutation } from "vuex-class";
-import {CommICL} from '@/utils/CommICL'
-let ICL = CommICL
-import { Menu } from "@/classes/Menu";
 import { BIPUtil } from "@/utils/Request"; 
 import { URIParams } from "@/classes/URIParams";
 import HomeCUnivSelect from './HomeCUnivSelect.vue'
@@ -62,6 +58,7 @@ export default class HomeReport extends Vue {
         if (res.data.id === 0 ) {
             let uri = res.data.data.mparams;
             if(this.type == "Report"){//报表统计模式
+                console.log("报表统计模式")
                 uri.bgroupList = [];
                 let cc = {selGroup:"",selValue:"",chartTypeValue:'',showChart:false,width:24,title:''};
                 cc.selGroup = cont.spbds.split(",");
@@ -107,7 +104,7 @@ export default class HomeReport extends Vue {
         if(command){
             let p = command.split("&");
             let pbuid = p[0].split("=")
-            let pmenuid = p[0].split("=")
+            let pmenuid = p[1].split("=")
             this.$router.push({
                 path:'/layout',
                 name:'layout',

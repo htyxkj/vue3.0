@@ -65,7 +65,6 @@
                                 <img class="chart-img" src="@/assets/chart/bar1.png">
                                 <div class="chart-radio" v-if="chartCheck == 'bar-0'">
                                     <i class="el-icon-circle-check chart-radio-input"></i>
-                                    <!-- <el-radio v-model="chartCheck" label="bar-0"  class="chart-radio-input"></el-radio> -->
                                 </div> 
                             </div>
                         </el-col>
@@ -75,7 +74,6 @@
                                 <img class="chart-img" src="@/assets/chart/bar-1.png">
                                 <div class="chart-radio" v-if="chartCheck == 'bar-1'">
                                         <i class="el-icon-circle-check chart-radio-input"></i>
-                                    <!-- <el-radio v-model="chartCheck" label="bar-1" class="chart-radio-input"></el-radio> -->
                                 </div>
                             </div>
 
@@ -89,7 +87,6 @@
                                 <img class="chart-img" src="@/assets/chart/bar2.png">
                                 <div class="chart-radio" v-if="chartCheck == 'bar-2'">
                                     <i class="el-icon-circle-check chart-radio-input"></i>
-                                    <!-- <el-radio v-model="chartCheck" label="bar-2"  class="chart-radio-input"></el-radio> -->
                                 </div> 
                             </div>
                         </el-col>
@@ -99,7 +96,6 @@
                                 <img class="chart-img" src="@/assets/chart/bar-3.png">
                                 <div class="chart-radio" v-if="chartCheck == 'bar-3'" >
                                     <i class="el-icon-circle-check chart-radio-input"></i>
-                                    <!-- <el-radio v-model="chartCheck" label="bar-3" class="chart-radio-input"></el-radio> -->
                                 </div>
                             </div>
                         </el-col>
@@ -111,7 +107,6 @@
                                 <img class="chart-img" src="@/assets/chart/bar-4.png">
                                 <div class="chart-radio" v-if="chartCheck == 'bar-4'">
                                     <i class="el-icon-circle-check chart-radio-input"></i>
-                                    <!-- <el-radio v-model="chartCheck" label="bar-1" class="chart-radio-input"></el-radio> -->
                                 </div>
                             </div>
                         </el-col>
@@ -121,7 +116,6 @@
                                 <img class="chart-img" src="@/assets/chart/bar-5.png">
                                 <div class="chart-radio" v-if="chartCheck == 'bar-5'" >
                                     <i class="el-icon-circle-check chart-radio-input"></i>
-                                    <!-- <el-radio v-model="chartCheck" label="bar-3" class="chart-radio-input"></el-radio> -->
                                 </div>
                             </div>
                         </el-col>
@@ -137,7 +131,6 @@
                             <img class="chart-img" src="@/assets/chart/pie-0.png">
                             <div class="chart-radio" v-if="chartCheck == 'pie-0'">
                                  <i class="el-icon-circle-check chart-radio-input"></i>
-                                <!-- <el-radio v-model="chartCheck" label="pie-0"  class="chart-radio-input"></el-radio> -->
                             </div> 
                         </div>
                     </el-col>
@@ -147,7 +140,6 @@
                             <img class="chart-img" src="@/assets/chart/pie-1.png">
                             <div class="chart-radio"  v-if="chartCheck == 'pie-1'">
                                 <i class="el-icon-circle-check chart-radio-input"></i>
-                                <!-- <el-radio v-model="chartCheck" label="pie-1"  class="chart-radio-input"></el-radio> -->
                             </div> 
                         </div>
                     </el-col>
@@ -160,7 +152,6 @@
                             <img class="chart-img" src="@/assets/chart/pie-2.png">
                             <div class="chart-radio" v-if="chartCheck == 'pie-2'">
                                 <i class="el-icon-circle-check chart-radio-input"></i>
-                                <!-- <el-radio v-model="chartCheck" label="pie-2"  class="chart-radio-input"></el-radio> -->
                             </div> 
                         </div>
                     </el-col>
@@ -175,7 +166,6 @@
                             <img class="chart-img" src="@/assets/chart/scatter-0.png">
                             <div class="chart-radio" v-if="chartCheck == 'scatter-0'">
                                 <i class="el-icon-circle-check chart-radio-input"></i>
-                                <!-- <el-radio v-model="chartCheck" label="scatter-0"  class="chart-radio-input"></el-radio> -->
                             </div> 
                         </div>
                     </el-col>
@@ -190,7 +180,6 @@
                             <img class="chart-img" src="@/assets/chart/radar-0.png">
                             <div class="chart-radio"  v-if="chartCheck == 'radar-0'">
                                 <i class="el-icon-circle-check chart-radio-input"></i>
-                                <!-- <el-radio v-model="chartCheck" label="radar-0"  class="chart-radio-input"></el-radio> -->
                             </div> 
                         </div>
                     </el-col>
@@ -205,7 +194,20 @@
                             <img class="chart-img" src="@/assets/chart/funnel-0.png">
                             <div class="chart-radio"  v-if="chartCheck == 'funnel-0'">
                                 <i class="el-icon-circle-check chart-radio-input"></i>
-                                <!-- <el-radio v-model="chartCheck" label="funnel-0"  class="chart-radio-input"></el-radio> -->
+                            </div> 
+                        </div>
+                    </el-col>
+                </el-row>
+            </el-tab-pane>
+            <el-tab-pane>
+                <span slot="label" class="echarts-label"><i class="el-icon-date"></i>甘特图</span>
+                <el-row :gutter="20">
+                     <el-col :span="11">
+                        <div class="chart" @click="bindEcharts('gantt-0')">
+                            <div class="grid-content bg-purple">甘特图</div>
+                            <img class="chart-img" src="@/assets/chart/gantt.png">
+                            <div class="chart-radio"  v-if="chartCheck == 'gantt-0'">
+                                <i class="el-icon-circle-check chart-radio-input"></i>
                             </div> 
                         </div>
                     </el-col>
@@ -221,7 +223,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import { type } from 'os';
 @Component({})
 export default class BipFigureTypeDialog extends Vue {
     @Provide() showFType:boolean = false;

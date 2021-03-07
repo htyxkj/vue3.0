@@ -10,6 +10,7 @@ export default class CCliEnv{
     dsm:CDataSet = new CDataSet(null)
     ds_cont:CDataSet = new CDataSet(null)
     ds_ext:Array<CDataSet> = Array<CDataSet>()
+    dsmcurr:CDataSet = this.dsm;
     constructor(){}
 
     initInfo(_uriParams:URIParams,_cells:Array<Cells>,_mbs:BipMenuBar,_dsm:CDataSet,_ds_ext:Array<CDataSet>){
@@ -18,6 +19,7 @@ export default class CCliEnv{
         this.mbs = _mbs
         this.dsm = _dsm
         this.ds_ext = _ds_ext
+         this.dsmcurr = this.dsm;
     }
     getDataSet(obid:string):any{
         if(obid==='' || this.dsm.ccells.obj_id === obid){

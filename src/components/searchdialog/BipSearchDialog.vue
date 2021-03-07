@@ -2,14 +2,14 @@
     <el-dialog class="bip-search" width="50%" :visible.sync="dialogVisible"
         :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
         <span slot="title">
-            <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">查询条件</div>
+            <div class="el-dialog__title" style="padding-bottom: 4px;border-bottom: solid 1px #D9DFEF;">查询条件</div>
         </span>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
             <el-form @submit.native.prevent ref="form" :model="currcont" label-width="100px" size="mini" label-position="left">
-                <el-row style="padding: 0px 15px 0px 10px;">
+                <el-row style="padding: 0px 15px 5px 10px;">
                     <el-col :span="10">
                         <el-row type="flex" justify="state">
-                            <el-form-item label="查询条件">
+                            <el-form-item class="bip-s-dia" label="查询条件" >
                                 <el-select v-model="model" placeholder="请选择查询条件" size="medium">
                                     <el-option
                                         v-for="(item,index) in options"
@@ -30,15 +30,15 @@
                         </el-row>
                     </el-col>
                 </el-row>
-                <el-row v-for="(sitem,index) in searchValues" :key="index" style="margin-top:5px;padding: 0px 15px 5px 10px;">
+                <el-row v-for="(sitem,index) in searchValues" :key="index" style="padding: 0px 15px 0px 10px;">
                     <el-col :span="20">
                         <el-row type="flex" justify="state">
-                            <el-form-item  :label="sitem.name">
+                            <el-form-item class="bip-s-dia" :label="sitem.name">
                                 <el-col :span="10" :xs="10" :sm="10" :md="10">
                                     <bip-comm-editor :cell="sitem.cell" :bgrid="false" :cds="tjCell1" :row="0" />                                    
                                     <!-- <el-input v-model="sitem.v1" size="small" :clearable="true" style="width: 100%;"></el-input> -->
                                 </el-col>
-                                <el-col class="line" :span="1">~</el-col>
+                                <el-col class="line" :span="1">-</el-col>
                                 <el-col :span="10" :xs="10" :sm="10" :md="10">
                                     <bip-comm-editor :cell="sitem.cell" :bgrid="false" :cds="tjCell2" :row="0" />
                                     <!-- <el-input v-model="sitem.v2" size="small" :clearable="true" style="width: 100%;"></el-input> -->
@@ -203,4 +203,16 @@ export default class BipSearchDialog extends Vue {
     }
 }
 </script>
+
+<style>
+.bip-s-dia .el-form-item__label{
+    padding: 4px 15px !important;
+}
+.bip-search .el-dialog__header {
+    padding-top: 15px;
+    padding-right: 25px;
+    padding-bottom: 5px;
+    padding-left: 25px;
+}
+</style>
 

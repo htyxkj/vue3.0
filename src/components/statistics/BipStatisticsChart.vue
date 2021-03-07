@@ -31,7 +31,8 @@
             </el-row>
         </div>
         <div v-if="stat.showChart && option"  class="showchart" :style="chartStyle" >
-            <bip-chart :style="chartStyle" :option="option" :chartStyle="chartStyle" @itemClick="itemClick"></bip-chart>
+            <BipGant v-if="stat.chartTypeValue=='gantt-0'" :config="option" :height='300'></BipGant>
+            <bip-chart v-else :style="chartStyle" :option="option" :chartStyle="chartStyle" @itemClick="itemClick"></bip-chart>
         </div>
         <div>
             <!-- 报表表格-->
@@ -50,12 +51,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import CDataSet from "@/classes/pub/CDataSet";
-import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BIPUtil } from "@/utils/Request";
 import { BIPUtils } from "@/utils/BaseUtil";
-import echarts from 'echarts';
 import BipChart from "@/components/chart/BipChart.vue"
 import QueryEntity from "@/classes/search/QueryEntity";
 let tools = BIPUtil.ServApi;
@@ -63,8 +61,9 @@ let tool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from "vuex-class";
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
+import BipGant from '@/components/chart/BipGant.vue';
 @Component({
-    components: { BipChart}
+    components: { BipChart,BipGant}
 })
 export default class BipStatisticsDialog extends Vue {
     @Prop() stat!:any;
@@ -118,13 +117,12 @@ export default class BipStatisticsDialog extends Vue {
         qe.pcell = this.env.dsm.ccells.obj_id
         qe.tcell = this.env.ds_cont.ccells.obj_id
         qe.cont = JSON.stringify(this.env.ds_cont.currRecord.data,this.testReplacer);
-        param = tool.getBipStatisticsParams(JSON.stringify(qe),groupfilds,groupdatafilds);
+        param = tool.getBipStatisticsParams(JSON.stringify(qe),groupfilds,groupdatafilds,this.stat.chartTypeValue);
         let chartData = await tools.getFromServer(param); 
 
         if(chartData.data.id == 0){
             this.tableData = chartData.data.data.tjpages.celData
             this.tjcell = chartData.data.data.tjlayCels
-            console.log(chartData)
             await this.initChartData(chartData);
         }else{ 
             this.$notify.warning(chartData.data.message);
@@ -168,22 +166,9 @@ export default class BipStatisticsDialog extends Vue {
             await this.makePie(chartData,type[1]);
         }else if(type[0] == 'funnel'){//漏斗图
             await this.makeFunnel(chartData,type[1]);
+        }else if(type[0] == 'gantt'){//甘特图
+            await this.makeGantt(chartData);
         }
-
-        // if(this.stat.chartTypeValue == "pie"){
-        //     // await this.makePieOpitons(chartData);
-        //     await this.meakeLine(chartData,this.stat.chartTypeValue);
-        // }else if ( this.stat.chartTypeValue =="barGraph"){
-        //     await this.makebarGraph(chartData);
-        // }else if( this.stat.chartTypeValue == "pieAnnular"){
-        //     await this.makepieAnnular(chartData);
-        // }else if(this.stat.chartTypeValue == 'dimensionBar'){
-        //     await this.makeDimensionBar(chartData,false)
-        // }else if(this.stat.chartTypeValue =='dimensionStackingBar'){
-        //     await this.makeDimensionBar(chartData,true)
-        // }else {
-        //     // await this.makeColumnOpitons(chartData);
-        // }
     }
 
     /**
@@ -1260,6 +1245,63 @@ export default class BipStatisticsDialog extends Vue {
             option.series.push(dd);
         }
         this.option = option;
+    }
+
+    //甘特图
+    async makeGantt(chartData:any){
+        if(chartData.data.id ==0){
+            let data = chartData.data.data;
+            let values = data.tjpages.celData
+            let gantt_data = [];
+            for(var i=0;i<values.length;i++){
+                let vl = values[i];
+                let _d:any = {
+                    id:(i+1),
+                    text:'',
+                    start_date:'',
+                    duration:'',
+                    progress:0
+                }
+                let seg = this.stat.selGroup;
+                for(var z=0;z<seg.length;z++){
+                    let key = seg[z];
+                    _d[key] = vl[key]
+                }
+                let sev = this.stat.selValue;
+                _d.start_date = vl[sev[0]]
+                _d.duration = vl[sev[1]]
+                if(sev[2] && sev[2]!='""'){
+                    let jd = vl[sev[2]];
+                    jd = jd ==null?0:vl[sev[2]];
+                    _d.progress = jd
+                    _d.text = (jd*100)+"%"
+                }
+                if(_d.start_date){
+                    gantt_data.push(_d);
+                }
+            }
+            let tjlayCels = data.tjlayCels;
+            let cels = tjlayCels.cels;
+            let seg = this.stat.selGroup;
+            let columns =[];
+            for(var z=0;z<seg.length;z++){
+                let _c:any = { name: "", label: "",width: "*" };
+                let key = seg[z];
+                for(var j=0;j<cels.length;j++){
+                    if(cels[j].id == key){
+                        _c.name = key;
+                        _c.label = cels[j].labelString
+                    }
+                }
+                columns.push(_c)
+            }
+            this.option= {
+                data: gantt_data,
+                columns :columns,
+                date_format:"%Y-%m-%d %H:%i",
+                readonly:true,
+            }
+        }
     }
 
     /**

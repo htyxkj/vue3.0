@@ -5,13 +5,13 @@
             <base-layout :layout="laycfg[0].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
         </el-card>
         <el-card v-else style="height:100% ; margin-bottom:10px;">
-            <el-row class="bip-row" :gutter="10">
+            <el-row class="bip-row" :gutter="4">
                 <lay-cell :laycell="laycfg[0].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
             </el-row>
         </el-card>
     </template>
     <template v-if="bcenter">
-        <el-row class="bip-row" :gutter="10">
+        <el-row class="bip-row" :gutter="4">
             <template v-if="bleft">
                 <el-col :span="wleft">
                     <el-card v-if="!laycfg[3].bcells">
@@ -43,7 +43,7 @@
         </el-row>
     </template>
     <template v-if="bbuttom">
-        <el-row class="bip-row" :gutter="10">
+        <el-row class="bip-row" :gutter="4">
             <el-card v-if="!laycfg[2].bcells">
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env" :config="config" @invokecmd="invokecmd"></bip-comm-lay >
             </el-card>

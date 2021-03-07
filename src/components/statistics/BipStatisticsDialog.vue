@@ -4,7 +4,7 @@
             <!-- <span slot="title">
                 <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">统计</div>
             </span> -->
-            <el-row style="padding:10px 25px 0px 25px">
+            <el-row class="statDlg">
                 <el-form @submit.native.prevent ref="form" label-width="120px" size="medium">
                     <el-form-item class="bip-form-item" label="已保存方案">
                         <el-select v-model="programModel" collapse-tags class="bip-form-input" placeholder="请选择">
@@ -17,24 +17,52 @@
                             <el-button slot="append" icon="el-icon-search" @click="showFigureType"></el-button>
                         </el-input>
                     </el-form-item>
-                    <el-form-item class="bip-form-item" label="统计项选择" :required="true">
-                        <el-select v-model="selX1" clearable collapse-tags class="bip-form-input" placeholder="请选择">
-                            <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item> 
-                    <el-form-item v-if="showSelX2" class="bip-form-item" label="统计项选择" :required="true">
-                        <el-select v-model="selX2" clearable collapse-tags class="bip-form-input" placeholder="请选择">
-                            <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item> 
-                    <el-form-item class="bip-form-item" label="数据项选择" :required="true">
-                        <el-select v-model="selValue" clearable collapse-tags class="bip-form-input" placeholder="请选择">
-                            <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item> 
+                    <template v-if="chartTypeValue =='gantt-0'">
+                        <el-form-item class="bip-form-item" label="统计项选择" :required="true">
+                            <el-select v-model="selX1" clearable collapse-tags multiple  class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item class="bip-form-item" label="时间" :required="true">
+                            <el-select v-model="gtSelValue1" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in ganttDateCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item class="bip-form-item" label="时长(天)" :required="true">
+                            <el-select v-model="gtSelValue2" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item> 
+                        <el-form-item class="bip-form-item" label="完成比例">
+                            <el-select v-model="gtSelValue3" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item> 
+                    </template>
+                    <template v-else>
+                        <el-form-item class="bip-form-item" label="统计项选择" :required="true">
+                            <el-select v-model="selX1" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item> 
+                        <el-form-item v-if="showSelX2" class="bip-form-item" label="统计项选择" :required="true">
+                            <el-select v-model="selX2" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in groupCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item> 
+                        <el-form-item class="bip-form-item" label="数据项选择" :required="true">
+                            <el-select v-model="selValue" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item> 
+                    </template>
 
                     <el-form-item class="bip-form-item" label="显示图表" :required="true">
                         <el-radio v-model="showChart"  :label='true' style="margin-left: 20px;" >显示</el-radio>
@@ -57,8 +85,8 @@
                 <!-- <span slot="title">
                     <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">保存方案</div>
                 </span>  -->
-                <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
-                    <el-row style="padding:10px 45px 0px 25px">
+                <el-form @submit.native.prevent ref="form" label-width="120px" size="medium">
+                    <el-row class="statDlg">
                         <el-form-item class="bip-form-item" label="方案名称" :required="true">
                             <el-input v-model="program.name" placeholder="请输入内容"></el-input>
                         </el-form-item>  
@@ -112,8 +140,6 @@ import { Cell } from '../../classes/pub/coob/Cell';
 import { Cells } from "@/classes/pub/coob/Cells";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
-import {CommICL} from '@/utils/CommICL'
-let ICL = CommICL
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 @Component({
@@ -131,6 +157,10 @@ export default class BipStatisticsDialog extends Vue {
     showChart:boolean = true;
     groupCells:Array<Cell>=[]
     valuesCells:Array<Cell>=[]
+    ganttDateCells:Array<Cell>=[]//甘特图时间cell
+    gtSelValue1:any ="";//甘特图时间
+    gtSelValue2:any ="";//甘特图天数
+    gtSelValue3:any ="";//甘特图完成比例
     program:any={name:"",state:"save",isdesktop:false};
     programEnv:any=null;
     showSelX2:boolean=false;//是否是堆叠系列
@@ -140,7 +170,7 @@ export default class BipStatisticsDialog extends Vue {
         'line-0':'折线图', 'line-1':'折线面积图', 'line-2':'平滑折线图', 'line-3':'平滑面积折线图', 'line-4':'堆叠折线图',
         'line-5':'堆叠面积折线图', 'line-6':'平滑堆叠折线图', 'line-7':'平滑堆叠面积折线图',
         'bar-0':'柱状图','bar-1':'条形图','bar-2':'堆叠柱状图','bar-3':'堆叠条形图','bar-4':'堆叠柱状图','bar-5':'堆叠条形图',
-        'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图',
+        'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图','gantt-0':'甘特图'
     };
     desktopListDlg:boolean = false;
     dlProgram:any={name:"",menuid:'',ishowtj:false};
@@ -151,6 +181,9 @@ export default class BipStatisticsDialog extends Vue {
         })
         this.valuesCells = this.env.dsm.ccells.cels.filter(item=>{
             return (item.type == 2 || item.type == 3 || item.type == 4 || item.type == 5 || item.type == 6 || item.type == 8) &&item.isShow
+        })
+        this.ganttDateCells = this.env.dsm.ccells.cels.filter(item=>{
+            return (item.type == 93 || item.type == 91 || item.type == 92) &&item.isShow
         })
     }
     open() {
@@ -197,19 +230,39 @@ export default class BipStatisticsDialog extends Vue {
         this.dialogVisible = false;
     }
     searchOK(){
-        this.selGroup = [this.selX1]
-        if(this.selX2)
-            this.selGroup.push(this.selX2)
-        if(this.selGroup == null){
-            this.$notify.warning('请勾选"统计项选择"');
-            return;
+        let selValue = [];
+        if(this.chartTypeValue != 'gantt-0'){
+            this.selGroup = [this.selX1]
+            if(this.selX2)
+                this.selGroup.push(this.selX2)
+            if(this.selGroup == null){
+                this.$notify.warning('请勾选"统计项选择"');
+                return;
+            }
+            if(this.selValue == null){
+                this.$notify.warning('请勾选"数据项选择"');
+                return;
+            }
+            selValue = [this.selValue];
+        }else{
+            this.selGroup = this.selX1
+            if(this.selGroup == null){
+                this.$notify.warning('请勾选"统计项选择"');
+                return;
+            }
+            if(this.gtSelValue1 == null){
+                this.$notify.warning('请勾选"时间"');
+                return
+            }
+            if(this.gtSelValue2 == null){
+                this.$notify.warning('请勾选"时长"');
+                return
+            }
+            selValue = [this.gtSelValue1,this.gtSelValue2]
+            if(this.gtSelValue3 && this.gtSelValue3!='""')
+            selValue.push(this.gtSelValue3)
         }
-        if(this.selValue == null){
-            this.$notify.warning('请勾选"数据项选择"');
-            return;
-        }
-
-        this.$emit("makeOK",this.selGroup,[this.selValue],this.chartTypeValue,this.showChart);
+        this.$emit("makeOK",this.selGroup,selValue,this.chartTypeValue,this.showChart);
         this.close();
     }
     /**
@@ -235,17 +288,50 @@ export default class BipStatisticsDialog extends Vue {
      * 显示保存查询方案页面
      */
     showProgram(){
-        this.selGroup = [this.selX1]
-        if(this.selX2)
-            this.selGroup.push(this.selX2)
-        if(this.selGroup == null){
-            this.$notify.warning('请勾选"统计项选择"');
-            return;
+        // this.selGroup = [this.selX1]
+        // if(this.selX2)
+        //     this.selGroup.push(this.selX2)
+        // if(this.selGroup == null){
+        //     this.$notify.warning('请勾选"统计项选择"');
+        //     return;
+        // }
+        // if(this.selValue ==null){
+        //     this.$notify.warning('请勾选"数据项选择"');
+        //     return;
+        // }
+        let selValue = [];
+        if(this.chartTypeValue != 'gantt-0'){
+            this.selGroup = [this.selX1]
+            if(this.selX2)
+                this.selGroup.push(this.selX2)
+            if(this.selGroup == null){
+                this.$notify.warning('请勾选"统计项选择"');
+                return;
+            }
+            if(this.selValue == null){
+                this.$notify.warning('请勾选"数据项选择"');
+                return;
+            }
+            selValue = [this.selValue];
+        }else{
+            this.selGroup = this.selX1
+            if(this.selGroup == null){
+                this.$notify.warning('请勾选"统计项选择"');
+                return;
+            }
+            if(this.gtSelValue1 == null){
+                this.$notify.warning('请勾选"时间"');
+                return
+            }
+            if(this.gtSelValue2 == null){
+                this.$notify.warning('请勾选"时长"');
+                return
+            }
+            selValue = [this.gtSelValue1,this.gtSelValue2]
+            if(this.gtSelValue3 && this.gtSelValue3!='""')
+            selValue.push(this.gtSelValue3)
         }
-        if(this.selValue ==null){
-            this.$notify.warning('请勾选"数据项选择"');
-            return;
-        }
+        this.selValue = selValue.toString();
         this.programEnv =  Object.assign(new CCliEnv(), this.env);
         this.programEnv.ds_cont.ccells.widthCell =2;  
         this.saveProgram = true;
@@ -415,5 +501,13 @@ export default class BipStatisticsDialog extends Vue {
 .bip-form-input {
     // margin-left: 20px;
     width: 70%
+}
+</style>
+<style>
+.statDlg{
+    padding:10px 25px 0px 25px
+}
+.statDlg .el-form-item__label{
+    padding: 0px 15px !important;
 }
 </style>

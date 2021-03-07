@@ -606,6 +606,16 @@ export default class CUnivSelect extends Vue {
             this.initVal();
         }
     }
+
+    @Watch('env.dsmcurr')
+    envCurrChange(){
+        this.dsm = this.env.dsmcurr;
+        if(this.dsm.cdata.data.length==0){
+            this.qe.page.currPage =1;
+            this.Recheck();
+        }
+    }
+
     /**
      * DLG 弹出框后重新查询
      */

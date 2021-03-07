@@ -80,9 +80,7 @@ export default class HomeCUnivSelect extends Vue {
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-    
-	@Provide('tablePage') tablePage:boolean = false;
-    @Provide('tableToolbar') tableToolbar:boolean = false;
+    @Provide('isNoHomeTable') isNoHomeTable:boolean = false;
     _cont:any = {};
     async initUI() {
         if (this.uriParams&&this.uriParams.pcell) {

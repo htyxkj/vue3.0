@@ -258,13 +258,14 @@ export namespace BIPUtils {
      * @param groupfilds 分组字段
      * @param groupdatafilds 数据字段
      */
-    getBipStatisticsParams(qe:string,groupfilds:string,groupdatafilds:string){
+    getBipStatisticsParams(qe:string,groupfilds:string,groupdatafilds:string,chartTypeValue:string){
       return Object.assign({
         apiId: GlobalVariable.APIID_FINDSTATDATA,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID,
         usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
         groupfilds:groupfilds,
         groupdatafilds:groupdatafilds, 
+        chartTypeValue:chartTypeValue,
         qe: qe
       });
     }

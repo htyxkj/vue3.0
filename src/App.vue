@@ -15,7 +15,7 @@
       <el-container> 
         <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
         <el-container>
-            <el-header style="background-color:#20a0ff;"> 
+            <el-header style="background-color:#20a0ff;height:50px"> 
                 <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
             </el-header>
             <el-main class="bip-main">
@@ -95,8 +95,7 @@ export default class App extends Vue {
     @Mutation("user", { namespace:'login' }) setUserInfo: any;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
-    @Provide('tablePage') tablePage:boolean = true;
-    @Provide('tableToolbar') tableToolbar:boolean = true;
+    @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 

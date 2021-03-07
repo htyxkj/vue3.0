@@ -133,7 +133,6 @@ export default class BipWork extends Vue{
         this.canRetrial = false; 
         this.isReview = false;
         this.canBack = false;
-        this.centerDialogVisible = true
         this.bchked = info.currState.checked
         this.currState = info.currState.state
         this.nodeList = info.list
@@ -238,7 +237,8 @@ export default class BipWork extends Vue{
         }
         if(this.nodeList&&this.nodeList.length>0){ 
             this.initSelectUser()
-        }
+        }        
+        this.centerDialogVisible = true
     }
 
     get title(){
@@ -311,7 +311,6 @@ export default class BipWork extends Vue{
                 }
             });
         }
-        console.log("cds")
     }
 
     selectChange(value:any){
@@ -378,7 +377,7 @@ export default class BipWork extends Vue{
             }else{
                 this.cea.stateagr = cuCheck.stateId;
             } 
-
+            console.log("asdf")
             this.loading = true
             tools.getCheckInfo(this.cea,34).then(res=>{
                 if(res.data.id ==0){

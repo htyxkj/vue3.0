@@ -313,7 +313,7 @@ export default class BipInsAidEditor extends Vue{
                     let val = vlarr[i]
                     let cont = "";
                     if(this.refLink.cells.cels.length>0){
-                        this.refLink.cells.cels[0].id+"='"+val+"' "
+                        cont = this.refLink.cells.cels[0].id+"='"+val+"' "
                     }
                     let key = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+val
                     let vrs = this.aidValues.get(key);
