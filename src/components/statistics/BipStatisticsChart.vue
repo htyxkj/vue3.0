@@ -1249,18 +1249,21 @@ export default class BipStatisticsDialog extends Vue {
 
     //甘特图
     async makeGantt(chartData:any){
+        console.log(chartData)
         if(chartData.data.id ==0){
             let data = chartData.data.data;
             let values = data.tjpages.celData
             let gantt_data = [];
             for(var i=0;i<values.length;i++){
                 let vl = values[i];
+
                 let _d:any = {
                     id:(i+1),
-                    text:'',
-                    start_date:'',
-                    duration:'',
-                    progress:0
+                    label:"",
+                    start: 0,
+                    duration:0,
+                    progress:0,
+                    type: "task"
                 }
                 let seg = this.stat.selGroup;
                 for(var z=0;z<seg.length;z++){
@@ -1268,28 +1271,30 @@ export default class BipStatisticsDialog extends Vue {
                     _d[key] = vl[key]
                 }
                 let sev = this.stat.selValue;
-                _d.start_date = vl[sev[0]]
-                _d.duration = vl[sev[1]]
+                if(!vl[sev[1]]){
+                    continue;
+                }
+                _d.start= new Date( vl[sev[0]]).getTime();
+                _d.duration = vl[sev[1]] *24* 60 * 60 * 1000;
                 if(sev[2] && sev[2]!='""'){
                     let jd = vl[sev[2]];
                     jd = jd ==null?0:vl[sev[2]];
-                    _d.progress = jd
-                    _d.text = (jd*100)+"%"
+                    _d.progress = jd*100
+                    _d.label = (jd*100)+"%"
                 }
-                if(_d.start_date){
-                    gantt_data.push(_d);
-                }
+                gantt_data.push(_d);
             }
             let tjlayCels = data.tjlayCels;
             let cels = tjlayCels.cels;
             let seg = this.stat.selGroup;
             let columns =[];
             for(var z=0;z<seg.length;z++){
-                let _c:any = { name: "", label: "",width: "*" };
+                let _c:any = { id:1,label:"",value:"",expander: true,width: 200 };
                 let key = seg[z];
                 for(var j=0;j<cels.length;j++){
                     if(cels[j].id == key){
-                        _c.name = key;
+                        _c.id= (z+1)
+                        _c.value = key;
                         _c.label = cels[j].labelString
                     }
                 }
@@ -1298,8 +1303,7 @@ export default class BipStatisticsDialog extends Vue {
             this.option= {
                 data: gantt_data,
                 columns :columns,
-                date_format:"%Y-%m-%d %H:%i",
-                readonly:true,
+                maxHeight:270
             }
         }
     }

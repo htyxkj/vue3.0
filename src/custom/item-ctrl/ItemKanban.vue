@@ -118,34 +118,56 @@ export default class ItemKanban extends Vue{
             let values = cc.data.data.data.values;
             for(var i=0;i<values.length;i++){
                 let vl = values[i];
-                if(vl.rate == null || !vl.rate)
+                if(!vl.bdate)
+                    continue;
+                if(!vl.rate)
                     vl.rate=0;
+                if(!vl.whours)
+                    vl.whours=0
                 let _d = {
                     id:(i+1),
                     sid:vl.sid,
                     taskname:vl.taskname,
-                    text:(vl.rate*100)+"%",
                     itemsopr:vl.usrname,
                     whours:vl.whours,
-                    start_date:vl.bdate,
-                    duration:vl.whours,
-                    progress:vl.rate
+                    label:(vl.rate*100)+"%",
+                    start: new Date(vl.bdate).getTime(),
+                    duration:vl.whours *24* 60 * 60 * 1000,
+                    progress:vl.rate*100,
+                    type: "task"
                 }
                 data.push(_d);
             }
         }else{
                 
         }
+        let _this = this
         this.gttConfig= {
             data: data,
             columns : [
-                { name: "taskname", label: "工作事项",align: 'center',resize:true},
-                { name: "itemsopr", label: "负责人", align: "center" ,resize:true},
-                { name: "whours", label: "持续天数", align: "center" ,resize:true}
+                {id:1,label:"工作事项",value:"taskname",expander: true,width: 200,
+                    events: {
+                        click({ data }:any) {
+                            _this.onTaskClick( data.sid);
+                        }
+                    }
+                },
+                {id:2,label:"负责人",value:"itemsopr",expander: true,width: 80,
+                    events: {
+                        click({ data }:any) {
+                            _this.onTaskClick( data.sid);
+                        }
+                    }
+                },
+                {id:3,label:"持续天数",value:"whours",expander: true,width: 100,
+                    events: {
+                        click({ data }:any) {
+                            _this.onTaskClick( data.sid);
+                        }
+                    }
+                }
             ],
-            date_format:"%Y-%m-%d %H:%i",
-            readonly:true,
-            grid_width : 400,
+            maxHeight:235
         } 
     }
 
@@ -153,18 +175,10 @@ export default class ItemKanban extends Vue{
     /**
      * 甘特图点击事件
      */
-    async onTaskClick(id:any){
-        let data = this.gttConfig.data;
-        let row = null;
-        for(var i=0;i<data.length;i++){
-            if(data[i].id == id){
-                row = data[i];
-                break;
-            }
-        }
+    async onTaskClick(sid:any){
         let qe:QueryEntity = new QueryEntity(this.jdhbCellId,this.jdhbCellId);
         qe.page.pageSize = 10000;
-        qe.cont = JSON.stringify({jbno:row.sid})
+        qe.cont = JSON.stringify({jbno:sid})
         let res = await this.jdhbCell.queryData(qe);
         if(res.data.id ==0 ){
             let data = res.data.data.data;

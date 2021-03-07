@@ -1,7 +1,8 @@
 <template>
 <div>
-	<div v-if="config && config.data.length>0" class="app-container" >
-		<div :ref="ganttID" :style="{height:height+'px'}"/>
+	<div v-if="initOk" class="app-container" >
+		<!-- <gantt-elastic :style="{height:height+'px'}" :options="options" :tasks="tasks" @tasks-changed="tasksUpdate" @options-changed="optionsUpdate" @dynamic-style-changed="styleUpdate"> -->
+		<gantt-elastic :style="{height:height+'px'}" :options="options" :tasks="tasks" ></gantt-elastic>
 	</div>
 	<div v-else>
 		暂无数据
@@ -10,70 +11,21 @@
 </template>
 <script lang="ts">
 import { Vue, Provide, Prop, Component,Watch } from 'vue-property-decorator';
-import _gantt from 'dhtmlx-gantt'  // 引入模块
-
-import 'dhtmlx-gantt/codebase/dhtmlxgantt.css'
-@Component
-// 文档： https://docs.dhtmlx.com/gantt/
+import GanttElastic from "gantt-elastic";
+@Component({
+    components: {  GanttElastic }
+})
 export default class BipGant extends Vue{
 	@Prop() config!:any;
 	@Prop() height!:any;
 	ganttID:any = this.guid();
-	gantt:any = _gantt
+	options:any = null
+	tasks:any = [];
+	initOk:boolean = false;
 	mounted(){
 		if(this.config){
-			this.initGt();
+			this.initGt()
 		}
-		this.gantt.locale={
-			date: {
-				month_full: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-				month_short: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-				day_full: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
-				day_short: ["日", "一", "二", "三", "四", "五", "六"]
-			},
-			labels: {
-				dhx_cal_today_button: "今天",
-				day_tab: "日",
-				week_tab: "周",
-				month_tab: "月",
-				new_event: "新建日程",
-				icon_save: "保存",
-				icon_cancel: "关闭",
-				icon_details: "详细",
-				icon_edit: "编辑",
-				icon_delete: "删除",
-				confirm_closing: "请确认是否撤销修改!", //Your changes will be lost, are your sure?
-				confirm_deleting: "是否删除日程?",
-				section_description: "描述",
-				section_time: "时间范围",
-				section_type: "类型",
-
-				/* grid columns */
-
-				column_text: "任务名",
-				column_start_date: "开始时间",
-				column_duration: "持续时间",
-				column_add: "",
-
-				/* link confirmation */
-
-				link: "关联",
-				confirm_link_deleting: "将被删除",
-				link_start: " (开始)",
-				link_end: " (结束)",
-
-				type_task: "任务",
-				type_project: "项目",
-				type_milestone: "里程碑",
-
-				minutes: "分钟",
-				hours: "小时",
-				days: "天",
-				weeks: "周",
-				months: "月",
-				years: "年"
-			}
-		};
 	}
 	@Watch('config',{deep:true})
 	configChange(val:any){
@@ -82,26 +34,61 @@ export default class BipGant extends Vue{
 		}
 	}
 	initGt(){
-		let _this:any =this;
-		this.gantt.clearAll(); 
-		this.gantt.config.columns = this.config.columns
-		if(this.config.date_format)
-			this.gantt.config.date_format = this.config.date_format;
-		this.gantt.config.readonly = this.config.readonly;
-		if(this.config.grid_width)
-			this.gantt.config.grid_width = this.config.grid_width;
-		// several scales at once
-		this.gantt.config.scales = [
-			{unit: "month", step: 1, format: "%Y,%F"},
-		];
-		this.gantt.attachEvent("onTaskClick", function(id:any, e:any) {
-			_this.$emit("onTaskClick",id)
-			this.gantt.selectTask(id); 
-		});
-		// 初始化
-		this.gantt.init(this.$refs[this.ganttID])
-		// 数据解析
-		this.gantt.parse(this.config)
+		this.initOk = false
+		let _options = {
+			taskMapping: {
+				progress: "percent"
+			},
+			maxHeight: 230,
+			row: {
+				height: 16,//设置行高
+			},
+			times: {
+				timeScale: 24 * 60 * 1000,
+			},
+			chart: {
+				grid: {
+					horizontal: {
+						gap: 6 ,//*
+					}
+				},
+				text: {
+					offset: 4, //*
+					xPadding: 10, //*
+					display: true //*
+				},
+				expander: {
+					type: 'chart',
+					display: true, //*
+					displayIfTaskListHidden: true, //*
+					offset: 4, //*
+					size: 18   
+				}
+			},
+			taskList: {
+				columns: [],
+				display: true
+			},
+			calendar: {
+				workingDays: [1, 2, 3, 4, 5,6], 
+				gap: 0, 
+				strokeWidth: 5,
+				hour: {
+					display: false
+				},
+			},
+			locale: {
+				weekdays:["周日","周一","周二","周三","周四","周五","周六"],
+				months:["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],
+			},
+    	};
+		_options.taskList.columns = this.config.columns
+		if(this.config.maxHeight){
+			_options.maxHeight = this.config.maxHeight
+		}
+		this.options = _options
+		this.tasks=  this.config.data;
+		this.initOk = true;
 	}
 	guid():string {
 		return (this.S4()+this.S4()+"-"+this.S4()+"-"+this.S4()+"-"+this.S4()+"-"+this.S4()+this.S4()+this.S4());
