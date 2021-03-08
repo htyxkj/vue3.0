@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar-container">
+    <div class="sidebar-container" style="top:50px;height: 100%;">
         <el-scrollbar wrap-class="scrollbar-wrapper">
             <el-menu mode="vertical" :unique-opened="false" router background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
                 <bip-menu-item v-for="menu in menuList" :key="menu.path" :item="menu"/>

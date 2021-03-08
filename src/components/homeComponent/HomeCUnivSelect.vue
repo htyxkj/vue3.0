@@ -5,7 +5,13 @@
                 <template v-if="!initShowChar">
                     <template v-if="!TJ">
                         <div v-if="lay.binit" class="home-table">
-                            <div class="table-title" v-if="_cont">{{_cont.name}}</div>
+                            <!-- <div class="table-title" v-if="_cont">{{_cont.name}}</div> -->
+                            <el-row type="flex" justify="space-between">
+                                <el-col :span="6" class="table-title" v-if="_cont">{{_cont.name}}</el-col>
+                                <el-col :span="6" style="text-align: end;" >
+                                    <el-button icon="el-icon-refresh" @click="find" circle size="mini" style="margin-right:5px"></el-button>
+                                </el-col>
+                            </el-row>
                             <el-form @submit.native.prevent label-position="right" label-width="120px">
                                 <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                             </el-form>
