@@ -36,8 +36,14 @@
                                 ></el-option>
                             </el-select>
                         </el-form-item> 
-                        <el-form-item class="bip-form-item" label="完成比例">
+                        <el-form-item class="bip-form-item" label="完成比例(实际)" :required="true">
                             <el-select v-model="gtSelValue3" clearable collapse-tags class="bip-form-input" placeholder="请选择">
+                                <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item class="bip-form-item" label="完成比例(应该)">
+                            <el-select v-model="gtSelValue4" clearable collapse-tags class="bip-form-input" placeholder="请选择">
                                 <el-option v-for="item in valuesCells" :key="item.id" :label="item.labelString" :value="item.id"
                                 ></el-option>
                             </el-select>
@@ -160,7 +166,8 @@ export default class BipStatisticsDialog extends Vue {
     ganttDateCells:Array<Cell>=[]//甘特图时间cell
     gtSelValue1:any ="";//甘特图时间
     gtSelValue2:any ="";//甘特图天数
-    gtSelValue3:any ="";//甘特图完成比例
+    gtSelValue3:any ="";//甘特图完成比例 实际
+    gtSelValue4:any ="";//甘特图完成比例 预计
     program:any={name:"",state:"save",isdesktop:false};
     programEnv:any=null;
     showSelX2:boolean=false;//是否是堆叠系列
@@ -258,9 +265,9 @@ export default class BipStatisticsDialog extends Vue {
                 this.$notify.warning('请勾选"时长"');
                 return
             }
-            selValue = [this.gtSelValue1,this.gtSelValue2]
-            if(this.gtSelValue3 && this.gtSelValue3!='""')
-            selValue.push(this.gtSelValue3)
+            selValue = [this.gtSelValue1,this.gtSelValue2,this.gtSelValue3]
+            if(this.gtSelValue4 && this.gtSelValue4!='""')
+            selValue.push(this.gtSelValue4)
         }
         this.$emit("makeOK",this.selGroup,selValue,this.chartTypeValue,this.showChart);
         this.close();
@@ -327,9 +334,13 @@ export default class BipStatisticsDialog extends Vue {
                 this.$notify.warning('请勾选"时长"');
                 return
             }
-            selValue = [this.gtSelValue1,this.gtSelValue2]
-            if(this.gtSelValue3 && this.gtSelValue3!='""')
-            selValue.push(this.gtSelValue3)
+            if(this.gtSelValue3 == null){
+                this.$notify.warning('请勾选"完成比例-实"');
+                return
+            }
+            selValue = [this.gtSelValue1,this.gtSelValue2,this.gtSelValue3]
+            if(this.gtSelValue4 && this.gtSelValue4!='""')
+            selValue.push(this.gtSelValue4)
         }
         this.selValue = selValue.toString();
         this.programEnv =  Object.assign(new CCliEnv(), this.env);

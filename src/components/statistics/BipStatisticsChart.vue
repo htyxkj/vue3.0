@@ -1249,7 +1249,6 @@ export default class BipStatisticsDialog extends Vue {
 
     //甘特图
     async makeGantt(chartData:any){
-        console.log(chartData)
         if(chartData.data.id ==0){
             let data = chartData.data.data;
             let values = data.tjpages.celData
@@ -1262,7 +1261,7 @@ export default class BipStatisticsDialog extends Vue {
                     label:"",
                     start: 0,
                     duration:0,
-                    progress:0,
+                    percent:0,
                     type: "task"
                 }
                 let seg = this.stat.selGroup;
@@ -1278,9 +1277,12 @@ export default class BipStatisticsDialog extends Vue {
                 _d.duration = vl[sev[1]] *24* 60 * 60 * 1000;
                 if(sev[2] && sev[2]!='""'){
                     let jd = vl[sev[2]];
-                    jd = jd ==null?0:vl[sev[2]];
-                    _d.progress = jd*100
+                    let yjjd = vl[sev[3]];
+                    _d.percent = jd*100
                     _d.label = (jd*100)+"%"
+                    if(yjjd != null){
+                        _d.label += "/"+(yjjd*100).toFixed(0)+"%"
+                    }
                 }
                 gantt_data.push(_d);
             }

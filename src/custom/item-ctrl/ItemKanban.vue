@@ -114,6 +114,7 @@ export default class ItemKanban extends Vue{
         qe.page.pageSize = 500;
         let cc = await tools.getBipInsAidInfo("WEBITEMGT", 210, qe);
         let data = [];
+        let sidNum:any={};
         if(cc.data.id ==0){
             let values = cc.data.data.data.values;
             for(var i=0;i<values.length;i++){
@@ -124,17 +125,25 @@ export default class ItemKanban extends Vue{
                     vl.rate=0;
                 if(!vl.whours)
                     vl.whours=0
+                sidNum[vl.sid] = (i+1);
                 let _d = {
                     id:(i+1),
                     sid:vl.sid,
                     taskname:vl.taskname,
                     itemsopr:vl.usrname,
                     whours:vl.whours,
-                    label:(vl.rate*100)+"%",
+                    label:(vl.rate*100)+"%/"+(vl.yjrate*100).toFixed(0)+"%",
                     start: new Date(vl.bdate).getTime(),
                     duration:vl.whours *24* 60 * 60 * 1000,
-                    progress:vl.rate*100,
-                    type: "task"
+                    percent:vl.rate*100,
+                    parentId:sidNum[vl.taskno],
+                    type: "task",
+                    style: {
+                        base: {
+                            fill: "#2db661",
+                            stroke: "#7E349D"
+                        }
+                    }
                 }
                 data.push(_d);
             }

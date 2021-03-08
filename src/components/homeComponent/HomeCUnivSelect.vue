@@ -390,7 +390,14 @@ export default class HomeCUnivSelect extends Vue {
     Recheck(){
         this.find()
     }
-
+    @Watch('env.dsmcurr')
+    envCurrChange(){
+        this.dsm = this.env.dsmcurr;
+        if(this.dsm.cdata.data.length==0){
+            this.qe.page.currPage =1;
+            this.Recheck();
+        }
+    }
     getCRecordByPk2(value:any){
         if(this.dsm){
             if(value == -1 && this.dsm.ds_sub && this.dsm.ds_sub.length>0){
