@@ -12,6 +12,7 @@
 <script lang="ts">
 import { Vue, Provide, Prop, Component,Watch } from 'vue-property-decorator';
 import GanttElastic from "gantt-elastic";
+import { min } from '../../../node_modules/moment/moment';
 @Component({
     components: {  GanttElastic }
 })
@@ -86,8 +87,29 @@ export default class BipGant extends Vue{
 		if(this.config.maxHeight){
 			_options.maxHeight = this.config.maxHeight
 		}
-		this.options = _options
 		this.tasks=  this.config.data;
+		let maxTime = 0
+		let minTime = 0
+		for(var i=0;i<this.tasks.length;i++){
+			let tk = this.tasks[i];
+			let t = tk.start
+			if(minTime ==0)
+				minTime = t;
+			if(t>maxTime)
+				maxTime = t;
+			if(t<minTime)
+				minTime = t;
+		}
+		let timeC = maxTime - minTime;
+		let moNum = timeC/1000/60/60/24/30;
+		if(moNum>0){
+			_options.times.timeScale = 12 * 60 * 1000;
+		}else if(moNum>3){
+			_options.times.timeScale = 24 * 60 * 1000;
+		}else if(moNum>12){
+			_options.times.timeScale = 48 * 60 * 1000;
+		}
+		this.options = _options
 		this.initOk = true;
 	}
 	guid():string {
