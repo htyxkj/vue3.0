@@ -2,7 +2,7 @@
 <div>
 	<div v-if="initOk" class="app-container" >
 		<!-- <gantt-elastic :style="{height:height+'px'}" :options="options" :tasks="tasks" @tasks-changed="tasksUpdate" @options-changed="optionsUpdate" @dynamic-style-changed="styleUpdate"> -->
-		<gantt-elastic :style="{height:height+'px'}" :options="options" :tasks="tasks" ></gantt-elastic>
+		<gantt-elastic :style="{height:height+'px'}" :options="options" :tasks="tasks" :dynamic-style="dynamicStyle"></gantt-elastic>
 	</div>
 	<div v-else>
 		暂无数据
@@ -12,7 +12,6 @@
 <script lang="ts">
 import { Vue, Provide, Prop, Component,Watch } from 'vue-property-decorator';
 import GanttElastic from "gantt-elastic";
-import { min } from '../../../node_modules/moment/moment';
 @Component({
     components: {  GanttElastic }
 })
@@ -23,6 +22,7 @@ export default class BipGant extends Vue{
 	options:any = null
 	tasks:any = [];
 	initOk:boolean = false;
+	dynamicStyle:any={};
 	mounted(){
 		if(this.config){
 			this.initGt()
@@ -93,10 +93,11 @@ export default class BipGant extends Vue{
 		for(var i=0;i<this.tasks.length;i++){
 			let tk = this.tasks[i];
 			let t = tk.start
+			let _t = t+tk.duration;
 			if(minTime ==0)
 				minTime = t;
-			if(t>maxTime)
-				maxTime = t;
+			if(_t>maxTime)
+				maxTime = _t;
 			if(t<minTime)
 				minTime = t;
 		}
@@ -113,8 +114,9 @@ export default class BipGant extends Vue{
 		}
 		if(moNum>12){
 			_options.times.timeScale = 48 * 60 * 1000;
-		}
+		}		
 		this.options = _options
+		this.dynamicStyle = this.config.dynamicStyle
 		this.initOk = true;
 	}
 	guid():string {
@@ -125,6 +127,11 @@ export default class BipGant extends Vue{
 	}
 }
 </script>
-<style scope>
-
+<style lang="scss">
+#diagonalHatch{
+	.chart-row-progress-bar-line{
+		stroke: #2dd36c !important;
+		stroke-width: 62px !important;
+	}
+}
 </style>

@@ -1,5 +1,6 @@
 <template>
     <div>
+        <el-button class="refreshBtn" icon="el-icon-refresh" size="mini" @click="initItemData">刷新</el-button>
         <el-row>
             <el-col :span="10">
                 <vxe-table ref="itemKanbanTask" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
@@ -54,6 +55,7 @@ import QueryCont from "@/classes/search/QueryCont";
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
+import moment from "moment"
 @Component({
     components: {
         BipGant,
@@ -90,6 +92,7 @@ export default class ItemKanban extends Vue{
             this.$notify.error("WEBGETITEM ：获取辅助信息失败！");
         }
         cc = await tools.getBipInsAidInfo("WEBGETITEM", 210, qe);
+        this.bipInsAid.values = [];
         if(cc.data.id==0){
             this.bipInsAid.values = cc.data.data.data.values;
             let table:any = this.$refs['itemKanbanTask'];
@@ -126,6 +129,8 @@ export default class ItemKanban extends Vue{
                 if(!vl.whours)
                     vl.whours=0
                 sidNum[vl.sid] = (i+1);
+
+                vl.bdate = moment(vl.bdate).format('YYYY-MM-DD')+" 00:00:00";
                 let _d = {
                     id:(i+1),
                     sid:vl.sid,
@@ -134,18 +139,21 @@ export default class ItemKanban extends Vue{
                     whours:vl.whours,
                     label:(vl.rate*100)+"%/"+(vl.yjrate*100).toFixed(0)+"%",
                     start: new Date(vl.bdate).getTime(),
-                    duration:vl.whours *24* 60 * 60 * 1000,
+                    duration:vl.whours *24* 60 * 60 * 1000 ,
                     percent:vl.rate*100,
                     parentId:sidNum[vl.taskno],
                     type: "task",
                     style: {
                         base: {
-                            fill: "#2db661",
+                            fill: "#F9D820",
                             stroke: "#7E349D"
                         }
                     }
                 }
                 data.push(_d);
+                if(i ==0 ){
+                    this.onTaskClick(_d.sid)
+                }
             }
         }else{
                 
@@ -176,7 +184,15 @@ export default class ItemKanban extends Vue{
                     }
                 }
             ],
-            maxHeight:235
+            maxHeight:235,
+            dynamicStyle:{
+                'task-list-item-value': {
+                    background: 'transparent'
+                },
+                'task-list-item':{
+                    // background:'#81C2DC'
+                },
+            }
         } 
     }
 
@@ -208,5 +224,8 @@ export default class ItemKanban extends Vue{
 }
 </script>
 
-<style>
+<style scoped>
+.refreshBtn{
+    margin: 5px
+}
 </style>

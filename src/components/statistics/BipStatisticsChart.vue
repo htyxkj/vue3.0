@@ -22,6 +22,7 @@
                                 </template>
                             </el-col>
                             <el-col :span="4" class="main-title-icon pointer"  >
+                                <el-button icon="el-icon-refresh" @click="searchData" circle size="mini" style="margin-right:15px"></el-button>
                                 <i class="iconfont icon-bip-kucun"></i> &nbsp;
                                 <span @click="openMenu">MORE</span>
                             </el-col>
@@ -1262,7 +1263,13 @@ export default class BipStatisticsDialog extends Vue {
                     start: 0,
                     duration:0,
                     percent:0,
-                    type: "task"
+                    type: "task",
+                    style: {
+                        base: {
+                            fill: "#F9D820",
+                            stroke: "#7E349D"
+                        }
+                    }
                 }
                 let seg = this.stat.selGroup;
                 for(var z=0;z<seg.length;z++){
