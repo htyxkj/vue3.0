@@ -19,6 +19,7 @@
           :on-remove="handleRemove"
           :before-remove="beforeRemove"
           :file-list="fileList"
+          :on-change="fileChange"
           :auto-upload="false"
           list-type="text"
           :http-request="uploadFile"
@@ -267,6 +268,14 @@ export default class BipFileInfo extends Vue {
         }
     }
     handlePreview(file: any) {
+        console.log(file)
+    }
+
+    fileChange(file:any,fileLis:any){
+        let f2:Array<any> = fileLis.filter((f1:any)=>f1.status != 'success')
+        if(f2&&f2.length>0){
+            this.canUpFile = true;
+        }
     }
 
     cancel() {
