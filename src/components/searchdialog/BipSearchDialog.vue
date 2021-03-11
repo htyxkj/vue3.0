@@ -179,8 +179,8 @@ export default class BipSearchDialog extends Vue {
             let con = item.v1+'~'+item.v2
             if(con !== '~'){
                 if(!con.startsWith('~')){
-                    if(item.v2===''){
-                        con = con.substring(0,con.length-1)
+                    if(item.v2==='' || item.v2==='null'){
+                        con = con.substring(0,con.indexOf("~"))
                     }
                 }
                 contrecord[`${item.id}`] = con

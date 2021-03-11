@@ -10,6 +10,7 @@
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
+                auto-resize
                 :ref="this.cds.ccells.obj_id"
                 v-if="beBill"
                 border

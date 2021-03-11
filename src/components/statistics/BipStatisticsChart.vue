@@ -63,6 +63,7 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import BipGant from '@/components/chart/BipGant.vue';
+import moment from "moment"
 @Component({
     components: { BipChart,BipGant}
 })
@@ -1280,15 +1281,16 @@ export default class BipStatisticsDialog extends Vue {
                 if(!vl[sev[1]]){
                     continue;
                 }
+                vl[sev[0]] = moment(vl[sev[0]]).format('YYYY-MM-DD')+" 00:00:00";
                 _d.start= new Date( vl[sev[0]]).getTime();
                 _d.duration = vl[sev[1]] *24* 60 * 60 * 1000;
                 if(sev[2] && sev[2]!='""'){
                     let jd = vl[sev[2]];
                     let yjjd = vl[sev[3]];
                     _d.percent = jd*100
-                    _d.label = (jd*100)+"%"
+                    _d.label = "实际完成："+(jd*100)+"%"
                     if(yjjd != null){
-                        _d.label += "/"+(yjjd*100).toFixed(0)+"%"
+                        _d.label += "/预计完成："+(yjjd*100).toFixed(0)+"%"
                     }
                 }
                 gantt_data.push(_d);

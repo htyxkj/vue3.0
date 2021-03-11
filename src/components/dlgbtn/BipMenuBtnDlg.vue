@@ -67,20 +67,13 @@
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
-import SearchEntity from "@/classes/SearchEntity";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BIPUtil } from "@/utils/Request"; 
-import echarts from 'echarts'; 
 let tools = BIPUtil.ServApi; 
 import { CommICL } from "@/utils/CommICL";
 
 let icl = CommICL;
-import { State, Action, Getter, Mutation } from "vuex-class";
-import { truncate } from 'fs';
-import { Menu } from "@/classes/Menu";
 import { Cells } from "@/classes/pub/coob/Cells";
-import CData from '@/classes/pub/CData';
-import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtils } from "@/utils/BaseUtil";
 import CRecord from '@/classes/pub/CRecord';

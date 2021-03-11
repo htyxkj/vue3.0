@@ -27,7 +27,7 @@
             </el-col>
         </el-row>
         <el-row v-if="jdhbCell && jdhbCell.ccells">
-            <vxe-table ref="itemKanbanTask" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+            <vxe-table ref="itemKanbanTaskHB" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
             show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"
             :data.sync="jdhbCell.cdata.data" height='300' :optimized="true">
             <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
@@ -137,7 +137,7 @@ export default class ItemKanban extends Vue{
                     taskname:vl.taskname,
                     itemsopr:vl.usrname,
                     whours:vl.whours,
-                    label:(vl.rate*100)+"%/"+(vl.yjrate*100).toFixed(0)+"%",
+                    label:"实际完成："+(vl.rate*100)+"%/预计完成："+(vl.yjrate*100).toFixed(0)+"%",
                     start: new Date(vl.bdate).getTime(),
                     duration:vl.whours *24* 60 * 60 * 1000 ,
                     percent:vl.rate*100,
@@ -208,6 +208,9 @@ export default class ItemKanban extends Vue{
         if(res.data.id ==0 ){
             let data = res.data.data.data;
             this.jdhbCell.cdata.data = data.data;
+            let table:any = this.$refs['itemKanbanTaskHB'];
+            table.setCurrentRow(data.data[0]);
+            table.syncData();
         }
     }
     async getCell(cellid:string){

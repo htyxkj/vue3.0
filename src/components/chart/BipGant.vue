@@ -102,19 +102,11 @@ export default class BipGant extends Vue{
 				minTime = t;
 		}
 		let timeC = maxTime - minTime;
-		let moNum = timeC/1000/60/60/24/30;
-		if(moNum>0){
+		let moNum = parseInt((timeC/1000/60/60/24/31)+'');
+		if(moNum >0)
+			_options.times.timeScale = (moNum ) * 60 * 1000;
+		else
 			_options.times.timeScale = 60 * 1000;
-		}
-		if(moNum>1){
-			_options.times.timeScale = 12 * 60 * 1000;
-		}
-		if(moNum>3){
-			_options.times.timeScale = 24 * 60 * 1000;
-		}
-		if(moNum>12){
-			_options.times.timeScale = 48 * 60 * 1000;
-		}		
 		this.options = _options
 		this.dynamicStyle = this.config.dynamicStyle
 		this.initOk = true;

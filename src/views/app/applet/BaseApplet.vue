@@ -481,6 +481,8 @@ export default class BaseApplet extends Vue{
                 cont[cel.id]= this.dsm.currRecord.data[cel.id];
             }
         }
+        this.qe.page.currPage = 1;
+        this.oprid = 13;
         await this.findData(cont);
         // this.JumpToIndexCRecord(0);
     }
