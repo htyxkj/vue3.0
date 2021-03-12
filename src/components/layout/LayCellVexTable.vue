@@ -18,8 +18,7 @@
                 :data.sync="cds.cdata.data"
                 row-id="id"
                 resizable
-                height="340px"
-                max-height="340px"
+                height="340"
                 highlight-hover-row
                 show-all-overflow="tooltip"
                 show-header-overflow

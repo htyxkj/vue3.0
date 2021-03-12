@@ -22,7 +22,8 @@
                                 </template>
                             </el-col>
                             <el-col :span="4" class="main-title-icon pointer"  >
-                                <el-button icon="el-icon-refresh" @click="searchData" circle size="mini" style="margin-right:15px"></el-button>
+                                <el-button icon="el-icon-refresh" @click="searchData" circle size="mini" style="margin-right:5px"></el-button>
+                                <el-button icon="el-icon-full-screen" v-if="!isFullScreen" @click="openFullScreen" circle size="mini" style="margin-right:15px"></el-button>
                                 <i class="iconfont icon-bip-kucun"></i> &nbsp;
                                 <span @click="openMenu">MORE</span>
                             </el-col>
@@ -47,6 +48,33 @@
                 </vxe-table-column>
             </vxe-table>
         </div>
+
+        <el-dialog class="flDialog" title="" :visible.sync="isFullScreen" fullscreen append-to-body @close="dlgClose">
+            <slot slot="title">
+                <template v-if="title">
+                    {{title}}
+                </template>
+                <template v-else> 
+                    统计维度：{{this.getTitle()}}
+                </template>
+            </slot>
+            <div v-if="stat.showChart && option"  class="showchart" :style="chartStyle" >
+                <BipGant v-if="stat.chartTypeValue=='gantt-0'" :config="option" :height='300'></BipGant>
+                <bip-chart v-else :style="chartStyle" :option="option" :chartStyle="chartStyle" @itemClick="itemClick"></bip-chart>
+            </div>
+            <div>
+                <!-- 报表表格-->
+                <vxe-table v-if="tableData && tjcell && showTable"
+                    ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+                    show-header-all-overflow class="vxe-table-element" :data.sync="tableData" style="padding-bottom: 15px;"
+                    :optimized="true" height="350px">
+                    <vxe-table-column type="index" width="60"></vxe-table-column>
+                    <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
+                        :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
+                    </vxe-table-column>
+                </vxe-table>
+            </div>
+        </el-dialog>
     </el-row>
 </div>
 </template>
@@ -91,6 +119,7 @@ export default class BipStatisticsDialog extends Vue {
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
+    isFullScreen:boolean = false;
     mounted() {
         this.restoreICON ="path://M49.07,31.35l-3.36-5.82a.31.31,0,0,0-.21-.16.33.33,0,0,0-.4.09L40.78,30.6a.35.35,0,0,0,0,.49.36.36,0,0,0,.49,0L45,26.64A20,20,0,0,1,8.67,37.57a.35.35,0,0,0-.49-.08A.34.34,0,0,0,8.1,38,20.73,20.73,0,0,0,45.7,26.89l2.77,4.8a.35.35,0,0,0,.48.13A.34.34,0,0,0,49.07,31.35ZM.67,19.36,4,25.18a.34.34,0,0,0,.21.16.34.34,0,0,0,.41-.09L9,20.11a.34.34,0,0,0,0-.49.36.36,0,0,0-.49,0l-3.7,4.41A20,20,0,0,1,41.08,13.14a.34.34,0,0,0,.56-.4A20.73,20.73,0,0,0,4,23.82L1.27,19a.34.34,0,0,0-.47-.13A.34.34,0,0,0,.67,19.36Z";
         this.comparedData={};
@@ -1299,8 +1328,13 @@ export default class BipStatisticsDialog extends Vue {
             let cels = tjlayCels.cels;
             let seg = this.stat.selGroup;
             let columns =[];
+            let _this = this;
             for(var z=0;z<seg.length;z++){
-                let _c:any = { id:1,label:"",value:"",expander: true,width: 200 };
+                let _c:any = { id:1,label:"",value:"",expander: true,width: 200,events: {
+                        click({event,data}:any) {
+                            _this.onTaskClick( data,event);
+                        }
+                    } };
                 let key = seg[z];
                 for(var j=0;j<cels.length;j++){
                     if(cels[j].id == key){
@@ -1314,7 +1348,17 @@ export default class BipStatisticsDialog extends Vue {
             this.option= {
                 data: gantt_data,
                 columns :columns,
-                maxHeight:270
+                maxHeight:270,
+                dynamicStyle:{
+                    'task-list-item-value': {
+                        background: 'transparent'
+                    },
+                    'task-list-item':{
+                    },
+                    'chart-row-text':{
+                        background:'transparent'
+                    }
+                }
             }
         }
     }
@@ -1577,7 +1621,40 @@ export default class BipStatisticsDialog extends Vue {
       });
       return (title = title.substring(0, title.length - 1));
     }
-
+    /**
+     * 打开全屏
+     */
+    openFullScreen(){
+        if(this.stat.chartTypeValue=='gantt-0'){
+            this.option.maxHeight=500
+        }
+        this.isFullScreen = true;
+    }
+    dlgClose(){
+        if(this.stat.chartTypeValue=='gantt-0'){
+            this.option.maxHeight=270
+        }
+        this.isFullScreen = false;
+    }
+    /**
+     * 甘特图点击事件
+     */
+    async onTaskClick(data:any,event:any){
+        if(event){
+            let itemDom = event.path[4];
+            if(itemDom){
+                let cc = document.querySelector('.gantt-task-list-item-select')
+                if(cc){
+                    cc.classList.remove("gantt-task-list-item-select")
+                }
+                itemDom.classList.add("gantt-task-list-item-select");
+            }
+        }
+        let dom:any = document.querySelector('.gantt-elastic__chart-scroll-container--horizontal')
+        if(dom){
+            dom.scrollTo(data.x,data.y)
+        }
+    }
     goTable(){
         this.$emit("goTable");
     }
@@ -1619,5 +1696,12 @@ export default class BipStatisticsDialog extends Vue {
 }      
 .pointer{
     cursor:pointer;
+}
+</style>
+<style lang="scss">
+.flDialog{
+    .el-dialog__body{
+        padding: 0px 15px;
+    }
 }
 </style>

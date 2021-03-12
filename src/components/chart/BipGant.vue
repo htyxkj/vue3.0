@@ -54,7 +54,7 @@ export default class BipGant extends Vue{
 					}
 				},
 				text: {
-					offset: 4, //*
+					offset: -188, //*
 					xPadding: 10, //*
 					display: true //*
 				},
@@ -86,6 +86,9 @@ export default class BipGant extends Vue{
 		_options.taskList.columns = this.config.columns
 		if(this.config.maxHeight){
 			_options.maxHeight = this.config.maxHeight
+		}
+		if(this.config.chart){
+			_options.chart = this.config.chart
 		}
 		this.tasks=  this.config.data;
 		let maxTime = 0

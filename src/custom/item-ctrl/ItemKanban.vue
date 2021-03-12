@@ -1,50 +1,69 @@
 <template>
-    <div>
-        <el-button class="refreshBtn" icon="el-icon-refresh" size="mini" @click="initItemData">刷新</el-button>
-        <el-row>
+    <div class="ItemKanbanCard" :style="style">
+        <el-row :gutter="10">
             <el-col :span="10">
-                <vxe-table ref="itemKanbanTask" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-                show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"
-                @cell-click="taskDetailsGT"
-                :data.sync="bipInsAid.values" height='300' :optimized="true">
-                <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
-                    <template v-for="(item,index) in bipInsAid.showColsIndex">
-                        <vxe-table-column :key="index" header-align="center" align="center" :field="bipInsAid.cells.cels[item].id"
-                        :title="bipInsAid.cells.cels[item].labelString" show-header-overflow  show-overflow >
-                        </vxe-table-column> 
-                    </template>
-                    <!-- <vxe-table-column header-align="center" align="center" title="完成情况" show-header-overflow  show-overflow >
-                        <template v-slot="{row}"> 
-                            <progress-bar class="progress" offsetParent="body" width="80%" :pointNum="100" :percent="row.sjrate" :canDrag="false"></progress-bar>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>经营计划</span>
+                        <el-button class="refreshBtn" icon="el-icon-refresh" style="float: right;" size="mini" @click="initItemData">刷新</el-button>
+                        <el-input placeholder="请输入内容" size="mini" v-model="taskName" style="float: right;width: 300px;">
+                            <el-button slot="append" icon="el-icon-search" @click="initItemData"></el-button>
+                        </el-input>
+                    </div>
+                    <vxe-table ref="itemKanbanTask" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+                    show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"
+                    @cell-click="taskDetailsGT" :loading="itemKanbanTaskLoading"
+                    :data.sync="bipInsAid.values" height='300' :optimized="true">
+                    <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
+                        <template v-for="(item,index) in bipInsAid.showColsIndex">
+                            <vxe-table-column :key="index" header-align="center" align="center" :field="bipInsAid.cells.cels[item].id"
+                            :title="bipInsAid.cells.cels[item].labelString" show-header-overflow  show-overflow >
+                            </vxe-table-column> 
                         </template>
-                    </vxe-table-column> -->
-                </vxe-table>
+                    </vxe-table>
+                </el-card>
             </el-col>
             <el-col :span="14">
-                <div>
-                    <BipGant :config="gttConfig" :height='300' @onTaskClick="onTaskClick"></BipGant>
-                </div>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>经营进展情况</span>
+                        <el-button icon="el-icon-full-screen" v-if="!isFullScreen" @click="openFullScreen" circle size="mini" style="float: right;"></el-button>
+                    </div>
+                    <BipGant :config="gttConfig" :height='300'></BipGant>
+                </el-card>
             </el-col>
         </el-row>
-        <el-row v-if="jdhbCell && jdhbCell.ccells">
-            <vxe-table ref="itemKanbanTaskHB" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-            show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"
-            :data.sync="jdhbCell.cdata.data" height='300' :optimized="true">
-            <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
-                <template v-for="(item,index) in jdhbCell.ccells.cels">
-                    <vxe-table-column v-if="(item.attr&0x400) <= 0 " :key="index" header-align="center" align="center" :field="item.id"
-                    :title="item.labelString" show-header-overflow  show-overflow >
-                        <template v-slot="{rowIndex}"> 
-                            <bip-grid-info :cds="jdhbCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                        </template>
-                    </vxe-table-column> 
-                </template>
-            </vxe-table>
+        <el-row v-if="jdhbCell && jdhbCell.ccells" style="padding-top:5px">
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span>相关汇报信息</span>
+                </div>
+                <vxe-table ref="itemKanbanTaskHB" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
+                show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"  :loading="itemKanbanTaskHBLoading"
+                :data.sync="jdhbCell.cdata.data" height='340' :optimized="true">
+                <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
+                    <template v-for="(item,index) in jdhbCell.ccells.cels">
+                        <vxe-table-column v-if="(item.attr&0x400) <= 0 " :key="index" header-align="center" align="center" :field="item.id"
+                        :title="item.labelString" show-header-overflow  show-overflow >
+                            <template v-slot="{rowIndex}"> 
+                                <bip-grid-info :cds="jdhbCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                            </template>
+                        </vxe-table-column> 
+                    </template>
+                </vxe-table>
+            </el-card>
         </el-row>
+        <el-dialog class="flDialog" title="" :visible.sync="isFullScreen" fullscreen append-to-body @close="dlaClose">
+            <slot slot="title">
+                经营进展情况
+            </slot>
+           <BipGant :config="gttConfig" :height='500'></BipGant>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts">
 import { Vue, Provide, Prop, Component,Watch } from 'vue-property-decorator';
+import { State, Action, Getter, Mutation } from 'vuex-class';
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
@@ -56,6 +75,7 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 import moment from "moment"
+
 @Component({
     components: {
         BipGant,
@@ -64,21 +84,29 @@ import moment from "moment"
     }
 })
 export default class ItemKanban extends Vue{
+    @State('bipComHeight', { namespace: 'login' }) height!: number;
+    style:string="height:"+(this.height?this.height:'400')+"px";
     bipInsAid:BipInsAidNew = new BipInsAidNew("")
     gttConfig:any = null;
     jdhbCellId:any = "13030713";
     jdhbCell:CDataSet= new CDataSet("");
+    isFullScreen:boolean = false;
+    taskName:any = null;
+    itemKanbanTaskLoading:boolean = false;
+    itemKanbanTaskHBLoading:boolean = false;
     created(){
         
     }
     async mounted(){
         await this.initItemData();
         this.jdhbCell = await this.getCell(this.jdhbCellId)
+        this.style="height:"+(this.height?this.height:'400')+"px";
     }
     /**
      * 查询任务信息
      */
     async initItemData(){
+        this.itemKanbanTaskLoading = true;
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
         qe.page.pageSize = 500;
@@ -90,6 +118,12 @@ export default class ItemKanban extends Vue{
             }
         }else{
             this.$notify.error("WEBGETITEM ：获取辅助信息失败！");
+        }
+        if(this.taskName && this.taskName.length>0){
+            let qCont = new QueryCont('name',this.taskName,12);
+            qCont.setContrast(3)
+            let oneCont = [qCont]; 
+            qe.cont = "~[" + JSON.stringify(oneCont)+"]";
         }
         cc = await tools.getBipInsAidInfo("WEBGETITEM", 210, qe);
         this.bipInsAid.values = [];
@@ -105,6 +139,7 @@ export default class ItemKanban extends Vue{
         }else{
             this.$notify.error("WEBGETITEM ：获取辅助数据失败！");
         }
+        this.itemKanbanTaskLoading = false;
     }
     async taskDetailsGT(d:any){
         let row =  this.bipInsAid.values[d.rowIndex];
@@ -152,7 +187,7 @@ export default class ItemKanban extends Vue{
                 }
                 data.push(_d);
                 if(i ==0 ){
-                    this.onTaskClick(_d.sid)
+                    this.onTaskClick(_d,null)
                 }
             }
         }else{
@@ -164,22 +199,22 @@ export default class ItemKanban extends Vue{
             columns : [
                 {id:1,label:"工作事项",value:"taskname",expander: true,width: 200,
                     events: {
-                        click({ data }:any) {
-                            _this.onTaskClick( data.sid);
+                        click({event,data}:any) {
+                            _this.onTaskClick( data,event);
                         }
                     }
                 },
                 {id:2,label:"负责人",value:"itemsopr",expander: true,width: 80,
                     events: {
-                        click({ data }:any) {
-                            _this.onTaskClick( data.sid);
+                        click({event,data}:any) {
+                            _this.onTaskClick( data,event);
                         }
                     }
                 },
                 {id:3,label:"持续天数",value:"whours",expander: true,width: 100,
                     events: {
-                        click({ data }:any) {
-                            _this.onTaskClick( data.sid);
+                        click({event,data}:any) {
+                            _this.onTaskClick( data,event);
                         }
                     }
                 }
@@ -190,17 +225,46 @@ export default class ItemKanban extends Vue{
                     background: 'transparent'
                 },
                 'task-list-item':{
-                    // background:'#81C2DC'
+                //    background:'#81C2DC'
                 },
+                'chart-row-text':{
+                    background:'transparent'
+                }
             }
         } 
     }
 
-
+    /**
+     * 打开全屏
+     */
+    openFullScreen(){ 
+        this.gttConfig.maxHeight = 500
+        this.isFullScreen = true;
+    }
+    dlaClose(){
+        this.gttConfig.maxHeight = 235
+        this.isFullScreen = false;
+    }
     /**
      * 甘特图点击事件
      */
-    async onTaskClick(sid:any){
+    async onTaskClick(data:any,event:any){
+        this.itemKanbanTaskHBLoading = true;
+        if(event){
+            let itemDom = event.path[4];
+            if(itemDom){
+                let cc = document.querySelector('.gantt-task-list-item-select')
+                if(cc){
+                    cc.classList.remove("gantt-task-list-item-select")
+                }
+                itemDom.classList.add("gantt-task-list-item-select");
+            }
+        }
+        let sid = data.sid
+        let dom:any = document.querySelector('.gantt-elastic__chart-scroll-container--horizontal')
+        if(dom){
+            dom.scrollTo(data.x,data.y)
+        }
         let qe:QueryEntity = new QueryEntity(this.jdhbCellId,this.jdhbCellId);
         qe.page.pageSize = 10000;
         qe.cont = JSON.stringify({jbno:sid})
@@ -212,6 +276,7 @@ export default class ItemKanban extends Vue{
             table.setCurrentRow(data.data[0]);
             table.syncData();
         }
+        this.itemKanbanTaskHBLoading = false;
     }
     async getCell(cellid:string){
         let res = await tools.getCCellsParams(cellid); 
@@ -229,6 +294,15 @@ export default class ItemKanban extends Vue{
 
 <style scoped>
 .refreshBtn{
-    margin: 5px
+    margin-left: 5px
+}
+</style>
+<style lang="scss">
+.ItemKanbanCard{
+    overflow-y: auto;
+    overflow-x: hidden;
+    .el-card__body{
+        padding:10px;
+    }
 }
 </style>
