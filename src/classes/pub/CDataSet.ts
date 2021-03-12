@@ -263,6 +263,7 @@ export default class CDataSet {
   async checkGS(cell?: Cell) {
     if(cell){
         let id = cell.id
+        console.log(112);
         for(var i=0;i<this.ccells.cels.length;i++){
             let col = this.ccells.cels[i];
             let scstr = col.script;
@@ -388,14 +389,18 @@ export default class CDataSet {
           }
       }
       if (scstr) {
-        if (col.initValue && (col.attr & 0x80) > 0) {
-          if (col.initValue.indexOf("%") > 0) {
-            let scval = "%";
-            if (this.currRecord.data[scstr]) {
-              scval = this.currRecord.data[scstr];
+        if(col.psAutoInc){
+          this.incCalc(this.ccells,this.currRecord);
+        }else{
+          if (col.initValue && (col.attr & 0x80) > 0) {
+            if (col.initValue.indexOf("%") > 0) {
+              let scval = "%";
+              if (this.currRecord.data[scstr]) {
+                scval = this.currRecord.data[scstr];
+              }
+              let vl = col.initValue.replace("%", scval);
+              this.currRecord.data[col.id] = vl;
             }
-            let vl = col.initValue.replace("%", scval);
-            this.currRecord.data[col.id] = vl;
           }
         }
       }
