@@ -2,7 +2,7 @@
     <el-dialog class="bip-search" width="50%" :visible.sync="dialogVisible"
         :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
         <span slot="title">
-            <div class="el-dialog__title" style="padding-bottom: 4px;border-bottom: solid 1px #D9DFEF;">查询条件</div>
+            <div class="el-dialog__title" style="padding-bottom: 5px;">查询条件</div>
         </span>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
             <el-form @submit.native.prevent ref="form" :model="currcont" label-width="100px" size="mini" label-position="left">

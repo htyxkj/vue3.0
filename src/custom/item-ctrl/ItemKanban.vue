@@ -5,7 +5,7 @@
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
                         <span>经营计划</span>
-                        <el-button class="refreshBtn" icon="el-icon-refresh" style="float: right;" size="mini" @click="initItemData">刷新</el-button>
+                        <el-button icon="el-icon-refresh" @click="initItemData" circle size="mini" style="float: right;    margin-left: 9px;"></el-button>
                         <el-input placeholder="请输入内容" size="mini" v-model="taskName" style="float: right;width: 300px;">
                             <el-button slot="append" icon="el-icon-search" @click="initItemData"></el-button>
                         </el-input>
@@ -291,10 +291,9 @@ export default class ItemKanban extends Vue{
     }
 }
 </script>
-
 <style scoped>
-.refreshBtn{
-    margin-left: 5px
+.clearfix{
+    line-height: 25px;
 }
 </style>
 <style lang="scss">

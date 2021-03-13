@@ -4,8 +4,8 @@
       <div class="login-title">{{loginTitle}}</div>
       <div class="login-cont" @keyup.enter="login">
 
-        <el-form @submit.native.prevent label-position="left" label-width="70px" >
-          <el-form-item class="bip-form-item" label="账户:" style="font-size:16px">
+        <el-form @submit.native.prevent label-position="left" label-width="70px" class="login-form">
+          <el-form-item class="bip-form-item" label="账户:">
             <el-input v-model="user.userCode"></el-input>
           </el-form-item>
           <el-form-item class="bip-form-item" label="密码:">
@@ -245,4 +245,14 @@ address {
   background-color: #0ea0b9 I !important;
 }
 </style>
-
+<style lang="scss">
+.login-form{
+  .el-form-item__label{
+    height: 40px !important;
+    line-height: 40px !important;
+    border-width: 0px !important;
+    padding: 0px 15px !important;
+    background:transparent !important;
+  }
+}
+</style>

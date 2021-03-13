@@ -3,7 +3,7 @@
     <el-aside width="280px" style="float:left; position: absolute;" >
         <el-row>
             <el-col :span="24" class="menu-title" style="overflow: hidden;height:50px;line-height: 50px;" >
-                <div>{{loginTitle}}</div>
+                <div style="overflow: hidden;height:50px;line-height: 50px;">{{loginTitle}}</div>
             </el-col>
         </el-row>
         <el-row>
