@@ -6,6 +6,9 @@
         <template v-else-if="editorType == 9 && bipInsAid && (bipInsAid.bType == 'CSelectEditor' || bipInsAid.bType == 'CGroupEditor'  || bipInsAid.bType == 'CDynaEditor'|| bipInsAid.bType == 'CGDicEditor' || bipInsAid.bType =='CTreePopEditor')">
             <bip-aid-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" :cds="cds"/>
         </template>
+        <template v-else-if="bipInsAid && (bipInsAid.bType == 'CUpDownEditor')">
+            <bip-file-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" :cds="cds" :index="row"/>
+        </template>
         <template v-else>
             <bip-grid-show :cell="cell" :model="model" />
         </template>
@@ -24,10 +27,11 @@ let baseTool = BIPUtils.baseUtil
 
 import BipListRef from './BipListRef.vue'
 import BipAidRef from './BipAidRef.vue'
+import BipFileRef from './BipFileRef.vue'
 import BipGridShow from './BipGridShow.vue'
 let ICL = CommICL
 @Component({
-    components:{BipListRef,BipGridShow,BipAidRef}
+    components:{BipListRef,BipGridShow,BipAidRef,BipFileRef}
 })
 export default class BipGridInfo extends Vue{
     @Prop() cds!:CDataSet
