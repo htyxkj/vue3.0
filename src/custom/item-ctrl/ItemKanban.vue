@@ -14,9 +14,9 @@
                     show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"
                     @cell-click="taskDetailsGT" :loading="itemKanbanTaskLoading"
                     :data.sync="bipInsAid.values" height='300' :optimized="true">
-                    <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
+                    <vxe-table-column type="seq" fixed="left" width="40"></vxe-table-column>
                         <template v-for="(item,index) in bipInsAid.showColsIndex">
-                            <vxe-table-column :key="index" header-align="center" align="center" :field="bipInsAid.cells.cels[item].id"
+                            <vxe-table-column :key="index" header-align="center" :align="index==0?'left':'center'"  :width="tableFWidth[index]" :field="bipInsAid.cells.cels[item].id"
                             :title="bipInsAid.cells.cels[item].labelString" show-header-overflow  show-overflow >
                             </vxe-table-column> 
                         </template>
@@ -40,11 +40,11 @@
                 </div>
                 <vxe-table ref="itemKanbanTaskHB" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
                 show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"  :loading="itemKanbanTaskHBLoading"
-                :data.sync="jdhbCell.cdata.data" height='340' :optimized="true">
+                :data.sync="jdhbCell.cdata.data" height='320' :optimized="true">
                 <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
                     <template v-for="(item,index) in jdhbCell.ccells.cels">
                         <vxe-table-column v-if="(item.attr&0x400) <= 0 " :key="index" header-align="center" align="center" :field="item.id"
-                        :title="item.labelString" show-header-overflow  show-overflow >
+                        :title="item.labelString" show-header-overflow  show-overflow>
                             <template v-slot="{rowIndex}"> 
                                 <bip-grid-info :cds="jdhbCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
@@ -94,6 +94,7 @@ export default class ItemKanban extends Vue{
     taskName:any = null;
     itemKanbanTaskLoading:boolean = false;
     itemKanbanTaskHBLoading:boolean = false;
+    tableFWidth:any=[-1,95,75,63,63];
     created(){
         
     }
@@ -170,7 +171,8 @@ export default class ItemKanban extends Vue{
                     id:(i+1),
                     sid:vl.sid,
                     taskname:vl.taskname,
-                    itemsopr:vl.usrname,
+                    out_scm:vl.out_scm,
+                    out_sopr:vl.out_sopr,
                     whours:vl.whours,
                     label:"实际完成："+(vl.rate*100)+"%/预计完成："+(vl.yjrate*100).toFixed(0)+"%",
                     start: new Date(vl.bdate).getTime(),
@@ -204,14 +206,21 @@ export default class ItemKanban extends Vue{
                         }
                     }
                 },
-                {id:2,label:"负责人",value:"itemsopr",expander: true,width: 80,
+                {id:2,label:"负责部门",value:"out_scm",expander: true,width: 90,
                     events: {
                         click({event,data}:any) {
                             _this.onTaskClick( data,event);
                         }
                     }
                 },
-                {id:3,label:"持续天数",value:"whours",expander: true,width: 100,
+                {id:3,label:"负责人",value:"out_sopr",expander: true,width: 80,
+                    events: {
+                        click({event,data}:any) {
+                            _this.onTaskClick( data,event);
+                        }
+                    }
+                },
+                {id:4,label:"持续天数",value:"whours",expander: true,width: 60,
                     events: {
                         click({event,data}:any) {
                             _this.onTaskClick( data,event);
@@ -288,6 +297,10 @@ export default class ItemKanban extends Vue{
         }else{
             return new CDataSet('');
         }
+    }
+    @Watch("height")
+    heightWatch(){
+        this.style = "height:"+(this.height?this.height:'400')+"px";
     }
 }
 </script>
