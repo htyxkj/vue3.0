@@ -508,7 +508,13 @@ export default class OperatingArea extends Vue {
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             if(!this.flightBeltWidth)
                 this.flightBeltWidth=45;
+            let tkid = this.taskTjCell.currRecord.data.sid;//任务标识
             let tlid = this.taskTjCell.currRecord.data.tlid;//设备标识
+            if(!tkid && !tlid){
+                this.$notify.warning("请选择设备或任务");
+                return;
+            }
+
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
@@ -533,10 +539,14 @@ export default class OperatingArea extends Vue {
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
             qe.page.pageSize = 50000;
-            let tkid = this.taskTjCell.currRecord.data.sid;
             let bgtime = this.taskTjCell.currRecord.data.bgtime;
             let edtime = this.taskTjCell.currRecord.data.edtime;
-            let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            let cont = "";
+            if(tkid){
+                cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            }else if(tlid){
+                cont =" sbid ='" +tlid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            }
             qe.cont = cont;
             this.loading = !this.loading;
             this.showTaskTjCell = false;
@@ -952,8 +962,8 @@ export default class OperatingArea extends Vue {
 <style scoped lang="scss" >
 .progress{
     position: absolute;
-    bottom: 1rem;
-    left: 6rem;
+    bottom: .55rem;
+    left: 3rem;
     z-index: 999;
 }
 .myTab {
@@ -1046,8 +1056,8 @@ export default class OperatingArea extends Vue {
 }
 .nav-tools {
     position: absolute;
-    top: 1rem;
-    left: 3rem;
+    top: 0.1rem;
+    left: 1rem;
     z-index: 999;
 }
 .taskdata {

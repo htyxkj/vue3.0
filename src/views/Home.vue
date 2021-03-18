@@ -359,7 +359,6 @@ export default class Home extends Vue {
       qe.oprid = 14
       qe.page.pageSize=1000
       let vv = await tools.query(qe);
-      console.log(vv)
       if(vv.data.id==0){
         let cc = vv.data.data.data.data;
         for(var i=0; i<cc.length;i++){

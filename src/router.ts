@@ -13,8 +13,8 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home,//默认首页
-      // component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
+      // component: Home,//默认首页
+      component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
       meta: {
         keepAlive: true // 需要被缓存
       }
@@ -241,6 +241,12 @@ export default new Router({
           path: '/ItemKanban',
           name: 'ItemKanban',
           component :()=> import('./custom/item-ctrl/ItemKanban.vue')
+      },
+      {
+          //巡检机器人实时视频页面
+          path: '/AgvRTVideo',
+          name: 'AgvRTVideo',
+          component :()=> import('./custom/agv/AgvRTVideo.vue')
       }
   ]
 })

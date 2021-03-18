@@ -278,6 +278,7 @@ export namespace TMapUtils {
          * @returns 标注点对象
          * */        
         markRealTimeAir(lngLat:string,tMap:any,key:any,click:any,msg:any="",offline:boolean=false){
+            let zIndexOffset = 10;
             var icon = new T.Icon({
                 iconUrl: require('@/assets/air-super/plane.png'),
                 iconSize: new T.Point(40, 40),
@@ -289,8 +290,9 @@ export namespace TMapUtils {
                     iconSize: new T.Point(40, 40),
                     iconAnchor: new T.Point(20, 20)
                 });
+                zIndexOffset = 9;
             }
-            var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), {icon: icon});
+            var marker = new T.Marker(new T.LngLat(lngLat.split(",")[0], lngLat.split(",")[1]), {icon: icon,zIndexOffset:zIndexOffset});
             //向地图上添加标注
             tMap.addOverLay(marker);
             marker.key = key;

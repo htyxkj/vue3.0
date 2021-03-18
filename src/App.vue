@@ -7,6 +7,9 @@
         <template v-else-if="isLoginPage == 2">
             <analysis></analysis>
         </template>
+        <template v-else-if="isLoginPage == 3">
+            <airSuperBI></airSuperBI>
+        </template>
         <template v-else>
             <router-view />
         </template>
@@ -51,6 +54,7 @@ import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import Login from "@/views/login/Login.vue";
 import Portal from "@/views/login/Portal.vue";
 import Analysis from "@/custom/bip-erp/analysis.vue";
+import airSuperBI from "@/custom/air-super/airSuperBI.vue";
 import BipAside from "@/views/app/BipAside.vue";
 import LayOut from "@/views/app/LayOut.vue";
 import LayHeader from "@/views/app/LayHeader.vue";
@@ -71,7 +75,8 @@ import { BIPUtil } from "@/utils/Request";
     BipAside,
     LayOut,
     LayHeader,
-    Analysis
+    Analysis,
+    airSuperBI
   }
 })
 export default class App extends Vue {
@@ -163,6 +168,9 @@ export default class App extends Vue {
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
                 }
+                if(BaseVariable.ITEMTYPE == 'air-super'){
+                    this.isLoginPage = 3;
+                }
                 if(this.isLoginPage == -1){
                     this.$router.push({
                         path:'/wlogin',
@@ -223,6 +231,9 @@ export default class App extends Vue {
                 }
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
+                }
+                if(BaseVariable.ITEMTYPE == 'air-super'){
+                    this.isLoginPage = 3;
                 }
                 if(this.isLoginPage == -1){
                     this.$router.push({

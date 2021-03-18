@@ -13,7 +13,7 @@
                                 <!-- 查找 -->
                                 <el-button icon="el-icon-search" circle @click="dialogShow = true"></el-button>
                                 <!-- 画面跟随 -->
-                                 <span class="follow">
+                                <span class="follow">
                                     <el-tooltip class="item" effect="light" content="画面跟随" placement="top" >
                                         <el-switch
                                             v-model="isFollow"
@@ -21,7 +21,19 @@
                                             inactive-color="#ff4949">
                                         </el-switch>
                                     </el-tooltip>
-                                 </span>
+                                </span>
+                                <!-- 查找地名 -->
+                                <span class="selAddress">
+                                    <el-input placeholder="地名检索" size="medium" v-model="address" class="input-with-select">
+                                        <el-button slot="append" icon="el-icon-search" @click="searchAddress"></el-button>
+                                    </el-input>
+                                </span>
+                                <!-- 查找设备 -->
+                                <span class="selSbid">
+                                    <el-form label-position="right" label-width="100px">
+                                        <bip-comm-editor  v-for="(cel,index) in tlidCell.ccells.cels" :key="'A'+index"  :cell="cel" :bgrid="false" :cds="tlidCell" :row="0" />
+                                    </el-form>
+                                </span>
                             </div>
                             <t-map ref="TMap" class="myTMap"></t-map>
                             <a class="operaBtn" @click="operaBtnClick">
@@ -44,7 +56,7 @@
                                </div>
 
                                 <div v-if="rightState">
-                                    <div class="nowtitle pointer" v-for="(item,index) in newTaskList" :key="index" @click="detailTask(item.sid)">
+                                    <div class="nowtitle pointer" v-for="(item,index) in newTaskList" :key="index" @click="detailTask(item)">
                                         <div class="nowtime-header">
                                             实时任务
                                         </div>
@@ -236,7 +248,7 @@
         </el-tabs>
         <el-dialog title="查询" :close-on-click-modal="false" :visible.sync="dialogShow" width="50%" class="bip-query">
             <el-row class="bip-lay">
-                <el-form ref="form" label-width="80px">
+                <el-form ref="form" label-width="120px">
                     <el-form-item label="查询年份">
                         <el-input v-model="conditionYera"></el-input>
                     </el-form-item>
@@ -292,74 +304,80 @@ export default class RealTimeTrack extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
     @Getter('user', { namespace: 'login' }) user?: User;
 
-    @Provide() style: string ="height:" + (this.height ? this.height - 50 : "400") + "px";
-    @Provide() selMap: string = "tianMap";
-    @Provide() tMap: any = null;
-    @Provide() tZoom: number = 12;
+    style: string ="height:" + (this.height ? this.height - 50 : "400") + "px";
+    selMap: string = "tianMap";
+    tMap: any = null;
+    tZoom: number = 12;
 
-    @Provide() sleepTime:number = 5*60*1000;//延迟时间
-    @Provide() maxTime:number = 0;//当前查询的最大时间
-    @Provide() loading: boolean = false;
+    sleepTime:number = 5*60*1000;//延迟时间
+    maxTime:number = 0;//当前查询的最大时间
+    loading: boolean = false;
 
 
-    @Provide() taskData:any={};//当天任务集合
-    @Provide() airPoint:any=[];//初始化飞机任务点  用来确认地图基本以及中心点
-    @Provide() taskPoint:any=[];//任务点
-    @Provide() taskPointJSON:any=[];//任务点
-    @Provide() plane:any = null;//单个飞机实时点
-    @Provide() rotate:number = 0;//飞机旋转角度
+    taskData:any={};//当天任务集合
+    airPoint:any=[];//初始化飞机任务点  用来确认地图基本以及中心点
+    taskPoint:any=[];//任务点
+    taskPointJSON:any=[];//任务点
+    plane:any = null;//单个飞机实时点
+    rotate:number = 0;//飞机旋转角度
 
-    @Provide() _timer:any = null;//计时器  画线
-    @Provide() _timer1:any = null;//计时器 查询数据
-    @Provide() _timer2:any = null;//计时器 无数据时查询数据
-    @Provide() interval:any = 1000;//飞行间隔时间 毫秒    
-    @Provide() isFollow:boolean = true;//画面跟随
+    _timer:any = null;//计时器  画线
+    _timer1:any = null;//计时器 查询数据
+    _timer2:any = null;//计时器 无数据时查询数据
+    interval:any = 1000;//飞行间隔时间 毫秒    
+    isFollow:boolean = true;//画面跟随
 
-    @Provide() PreviousFlowPoint:any = null;//上一个流量点
-    @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
-    @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
-    @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
-    @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
-    @Provide() flightBeltOpacity:number = 0.3;//航道透明度
-    @Provide() flightBeltWidth:number = 45;//航带宽度 米
-    @Provide() trackColor:string = "#FFFF00";//航迹颜色
-    @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
+    PreviousFlowPoint:any = null;//上一个流量点
+    sprayLine0:any=[];//喷洒轨迹（农药范围）
+    sprayLine1:any=[];//喷洒轨迹（一像素的线）
+    sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
+    sprayBreak:boolean = true;//喷洒是否中断
+    flightBeltColor:string = "#ADFF2F"//行带颜色
+    flightBeltOpacity:number = 0.3;//航道透明度
+    flightBeltWidth:number = 45;//航带宽度 米
+    trackColor:string = "#FFFF00";//航迹颜色
+    noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
-    @Provide() operaWidth: number = 0; //右侧作业数据区宽度
-    @Provide() operaBtnOpen: boolean = false; //右侧作业数据是否显示
+    operaWidth: number = 0; //右侧作业数据区宽度
+    operaBtnOpen: boolean = false; //右侧作业数据是否显示
 
-    @Provide() rightState:Boolean = true; //右侧显示内容状态判断
-    @Provide() newTaskList:any = []; //当天任务集合
+    rightState:Boolean = true; //右侧显示内容状态判断
+    newTaskList:any = []; //当天任务集合
     
-    @Provide() dialogShow:boolean = false;
-    @Provide() conditionYera:any = new Date().getFullYear();
-    @Provide() checkList:any = [];
-    @Provide() operaCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
-    @Provide() liftCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
-    @Provide() operaBrCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
-    @Provide() allCover:any=[];
+    dialogShow:boolean = false;
+    conditionYera:any = new Date().getFullYear();
+    checkList:any = [];
+    operaCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
+    liftCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
+    operaBrCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
+    allCover:any=[];
 
     // 实时时间对应的数据
-    @Provide() nowtime:String = '----';
-    @Provide() nowspeed:String = '--';
-    @Provide() nowflow:String = '--';
-    @Provide() nowpressure:String = '--';//压强
-    @Provide() nowtemperature:String = '--';//温度
-    @Provide() sumflow:number = 0;
-    @Provide() nowheight:String = '--';
-    @Provide() sumtimeflow:number = 0;
-    @Provide() sumtime:number = 0;
-    @Provide() taskname:String = "";
+    nowtime:String = '----';
+    nowspeed:String = '--';
+    nowflow:String = '--';
+    nowpressure:String = '--';//压强
+    nowtemperature:String = '--';//温度
+    sumflow:number = 0;
+    nowheight:String = '--';
+    sumtimeflow:number = 0;
+    sumtime:number = 0;
+    taskname:String = "";
     sumarea:number = 0;
     windSpeed:any = 0;//风速
     humidity:any = 0;//湿度
     //当前任务起降点
-    @Provide() takeoff:any = null;//起降点
-    @Provide() takeoffRange:any = 50;//起降点范围
+    takeoff:any = null;//起降点
+    takeoffRange:any = 50;//起降点范围
 
-    @Provide() warn:any =null;
-    @Provide() warnInterval:any= 0;
+    warn:any =null;
+    warnInterval:any= 0;
+    
+    address:any="";
+    tlidCell:CDataSet = new CDataSet("");
+    tlidValues:any = [];//全部设备信息
+    tlidMarker:any =[];//全部设备标注点对象
+    
 
     async created() {
         if (this.height) {
@@ -368,6 +386,8 @@ export default class RealTimeTrack extends Vue {
         this.operaCell = await this.getCell("FW2015");//作业区查询条件
         this.liftCell = await this.getCell("20200203");//作业区查询条件
         this.operaBrCell = await this.getCell("F2015A");//避让点
+        this.tlidCell = await this.getCell("WEBGETSBID");//设备
+        this.tlidCell.createRecord();
         this.initWarn();
     }
     async mounted() {
@@ -422,7 +442,7 @@ export default class RealTimeTrack extends Vue {
         }
     }
     /**
-     * 查询任务最新设备  可能会做设备便跟
+     * 查询任务最新设备  可能会做设备便跟   已作废
      * @param asid 器械标识
      */
     async initNewTlid(asid:any){
@@ -452,7 +472,7 @@ export default class RealTimeTrack extends Vue {
         return tlid;
     }
     /**
-     * 查询正在作业的设备
+     * 查询正在作业的设备  已作废
      */
     async initOperDevice(task:any){
         let rest = await tools.getServerTime();
@@ -525,79 +545,91 @@ export default class RealTimeTrack extends Vue {
         let res = await Vue.$axios.post("/realTimeServlet", data1);
         if(res.data.id ==0){
             let values = res.data.data.data;
+            this.tlidValues = values;
             for(var i=0;i<values.length;i++){
                 let v = values[i]
-                let key = v.taskid+"_"+v.sbid+"_"+v.offline;
-                if(v.latitude<=0 || v.longitude<=0){
-                    break;
-                }
-                let lnglat = [v.latitude,v.longitude];
-                let offline = false;
-                if(v.sbtype =='0'){
-                    lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
-                }
-                if(v.offline+'' == '1'){
-                    offline = true;
-                }
-                let cc = lnglat[1]+","+lnglat[0]
-                let poin = new T.LngLat(lnglat[1], lnglat[0]);
-                this.airPoint.push(poin);
-                v.speedtime = new Date(v.speedtime)
-                v.speedtime = moment(v.speedtime).format("YYYY-MM-DD HH:mm:ss")
-                let msg = "<div>任务编码："+v.taskid+"<br/>任务名称："+v.taskname+"<br/>设备编码："+v.sbid+"<br/>定位信息:"+lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+v.time
-                if(offline){//离线
-                    msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:red;'>离线</span>"
-                }else{//在线
-                    msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:green;'>在线</span>"
-                }
-                msg +="</div>";
-                TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
+                this.drawingPoing(v)
             }
         } 
+    }
+    drawingPoing(v:any){
+        let key = v.taskid+"_"+v.sbid+"_"+v.offline+"_"+v.sbtype;
+        if(v.latitude<=0 || v.longitude<=0){
+            return;
+        }
+        let lnglat = [v.latitude,v.longitude];
+        let offline = false;
+        if(v.sbtype =='0'){
+            lnglat = Gps.bd09_To_gps84(v.latitude,v.longitude);
+            v.speedtime = v.time
+        }
+        if(v.offline+'' == '1'){
+            offline = true;
+        }
+        let cc = lnglat[1]+","+lnglat[0]
+        let poin = new T.LngLat(lnglat[1], lnglat[0]);
+        this.airPoint.push(poin);
+        let msg = "<div>任务编码："+v.taskid+"<br/>任务名称："+v.taskname+"<br/>设备编码："+v.sbid+"<br/>定位信息:"+lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+v.speedtime
+        if(offline){//离线
+            msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:red;'>离线</span>"
+        }else{//在线
+            msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:green;'>在线</span>"
+        }
+        msg +="</div>";
+        let mark = TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
+        this.tlidMarker.push(mark);
     }
 
 
     // 点击右侧任务跳转至详情页面
-    detailTask(tkid:String){
-        let data1 = {target:{key:tkid}}
+    detailTask(item:any){
+        let key = item.sid+"_"+item.tlid+"_0_"+item.trtype
+        let data1 = {target:{key:key}}
         this.ariClick(data1);
     }
     /**
      * 点击单个飞机
      */
     ariClick(data:any){
+        let keys = data.target.key.split("_");//v.taskid+"_"+v.sbid+"_"+v.offline+"_"+v.sbtype;
+        let tkid = keys[0];
+        let sbid = keys[1];
+        let offline = keys[2];
+        let sbtype = keys[3];
+        let task = this.taskData[tkid];
+        if(offline =='1'){
+            return;
+        }
         this.rightState = false;
         this.clearCover();
         this.loading = true;
-        let tkid = data.target.key;
-        let task = this.taskData[tkid];
-        this.taskname = this.taskData[tkid].taskname;
-        this.flightBeltWidth = this.taskData[tkid].widcloth;
-        let route = task.route
-        let hoaid = task.hoaid;
-        let oaid = task.oaid;
-        let takeoff = task.takeoff;
-        this.initTakeoff(takeoff);
-        if(route){
-            TMapUt.makeRoute(route,"",this.tMap);
+        if(task){
+            this.taskname = this.taskData[tkid].taskname;
+            this.flightBeltWidth = this.taskData[tkid].widcloth;
+            let route = task.route
+            let hoaid = task.hoaid;
+            let oaid = task.oaid;
+            let takeoff = task.takeoff;
+            this.initTakeoff(takeoff);
+            if(route){
+                TMapUt.makeRoute(route,"",this.tMap);
+            }
+            if(hoaid){
+                TMapUt.getOpera(hoaid,this.tMap);
+            }
+            if(oaid){
+                TMapUt.getOperaRoute(oaid,this.tMap);
+                TMapUt.getOpera(oaid,this.tMap);
+                TMapUt.getOperaBr(oaid,this.tMap);
+            }
         }
-        if(hoaid){
-            TMapUt.getOpera(hoaid,this.tMap);
-        }
-        if(oaid){
-            TMapUt.getOperaRoute(oaid,this.tMap);
-            TMapUt.getOpera(oaid,this.tMap);
-            TMapUt.getOperaBr(oaid,this.tMap);
-        }
-        if(task.trtype=='0'){
+        if(sbtype=='0'){
             this.maxTime = parseInt(((this.maxTime - this.sleepTime)/1000)+"");
-            // this.maxTime = 1566597121;
         }else{
             this.maxTime = this.maxTime -5000;
         }
-        this.getPointList(task.tlid,true,task.trtype)
+        this.getPointList(sbid,true,sbtype)
         this.tMap.setZoom(17)//设置地图放大级次
-
     }
     
     /***
@@ -916,7 +948,7 @@ export default class RealTimeTrack extends Vue {
             this.airPoint=[];
             this.sumtime = 0;
             this.sumtimeflow = 0;
-            // await this.initTask();
+            await this.initTask();
             // for(var k in this.taskData){
             //     await this.initOperDevice(this.taskData[k]);
             // }
@@ -1266,6 +1298,55 @@ export default class RealTimeTrack extends Vue {
         }
     }
 /********************************* 预警信息 *******************************/
+    //地名检索
+    searchAddress(){
+        if(this.address){
+            var config = {
+                pageCapacity: 1,	//每页显示的数量
+                onSearchComplete: this.localSearchResult	//接收数据的回调函数
+            };
+            //创建搜索对象
+            let localsearch = new T.LocalSearch(this.tMap, config);
+            localsearch.search(this.address);
+        }
+    }
+    localSearchResult(result:any) {
+        //根据返回类型解析搜索结果
+        switch (parseInt(result.getResultType())) {
+            case 1:
+                let pois = result.getPois();
+                if(pois && pois.length>0){
+                    let lonlat = pois[0].lonlat;
+                    let lng = lonlat.split(" ")[0]
+                    let lat = lonlat.split(" ")[1]
+                    let p = new T.LngLat(lng, lat)
+                    this.tMap.panTo(p)
+                }
+            break;
+        }
+    }
+    @Watch('tlidCell.currRecord.data.tlid')
+    tlidCurrChange(){
+        let tlid = this.tlidCell.currRecord.data.tlid;
+        if(tlid){
+            for(var i=0;i<this.tlidMarker.length;i++){
+                this.tMap.removeOverLay(this.tlidMarker[i]);
+            }
+            let tlids = tlid.split(";");
+            for(var i=0;i<this.tlidValues.length;i++){
+                let v = this.tlidValues[i];
+                if(tlids.indexOf(v.sbid+'') !=-1){
+                    this.drawingPoing(v)
+                }
+            }
+        }else{
+            for(var i=0;i<this.tlidValues.length;i++){
+                let v = this.tlidValues[i];
+                this.drawingPoing(v)
+            }
+        }
+    }
+
     mapChnage() {
     }
     @Watch("height")
@@ -1406,8 +1487,8 @@ export default class RealTimeTrack extends Vue {
 }
 .nav-tools {
     position: absolute;
-    top: 1rem;
-    left: 3rem;
+    top: 0.1rem;
+    left: 1rem;
     z-index: 999;
 }
 .taskdata {
@@ -1517,6 +1598,18 @@ export default class RealTimeTrack extends Vue {
     margin-left: 15px;
     color: #20A0ff;
     font-size: 14px;
+}
+.selAddress{
+    margin-left: 15px;
+    div{
+        width: 200px;
+    }
+}
+.selSbid{
+    position: absolute;
+    margin-left: 15px;
+    width: 600px;
+    margin-top: 2px;
 }
 </style>
 <style lang="scss" >

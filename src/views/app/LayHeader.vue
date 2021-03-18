@@ -6,7 +6,7 @@
                     <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer" aria-hidden="true" @click="showMenu" style="width:1em;height: 1em;">
                         <use xlink:href="#icon-bip-rongtong "></use>
                      </svg>
-                    <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu"></i>
+                    <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i>
                 </el-row>
             </el-col>
             <el-col :span="20">
@@ -14,9 +14,9 @@
                     <el-badge :value="taskNum" class="header_badge_item">
                         <i class="el-icon-mobile pointer" @click="myTask"></i>    
                     </el-badge>
-                    <!-- <el-badge :value="msgNum" class="header_badge_item">
+                    <el-badge :value="msgNum" class="header_badge_item">
                         <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
-                    </el-badge>  -->
+                    </el-badge> 
                     <el-badge    class="header_badge_item">
                         <i :class="icon "  @click="isQP"></i>    
                     </el-badge> 

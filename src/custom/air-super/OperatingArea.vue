@@ -98,7 +98,7 @@
                                     </el-col>
                                     <el-col :span="20" style="height:60px;">
                                     <el-row>
-                                        <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
+                                        <el-col :span="24" style="height:20px;font-size: .18rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
                                         <el-col :span="24" style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;">{{item.address}}</el-col>
                                     </el-row>
                                     <el-row>
@@ -134,7 +134,7 @@
                                             </el-col>
                                             <el-col :span="20">
                                                 <el-row>
-                                                    <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
+                                                    <el-col :span="24" style="height:20px;font-size: .18rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
                                                     <el-col :span="24" style="color: rgba(0,0,0,.54);font-size: .12rem;">{{item.address}}</el-col>
                                                 </el-row>
                                                 <el-row v-if="!item.mergeid" style="textAlign:center;">
@@ -197,7 +197,7 @@
                                             </el-col>
                                             <el-col :span="20">
                                                 <el-row>
-                                                    <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
+                                                    <el-col :span="24" style="height:20px;font-size: .18rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
                                                     <el-col :span="24" style="color: rgba(0,0,0,.54);font-size: .12rem;">{{item.address}}</el-col>
                                                 </el-row>
                                                 <el-row v-if="!item.mergeid" style="textAlign:center;">
@@ -260,7 +260,7 @@
                                             </el-col>
                                             <el-col :span="20">
                                                 <el-row>
-                                                    <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
+                                                    <el-col :span="24" style="height:20px;font-size: .18rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
                                                     <el-col :span="24" style="color: rgba(0,0,0,.54);font-size: .12rem;">{{item.address}}</el-col>
                                                 </el-row>
                                                 <el-row v-if="!item.mergeid" style="textAlign:center;">
@@ -324,7 +324,7 @@
                                 </el-col>
                                 <el-col :span="20" style="height:80px;">
                                 <el-row>
-                                    <el-col :span="24" style="height:20px;font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
+                                    <el-col :span="24" style="height:20px;font-size: .18rem; color: rgba(0,0,0,.54)">{{item.name}}</el-col>
                                     <el-col :span="24" style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;">{{item.name1}}</el-col>
                                     <el-col :span="24" style="height:20px;color: rgba(0,0,0,.54);font-size: .12rem;">{{item.place}}</el-col>
                                 </el-row>
@@ -1824,6 +1824,8 @@ export default class OperatingArea extends Vue {
                     let k = d1.oid+"|"+d1.oaid
                     this.operaBrJSON[k] = d1;
                 }
+            }else{
+                console.log(res)
             }
         })
         .catch(err => {
@@ -3037,8 +3039,8 @@ export default class OperatingArea extends Vue {
 }
 .nav-tools {
     position: absolute;
-    top: 1rem;
-    left: 3rem;
+    top: 0.1rem;
+    left: 1rem;
     z-index: 999;
 }
 </style>

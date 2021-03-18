@@ -491,8 +491,8 @@ export default class TaskRoutePlanning extends Vue {
 }
 .nav-tools {
     position: absolute;
-    top: 1rem;
-    left: 3rem;
+    top: 0.1rem;
+    left: 1rem;
     z-index: 999;
 }
 .task-info{
