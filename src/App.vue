@@ -15,36 +15,36 @@
         </template>
     </template>
     <template v-else>
-      <el-container> 
-        <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
-        <el-container>
-            <el-header style="background-color:#20a0ff;height:50px"> 
-                <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
-            </el-header>
-            <el-main class="bip-main">
-                <el-tabs
-                v-model="editableTabsValue2"
-                type="border-card"
-                :closable="false"
-                @tab-remove="removeTab"
-                class="bip-tabs"
-                >
-                <el-tab-pane
-                    v-for="(item) in editableTabs2"
-                    :key="item.name"
-                    :label="item.title"
-                    :name="item.name"
-                    :closable="item.closable"
-                    :lazy="true"
-                    :style="style"
-                >    
-                    <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
-                    </lay-out>
-                </el-tab-pane>
-                </el-tabs>
-            </el-main>
+        <el-container> 
+            <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
+            <el-container>
+                <el-header style="background-color:#20a0ff;height:50px"> 
+                    <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
+                </el-header>
+                <el-main class="bip-main">
+                    <el-tabs
+                    v-model="editableTabsValue2"
+                    type="border-card"
+                    :closable="false"
+                    @tab-remove="removeTab"
+                    class="bip-tabs"
+                    >
+                    <el-tab-pane
+                        v-for="(item) in editableTabs2"
+                        :key="item.name"
+                        :label="item.title"
+                        :name="item.name"
+                        :closable="item.closable"
+                        :lazy="true"
+                        :style="style"
+                    >    
+                        <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
+                        </lay-out>
+                    </el-tab-pane>
+                    </el-tabs>
+                </el-main>
+            </el-container>
         </el-container>
-      </el-container>
     </template>
   </div>
 </template>
@@ -334,13 +334,6 @@ export default class App extends Vue {
                     } else {
                         this.editableTabsValue2 = menu.menuId;
                     }
-                }
-            }else{
-                if(!this.isLogin){
-                    this.$router.push({
-                        path:'/portal',
-                        name:'portal',
-                    })
                 }
             }
         }

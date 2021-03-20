@@ -400,13 +400,19 @@ export default class RealTimeTrack extends Vue {
             this.loading = !this.loading;
             this.airPoint=[];
             await this.initTask();
-            // for(var k in this.taskData){
-            //     await this.initOperDevice(this.taskData[k]);
-            // }
-            await this.initAllDev();
-            let t1 = this.tMap.getViewport(this.airPoint);
-            if(t1)
-                this.tMap.panTo(t1.center, t1.zoom);
+            if(this.$route && this.$route.query.key){
+                let key = this.$route.query.key
+                let data1 = {target:{key:key}}
+                this.ariClick(data1);
+            }else{
+                // for(var k in this.taskData){
+                //     await this.initOperDevice(this.taskData[k]);
+                // }
+                await this.initAllDev();
+                let t1 = this.tMap.getViewport(this.airPoint);
+                if(t1)
+                    this.tMap.panTo(t1.center, t1.zoom);
+            }
             this.loading = !this.loading;
         }catch(err){
             this.loading = false;
@@ -546,6 +552,7 @@ export default class RealTimeTrack extends Vue {
         if(res.data.id ==0){
             let values = res.data.data.data;
             this.tlidValues = values;
+            this.tlidMarker = [];
             for(var i=0;i<values.length;i++){
                 let v = values[i]
                 this.drawingPoing(v)

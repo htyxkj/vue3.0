@@ -3,8 +3,11 @@
     <div class="header">
       <h1>飞防数据可视化分析</h1>
       <div class="showTime">{{ showtime }}</div>
-      <div class="loginBtn"><el-button type="text" class="btn" @click="loginPage()">登陆</el-button></div>
-      <div class="homeBtn" v-if="isFormalLogin"><el-button type="text" class="btn" @click="gaotoPage('')">业务系统</el-button></div>
+      <div class="loginBtn" v-if="!isFormalLogin"><el-button type="text" class="btn" @click="loginPage(1)">登陆</el-button></div>
+      <template v-if="isFormalLogin">
+        <div class="loginBtn"><el-button type="text" class="btn" @click="loginPage(0)">退出</el-button></div>
+        <div class="homeBtn"><el-button type="text" class="btn" @click="gaotoPage('')">业务系统</el-button></div>
+      </template>
     </div>
     <!-- 页面主体部分 -->
     <div class="mainbox">
@@ -83,13 +86,13 @@
                 <span class="ellipsis">{{ item.taskname }}</span>
               </div>
               <div class="oper">
-                <span class="ellipsis">{{ item.address }}</span>
+                <span class="ellipsis" @click="gotoOneRealTime(item)">{{ item.address }}</span>
               </div>
             </div>
           </div>
           <div class="panel-footer"></div>
         </div>
-        <div class="panel panel-message">
+        <!-- <div class="panel panel-message">
           <h2>本日汇总信息</h2>
           <div class="chart ">
             <div>
@@ -122,7 +125,7 @@
             </div>
           </div>
           <div class="panel-footer"></div>
-        </div>
+        </div> -->
       </div>
     </div>
     <el-dialog title="登陆" :visible.sync="showLoginDia" width="35%">
@@ -273,8 +276,8 @@ export default class followTimesLine extends Vue {
         for(var i=0;i<tasks.length;i++){
           let task = tasks[i];
           if(task.offline== 0){
-            let d1 = {sbid:task.sbid,speedtime:task.speedtime,address:"详情",area:task.area};
-            this.tableData.push(d1);
+            task['address'] = "详情";
+            this.tableData.push(task);
           }
         }
       }
@@ -401,11 +404,18 @@ export default class followTimesLine extends Vue {
       qe.page.currPage = 1;
       qe.page.pageSize = 1;
       let cc = await tools.getBipInsAidInfo("BIYEARSUM", 210, qe);
+      console.log(cc);
       if (cc.data.id === 0 ) {
         let res = cc.data.data.data.values;
-        this.skfcy = res[0].jcqty;
-        this.fkfcy = res[0].sumflow;
-        this.yefcy = res[0].sumarea;
+        if(res.length>0){
+          this.skfcy = res[0].jcqty;
+          this.fkfcy = res[0].sumflow;
+          this.yefcy = res[0].sumarea;
+        }else{
+          this.skfcy = 0;
+          this.fkfcy = 0;
+          this.yefcy = 0;
+        }
       }
     }else{//未正式登陆 生成模拟数据
       this.skfcy = this.getRandom(100,0);
@@ -902,16 +912,40 @@ export default class followTimesLine extends Vue {
     }
   }
   /**
+   * 设备点击详情
+   */
+  gotoOneRealTime(item:any){
+    this.setIsLogin(true);
+    if(this.isFormalLogin){
+      let key = item.taskid+"_"+item.sbid+"_"+item.offline+"_"+item.sbtype;
+      let url = "/RealTimeTrack?pmenuid=M0303&key="+key;
+      this.$router.push({
+        path:url
+      })
+    }else{
+      this.loginPage(1);
+    }
+  }
+
+  /**
    * 生成随机数
    */
   getRandom(num:any,digits:any): number{
     return parseFloat((Math.random()*num).toFixed(digits));
   }
 
-  loginPage(){
-    this.showLoginDia = true;
+  /**
+   * type  1 登陆 0 退出
+   */
+  loginPage(type:any){
     this.userCode = null;
     this.password = null;
+    if(type == 1){
+      this.showLoginDia = true;
+    }else{
+      this.isFormalLogin = false;
+      this.initPortal();
+    }
   }
   gaotoPage(url:any){
     this.setIsLogin(true);
