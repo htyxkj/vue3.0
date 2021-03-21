@@ -5,14 +5,17 @@
     </el-row> -->
     <el-row style="padding-top:15px" @keyup.enter="fetchTaskData">
       <el-input v-model="keyword" size="mini" placeholder="关键词" style="width:220px;padding-right:20px" ></el-input>
-      <el-button type="primary" size="mini" @click="fetchTaskData">查询</el-button>
+      <el-button type="primary" size="mini" @click="fetchTaskData" >查询</el-button>
+      <el-button type="primary" size="mini" style="padding-right:20px" @click="readById(tableChecked)">全部已读</el-button>
+      <el-button type="primary" size="mini"  @click="removeById(tableChecked)">全部删除</el-button>
     </el-row>
     <el-row style="padding-top:15px">
       <vxe-table
             ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
             show-header-all-overflow class="vxe-table-element" :data.sync="msgValue"
-            :optimized="true" height="450px">
-            <vxe-table-column type="index" title="编号" width="60"></vxe-table-column>
+            :optimized="true" height="450px" @checkbox-change="selectChangeEvent"  @checkbox-all="selectChangeEvent">
+            <vxe-table-column type="checkbox" width="60"></vxe-table-column>
+            <vxe-table-column type="index" title="编号" width="70"></vxe-table-column>
             <vxe-table-column header-align="center" align="center" field="title" title="标题" show-header-overflow show-overflow ></vxe-table-column>
             <vxe-table-column header-align="center" align="center" field="dmake" title="时间" show-header-overflow show-overflow ></vxe-table-column>
             <vxe-table-column header-align="center" align="center" field="brd" title="消息状态" show-header-overflow show-overflow >
@@ -81,6 +84,7 @@ let tools = BIPUtil.ServApi
 
 @Component({
 })
+
 export default class bipTask extends Vue {
     @Provide() pmenuid: string = "";
     @Provide() currPage:number = 1; 
@@ -93,6 +97,7 @@ export default class bipTask extends Vue {
     @Provide() dialogVl:any = null;
     @Provide() msgChangebusId:number = 0;
     @Getter('user', { namespace: 'login' }) user?: User;
+    tableChecked:any = [];
     /**
      * 	APIID_TA_MSG  = "taskmsg";//apiid
      *  APIID_TM_ALL  = 200;//获取任务和消息
@@ -104,6 +109,7 @@ export default class bipTask extends Vue {
      *  APIID_TM_RL  = 249;//重新加载RMQ配置信息
      * 
      */
+
     async mounted() {  
       this.msgChangebusId= this.$bus.$on('MyMsgChange',this.fetchTaskData)
       this.fetchTaskData();
@@ -132,6 +138,62 @@ export default class bipTask extends Vue {
       let row = this.msgValue[rowIndex]
       let cc = await tools.getTaskMsgData(213,row.iid,3,null,null,null,null,null,null);
       this.fetchTaskData();
+    }  
+     selectChangeEvent ({ selection,checked,}:any) {
+        this.tableChecked = selection;
+    }
+    /**
+     * 全部删除
+     * wangruxin
+     */
+    async removeById() {  
+        let selectRecords = this.tableChecked.length;
+        if(selectRecords=="0"){
+            this.$confirm('请选择要删除的数据！', '提示', {
+            confirmButtonText: '确定',
+            type: 'success'
+            });
+        }else{
+            this.$confirm('确定删除该记录吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(async () => {
+               for(var i=0;i<this.tableChecked.length;i++){
+                  let cc = await tools.getTaskMsgData(213,this.tableChecked[i].iid,3,null,null,null,null,null,null);
+               }
+               this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+               this.fetchTaskData();
+        }).catch(() => {
+              
+        });
+        }
+    }
+    /**
+     * 全部已读
+     * wangruxin
+     */
+    async readById(){
+       let selectRecords = this.tableChecked.length; 
+       if(selectRecords=="0"){
+            this.$confirm('请选择要已读的数据！', '提示', {
+            confirmButtonText: '确定',
+            type: 'success'
+            });
+        }else{
+             for(var i=0;i<this.tableChecked.length;i++){
+                let cc = await tools.getTaskMsgData(213,this.tableChecked[i].iid,2,null,null,null,null,null,null);
+            }
+            this.$message({
+            type: 'success',
+            message: '已读!'
+            });
+        this.fetchTaskData();  
+        }
+         
     }
     async readMsg(){
       let row = this.dialogVl
@@ -157,7 +219,9 @@ export default class bipTask extends Vue {
     beforeDestroy(){
       this.$bus.$off('MyMsgChange',this.msgChangebusId)
     }
+    
 }
+
 </script>
 
 <style lang="scss" scoped>
