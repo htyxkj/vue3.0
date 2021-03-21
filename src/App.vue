@@ -7,44 +7,46 @@
         <template v-else-if="isLoginPage == 2">
             <analysis></analysis>
         </template>
-        <template v-else-if="isLoginPage == 3">
-            <airSuperBI></airSuperBI>
-        </template>
         <template v-else>
             <router-view />
         </template>
     </template>
     <template v-else>
-        <el-container> 
-            <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
-            <el-container>
-                <el-header style="background-color:#20a0ff;height:50px"> 
-                    <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
-                </el-header>
-                <el-main class="bip-main">
-                    <el-tabs
-                    v-model="editableTabsValue2"
-                    type="border-card"
-                    :closable="false"
-                    @tab-remove="removeTab"
-                    class="bip-tabs"
-                    >
-                    <el-tab-pane
-                        v-for="(item) in editableTabs2"
-                        :key="item.name"
-                        :label="item.title"
-                        :name="item.name"
-                        :closable="item.closable"
-                        :lazy="true"
-                        :style="style"
-                    >    
-                        <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
-                        </lay-out>
-                    </el-tab-pane>
-                    </el-tabs>
-                </el-main>
+        <template v-if="isOtherPage">
+            <router-view />
+        </template>
+        <template v-else>
+            <el-container> 
+                <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
+                <el-container>
+                    <el-header style="background-color:#20a0ff;height:50px"> 
+                        <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
+                    </el-header>
+                    <el-main class="bip-main">
+                        <el-tabs
+                        v-model="editableTabsValue2"
+                        type="border-card"
+                        :closable="false"
+                        @tab-remove="removeTab"
+                        class="bip-tabs"
+                        >
+                        <el-tab-pane
+                            v-for="(item) in editableTabs2"
+                            :key="item.name"
+                            :label="item.title"
+                            :name="item.name"
+                            :closable="item.closable"
+                            :lazy="true"
+                            :style="style"
+                        >    
+                            <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
+                            </lay-out>
+                        </el-tab-pane>
+                        </el-tabs>
+                    </el-main>
+                </el-container>
             </el-container>
-        </el-container>
+        </template>
     </template>
   </div>
 </template>
@@ -101,6 +103,8 @@ export default class App extends Vue {
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
     @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
+    isOtherPage:boolean = false;
+    otherPagehangeBusID:any = null;
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
@@ -146,7 +150,7 @@ export default class App extends Vue {
             console.log(err)
             window.location.reload()
         }) 
-
+        this.otherPagehangeBusID = this.$bus.$on('otherPagehange',this.isOtherPageChange)
         if(this.height){
             this.style = "height:"+(this.height)+"px";
         }
@@ -167,9 +171,6 @@ export default class App extends Vue {
                 }
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
-                }
-                if(BaseVariable.ITEMTYPE == 'air-super'){
-                    this.isLoginPage = 3;
                 }
                 if(this.isLoginPage == -1){
                     this.$router.push({
@@ -232,9 +233,6 @@ export default class App extends Vue {
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
                 }
-                if(BaseVariable.ITEMTYPE == 'air-super'){
-                    this.isLoginPage = 3;
-                }
                 if(this.isLoginPage == -1){
                     this.$router.push({
                         path:'/wlogin',
@@ -269,7 +267,7 @@ export default class App extends Vue {
             this.editableTabsValue2 = 'index';
         }
         if(to.fullPath ==='layout?undefined'){
-        return
+            return
         }
         if (to.name === 'layout') {
             if (this.menusList.length > 0) { 
@@ -315,6 +313,10 @@ export default class App extends Vue {
                 this.editableTabsValue2 = 'myMsg';
             }
         }else{
+            if(to.name == 'airSuperBI'){
+                this.isOtherPage = true;
+                return;
+            }
             if(to.fullPath != '/'){
                 if (this.menusList.length > 0) { 
                     let me:any = baseTool.findMenu(to.query.pmenuid+''); 
@@ -352,6 +354,8 @@ export default class App extends Vue {
         this.style= "height:"+this.height+"px";
         console.log(this.style)
     }
-
+    isOtherPageChange(val:any) {
+        this.isOtherPage = val;
+    }
 }
 </script>

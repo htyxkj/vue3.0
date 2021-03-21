@@ -147,6 +147,15 @@ export default new Router({
         component: () => import(/* webpackChunkName: "about" */ './custom/air-super/GPSRepair.vue')
       },
       {
+        //飞防 机组GPS导入
+        path: '/airSuperBI',
+        name: 'airSuperBI',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/airSuperBI.vue')
+      },
+      {
         //阿米巴 数据建模
         path: '/DataModeling',
         name: 'DataModeling',

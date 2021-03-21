@@ -3,9 +3,7 @@
     <div class="header">
       <h1>飞防数据可视化分析</h1>
       <div class="showTime">{{ showtime }}</div>
-      <div class="loginBtn" v-if="!isFormalLogin"><el-button type="text" class="btn" @click="loginPage(1)">登陆</el-button></div>
       <template v-if="isFormalLogin">
-        <div class="loginBtn"><el-button type="text" class="btn" @click="loginPage(0)">退出</el-button></div>
         <div class="homeBtn"><el-button type="text" class="btn" @click="gaotoPage('')">业务系统</el-button></div>
       </template>
     </div>
@@ -57,6 +55,25 @@
             </ul>
           </div>
         </div>
+        <!-- 数字模块 -->
+        <div class="no">
+          <div class="no-hd">
+            <ul>
+              <li>{{ daySum.time }}</li>
+              <li>{{ daySum.area }}</li>
+              <li>{{ daySum.dosage }}</li>
+              <li>{{ daySum.avgDosage }}</li>
+            </ul>
+          </div>
+          <div class="no-bd">
+            <ul>
+              <li>本日总喷洒时长</li>
+              <li>本日总喷洒面积</li>
+              <li>本日总用药量</li>
+              <li>本日平均用药量</li>
+            </ul>
+          </div>
+        </div>
         <!-- 地图模块 -->
         <div class="map">
           <div class="chart"></div>
@@ -92,40 +109,10 @@
           </div>
           <div class="panel-footer"></div>
         </div>
-        <!-- <div class="panel panel-message">
-          <h2>本日汇总信息</h2>
-          <div class="chart ">
-            <div>
-              <div class="no-cont">
-                <ul>
-                  <li>总喷洒时长</li>
-                  <li>有效喷洒时长</li>
-                  <li>总喷洒面积</li>
-                </ul>
-              </div>
-              <div class="no-value">
-                <ul>
-                  <li>{{ skfcy }}</li>
-                  <li>{{ fkfcy }}</li>
-                  <li>{{ fkfcy }}</li>
-                </ul>
-              </div>
-              <div class="no-cont">
-                <ul>
-                  <li>总用药量</li>
-                  <li>平均用药量</li>
-                </ul>
-              </div>
-              <div class="no-value">
-                <ul>
-                  <li>{{ skfcy }}</li>
-                  <li>{{ fkfcy }}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+        <div class="panel rtmap">    
+          <bi-real-time-track :sbKeys="sbKeys"></bi-real-time-track>
           <div class="panel-footer"></div>
-        </div> -->
+        </div>
       </div>
     </div>
     <el-dialog title="登陆" :visible.sync="showLoginDia" width="35%">
@@ -159,8 +146,9 @@ import { GlobalVariable } from "@/utils/ICL";
 import { BaseVariable } from "@/utils/BaseICL";
 import qs from "qs";
 import moment from 'moment';
+import BiRealTimeTrack from "./components/BIRealTimeTrack.vue";
 @Component({
-  components: {},
+  components: {BiRealTimeTrack},
 })
 export default class followTimesLine extends Vue {
   @Mutation("isLogin", { namespace: 'login' }) setIsLogin: any;
@@ -168,7 +156,7 @@ export default class followTimesLine extends Vue {
   @Mutation("snkey", { namespace: "login" }) setSnkey: any;
   @Mutation("user", { namespace: "login" }) setUserInfo: any;
   @Mutation("menulist", { namespace: "login" }) setMenusInfo: any;
-  isFormalLogin:boolean = false;
+  isFormalLogin:boolean = true;
   page: any = { pageSize: 2000, currPage: 1, total: 0 };
   showtime: String = "";
   t: any = "";
@@ -187,6 +175,9 @@ export default class followTimesLine extends Vue {
   password:any = null;
   userCode:any = null;
   showLoginDia:boolean = false;
+  daySum:any = {area: 0,avgDosage: 0,dosage: 0,time: 0}; //日汇总信息
+  sbKeys:any = null;//选择设备key
+  reamIndex:any=0;
   async mounted() {
     let _year = moment().year();
     this.year = _year;
@@ -199,36 +190,42 @@ export default class followTimesLine extends Vue {
   }
   // 模拟账户登录
   async initPortal() {
-    const loading = this.$loading({
-      lock: true,
-      text: "加载中",
-      spinner: "el-icon-loading",
-      background: "background:'rgba(0, 0, 0, 0.7)'",
-    });
-    let res = null;
-    if(!this.userCode && !this.password){
-      res = await tools.loginWithOutPwd("portal");
-    }else{
-      res = await tools.login(new User(this.userCode, "", this.password));
-      if(res.data.id  == 0){
-        this.isFormalLogin = true;
-        this.showLoginDia = false;
+    if(!this.isFormalLogin){
+      const loading = this.$loading({
+        lock: true,
+        text: "加载中",
+        spinner: "el-icon-loading",
+        background: "background:'rgba(0, 0, 0, 0.7)'",
+      });
+      let res = null;
+      if(!this.userCode && !this.password){
+        res = await tools.loginWithOutPwd("portal");
+      }else{
+        res = await tools.login(new User(this.userCode, "", this.password));
+        if(res.data.id  == 0){
+          this.isFormalLogin = true;
+          this.showLoginDia = false;
+        }
       }
-    }
-    let data = res.data;
-    if (data.id === 0) {
-      let userI = data.data.user;
-      let snkey = data.data.snkey;
-      userI.password = "";
-      this.setSnkey(snkey);
-      this.setUserInfo(userI);
-      let ms = data.data.menulist;
-      this.setMenusInfo(ms);
-      this.timeReqData();
+      let data = res.data;
+      if (data.id === 0) {
+        let userI = data.data.user;
+        let snkey = data.data.snkey;
+        userI.password = "";
+        this.setSnkey(snkey);
+        this.setUserInfo(userI);
+        let ms = data.data.menulist;
+        this.setMenusInfo(ms);
+        this.timeReqData();
+      }else{
+        this.$notify.error(data.message);
+      }
+      loading.close();
     }else{
-      this.$notify.error(data.message);
+      this.timeReqData();
+      this.modifyMapAir();
     }
-    loading.close();
+    
   }
   // 定时器执行获取当前时间
   time() {
@@ -250,10 +247,24 @@ export default class followTimesLine extends Vue {
     clearTimeout(t);
     this.reqOutputMonth();
     this.reqCaptYear();
+    this.getDaySum();
     this.reqBilltYear();
     this.reqEqui();
     this.reqRatio();
     t = setTimeout(this.timeReqData, 1000 * 60 * 30); //设定定时器，循环运行
+  }
+  //间隔15分钟跟换地图展示飞机
+  modifyMapAir(){
+    if(this.tableData.length>0){
+      if(this.reamIndex>= this.tableData.length-1){
+        this.reamIndex = 0;
+      }
+      this.gotoOneRealTime(this.tableData[this.reamIndex])
+      this.reamIndex++;
+      setTimeout(() => {
+        this.modifyMapAir();
+      }, 1000*60*15);
+    }
   }
   // ------------------------数据请求-----------------
   // 获取设备信息
@@ -279,6 +290,9 @@ export default class followTimesLine extends Vue {
             task['address'] = "详情";
             this.tableData.push(task);
           }
+        }
+        if(this.tableData.length>0){
+          this.gotoOneRealTime(this.tableData[0]);
         }
       }
     }else{
@@ -423,7 +437,27 @@ export default class followTimesLine extends Vue {
       this.yefcy = this.getRandom(10000,2);
     }
   }
-
+  //本日汇总信息
+  async getDaySum(){
+    if(this.isFormalLogin){
+      let usercode = JSON.parse(window.sessionStorage.getItem("user") + "").userCode
+      //查询全部设备
+      let data = {
+        apiId: GlobalVariable.APIID_MPARAMS,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: usercode,
+        oprid: 230,
+        condition: '{"userCode":"'+usercode+'"}',
+      };
+      let data1 = qs.stringify(data);
+      let res = await Vue.$axios.post("/realTimeServlet", data1);
+      if(res.data.id == 0){
+        this.daySum = res.data.data.data;
+      }
+    }else{
+        this.daySum = {area: this.getRandom(100000,0),avgDosage: this.getRandom(100000,0),dosage: this.getRandom(100000,0),time:this.getRandom(100000,0)}
+    }
+  }
   async getCell(cellid: string) {
     let res = await tools.getCCellsParams(cellid);
     let rtn: any = res.data;
@@ -915,15 +949,8 @@ export default class followTimesLine extends Vue {
    * 设备点击详情
    */
   gotoOneRealTime(item:any){
-    this.setIsLogin(true);
     if(this.isFormalLogin){
-      let key = item.taskid+"_"+item.sbid+"_"+item.offline+"_"+item.sbtype;
-      let url = "/RealTimeTrack?pmenuid=M0303&key="+key;
-      this.$router.push({
-        path:url
-      })
-    }else{
-      this.loginPage(1);
+      this.sbKeys = item.taskid+"_"+item.sbid+"_"+item.offline+"_"+item.sbtype;
     }
   }
 
@@ -948,11 +975,11 @@ export default class followTimesLine extends Vue {
     }
   }
   gaotoPage(url:any){
-    this.setIsLogin(true);
     this.$router.push({
       path:'/'+url,
       name:url,
     })
+    this.$bus.$emit("otherPagehange",false);
   }
 }
 </script>
@@ -1030,6 +1057,10 @@ li {
   flex: 5;
   margin: 0px 0.125rem 0.1875rem;
 }
+.rtmap{
+  height: 7.25rem !important;
+  padding: 0px !important;
+}
 .mainbox .panel {
   position: relative;
   height: 3.75rem;
@@ -1040,7 +1071,7 @@ li {
 }
 .mainbox .panel-max {
   position: relative;
-  height: 8.23rem;
+  height: 5.23rem;
   border: 1px solid rgba(25, 186, 139, 0.17);
   background: url(../../assets/bip-erp/image/line.png) rgba(255, 255, 255, 0.04);
   padding: 0 0.1875rem 0.5rem;
@@ -1143,8 +1174,8 @@ li {
 .mainbox .no .no-hd ul li {
   position: relative;
   flex: 1;
-  height: 1rem;
-  line-height: 1rem;
+  height: 0.5rem;
+  line-height: 0.5rem;
   text-align: center;
   color: #ffeb7b;
   font-size: 0.875rem;
@@ -1161,17 +1192,26 @@ li {
   height: 50%;
   background: rgba(255, 255, 255, 0.2);
 }
-
+.mainbox .no .no-bd ul li {
+    -webkit-box-flex: 1;
+    flex: 1;
+    text-align: center;
+    height: 0.1rem;
+    line-height: 0.1rem;
+    font-size: 0.225rem;
+    color: rgba(255, 255, 255, 0.7);
+    padding-top: 0.1rem;
+}
 .map {
   position: relative;
-  height: 10.125rem;
+  height: 8.99rem;
 }
 .map .chart {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 5;
-  height: 10.125rem;
+  height: 8.99rem;
   width: 100%;
 }
 .map .map1,

@@ -54,7 +54,8 @@ import qs from "qs";
 import { BIPUtil } from "@/utils/Request";
 import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from "vuex-class";
-import { LoginState } from "@/store/modules/login/types";
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 const namespace: string = "login";
 @Component
 export default class Login extends Vue {
@@ -108,7 +109,6 @@ export default class Login extends Vue {
           this.setSnkey(snkey);
           this.setUserInfo(userI);
           this.setMenusInfo(ms);
-          this.$router.push({ path: "/", name: "home" });
           this.$notify.success({
             title:"",
             type: 'success',
@@ -126,6 +126,9 @@ export default class Login extends Vue {
         } else {
           this.$notify.error(data.message);
         }
+        setTimeout(() => {
+          this.gotoPage();
+        }, 500);
         loading.close();
         this.fullscreenLoading = false;
       })
@@ -166,6 +169,17 @@ export default class Login extends Vue {
   titleWatch(){
     this.loginTitle = BaseVariable.Project_Name;
     this.COPYRIGHT = BaseVariable.COPYRIGHT;
+  }
+
+  gotoPage(){
+    if(BaseVariable.ITEMTYPE == 'air-super'){
+      let menu = baseTool.findMenu("M0330"); 
+      if(menu){
+        this.$router.push({ path: "/airSuperBI", name: "airSuperBI" });
+      }
+    }else{
+      this.$router.push({ path: "/", name: "home" });
+    }
   }
 
 }
