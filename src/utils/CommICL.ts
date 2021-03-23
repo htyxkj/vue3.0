@@ -53,6 +53,7 @@ export const CommICL = Object.assign({
     B_CMD_ROWCOLUMN:'ROWCOLUMN',//行转列
     B_CMD_SHOWMAP:'SHOWMAP',//显示地图页面
     B_CMD_DESKTOPLIST:'DESKTOPLIST',//将报表界面保存为桌面组件
+    B_CMD_CONDITIONSHOW:'CONDITIONSHOW',//显示隐藏
     //#region 输入框常量
     I_EDITOR_COMM:0,//普通输入框
     I_EDITOR_LIST:1,//下拉框

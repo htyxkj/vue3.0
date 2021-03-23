@@ -90,6 +90,11 @@ export default class BipMenuBar{
             this.menuList.push(btn)
         }
         if(this.search){
+            btn = new BipMenuBtn(CommICL.B_CMD_CONDITIONSHOW,"显示/隐藏")
+            btn.setIconFontIcon('show');
+            this.menuList.push(btn)
+        }
+        if(this.search){
             let btn = new BipMenuBtn(CommICL.B_CMD_DESKTOPLIST,"存为桌面组件")
             btn.setIconFontIcon('zhexian1');
             // this.menuList.push(btn)

@@ -9,7 +9,7 @@
                             <div class="bip-main-container" v-if="lay.binit">
                                 <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
                                     <div ref="se" @keyup.enter="find">
-                                        <bip-search-cont :env="env" ></bip-search-cont>
+                                        <bip-search-cont :env="env" v-show="CondiyionShow"></bip-search-cont>
                                     </div>
                                     <el-form @submit.native.prevent label-position="right" label-width="120px">
                                         <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
@@ -108,6 +108,7 @@ export default class CUnivSelect extends Vue {
     @Provide() biType?:string;
     @Provide() config:any={};
 
+    CondiyionShow:boolean = true;
     isMap:boolean = false;      //是否是地图页面
     isShowMap:boolean = false;  //是否是显示地图
 
@@ -320,6 +321,8 @@ export default class CUnivSelect extends Vue {
                     }
                 }
             }
+        }else if(cmd === 'CONDITIONSHOW'){
+            this.CondiyionShow = !this.CondiyionShow
         }else if(cmd === 'SHOWMAP'){
             await this.find();
             this.isShowMap = !this.isShowMap;

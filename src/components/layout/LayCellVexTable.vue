@@ -135,6 +135,7 @@
                 show-footer
                 row-id="id"
                 :cell-style="cellStyle"
+                header-cell-class-name="tableHead"
                 :row-class-name="getRowStyleNew"
                 @checkbox-change="checkChange"
                 @checkbox-all="checkChange"
@@ -1209,6 +1210,12 @@ export default class LayCelVexTable extends Vue {
         }
     }
 </script>
+<style>
+.tableHead{
+  font-weight: 100;
+  color: #000;
+}
+</style>
 <style lang="scss" scoped>
 .sum{
     min-width: 130px;
