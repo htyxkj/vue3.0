@@ -356,6 +356,6 @@ export default class BipCommEditor extends Vue{
 </script>
 <style>
  .BJstyle{
-   padding: 5px 5px 0 0;
+   padding: 0 5px 0 0;
  }
 </style>

@@ -6,7 +6,7 @@
             </template>
         </el-row>
 
-        <vxe-toolbar v-if="isNoHomeTable" :custom-config="{storage:true}" :custom="{immediate:true}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
@@ -34,6 +34,7 @@
                 @edit-closed="editClose"
                 @checkbox-change="selectChangeEvent"
                 @checkbox-all="selectChangeEvent"
+                @custom="toolbarCustomEvent"
                 >
                 <vxe-table-column v-if="cds.ds_par" type="checkbox" width="40"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
@@ -140,6 +141,7 @@
                 @checkbox-change="checkChange"
                 @checkbox-all="checkChange"
                 :checkbox-config="{checkField: 'checked',reserve:'true'}"
+                @custom="toolbarCustomEvent"
                 > 
                 <!-- :pager-config="tablePage"
                 @page-change="handlePageChange" 分页信息 -->
@@ -969,6 +971,28 @@ export default class LayCelVexTable extends Vue {
         }
     } 
     /**
+     * 表格工具栏点击
+     */
+    toolbarCustomEvent(params:any){
+        let cc:any = this.$refs[this.cds.ccells.obj_id];
+        if(cc){
+            switch (params.type) {
+                case 'confirm': {
+                    cc.syncData();
+                    break
+                }
+                case 'reset': {
+                    cc.syncData();
+                    break
+                }
+                case 'close': {
+                    cc.syncData();
+                    break
+                }
+            }
+        }
+    }
+    /**
      * 初始化行调用的辅助
      */
     openInitEdit(){
@@ -1124,6 +1148,9 @@ export default class LayCelVexTable extends Vue {
         }
     }
 
+    /**
+     * 设置选中行
+     */
     setSelectRow() {
         if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
             return;
@@ -1190,7 +1217,9 @@ export default class LayCelVexTable extends Vue {
       });
     }
 
-
+    /**
+    检查非空
+     */
     checkNotNull(cds:CDataSet):boolean{
             let bok = true;
             cds.ccells.cels.forEach(item => {

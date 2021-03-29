@@ -123,12 +123,12 @@ export default class Login extends Vue {
           }else {
             this.clear()
           }
+          setTimeout(() => {
+            this.gotoPage();
+          }, 500);
         } else {
           this.$notify.error(data.message);
         }
-        setTimeout(() => {
-          this.gotoPage();
-        }, 500);
         loading.close();
         this.fullscreenLoading = false;
       })

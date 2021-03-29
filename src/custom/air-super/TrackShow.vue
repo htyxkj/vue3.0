@@ -157,7 +157,9 @@ export default class TrackShow extends Vue {
                 this.$notify.warning(bok);
                 return;
             }
-            console.log(this.taskTjCell.currRecord.data)
+            let tkid = this.taskTjCell.currRecord.data.sid;//任务编码
+            let bgtime = this.taskTjCell.currRecord.data.bgtime;//开始时间
+            let edtime = this.taskTjCell.currRecord.data.edtime;//结束时间
             let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
             let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
             let route = this.taskTjCell.currRecord.data.route;//路线
@@ -167,6 +169,11 @@ export default class TrackShow extends Vue {
             let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
+            let tlid = this.taskTjCell.currRecord.data.tlid;//设备信息
+            if(!tlid && !tkid){
+                this.$notify.warning("任务编码和设备标识不能同时为空！");
+                return;
+            }
             this.initTakeoff(takeoff);
             if(showarea == '1'){
                 TMapUt.getOpera(oaid,this.tMap);//作业区
@@ -190,10 +197,13 @@ export default class TrackShow extends Vue {
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
             qe.page.pageSize = 50000;
-            let tkid = this.taskTjCell.currRecord.data.sid;
-            let bgtime = this.taskTjCell.currRecord.data.bgtime;
-            let edtime = this.taskTjCell.currRecord.data.edtime;
-            let cont =" tkid ='" +tkid +"' and " +"speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            let cont =" speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            if(tkid){
+                cont+= " and tkid ='" +tkid +"' ";
+            }
+            if(tlid){
+                cont+= " and sbid ='" +tlid +"' ";
+            }
             qe.cont = cont;
             this.loading = !this.loading;
             this.showTaskTjCell = false;

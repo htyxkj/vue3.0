@@ -76,6 +76,7 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
 import { Menu } from '../../../classes/Menu';
+let _ = require('lodash');
 // import { on } from 'cluster';
 // import { types } from 'util';
 // import { connect } from 'echarts';
@@ -613,10 +614,19 @@ export default class CUnivSelect extends Vue {
     @Watch('env.dsmcurr')
     envCurrChange(){
         this.dsm = this.env.dsmcurr;
-        if(this.dsm.cdata.data.length==0){
-            this.qe.page.currPage =1;
-            this.Recheck();
-        }
+        let data = this.env.ds_cont.currRecord.data;
+        if(data){
+            let b = false;
+            _.forEach(data,(v:any,k:any) => {
+                if(v && v.length>0){
+                    b =true;
+                }
+            });
+            if(this.dsm.cdata.data.length==0 && b){
+                this.qe.page.currPage =1;
+                this.find();
+            }
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 <template>
-  <div class="hello" @keyup="press1($event)">
+  <div class="hello" ref="calculator" @keyup="press1($event)">
     <div class="calculator">
       <!-- <button @click="changeModeEvent" class="toggle-button">
         <p v-if="changeMode">Show Advanced Mode &nbsp; &nbsp; &#9864;</p>
@@ -37,6 +37,8 @@
        
 
         <button class="button " @click="press">=</button>
+
+        <button class="button buttonTools" @click="ok">确定</button>
       </div>
       <div class="mode" v-else>
         <button class="button" @click="press">sin</button>
@@ -83,11 +85,17 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 @Component({})
 export default class Calculator extends Vue {
-  @Provide() current: any = '';
-  @Provide() changeMode: boolean = true;
+  @Prop() value!: Number;
+  current: any = '';
+  changeMode: boolean = true;
   press1(event: any) {
     // if(event.keyCode >= 48 && event.keyCode<=57)
     // this.calculation(event.key);
+  }
+  mounted(){
+    if(this.value){
+      this.current = this.value;
+    }
   }
 
   press(event: any) {
@@ -122,14 +130,16 @@ export default class Calculator extends Vue {
     ) {
       me.current += key;
     } else if (key === "=") {
-      if (me.current.indexOf("^") > -1) {
+      me.current+='';
+      if (me.current && me.current.indexOf("^") > -1) {
         var base = me.current.slice(0, me.current.indexOf("^"));
         var exponent = me.current.slice(me.current.indexOf("^") + 1);
         me.current = eval("Math.pow(" + base + "," + exponent + ")");
       } else {
-        me.current = eval(me.current);
+        if(me.current){
+          me.current = eval(me.current);
+        }
       }
-      this.$emit("valueChange",me.current)
     } else if (key === "C") {
       me.current = "";
     } else if (key === "*") {
@@ -189,6 +199,24 @@ export default class Calculator extends Vue {
       me.current = me.current * (180 / Math.PI);
     }
   }
+  ok(){
+    let curr = this.current;
+    curr = curr+'';
+    if (curr && curr.indexOf("^") > -1) {
+      var base = curr.slice(0, curr.indexOf("^"));
+      var exponent = curr.slice(curr.indexOf("^") + 1);
+      curr = eval("Math.pow(" + base + "," + exponent + ")");
+    } else {
+      if(curr){
+        curr = eval(curr);
+      }
+    }
+    this.current = curr;
+    this.$emit("valueChange",curr)
+  }
+  close(){
+    this.$emit("valueChange",this.value)
+  }
   changeModeEvent() {
     var me = this;
     me.changeMode = !me.changeMode;
@@ -206,31 +234,30 @@ export default class Calculator extends Vue {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  
 }
 
 .calculator {
   width: 250px;
   // padding: 20px;
   border-radius: 5px;
-  margin: 20px auto;
+  margin: 10px auto;
   font-size: 16px;
   background-color: #ECECEC;
   
 }
 
 .input {
-  width: 246px;
-  height: 50px;
+  width: 220px;
+  height: 38px;
   border-radius: 0px;
   margin: 0 0px 5px 0px;
-  font-size: 30px;
+  font-size: 26px;
 }
 
 .button {
   margin: 3px;
-  width: 60px;
-  height: 40px;
+  width: 50px;
+  height: 35px;
   border-radius: 4px;
   color: black;
   font-weight: 600;
@@ -243,11 +270,14 @@ export default class Calculator extends Vue {
 .button:hover {
     background-color: #84BEEC;
 }
+.buttonTools{
+  width: 228px;
+}
 .button1 {
     background-color: #ffffff;
     margin: 3px;
-    width: 60px;
-    height: 40px;
+    width: 50px;
+    height: 35px;
     border-radius: 4px;
     color: black;
     font-weight: 600;

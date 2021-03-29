@@ -275,6 +275,7 @@ export default class Home extends Vue {
       this.layout = []
       this.layout = newLayout;
       this.showCoList = false;
+      this.saveCoList();
     }
     /**
      * 快捷菜单发生改变

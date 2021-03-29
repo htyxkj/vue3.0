@@ -385,7 +385,8 @@ export default class OperatingArea extends Vue {
     @Provide() sumarea:number = 0;
     @Provide() mileage:number = 0;//喷洒里程
     @Provide() haveFlow:any=[];//有流量的节点
-    nowpressure:any =0;//当前压力
+    nowpressure:any =0;//当前压力1
+    nowpressure2:any =0;//当前压力2
     windSpeed:any = 0;//风速
     humidity:any = 0;//湿度
     nowtemperature:any = 0;//温度
@@ -626,6 +627,8 @@ export default class OperatingArea extends Vue {
                 this.humidity = data.humidity;//湿度
             if(data.pressure)
                 this.nowpressure = (data.pressure).toFixed(1); //压力
+            if(data.pressure2)
+                this.nowpressure2 = (data.pressure2).toFixed(1); //压力
             if(data.temperature)
                 this.nowtemperature = (data.temperature).toFixed(1);//温度
             this.nowflow = ( data.flow).toFixed(2);;
