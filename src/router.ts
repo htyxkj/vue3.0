@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import Index from './views/Index.vue'
 
 Vue.use(Router)
 
@@ -12,13 +13,33 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'Home',
       component: Home,//默认首页
       // component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
       meta: {
         keepAlive: true // 需要被缓存
       }
-    },{
+    },
+    {
+      path: '/report',
+      name: 'Report',
+      component: Index,//默认首页
+      // component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
+      meta: {
+        keepAlive: true // 需要被缓存
+      },
+      children:[
+        {
+          path: '/layout',
+          name: 'layout',
+          // route level code-splitting
+          // this generates a separate chunk (about.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import(/* webpackChunkName: "about" */ './views/app/CommonLayOut.vue')
+        },
+      ]
+    },
+    {
       path: '/portal',
       name: 'portal',
       component: () => import(/* webpackChunkName: "about" */ './views/login/Portal.vue'),//未登录状态门户页
@@ -39,14 +60,7 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/registered/Registered.vue')
     },
-    {
-      path: '/layout',
-      name: 'layout',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/app/CommonLayOut.vue')
-    },
+    
     {
         path: '/myTask',
         name: 'myTask',

@@ -103,7 +103,7 @@ export default class App extends Vue {
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     @Provide() style:string="height:"+(this.height?this.height:'400')+"px";
     @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
-    isOtherPage:boolean = false;
+    isOtherPage:boolean = true;
     otherPagehangeBusID:any = null;
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
@@ -149,16 +149,22 @@ export default class App extends Vue {
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
-        }) 
+        })
+        this.$bus.$off('otherPagehange',this.otherPagehangeBusID);
         this.otherPagehangeBusID = this.$bus.$on('otherPagehange',this.isOtherPageChange)
         if(this.height){
             this.style = "height:"+(this.height)+"px";
         }
         if(this.isLogin){
-            this.$router.push({ path: "/" }); 
-            if(this.editableTabs2.length==0){
-                this.addIndex();
-            }  
+            if(this.isOtherPage){
+                 this.$router.push({ path: "/report",name:'Report' }); 
+            }else{
+                this.$router.push({ path: "/" }); 
+                if(this.editableTabs2.length==0){
+                    this.addIndex();
+                } 
+            }
+             
         }else{
             this.isLoginPage = -1;
             if (this.$route.query) {
@@ -313,14 +319,21 @@ export default class App extends Vue {
                 this.editableTabsValue2 = 'myMsg';
             }
         }else{
-            if(to.name == 'airSuperBI' || to.name =="ItemAnalysis"){
+            if(to.name == 'airSuperBI' || to.name =="Report"){
                 this.isOtherPage = true;
                 return;
             }
             if(to.fullPath != '/'){
+                // if(this.isLogin)
+                // {
+                //     if(this.editableTabs2.length==0){
+                //         this.addIndex();
+                //         return ;
+                //     }
+                // }
                 if (this.menusList.length > 0) { 
                     let me:any = baseTool.findMenu(to.query.pmenuid+''); 
-                    // console.log(me)
+                    console.log(me)
                     let menu:Menu = me;
                     if(!me)
                         return;
@@ -356,6 +369,19 @@ export default class App extends Vue {
     }
     isOtherPageChange(val:any) {
         this.isOtherPage = val;
+        console.log('值改变。。。')
+        if(!this.isOtherPage){
+            setTimeout(()=>{
+                if(this.editableTabs2.length==0){
+                    this.addIndex();
+                }
+                this.$router.push({
+                path:'/index',
+                name:'Home',
+            })
+        },200);
+        }
+
     }
 }
 </script>

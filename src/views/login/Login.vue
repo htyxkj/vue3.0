@@ -179,7 +179,7 @@ export default class Login extends Vue {
       }
     }else{
       // this.$router.push({ path: "/", name: "home" });
-      this.$router.push({ path: "/ItemAnalysis", name: "ItemAnalysis" });
+      this.$router.push({ path: "/report", name: "Report" });
     }
   }
 
