@@ -313,7 +313,7 @@ export default class App extends Vue {
                 this.editableTabsValue2 = 'myMsg';
             }
         }else{
-            if(to.name == 'airSuperBI'){
+            if(to.name == 'airSuperBI' || to.name =="ItemAnalysis"){
                 this.isOtherPage = true;
                 return;
             }

@@ -12,6 +12,7 @@
     "core-js": "^2.6.11",
     "dom-to-image": "^2.6.0",
     "echarts": "^4.2.1",
+    "echarts-liquidfill": "^2.0.6",
     "element-ui": "^2.13.2",
     "gantt-elastic": "^1.0.12",
     "moment": "^2.24.0",

@@ -143,7 +143,7 @@ export default class BipWork extends Vue{
         }
 
         if (this.cea.statefr == "0" || this.cea.statefr == "1" || this.cea.statefr == "5") {
-            if (this.smakefld !== this.user.userCode && this.smakefld != undefined) {
+            if (this.smakefld && this.smakefld !== this.user.userCode && this.smakefld != undefined) {
                 this.$notify.error("只有制单人可以提交!");
                 this.centerDialogVisible = false
                 return;

@@ -178,7 +178,8 @@ export default class Login extends Vue {
         this.$router.push({ path: "/airSuperBI", name: "airSuperBI" });
       }
     }else{
-      this.$router.push({ path: "/", name: "home" });
+      // this.$router.push({ path: "/", name: "home" });
+      this.$router.push({ path: "/ItemAnalysis", name: "ItemAnalysis" });
     }
   }
 

@@ -55,7 +55,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Carousel,
-  CarouselItem
+  CarouselItem,
+  Avatar
 
 } from "element-ui";
 
@@ -112,6 +113,7 @@ Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
+Vue.use(Avatar)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

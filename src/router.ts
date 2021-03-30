@@ -252,6 +252,12 @@ export default new Router({
           component :()=> import('./custom/item-ctrl/ItemKanban.vue')
       },
       {
+          //融通数据分析 看板
+          path: '/ItemAnalysis',
+          name: 'ItemAnalysis',
+          component :()=> import('./custom/item-ctrl/ItemAnalysis.vue')
+      },
+      {
           //巡检机器人实时视频页面
           path: '/AgvRTVideo',
           name: 'AgvRTVideo',
