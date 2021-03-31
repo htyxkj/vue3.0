@@ -1909,14 +1909,16 @@ a {
   // width: 33%;
   width: 200px;
   height: 150px;
+  margin-left:8px;
   margin-bottom: 10px;
 }
 
-.summaryPie2  .chart{
-    width: 180px;
-    height: 150px;
+.summaryPie2 .chart{
+   float: left;
+    width: 200px;
+    height: 160px;
     background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center bottom;
-    background-size: 68% 80%;
+    background-size: 64% 80%;
     margin: 0 auto 0;
     background-position-y: 17px;
 }
