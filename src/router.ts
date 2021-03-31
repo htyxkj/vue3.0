@@ -26,18 +26,16 @@ export default new Router({
       component: Index,//默认首页
       // component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
       meta: {
-        keepAlive: true // 需要被缓存
-      },
-      children:[
-        {
-          path: '/layout',
-          name: 'layout',
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () => import(/* webpackChunkName: "about" */ './views/app/CommonLayOut.vue')
-        },
-      ]
+        keepAlive: false // 需要被缓存
+      }
+    },
+    {
+      path: '/layout',
+      name: 'layout',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "about" */ './views/app/CommonLayOut.vue')
     },
     {
       path: '/portal',

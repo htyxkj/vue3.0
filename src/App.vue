@@ -276,6 +276,7 @@ export default class App extends Vue {
             return
         }
         if (to.name === 'layout') {
+            this.isOtherPage = false;
             if (this.menusList.length > 0) { 
                 let me:any = baseTool.findMenu(to.query.pmenuid+''); 
                 // console.log(me)

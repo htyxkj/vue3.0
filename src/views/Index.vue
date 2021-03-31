@@ -33,7 +33,6 @@ export default class Index extends Vue {
     mounted(){
         this.styles="width:"+document.documentElement.clientWidth+'px;';
         this.styles+='height:'+document.documentElement.clientHeight+'px;';
-        console.log(this.menusList);
         if(this.menusList){
             let _s = this.menusList.length-1;
             let lastNode = this.menusList[_s];
@@ -45,21 +44,19 @@ export default class Index extends Vue {
                     //     name:'ItemAnalysis',
                     // })
                 }
-
             }
         }
     }
-  gotoIndex(url:any){
-    this.$bus.$emit("otherPagehange",false);
-  }
+    gotoIndex(url:any){
+        this.$bus.$emit("otherPagehange",false);
+    }
 
-  gotoPage(e:any){
-      console.log(e);
-       this.$router.push({
-                        path:'/ItemAnalysis',
-                        name:'ItemAnalysis',
-                    })
-  }
+    gotoPage(e:any){
+        this.$router.push({
+            path:'/'+e.command,
+            name:e.command,
+        })
+    }
 }
 </script>
 

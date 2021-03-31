@@ -127,7 +127,8 @@ export default class CardInfo extends Vue{
 		/* vertical-align: middle; */
 		text-align: center;
 		color: #fff;
-		background: #22284A;
+		/* background: #22284A; */
+		background: rgb(230 236 255 / 10%);
 		border-radius: 6px;
 		/* padding: 2px 2px; */
 	}
