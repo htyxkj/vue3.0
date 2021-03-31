@@ -261,10 +261,10 @@
         ></a>
         <el-row style="color: #f7f8fe; text-align: center"
           ><h3>
-           各个公司{{ popCenterType == 1 ? "营业收入" : "利润" }}完成情况
+           各区域公司{{ popCenterType == 1 ? "营业收入" : "利润" }}完成情况
           </h3>
           <div>
-            <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿</span>
+            <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿&nbsp;&nbsp;</span>
              <span>已完成:{{popItemCenter.wcfcy}}亿</span>
           </div>
           </el-row >
@@ -491,13 +491,6 @@ export default class ItemAnalysis extends Vue {
         let summaryPie: any = echarts.init(
           _r[0] as HTMLCanvasElement
         );
-        let pieData: any = {
-          pieTop: "40%",
-          pieTop2: "26%",
-          titleSize: 12,
-          pieRadius: [40, 46],
-          itemSize: 14,
-        };
         var pieOption1 = {
           title: {
             // x: "center",
@@ -818,7 +811,7 @@ export default class ItemAnalysis extends Vue {
               series: [{
                 type: 'liquidFill',
                 name: item.name, // 系列名称，用于tooltip的显示，legend 的图例筛选
-                radius: '60%', // 水球图的半径
+                radius: '40%', // 水球图的半径
                 center: ['50%', '51%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
                 // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形  
                 // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
@@ -1457,7 +1450,7 @@ export default class ItemAnalysis extends Vue {
 
     this.mapCon={
       color: [
-        "#382518",
+        "#ffffff",
         "#065aab",
         "#066eab",
         "#0682ab",
@@ -1547,7 +1540,7 @@ export default class ItemAnalysis extends Vue {
           coordinateSystem: "geo", //该系列使用的坐标系
           symbolSize: 10, //标记的大小
           rippleEffect:{              //涟漪特效相关配置。
-            period:2,               //动画的时间。
+            period:1.2,               //动画的时间。
             scale:3.5,              //动画中波纹的最大缩放比例。
             brushType:'fill', 
           },
@@ -1907,7 +1900,7 @@ a {
   height: 100%;
   float: left;
   // width: 33%;
-  width: 200px;
+  width: 150px;
   height: 150px;
   margin-left:8px;
   margin-bottom: 10px;
@@ -1915,11 +1908,11 @@ a {
 
 .summaryPie2 .chart{
    float: left;
-    width: 200px;
-    height: 160px;
+    width: 150px;
+    height: 150px;
     background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center bottom;
-    background-size: 64% 80%;
+    background-size: 60% 60%;
     margin: 0 auto 0;
-    background-position-y: 17px;
+    background-position-y: 30px;
 }
 </style>
