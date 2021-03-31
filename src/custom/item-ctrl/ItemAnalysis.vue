@@ -246,6 +246,39 @@
         </el-row>
       </div>
     </template>
+
+    <!---中间营收和利润完成比-->
+    <template v-if="centerPopShow">
+      <div class="filterbg"></div>
+      <div
+        class="popup"
+        :style="centerPopShow ? 'width: 82%;height: 76%;' : ''"
+      >
+        <a
+          href="javascript:;"
+          class="popupClose"
+          @click="centerPopShow = false"
+        ></a>
+        <el-row style="color: #f7f8fe; text-align: center"
+          ><h3>
+           各个公司{{ popCenterType == 1 ? "营业收入" : "利润" }}完成情况
+          </h3>
+          <div>
+            <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿</span>
+             <span>已完成:{{popItemCenter.wcfcy}}亿</span>
+          </div>
+          </el-row >
+        <el-row>
+            <div class="popView" v-for="(item,index) in popItemCenter.data" :key="index">
+              <div class="summaryPie2">
+                 <div class="chart" :ref="'popCenterTC'+(index+1)"></div>
+              </div>
+             
+              <div class="btm"></div>
+            </div>
+        </el-row>
+      </div>
+    </template>
   </div>
 </template>
 <script lang="ts">
@@ -300,6 +333,9 @@ export default class ItemAnalysis extends Vue {
   centerTC2Con: any = null;
   centerTC1: any = null;
   centerTC2: any = null;
+  centerPopShow:boolean = false
+  popItemCenter:any = null;
+  popCenterType:any = 1;
   /************ 地图 *************/
   map: any = null;
   mapCon: any = null;
@@ -696,12 +732,14 @@ export default class ItemAnalysis extends Vue {
       let values = cc.data.data.data.values[0];
       // 基于准备好的dom，初始化echarts实例
       this.centerTC1 = echarts.init(this.$refs.centerTC1 as HTMLCanvasElement);
+      
       // 绘制图表
       this.centerTC1Con.series[0].data.push(parseFloat(values.rmbbl)/100)
       this.centerTC1Con.series[0].name="营收目标"
       this.centerTC1Con.title.text="营收目标"
       this.centerTC1.setOption(this.centerTC1Con);
-
+      this.centerTC1.getZr().on('click',this.centerTC1Click);
+      
       // 基于准备好的dom，初始化echarts实例
       this.centerTC2 = echarts.init(this.$refs.centerTC2 as HTMLCanvasElement);
       // 绘制图表
@@ -709,8 +747,162 @@ export default class ItemAnalysis extends Vue {
       this.centerTC2Con.series[0].name="利润目标"
       this.centerTC2Con.title.text="利润目标"
       this.centerTC2.setOption(this.centerTC2Con);
+      this.centerTC2.getZr().on('click',this.centerTC2Click);
     }
   }
+
+  async centerTC1Click(param:any){
+    console.log(param)
+    this.popCenterType = 1;
+    this.centerPopShow = true;
+    this.popItemCenter = {total:0,wcfcy:0,data:[]};
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 500;
+    let ins:any = await tools.getBipInsAidInfo("BOARD_M2", 210, qe);
+    if(ins.data.id >=0){
+         let vrs = ins.data.data.data.values;
+        _.forEach(vrs,(item:any) => {
+          this.popItemCenter.total+=parseFloat(item.yjrmb);
+          this.popItemCenter.wcfcy+=parseFloat(item.sjrmb);
+          let itm:any = {};
+          itm.name = item.name;
+          itm.wcbl = parseFloat(item.rmbbl)/100;
+          itm.yjfcy = item.yjrmb;
+          itm.sjfcy = item.sjrmb;
+           itm.color = this.getColor(item.rmbbl);
+          this.popItemCenter.data.push(itm);
+        });
+        this.popItemCenter.wcfcy = this.popItemCenter.wcfcy.toFixed(2);
+        console.log(this.popItemCenter)
+        //创建board
+        this.$nextTick(()=>{
+          _.forEach(this.popItemCenter.data, (item: any, index: any) => {
+            let k = "popCenterTC" + (index + 1);
+            let _r:any = this.$refs[k];
+            let popCenterTC: any = echarts.init(
+              _r[0] as HTMLCanvasElement
+            );
+          let popCenterOption = this.getCenterPopOption(item);
+            popCenterTC.setOption(popCenterOption);
+          });
+        });
+
+    }
+
+  }
+
+  getCenterPopOption(item:any){
+    let popCenterOption ={
+              // 图表主标题
+              title: {
+                text: item.name, // 主标题文本，支持使用 \n 换行
+                bottom: -2, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
+                left: 'left', // 值: 'left', 'center', 'right' 同上
+                textStyle: { // 文本样式
+                  fontSize: 20,
+                  fontWeight: 300,
+                  color: '#fff'
+                },
+                subtext:'计划'+item.yjfcy+'，完成'+item.sjfcy+'亿',
+              },
+              // 提示框组件
+              tooltip: {
+                trigger: 'item', // 触发类型, 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
+                formatter: function (value:any) {
+                  let n1:any = value.data * 100;
+                  n1 = n1.toFixed(2);
+                  return value.seriesName + ': ' + n1 + '%'
+                }
+              },
+              series: [{
+                type: 'liquidFill',
+                name: item.name, // 系列名称，用于tooltip的显示，legend 的图例筛选
+                radius: '60%', // 水球图的半径
+                center: ['50%', '51%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
+                // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形  
+                // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
+                shape: 'circle',
+                phase: 0, // 波的相位弧度 不设置  默认自动
+                direction: 'right', // 波浪移动的速度  两个参数  left 从右往左 right 从左往右
+                // 图形上的文本标签
+                label: {
+                  fontSize: 14,
+                  fontWeight: 300,
+                  color: '#fff'
+                },
+                outline: {
+                  show: true,
+                  borderDistance: 2, // 边框线与图表的距离 数字
+                  itemStyle: {
+                    opacity: 1, // 边框的透明度   默认为 1
+                    borderWidth: 1, // 边框的宽度
+                    shadowBlur: 1, // 边框的阴影范围 一旦设置了内外都有阴影
+                    shadowColor: '#fff', // 边框的阴影颜色,
+                    borderColor: '#41dcd8' // 边框颜色
+                  }
+                },
+                // 图形样式
+                itemStyle: {
+                  color: item.color, // 水球显示的背景颜色
+                  opacity: 0.5, // 波浪的透明度
+                  shadowBlur: 10 // 波浪的阴影范围
+                },
+                backgroundStyle: {
+                  color: '#407bf3', // 水球未到的背景颜色
+                  opacity: 0.5
+                },
+                // 图形的高亮样式
+                emphasis: {
+                  itemStyle: {
+                    opacity: 0.8 // 鼠标经过波浪颜色的透明度
+                  }
+                },
+                data: [item.wcbl] // 系列中的数据内容数组
+              }]
+            }
+
+            return popCenterOption
+  }
+
+  async centerTC2Click(param:any){
+    this.popCenterType = 2;
+    this.centerPopShow = true;
+    this.popItemCenter = {total:0,wcfcy:0,data:[]};
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 500;
+    let ins:any = await tools.getBipInsAidInfo("BOARD_M2", 210, qe);
+    if(ins.data.id >=0){
+         let vrs = ins.data.data.data.values;
+        _.forEach(vrs,(item:any) => {
+          this.popItemCenter.total+=parseFloat(item.yjfcy);
+          this.popItemCenter.wcfcy+=parseFloat(item.sjfcy);
+          let itm:any = {};
+          itm.name = item.name;
+          itm.wcbl = parseFloat(item.fcybl)/100;
+          itm.yjfcy = item.yjfcy;
+          itm.sjfcy = item.sjfcy;
+          itm.color = this.getColor(item.fcybl);
+          this.popItemCenter.data.push(itm);
+        });
+        this.popItemCenter.wcfcy = this.popItemCenter.wcfcy.toFixed(2);
+        console.log(this.popItemCenter)
+        //创建board
+        this.$nextTick(()=>{
+          _.forEach(this.popItemCenter.data, (item: any, index: any) => {
+            let k = "popCenterTC" + (index + 1);
+            let _r:any = this.$refs[k];
+            let popCenterTC: any = echarts.init(
+              _r[0] as HTMLCanvasElement
+            );
+          let popCenterOption = this.getCenterPopOption(item);
+            popCenterTC.setOption(popCenterOption);
+          });
+        });
+    }
+  }
+
   /**
    * 地图
    */
@@ -753,7 +945,7 @@ export default class ItemAnalysis extends Vue {
             let text = vl[ins.cells.cels[showColsIndex[j]].id];
             let label = labers[j];
             tipHtml += '<p style="color:#fff;font-size:12px;width:50%;float:left">'+'<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">'+'</i>'
-            tipHtml += label+'<span style="color:#f48225;margin:0 6px;">'+text+'</span>'+'(亿)'+'</p>'
+            tipHtml += label+'<span style="color:#f48225;margin:0 6px;">'+text+'</span>'+''+'</p>'
           }
           tipHtml += '</div></div>';
           let d1 = { name: name, value: addr,message:tipHtml}
@@ -1265,6 +1457,7 @@ export default class ItemAnalysis extends Vue {
 
     this.mapCon={
       color: [
+        "#382518",
         "#065aab",
         "#066eab",
         "#0682ab",
@@ -1349,10 +1542,15 @@ export default class ItemAnalysis extends Vue {
       //配置地图的数据，并且显示
       series: [
         {
-          type: "scatter",
+          type: "effectScatter",
           showEffectOn: "render", //配置什么时候显示特效
           coordinateSystem: "geo", //该系列使用的坐标系
           symbolSize: 10, //标记的大小
+          rippleEffect:{              //涟漪特效相关配置。
+            period:2,               //动画的时间。
+            scale:3.5,              //动画中波纹的最大缩放比例。
+            brushType:'fill', 
+          },
           data: []
         },
       ]
@@ -1704,5 +1902,22 @@ a {
   width: 200px;
   height: 150px;
   margin-bottom: 10px;
+}
+.summaryPie2 {
+  height: 100%;
+  float: left;
+  // width: 33%;
+  width: 200px;
+  height: 150px;
+  margin-bottom: 10px;
+}
+
+.summaryPie2  .chart{
+    width: 180px;
+    height: 150px;
+    background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center bottom;
+    background-size: 68% 80%;
+    margin: 0 auto 0;
+    background-position-y: 17px;
 }
 </style>
