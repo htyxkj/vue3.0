@@ -370,18 +370,19 @@ export default class App extends Vue {
     isOtherPageChange(val:any) {
         this.isOtherPage = val;
         console.log('值改变。。。')
-        if(!this.isOtherPage){
+        if(!this.isOtherPage && this.editableTabs2){
             setTimeout(()=>{
-                if(this.editableTabs2.length==0){
-                    this.addIndex();
-                }
-                this.$router.push({
-                path:'/index',
-                name:'Home',
-            })
-        },200);
+                this.$nextTick(()=>{
+                    if(this.editableTabs2.length==0){
+                        this.addIndex();
+                    }
+                    this.$router.push({
+                        path:'/index',
+                        name:'Home',
+                    })
+                });
+            },200);
         }
-
     }
 }
 </script>

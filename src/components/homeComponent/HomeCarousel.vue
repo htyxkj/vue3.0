@@ -1,5 +1,5 @@
 <template>
-    <el-row style="width: 100%;height: 100%;">
+    <el-row class="home-carousel">
         <el-carousel height="height:100%" :type="carouselType">
             <el-carousel-item v-for="(item,index) in listCar" :key="index" style="width: 100%;height: 100%;">
                 <img @click="menuClick(item.url)" :src="item.images" style="width: 100%;height: 100%;" />
@@ -92,8 +92,12 @@ export default class HomeCarousel extends Vue {
     height: 100% !important;
 } 
 </style>
-<style lang="scss">
-.el-carousel__container{
-    height: 100% !important;
+<style lang="scss" lang="scss">
+.home-carousel{
+    width: 100%;
+    height: 100%;
+    .el-carousel__container{
+        height: 100% !important;
+    }
 }
 </style>

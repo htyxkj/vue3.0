@@ -876,7 +876,7 @@ export default class followTimesLine extends Vue {
   }
 }
 </script>
-<style>
+<style  lang="scss" scoped>
 li {
   list-style: none;
 }

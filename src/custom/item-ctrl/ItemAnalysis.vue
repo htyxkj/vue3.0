@@ -22,25 +22,16 @@
             <a data-id="3" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1==3?'active':''" @click="aClick">第三季度</a>
             <a data-id="4" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1==4?'active':''" @click="aClick">第四季度</a>
           </div>
-          <template v-if="leftCenterabs1 == 1">
-            <div>
+          <el-carousel height="200px" indicator-position="none" :interval="7000">
+            <el-carousel-item v-for="(item,index) in leftTableData[leftCenterabs1]" :key="index">
               <CardInfo :item="item"></CardInfo>
-            </div>
-          </template>
-          <template v-if="leftCenterabs1 == 2">
-            <div class="chart">第二季度</div>
-          </template>
-          <template v-if="leftCenterabs1 == 3">
-            <div class="chart">第三季度</div>
-          </template>
-          <template v-if="leftCenterabs1 == 4">
-            <div class="chart">第四季度</div>
-          </template>
+            </el-carousel-item>
+          </el-carousel>
           <div class="panel-footer"></div>
         </div>
       </div>
       <div class="column columnCenter">
-        <!-- <div class="panel leftTop2">
+        <div class="leftTop2">
           <div class='wrapper'>
             <div class="inner">
               <div class="chart" ref="centerTC1"></div>
@@ -52,7 +43,7 @@
             </div>
           </div>
           <div class="panel-footer"></div>
-        </div> -->
+        </div>
         <!-- 地图模块 -->
         <div class="map">
           <div class="chart" ref="itemAnaMap"></div>
@@ -77,26 +68,27 @@
             <a data-id="3" data-type="rightCenterabs1" href="javascript:;" :class="rightCenterabs1==3?'active':''" @click="aClick">第三季度</a>
             <a data-id="4" data-type="rightCenterabs1" href="javascript:;" :class="rightCenterabs1==4?'active':''" @click="aClick">第四季度</a>
           </div>
-          <template v-if="rightCenterabs1 == 1"><div class="chart">第一季度</div></template>
-          <template v-if="rightCenterabs1 == 2"><div class="chart">第二季度</div></template>
-          <template v-if="rightCenterabs1 == 3"><div class="chart">第三季度</div></template>
-          <template v-if="rightCenterabs1 == 4"><div class="chart">第四季度</div></template>
+          <el-carousel height="200px" indicator-position="none" :interval="7000">
+            <el-carousel-item v-for="(item,index) in rightTableData[rightCenterabs1]" :key="index">
+              <CardInfo :item="item"></CardInfo>
+            </el-carousel-item>
+          </el-carousel>
           <div class="panel-footer"></div>
         </div>
       </div>
     </div>
     <div class="mainbox bottombox">
       <div class="column">
-        <div class="panel pie">
-          <h2>年度砼型号销售占比</h2>
-          <div class="chart"></div>
+        <div class="panel bottomChart">
+          <h2>{{leftB1ConName}}</h2>
+          <div class="chart" ref="leftB1Con"></div>
           <div class="panel-footer"></div>
         </div>
       </div>
       <div class="column">
-        <div class="panel bar2">
-          <h2>年度应付账款</h2>
-          <div class="chart "></div>
+        <div class="panel bottomChart">
+          <h2>{{rightB1ConName}}</h2>
+          <div class="chart"  ref="rightB1Con"></div>
           <div class="panel-footer"></div>
         </div>
       </div>
@@ -151,8 +143,28 @@ export default class ItemAnalysis extends Vue {
   /************ 地图 *************/
   map:any = null;
   mapCon:any = null;
-
-  item:any = null;
+  /************ 左侧中间列表 ************/
+  leftTableData:any={
+    1 : [],
+    2 : [],
+    3 : [],
+    4 : [],
+  }
+  /************ 右侧中间列表 ************/
+  rightTableData:any={
+    1 : [],
+    2 : [],
+    3 : [],
+    4 : [],
+  }
+  /************** 左下图表 *****************/
+  leftB1Con:any=null;
+  leftB1C1:any = null;
+  leftB1ConName:any = "";
+  /************** 右下图表 *****************/
+  rightB1Con:any=null;
+  rightB1C1:any = null;
+  rightB1ConName:any = "";
 
   async mounted() {
     this.time();
@@ -165,24 +177,14 @@ export default class ItemAnalysis extends Vue {
     this.initCenterTop1();
     //初始化地图
     this.initMap();
-
+    //左侧列表
     this.initLeftCenter1();
-
-    this.item =  {
-                    "ob_month": 1,
-                    "yjfcy": 13240.6000,
-                    "sjfcy": 14495.2500,
-                    "sjrmb": 49996.4300,
-                    "name": "中国融通农业发展（哈尔滨）有限责任公司",
-                    "rmbbl": 0.226,
-                    "fcybl": 1.095,
-                    "scm": "051",
-                    "yjrmb": 73652.5600,
-                    "pm1":1,
-                    "pm2":5
-                }
-
-
+    //右侧列表
+    this.initRightCenter1()
+    //左侧下方面积图
+    this.initleftBottom1();
+    //右侧柱状图
+    this.initRightBottom1();
     let _this = this;
     window.addEventListener("resize", function() {
       if(_this.centerTC1)
@@ -193,6 +195,8 @@ export default class ItemAnalysis extends Vue {
       _this.leftTopTabsC.resize();
       if(_this.rightTopTabsC)
       _this.rightTopTabsC.resize();
+      if(_this.map)
+      _this.map.resize();
     });
   }
   /**
@@ -289,7 +293,6 @@ export default class ItemAnalysis extends Vue {
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
     let cc = await tools.getBipInsAidInfo("BOARD_M1", 210, qe);
-    console.log(cc)
     if(cc.data.id ==0){
       let values = cc.data.data.data.values[0];
       // 基于准备好的dom，初始化echarts实例
@@ -315,51 +318,197 @@ export default class ItemAnalysis extends Vue {
   async initMap(){
     this.map = echarts.init(this.$refs.itemAnaMap as HTMLCanvasElement) 
     echarts.registerMap("中华人民共和国", Map);
-    var option = {
-      title: {
-        text: "",
-        subtext: "",
-        left: "center",
-        textStyle: {
-          color: "#7bbfea",
-        },
-      },
-      geo: {
-        map: "china",
-        label: {
-          emphasis: {
-            show: true,
-            color: "#fff"
-          }
-        },
-        roam: false,
-        zoom: 1,
-        itemStyle: {
-          normal: {
-            areaColor: "rgba(43, 196, 243, 0.42)",
-            borderColor: "rgba(43, 196, 243, 1)",
-            borderWidth: 1
-          },
-          emphasis: {
-            areaColor: "#2B91B7"
-          }
-        }
-      }
-    };
     // 绘制图表
-    this.map.setOption( option);
+    this.map.setOption(this.mapCon);
   }
-
+  /**
+   * 左侧列表
+   */
   async initLeftCenter1(){
     let qe: QueryEntity = new QueryEntity("", "");
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
     let cc = await tools.getBipInsAidInfo("BOARD_L2", 210, qe);
+    this.leftTableData={ 
+      1 : [],
+      2 : [],
+      3 : [],
+      4 : [],
+    }
+    let f:any = [];
+    let s:any = [];
+    let t:any = [];
+    let f4:any = [];
     if(cc.data.id ==0){
       let values = cc.data.data.data.values;
       for(var i=0;i<values.length;i++){
+        let vl = values[i];
+        if(vl.ob_month == 1){//第一季度
+          f.push(vl)
+        }else if(vl.ob_month == 2){//第一季度
+          s.push(vl)
+        }else if(vl.ob_month == 3){//第一季度
+          t.push(vl)
+        }else if(vl.ob_month == 4){//第一季度
+          f4.push(vl)
+        }
       }
     }
+    f = this.sort(f,"fcybl","pm2","name","desc")
+    f = this.sort(f,"rmbbl","pm1","name","desc")
+    this.leftTableData["1"] = f;
+    s = this.sort(s,"fcybl","pm2","name","desc")
+    s = this.sort(s,"rmbbl","pm1","name","desc")
+    this.leftTableData["2"] = s;
+    t = this.sort(t,"fcybl","pm2","name","desc")
+    t = this.sort(t,"rmbbl","pm1","name","desc")
+    this.leftTableData["3"] = t;
+    f4 = this.sort(f4,"fcybl","pm2","name","desc")
+    f4 = this.sort(f4,"rmbbl","pm1","name","desc")
+    this.leftTableData["4"] = f4;
+  }
+  /**
+   * 右侧列表
+   */
+  async initRightCenter1(){
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 500;
+    let cc = await tools.getBipInsAidInfo("BOARD_R2", 210, qe);
+    this.rightTableData={ 
+      1 : [],
+      2 : [],
+      3 : [],
+      4 : [],
+    }
+    let f:any = [];
+    let s:any = [];
+    let t:any = [];
+    let f4:any = [];
+    if(cc.data.id ==0){
+      let values = cc.data.data.data.values;
+      for(var i=0;i<values.length;i++){
+        let vl = values[i];
+        if(vl.ob_month == 1){//第一季度
+          f.push(vl)
+        }else if(vl.ob_month == 2){//第一季度
+          s.push(vl)
+        }else if(vl.ob_month == 3){//第一季度
+          t.push(vl)
+        }else if(vl.ob_month == 4){//第一季度
+          f4.push(vl)
+        }
+      }
+    }
+    f = this.sort(f,"fcybl","pm2","name","desc")
+    f = this.sort(f,"rmbbl","pm1","name","desc")
+    this.rightTableData["1"] = f;
+    s = this.sort(s,"fcybl","pm2","name","desc")
+    s = this.sort(s,"rmbbl","pm1","name","desc")
+    this.rightTableData["2"] = s;
+    t = this.sort(t,"fcybl","pm2","name","desc")
+    t = this.sort(t,"rmbbl","pm1","name","desc")
+    this.rightTableData["3"] = t;
+    f4 = this.sort(f4,"fcybl","pm2","name","desc")
+    f4 = this.sort(f4,"rmbbl","pm1","name","desc")
+    this.rightTableData["4"] = f4;
+  }
+  /**
+   * 左下面积图
+   */
+  async initleftBottom1(){
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 500;
+    let ins:any = await tools.getBipInsAidInfo("BOARD_L3", 200, qe);
+    if(ins.data.id >=0){
+      ins = ins.data.data.data
+      console.log(ins)
+      this.leftB1ConName = ins.title;
+      let labers = ins.labers;
+      let showColsIndex = ins.showColsIndex;
+      for(var i=1;i<labers.length;i++){
+          let dd = { name: labers[i], type: 'line', stack: labers[i], areaStyle: {}, emphasis: { focus: 'series' },data: [] }
+          this.leftB1Con.series.push(dd)
+      }
+      let cc = await tools.getBipInsAidInfo("BOARD_L3", 210, qe);
+      if(cc.data.id ==0){
+        let values = cc.data.data.data.values;
+        for(var i=0;i<values.length;i++){
+          let vl = values[i];
+          this.leftB1Con.xAxis[0].data.push(vl.iym)
+          for(var j=1;j<labers.length;j++){
+            this.leftB1Con.series[j-1].data.push(vl[ins.cells.cels[showColsIndex[j]].id]);
+          }
+        }
+      }
+      // 基于准备好的dom，初始化echarts实例
+      this.leftB1C1 = echarts.init(this.$refs.leftB1Con as HTMLCanvasElement) 
+      // 绘制图表
+      this.leftB1C1.setOption(this.leftB1Con);
+    }
+  }
+  /**
+   * 右下柱状图
+   */
+  async initRightBottom1(){
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 500;
+    let ins:any = await tools.getBipInsAidInfo("BOARD_R3", 200, qe);
+    if(ins.data.id >=0){
+      ins = ins.data.data.data
+      this.rightB1ConName = ins.title;
+      let cc = await tools.getBipInsAidInfo("BOARD_R3", 210, qe);
+      if(cc.data.id ==0){
+        let values = cc.data.data.data.values;
+        for(var i=0;i<values.length;i++){
+          let vl = values[i]
+          this.rightB1Con.xAxis[0].data.push(vl.name);
+          this.rightB1Con.series[0].data.push(vl.lrbl);
+        }
+      }
+      // 基于准备好的dom，初始化echarts实例
+      this.rightB1C1 = echarts.init(this.$refs.rightB1Con as HTMLCanvasElement) 
+      // 绘制图表
+      this.rightB1C1.setOption(this.rightB1Con);
+    }
+  }
+
+    /***
+   * 数组排序  不改变数组数据顺序 只修改排序字段
+   * arr 数组集合
+   * field 排序字段
+   * sortfield 排序回写字段
+   * key 唯一值
+   * type 排序类型
+   */
+  sort(arr:any=[],field:any,sortfield:any,key:any,type:string="desc"){
+    let retArr = JSON.parse(JSON.stringify(arr));
+    let d = null;
+    for(var i=0;i<arr.length;i++){
+      for(var j=i;j<arr.length;j++){
+        arr[j][field] = parseFloat(arr[j][field]);
+        if(type == "desc"){
+          if(arr[i][field]<arr[j][field]){
+            d = arr[i]; arr[i] = arr[j]; arr[j] =d
+          }
+        }else if(type == "asc"){
+          if(arr[i][field]>arr[j][field]){
+            d = arr[i]; arr[i] = arr[j]; arr[j] =d
+          }
+        }
+      }
+    }
+    for(var i=0;i<arr.length;i++){
+      let v1 = arr[i];
+      for(var j=0;j<retArr.length;j++){
+        if(retArr[j][key] == v1[key]){
+          retArr[j][sortfield] = (i+1);
+        }
+      }
+    }
+    return retArr;
   }
   /**
    * 页签切换
@@ -388,6 +537,17 @@ export default class ItemAnalysis extends Vue {
   }
   initConfig(){
     let leftT1Con = {
+      color: [
+          "#065aab",
+          "#066eab",
+          "#0682ab",
+          "#0696ab",
+          "#06a0ab",
+          "#06b4ab",
+          "#06c8ab",
+          "#06dcab",
+          "#06f0ab"
+        ],
       tooltip: {
           trigger: 'item'
       },
@@ -440,7 +600,7 @@ export default class ItemAnalysis extends Vue {
         type: 'liquidFill',
         name: '', // 系列名称，用于tooltip的显示，legend 的图例筛选
         radius: '60%', // 水球图的半径
-        center: ['50%', '50%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
+        center: ['50%', '51%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
         // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形  
         // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
         shape: 'circle',
@@ -484,6 +644,258 @@ export default class ItemAnalysis extends Vue {
     }
     this.centerTC1Con =  JSON.parse(JSON.stringify(centerTC1Con))
     this.centerTC2Con =  JSON.parse(JSON.stringify(centerTC1Con))
+
+    let leftB1Con={
+      color: [
+        "#065aab",
+        "#066eab",
+        "#0682ab",
+        "#0696ab",
+        "#06a0ab",
+        "#06b4ab",
+        "#06c8ab",
+        "#06dcab",
+        "#06f0ab"
+      ],
+      tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+              type: 'cross',
+              label: {
+                  backgroundColor: '#6a7985'
+              }
+          }
+      },
+      grid: {
+        left: "0%",
+        top: "10px",
+        right: "0%",
+        bottom: "4%",
+        containLabel: true
+      },
+      xAxis: [
+          {
+              type: 'category',
+              data: [],
+              axisTick: {
+                alignWithLabel: true
+              },
+              axisLabel: {
+                textStyle: {
+                  color: "rgba(255,255,255,.6)",
+                  fontSize: "12"
+                }
+              },
+              axisLine: {
+                show: false
+              }
+          }
+      ],
+      yAxis: [
+          {
+              type: 'value',
+              axisLabel: {
+                textStyle: {
+                  color: "rgba(255,255,255,.6)",
+                  fontSize: "12"
+                }
+              },
+              axisLine: {
+                lineStyle: {
+                  color: "rgba(255,255,255,.1)"
+                }
+              },
+              splitLine: {
+                lineStyle: {
+                  color: "rgba(255,255,255,.1)"
+                }
+              }
+          }
+      ],
+      series: []
+    };
+    this.leftB1Con = JSON.parse(JSON.stringify(leftB1Con))
+
+    let rightB1Con = {
+      color: ["#2f89cf"],
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          // 坐标轴指示器，坐标轴触发有效
+          type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+        }
+      },
+      grid: {
+        left: "0%",
+        top: "10px",
+        right: "0%",
+        bottom: "4%",
+        containLabel: true
+      },
+      xAxis: [
+        {
+          type: "category",
+          data: [],
+          axisTick: {
+            alignWithLabel: true
+          },
+          axisLabel: {
+            textStyle: {
+              color: "rgba(255,255,255,.6)",
+              fontSize: "12"
+            }
+          },
+          axisLine: {
+            show: false
+          }
+        }
+      ],
+      yAxis: [
+        {
+          type: "value",
+          axisLabel: {
+            textStyle: {
+              color: "rgba(255,255,255,.6)",
+              fontSize: "12"
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: "rgba(255,255,255,.1)"
+              // width: 1,
+              // type: "solid"
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              color: "rgba(255,255,255,.1)"
+            }
+          }
+        }
+      ],
+      series: [
+        {
+          name: "",
+          type: "bar",
+          barWidth: "35%",
+          data: [],
+          itemStyle: {
+            barBorderRadius: 5
+          }
+        }
+      ]
+    };
+    this.rightB1Con = JSON.parse(JSON.stringify(rightB1Con))
+
+    this.mapCon={
+      title: {
+        text: "",
+        subtext: "",
+        left: "center",
+        textStyle: {
+          color: "#7bbfea",
+        },
+      },
+      geo: {
+        map: "china",
+        label: {
+          emphasis: {
+            show: true,
+            color: "#fff"
+          }
+        },
+        roam: false,
+        zoom: 1,
+        itemStyle: {
+          normal: {
+            areaColor: "rgba(43, 196, 243, 0.42)",
+            borderColor: "rgba(43, 196, 243, 1)",
+            borderWidth: 1
+          },
+          emphasis: {
+            areaColor: "#2B91B7"
+          }
+        }
+      },
+      // 提示框，鼠标移入
+      tooltip: {
+        show: true, //鼠标移入是否触发数据
+        trigger: "item", //出发方式
+        // formatter: "{b}-公司数量：{c}",
+        formatter:function(params:any){
+           var tipHtml = '';
+            tipHtml = '<div style="width:300px;height:140px;background:rgba(22,80,158,0.8);border:1px solid rgba(7,166,255,0.7)">'
+            +'<div style="width:100%;height:40px;line-height:40px;border-bottom:2px solid rgba(7,166,255,0.7);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<i style="display:inline-block;width:8px;height:8px;background:#16d6ff;border-radius:40px;">'+'</i>'
+            +'<span style="margin-left:10px;color:#fff;font-size:16px;">'+params.data.name+'</span>'+'</div>'
+            +'<div style="padding:20px">'
+            +'<p style="color:#fff;font-size:12px;">'+'<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">'+'</i>'
+            +'单位总数：'+'<span style="color:#11ee7d;margin:0 6px;">'+params.data.value+'</span>'+'个'+'</p>'
+            +'<p style="color:#fff;font-size:12px;">'+'<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">'+'</i>'
+            +'总人数：'+'<span style="color:#f48225;margin:0 6px;">'+params.data.qty+'</span>'+'个'+'</p>'
+           +'</div>'+'</div>';
+            return tipHtml;
+        }
+      },
+      //配置地图的数据，并且显示
+      series: [
+        {
+          name: "地图",
+          type: "map", //地图种类
+          map: "china", //地图类型。
+          data: [
+            { name: "北京", value: 0, qty:0 },
+            { name: "天津", value: 0, qty:0 },
+            { name: "上海", value: 0, qty:0 },
+            { name: "重庆", value: 0, qty:0},
+            { name: "河北", value: 5, qty:150 },
+            { name: "河南", value: 0, qty:0 },
+            { name: "云南", value: 0, qty:0 },
+            { name: "辽宁", value: 0, qty:0 },
+            { name: "黑龙江", value: 0, qty:0 },
+            { name: "湖南", value: 0, qty:0 },
+            { name: "安徽", value: 0, qty:0 },
+            { name: "山东", value: 8, qty:110 },
+            { name: "新疆", value: 0, qty:0 },
+            { name: "江苏", value: 0, qty:0 },
+            { name: "浙江", value: 0, qty:0 },
+            { name: "江西", value: 0, qty:0 },
+            { name: "湖北", value: 0, qty:0 },
+            { name: "广西", value: 7,qty:405 },
+            { name: "甘肃", value: 0, qty:0 },
+            { name: "山西", value: 0, qty:0 },
+            { name: "内蒙古", value: 0, qty:0 },
+            { name: "陕西", value: 0, qty:0},
+            { name: "吉林", value: 0, qty:0 },
+            { name: "福建", value: 1, qty:6 },
+            { name: "贵州", value: 0, qty:0 },
+            { name: "广东", value: 7, qty:422 },
+            { name: "青海", value: 0, qty:0 },
+            { name: "西藏", value: 0, qty:0 },
+            { name: "四川", value: 0, qty:0 },
+            { name: "宁夏", value: 0, qty:0 },
+            { name: "海南", value: 0, qty:0 },
+            { name: "台湾", value: 0, qty:0 },
+            { name: "香港", value: 0, qty:0 },
+            { name: "澳门", value: 0, qty:0},
+            { name: "南海诸岛", value: 0, qty:0 },
+          ],
+          itemStyle: {
+            //地图区域的多边形 图形样式。
+            emphasis: {
+              //高亮状态下的样试
+              label: {
+                show: true,
+              },
+            },
+          },
+          zoom: 1, //放大比例
+          label: {
+            //图形上的文本标签，可用于说明图形的一些数据信息
+            show: true,
+          },
+        }
+      ],
+    };
   }
   // 定时器执行获取当前时间
   time() {
@@ -572,31 +984,94 @@ export default class ItemAnalysis extends Vue {
     }
   }
 }
+.mainbox .panel::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #02a6b5;
+  border-left: 2px solid #02a6b5;
+}
+.mainbox .panel::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #02a6b5;
+  border-right: 2px solid #02a6b5;
+}
+.mainbox .panel .panel-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+.mainbox .panel .panel-footer::before {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #02a6b5;
+  border-left: 2px solid #02a6b5;
+}
+.mainbox .panel .panel-footer::after {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid #02a6b5;
+  border-right: 2px solid #02a6b5;
+}
+.bottomChart{
+
+  h2{
+    margin: 0px;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    font-size: 0.25rem;
+    font-weight: 400;
+    color: #ffffff;
+    text-align: center;
+  }
+}
 .bottombox{
   padding-top: 0px;
+  .column:nth-child(1) {
+    margin-right: 0.075rem;
+  }
 }
 .leftTop1{
-  height: 4.5rem !important;
+  // height: 4.5rem !important;
+  height: 3.125rem !important;
 }
 .leftTop2{
-  height: 3.2rem !important;
+  // height: 3.2rem !important;
+  width: 50%;
 }
 .leftCenter1{
-  height: 10.125rem !important;
+  height: 3.125rem !important;
 }
 .mainbox .panel .chart {
   height: 100%;
 }
 .map {
   position: relative;
-  height: 10.125rem;
+  height: 7.4rem;
 }
 .map .chart {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 5;
-  height: 10.125rem;
+  height: 7.4rem;
   width: 100%;
 }
 .map .map1,
@@ -677,17 +1152,17 @@ a{
   float: left;
 }
 .wrapper .inner .chart {
-  width: 200px;
-  height: 180px;
+  width: 180px;
+  height: 150px;
   background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center bottom;
-  background-size: 80% 80%;
+  background-size: 70% 80%;
   margin: 0 auto 0;
-  background-position-y: 20px;
+  background-position-y: 17px;
 }
 .wrapper .inner .btm {
   width: 220px;
   height: 20px;
-  background: url(../../assets/item-ctrl/icon-bot.png) no-repeat;
+  // background: url(../../assets/item-ctrl/icon-bot.png) no-repeat;
   background-size: 100% 100%;
   margin: 0 auto;
 }

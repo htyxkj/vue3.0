@@ -31,7 +31,6 @@ export default class Index extends Vue {
     boards:Array<any> = []
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     mounted(){
-        this.$bus.$emit("otherPagehange",true);
         this.styles="width:"+document.documentElement.clientWidth+'px;';
         this.styles+='height:'+document.documentElement.clientHeight+'px;';
         console.log(this.menusList);

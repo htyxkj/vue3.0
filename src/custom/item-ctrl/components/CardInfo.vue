@@ -81,7 +81,7 @@ export default class CardInfo extends Vue{
 
 	get percent1(){
 		if(this.item){
-			return this.item.rmbbl*100.0+'%';
+			return (this.item.rmbbl*1).toFixed(2)+'%';
 		}
 		
 		return 0.0;
@@ -89,13 +89,10 @@ export default class CardInfo extends Vue{
 
 	get percent2(){
 		if(this.item){
-			return this.item.fcybl*100.0+'%';
+			return (this.item.fcybl*1).toFixed(2)+'%';
 		}
-		
 		return 0.0;
 	}
-
-
 }
 </script>
 
