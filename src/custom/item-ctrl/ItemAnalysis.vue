@@ -1,13 +1,13 @@
 <template>
   <div class="analysis">
     <div class="header">
-      <h1>农发数据可视化分析</h1>
+      <h1>融通农发经营数据可视化分析</h1>
       <div class="showTime">{{ showtime }}</div>
     </div>
     <!-- 页面主体部分 -->
     <div class="mainbox">
       <div class="column">
-        <div class="panel leftTop1">
+        <div class="panel">
           <div class="filter">
             <a
               data-id="1"
@@ -29,7 +29,7 @@
           <div class="chart" ref="leftTopTabsC"></div>
           <div class="panel-footer"></div>
         </div>
-        <div class="panel leftCenter1">
+        <div class="panel">
           <div class="filter">
             <a
               data-id="1"
@@ -102,7 +102,7 @@
         </div>
       </div>
       <div class="column">
-        <div class="panel leftTop1">
+        <div class="panel">
           <div class="filter">
             <a
               data-id="1"
@@ -124,7 +124,7 @@
           <div class="chart" ref="rightTopTabsC"></div>
           <div class="panel-footer"></div>
         </div>
-        <div class="panel leftCenter1">
+        <div class="panel">
           <div class="filter">
             <a
               data-id="1"
@@ -259,7 +259,6 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import CardInfo from "@/custom/item-ctrl/components/CardInfo.vue";
 import { Map } from "@/custom/item-ctrl/components/china";
-import { values } from "node_modules/xe-utils";
 let _ = require("lodash");
 @Component({
   components: { CardInfo },
@@ -605,7 +604,7 @@ export default class ItemAnalysis extends Vue {
       console.log(values);
       if(values){
         let rpopChart:any = echarts.init(this.$refs.popRightChart as HTMLCanvasElement);
-        let option = {
+        let option:any = {
           color: ["#73b9bc"],
           tooltip: {
             trigger: "axis",
@@ -677,8 +676,7 @@ export default class ItemAnalysis extends Vue {
         option.xAxis[0].data = [];
         option.series[0].data = [];
         _.forEach(values,(item:any,index:any) => {
-          let lname:string = item.gsname+''
-          option.xAxis[0].data.push(lname);
+          option.xAxis[0].data.push(item.gsname);
           option.series[0].data.push(this.rightTopTabs1==1?item.rmb:item.fcy);
         });
         rpopChart.setOption(option);
@@ -699,17 +697,17 @@ export default class ItemAnalysis extends Vue {
       // 基于准备好的dom，初始化echarts实例
       this.centerTC1 = echarts.init(this.$refs.centerTC1 as HTMLCanvasElement);
       // 绘制图表
-      this.centerTC1Con.series[0].data.push(parseFloat(values.rmbbl) / 100);
-      this.centerTC1Con.series[0].name = "营业收入";
-      this.centerTC1Con.title.text = "营业收入";
+      this.centerTC1Con.series[0].data.push(parseFloat(values.rmbbl)/100)
+      this.centerTC1Con.series[0].name="营收目标"
+      this.centerTC1Con.title.text="营收目标"
       this.centerTC1.setOption(this.centerTC1Con);
 
       // 基于准备好的dom，初始化echarts实例
       this.centerTC2 = echarts.init(this.$refs.centerTC2 as HTMLCanvasElement);
       // 绘制图表
-      this.centerTC2Con.series[0].data.push(parseFloat(values.fcybl) / 100);
-      this.centerTC2Con.series[0].name = "利润";
-      this.centerTC2Con.title.text = "利润";
+      this.centerTC2Con.series[0].data.push(parseFloat(values.fcybl)/100)
+      this.centerTC2Con.series[0].name="利润目标"
+      this.centerTC2Con.title.text="利润目标"
       this.centerTC2.setOption(this.centerTC2Con);
     }
   }
@@ -719,6 +717,50 @@ export default class ItemAnalysis extends Vue {
   async initMap() {
     this.map = echarts.init(this.$refs.itemAnaMap as HTMLCanvasElement);
     echarts.registerMap("中华人民共和国", Map);
+    let qe: QueryEntity = new QueryEntity("", "");
+    qe.page.currPage = 1;
+    qe.page.pageSize = 500;
+    let ins:any = await tools.getBipInsAidInfo("BOARD_M2", 200, qe);
+    if(ins.data.id >=0){
+            ins = ins.data.data.data
+      this.leftB1ConName = ins.title;
+      let labers = ins.labers;
+      let showColsIndex = ins.showColsIndex;
+      let cc = await tools.getBipInsAidInfo("BOARD_M2", 210, qe);
+      let gps:any ={
+        "哈尔滨": [126.535732,45.807747, 130],
+        "沈阳": [123.469255,41.684175, 130] ,
+        "北京": [116.404188,39.915529, 130] ,
+        "济南": [117.1195,36.655813, 130],
+        "南京": [118.801042,32.064652, 130] ,
+        "杭州": [120.21459,30.253481, 130] ,
+        "广州": [113.271889,23.135336, 130] ,
+        "昆明": [102.835764,24.885852, 130] ,
+        "武汉": [114.308826,30.599661, 130] ,
+        "乌鲁木齐": [87.617539,43.829764, 130] ,
+        "成都": [104.074585,30.58178, 130] }
+      if(cc.data.id ==0){
+        let values = cc.data.data.data.values;
+        for(var i=0;i<values.length;i++){
+          let vl = values[i];
+          let name = vl.name;
+          let addr = gps[name];
+          let tipHtml = '<div style="width:300px;height:178px;background:rgba(22,80,158,0.8);border:1px solid rgba(7,166,255,0.7)">'
+            +'<div style="width:100%;height:40px;line-height:40px;border-bottom:2px solid rgba(7,166,255,0.7);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<i style="display:inline-block;width:8px;height:8px;background:#16d6ff;border-radius:40px;">'+'</i>'
+            +'<span style="margin-left:10px;color:#fff;font-size:16px;">'+name+'</span>'+'</div>'
+            +'<div style="padding:5px">'
+          for(var j=2;j<showColsIndex.length;j++){
+            let text = vl[ins.cells.cels[showColsIndex[j]].id];
+            let label = labers[j];
+            tipHtml += '<p style="color:#fff;font-size:12px;width:50%;float:left">'+'<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">'+'</i>'
+            tipHtml += label+'<span style="color:#f48225;margin:0 6px;">'+text+'</span>'+'(亿)'+'</p>'
+          }
+          tipHtml += '</div></div>';
+          let d1 = { name: name, value: addr,message:tipHtml}
+          this.mapCon.series[0].data.push(d1);
+        }
+      }
+    }
     // 绘制图表
     this.map.setOption(this.mapCon);
   }
@@ -829,23 +871,15 @@ export default class ItemAnalysis extends Vue {
     let qe: QueryEntity = new QueryEntity("", "");
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
-    let ins: any = await tools.getBipInsAidInfo("BOARD_L3", 200, qe);
-    if (ins.data.id >= 0) {
-      ins = ins.data.data.data;
-      console.log(ins);
+    let ins:any = await tools.getBipInsAidInfo("BOARD_L3", 200, qe);
+    if(ins.data.id >=0){
+      ins = ins.data.data.data
       this.leftB1ConName = ins.title;
       let labers = ins.labers;
       let showColsIndex = ins.showColsIndex;
-      for (var i = 1; i < labers.length; i++) {
-        let dd = {
-          name: labers[i],
-          type: "line",
-          stack: labers[i],
-          areaStyle: {},
-          emphasis: { focus: "series" },
-          data: [],
-        };
-        this.leftB1Con.series.push(dd);
+      for(var i=1;i<labers.length;i++){
+          let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {}, emphasis: { focus: 'series' },data: [] }
+          this.leftB1Con.series.push(dd)
       }
       let cc = await tools.getBipInsAidInfo("BOARD_L3", 210, qe);
       if (cc.data.id == 0) {
@@ -1000,79 +1034,113 @@ export default class ItemAnalysis extends Vue {
     let centerTC1Con = {
       // 图表主标题
       title: {
-        text: "", // 主标题文本，支持使用 \n 换行
-        bottom: -5, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
-        left: "center", // 值: 'left', 'center', 'right' 同上
-        textStyle: {
-          // 文本样式
+        text: '', // 主标题文本，支持使用 \n 换行
+        bottom: 0, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
+        left: 'center', // 值: 'left', 'center', 'right' 同上
+        textStyle: { // 文本样式
           fontSize: 20,
-          fontWeight: 500,
-          color: "#fff",
-        },
+          fontWeight: 300,
+          color: '#fff'
+        }
       },
       // 提示框组件
       tooltip: {
-        trigger: "item", // 触发类型, 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
-        textStyle: {
-          color: "#fff", // 文字颜色
-        },
-        // 提示框浮层内容格式器，支持字符串模板和回调函数两种形式
-        // 水球图: {a}（系列名称），{b}（无），{c}（数值）
-        // 使用函数模板   传入的数据值 -> value: number|Array,
-        formatter: function (value: any) {
-          return value.seriesName + ": " + value.data * 100 + "%";
-        },
+        trigger: 'item', // 触发类型, 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
+        formatter: function (value:any) {
+          return value.seriesName + ': ' + value.data * 100 + '%'
+        }
       },
-      series: [
-        {
-          type: "liquidFill",
-          name: "", // 系列名称，用于tooltip的显示，legend 的图例筛选
-          radius: "60%", // 水球图的半径
-          center: ["50%", "51%"], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
-          // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形
-          // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
-          shape: "circle",
-          phase: 0, // 波的相位弧度 不设置  默认自动
-          direction: "right", // 波浪移动的速度  两个参数  left 从右往左 right 从左往右
-          outline: {
-            show: true,
-            borderDistance: 0, // 边框线与图表的距离 数字
-            itemStyle: {
-              opacity: 1, // 边框的透明度   默认为 1
-              borderWidth: 1, // 边框的宽度
-              shadowBlur: 1, // 边框的阴影范围 一旦设置了内外都有阴影
-              shadowColor: "#fff", // 边框的阴影颜色,
-              borderColor: "#41dcd8", // 边框颜色
-            },
-          },
-          // 图形样式
-          itemStyle: {
-            color: "#4077eb", // 水球显示的背景颜色
-            opacity: 0.5, // 波浪的透明度
-            shadowBlur: 10, // 波浪的阴影范围
-          },
-          backgroundStyle: {
-            color: "#407bf3", // 水球未到的背景颜色
-            opacity: 0.5,
-          },
-          // 图形的高亮样式
-          emphasis: {
-            itemStyle: {
-              opacity: 0.8, // 鼠标经过波浪颜色的透明度
-            },
-          },
-          // 图形上的文本标签
-          label: {
-            fontSize: 30,
-            fontWeight: 200,
-            color: "#fff",
-          },
-          data: [], // 系列中的数据内容数组
+      series: [{
+        type: 'liquidFill',
+        name: '', // 系列名称，用于tooltip的显示，legend 的图例筛选
+        radius: '60%', // 水球图的半径
+        center: ['50%', '51%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
+        // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形  
+        // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
+        shape: 'circle',
+        phase: 0, // 波的相位弧度 不设置  默认自动
+        direction: 'right', // 波浪移动的速度  两个参数  left 从右往左 right 从左往右
+        // 图形上的文本标签
+        label: {
+          fontSize: 30,
+          fontWeight: 200,
+          color: '#fff'
         },
-      ],
-    };
-    this.centerTC1Con = JSON.parse(JSON.stringify(centerTC1Con));
-    this.centerTC2Con = JSON.parse(JSON.stringify(centerTC1Con));
+        // label: {
+        //   show: true,
+        //   fontSize: 14,
+        //   position: ['50%', '50%'],
+        //   color: 'rgba(254, 253, 244, 1.00)',
+        //   insideColor: 'rgba(244, 120, 34, 1.00)',
+        //   formatter: 'XXXXXXXXXX',
+        //   rich: {
+        //       total: {
+        //           fontSize: 37,
+        //           fontFamily: "微软雅黑",
+        //       }, total2: {
+        //           fontSize: 25,
+        //           fontFamily: "微软雅黑",
+        //       },
+        //       active: {
+        //           fontFamily: "微软雅黑",
+        //           fontSize: 14,
+        //       },
+        //   }
+        // },
+        outline: {
+          show: true,
+          borderDistance: 0, // 边框线与图表的距离 数字
+          itemStyle: {
+            opacity: 1, // 边框的透明度   默认为 1
+            borderWidth: 1, // 边框的宽度
+            shadowBlur: 1, // 边框的阴影范围 一旦设置了内外都有阴影
+            shadowColor: '#fff', // 边框的阴影颜色,
+            borderColor: '#41dcd8' // 边框颜色
+          }
+        },
+        // 图形样式
+        itemStyle: {
+          color: '#4077eb', // 水球显示的背景颜色
+          opacity: 0.5, // 波浪的透明度
+          shadowBlur: 10 // 波浪的阴影范围
+        },
+        backgroundStyle: {
+          color: '#407bf3', // 水球未到的背景颜色
+          opacity: 0.5
+        },
+      },]
+      // series: [
+      //   {
+      //     type: "liquidFill",
+      //     name: "", // 系列名称，用于tooltip的显示，legend 的图例筛选
+      //     radius: "60%", // 水球图的半径
+      //     center: ["50%", "51%"], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
+      //     // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形
+      //     // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
+      //     shape: "circle",
+      //     phase: 0, // 波的相位弧度 不设置  默认自动
+      //     direction: "right", // 波浪移动的速度  两个参数  left 从右往左 right 从左往右
+      //     outline: {
+      //       show: true,
+      //       borderDistance: 0, // 边框线与图表的距离 数字
+      //       itemStyle: {
+      //         opacity: 1, // 边框的透明度   默认为 1
+      //         borderWidth: 1, // 边框的宽度
+      //         shadowBlur: 1, // 边框的阴影范围 一旦设置了内外都有阴影
+      //         shadowColor: "#fff", // 边框的阴影颜色,
+      //         borderColor: "#41dcd8", // 边框颜色
+      //       },
+      //     },
+      //     // 图形样式
+      //     itemStyle: {
+      //       opacity: 0.8 // 鼠标经过波浪颜色的透明度
+      //     }
+      //   },
+      //   data: [] // 系列中的数据内容数组
+      // }]
+    }
+    this.centerTC1Con =  JSON.parse(JSON.stringify(centerTC1Con))
+    this.centerTC2Con =  JSON.parse(JSON.stringify(centerTC1Con))
 
     let leftB1Con = {
       color: [
@@ -1103,22 +1171,23 @@ export default class ItemAnalysis extends Vue {
         containLabel: true,
       },
       xAxis: [
-        {
-          type: "category",
-          data: [],
-          axisTick: {
-            alignWithLabel: true,
-          },
-          axisLabel: {
-            textStyle: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-          },
-          axisLine: {
-            show: false,
-          },
-        },
+          {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true
+              },
+              axisLabel: {
+                textStyle: {
+                  color: "rgba(255,255,255,.6)",
+                  fontSize: "12"
+                }
+              },
+              axisLine: {
+                show: false
+              }
+          }
       ],
       yAxis: [
         {
@@ -1216,7 +1285,18 @@ export default class ItemAnalysis extends Vue {
     };
     this.rightB1Con = JSON.parse(JSON.stringify(rightB1Con));
 
-    this.mapCon = {
+    this.mapCon={
+      color: [
+        "#065aab",
+        "#066eab",
+        "#0682ab",
+        "#0696ab",
+        "#06a0ab",
+        "#06b4ab",
+        "#06c8ab",
+        "#06dcab",
+        "#06f0ab"
+      ],
       title: {
         text: "",
         subtext: "",
@@ -1228,6 +1308,7 @@ export default class ItemAnalysis extends Vue {
       geo: {
         map: "china",
         label: {
+          show:true,
           emphasis: {
             show: true,
             color: "#fff",
@@ -1242,109 +1323,61 @@ export default class ItemAnalysis extends Vue {
             borderWidth: 1,
           },
           emphasis: {
-            areaColor: "#2B91B7",
-          },
+            areaColor: "#2B91B7"
+          }
         },
+        regions: [
+          {name: '黑龙江',itemStyle: {areaColor: '#3580ed',color: '#3580ed',borderWidth:0}},
+          {name: '吉林',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
+          {name: '内蒙古',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
+          {name: '辽宁',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
+          {name: '北京',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+          {name: '天津',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+          {name: '河北',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+          {name: '山西',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+          {name: '山东',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
+          {name: '河南',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
+          {name: '重庆',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
+          {name: '江苏',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
+          {name: '安徽',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
+          {name: '浙江',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+          {name: '上海',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+          {name: '福建',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+          {name: '江西',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+          {name: '广东',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
+          {name: '广西',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
+          {name: '海南',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
+          {name: '云南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
+          {name: '贵州',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
+          {name: '湖南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
+          {name: '湖北',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
+          {name: '陕西',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
+          {name: '新疆',itemStyle: {areaColor: '#18d186',color: '#18d186',borderWidth:0}},
+          {name: '青海',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+          {name: '宁夏',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+          {name: '甘肃',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+          {name: '四川',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+        ]
       },
       // 提示框，鼠标移入
       tooltip: {
         show: true, //鼠标移入是否触发数据
         trigger: "item", //出发方式
         // formatter: "{b}-公司数量：{c}",
-        formatter: function (params: any) {
-          var tipHtml = "";
-          tipHtml =
-            '<div style="width:300px;height:140px;background:rgba(22,80,158,0.8);border:1px solid rgba(7,166,255,0.7)">' +
-            '<div style="width:100%;height:40px;line-height:40px;border-bottom:2px solid rgba(7,166,255,0.7);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-            '<i style="display:inline-block;width:8px;height:8px;background:#16d6ff;border-radius:40px;">' +
-            "</i>" +
-            '<span style="margin-left:10px;color:#fff;font-size:16px;">' +
-            params.data.name +
-            "</span>" +
-            "</div>" +
-            '<div style="padding:20px">' +
-            '<p style="color:#fff;font-size:12px;">' +
-            '<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">' +
-            "</i>" +
-            "单位总数：" +
-            '<span style="color:#11ee7d;margin:0 6px;">' +
-            params.data.value +
-            "</span>" +
-            "个" +
-            "</p>" +
-            '<p style="color:#fff;font-size:12px;">' +
-            '<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">' +
-            "</i>" +
-            "总人数：" +
-            '<span style="color:#f48225;margin:0 6px;">' +
-            params.data.qty +
-            "</span>" +
-            "个" +
-            "</p>" +
-            "</div>" +
-            "</div>";
-          return tipHtml;
-        },
+        formatter:function(params:any){
+          return params.data.message;
+        }
       },
       //配置地图的数据，并且显示
       series: [
         {
-          name: "地图",
-          type: "map", //地图种类
-          map: "china", //地图类型。
-          data: [
-            { name: "北京", value: 0, qty: 0 },
-            { name: "天津", value: 0, qty: 0 },
-            { name: "上海", value: 0, qty: 0 },
-            { name: "重庆", value: 0, qty: 0 },
-            { name: "河北", value: 5, qty: 150 },
-            { name: "河南", value: 0, qty: 0 },
-            { name: "云南", value: 0, qty: 0 },
-            { name: "辽宁", value: 0, qty: 0 },
-            { name: "黑龙江", value: 0, qty: 0 },
-            { name: "湖南", value: 0, qty: 0 },
-            { name: "安徽", value: 0, qty: 0 },
-            { name: "山东", value: 8, qty: 110 },
-            { name: "新疆", value: 0, qty: 0 },
-            { name: "江苏", value: 0, qty: 0 },
-            { name: "浙江", value: 0, qty: 0 },
-            { name: "江西", value: 0, qty: 0 },
-            { name: "湖北", value: 0, qty: 0 },
-            { name: "广西", value: 7, qty: 405 },
-            { name: "甘肃", value: 0, qty: 0 },
-            { name: "山西", value: 0, qty: 0 },
-            { name: "内蒙古", value: 0, qty: 0 },
-            { name: "陕西", value: 0, qty: 0 },
-            { name: "吉林", value: 0, qty: 0 },
-            { name: "福建", value: 1, qty: 6 },
-            { name: "贵州", value: 0, qty: 0 },
-            { name: "广东", value: 7, qty: 422 },
-            { name: "青海", value: 0, qty: 0 },
-            { name: "西藏", value: 0, qty: 0 },
-            { name: "四川", value: 0, qty: 0 },
-            { name: "宁夏", value: 0, qty: 0 },
-            { name: "海南", value: 0, qty: 0 },
-            { name: "台湾", value: 0, qty: 0 },
-            { name: "香港", value: 0, qty: 0 },
-            { name: "澳门", value: 0, qty: 0 },
-            { name: "南海诸岛", value: 0, qty: 0 },
-          ],
-          itemStyle: {
-            //地图区域的多边形 图形样式。
-            emphasis: {
-              //高亮状态下的样试
-              label: {
-                show: true,
-              },
-            },
-          },
-          zoom: 1, //放大比例
-          label: {
-            //图形上的文本标签，可用于说明图形的一些数据信息
-            show: true,
-          },
+          type: "scatter",
+          showEffectOn: "render", //配置什么时候显示特效
+          coordinateSystem: "geo", //该系列使用的坐标系
+          symbolSize: 10, //标记的大小
+          data: []
         },
-      ],
+      ]
     };
   }
   // 定时器执行获取当前时间
@@ -1447,7 +1480,7 @@ export default class ItemAnalysis extends Vue {
   }
   .panel {
     position: relative;
-    height: 5rem;
+    height: 3.28rem;
     border: 1px solid rgba(25, 186, 139, 0.17);
     background: url(../../assets/bip-erp/image/line.png)
       rgba(255, 255, 255, 0.04);
@@ -1507,16 +1540,13 @@ export default class ItemAnalysis extends Vue {
   border-bottom: 2px solid #02a6b5;
   border-right: 2px solid #02a6b5;
 }
-.bottomChart {
-  h2 {
-    margin: 0px;
-    height: 0.6rem;
-    line-height: 0.6rem;
-    font-size: 0.25rem;
-    font-weight: 400;
-    color: #ffffff;
-    text-align: center;
-  }
+h2{
+  margin: 0px;
+  height: 0.6rem;
+  line-height: 0.6rem;
+  font-size: 0.25rem;
+  color: #ffffff;
+  text-align: center;
 }
 .bottombox {
   padding-top: 0px;
@@ -1524,30 +1554,23 @@ export default class ItemAnalysis extends Vue {
     margin-right: 0.075rem;
   }
 }
-.leftTop1 {
-  // height: 4.5rem !important;
-  height: 3.125rem !important;
-}
-.leftTop2 {
+.leftTop2{
   // height: 3.2rem !important;
-  width: 50%;
-}
-.leftCenter1 {
-  height: 3.125rem !important;
+  width: 100%;
 }
 .mainbox .panel .chart {
   height: 100%;
 }
 .map {
   position: relative;
-  height: 7.4rem;
+  height: 8rem;
 }
 .map .chart {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 5;
-  height: 7.4rem;
+  height: 8rem;
   width: 100%;
 }
 .map .map1,
@@ -1624,24 +1647,28 @@ a {
 }
 .wrapper .inner {
   position: relative;
-  width: 50%;
+  width: 26%;
   float: left;
+  z-index: 9;
+  margin-top: -26px;
+}
+.wrapper .inner:nth-child(2){
+  margin-left: 0.5rem
 }
 .wrapper .inner .chart {
   width: 180px;
   height: 150px;
-  background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center
-    bottom;
-  background-size: 70% 80%;
+  background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center bottom;
+  background-size: 68% 80%;
   margin: 0 auto 0;
   background-position-y: 17px;
 }
 .wrapper .inner .btm {
-  width: 220px;
-  height: 20px;
-  // background: url(../../assets/item-ctrl/icon-bot.png) no-repeat;
+  width: 120px;
+  height: 10px;
+  background: url(../../assets/item-ctrl/icon-bot.png) no-repeat;
   background-size: 100% 100%;
-  margin: 0 auto;
+  margin: 0 30px;
 }
 
 /**弹出层*/
