@@ -1,5 +1,12 @@
 <template>
   <div class="analysis">
+    <div id="load" :class="!loading?'load_hide':''">
+      <div class="load_img">
+        <!-- 加载动画 -->
+        <img class="jzxz1" src="../../assets/item-ctrl/jzxz1.png">
+        <img class="jzxz2" src="../../assets/item-ctrl/jzxz2.png">
+      </div>
+    </div>
     <div class="header">
       <h1>融通农发经营数据可视化分析</h1>
       <div class="showTime">{{ showtime }}</div>
@@ -304,6 +311,7 @@ export default class ItemAnalysis extends Vue {
   showtime: String = "";
   t: any = "";
   currActive: any = 1;
+  loading:boolean = false;
 
   leftTopTabs1: any = 1;
   leftCenterabs1: any = 1;
@@ -363,6 +371,7 @@ export default class ItemAnalysis extends Vue {
   rightB1ConName: any = "";
 
   async mounted() {
+    this.loading = true;
     this.time();
     this.initConfig();
     //初始化 左上1
@@ -382,6 +391,9 @@ export default class ItemAnalysis extends Vue {
     //右侧柱状图
     this.initRightBottom1();
     let _this = this;
+    setTimeout(() => {
+      this.loading = false
+    }, 700);
     window.addEventListener("resize", function () {
       if (_this.centerTC1) _this.centerTC1.resize();
       if (_this.centerTC2) _this.centerTC2.resize();
@@ -526,7 +538,7 @@ export default class ItemAnalysis extends Vue {
               },
               data: [
                 {
-                  value: item.rmb,
+                  value: this.leftTopTabs1==1?item.rmb:item.fcy,
                   label: {
                     normal: {
                       formatter: " {d}% \n "+(this.leftTopTabs1==1?item.rmb:item.fcy)+"亿",
@@ -1065,6 +1077,13 @@ export default class ItemAnalysis extends Vue {
       for(var i=1;i<labers.length;i++){
           let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {}, emphasis: { focus: 'series' },data: [] }
           this.leftB1Con.series.push(dd)
+          let lb1 = {
+            name: labers[i],
+            textStyle: {
+              color: '#ffffff'
+            }
+          }
+          this.leftB1Con.legend.data.push(lb1)
       }
       let cc = await tools.getBipInsAidInfo("BOARD_L3", 210, qe);
       if (cc.data.id == 0) {
@@ -1325,6 +1344,9 @@ export default class ItemAnalysis extends Vue {
             backgroundColor: "#6a7985",
           },
         },
+      },
+      legend: {
+          data: []
       },
       grid: {
         left: "0%",
@@ -1915,4 +1937,40 @@ a {
     margin: 0 auto 0;
     background-position-y: 30px;
 }
+
+/* 加载旋转动画 */
+#load{width:100%;height:100%;position:absolute;background:url(../../assets/item-ctrl/data08.png) no-repeat #061537;background-size:cover;top:0;left:0;z-index:999}
+#load .load_img{position:absolute;left:calc(50% - 182px);top:calc(50% - 182px);}
+.load_img img{position:absolute;left:0;top:0;}
+.load_img .jzxz1{animation:xz1 8s infinite linear;}
+	@keyframes xz1 {
+	  from {
+	  transform:rotate(0deg);
+	  }
+	  50% {
+	    transform:rotate(180deg);
+	  }
+	  to{
+	  	transform:rotate(360deg);
+	  }
+	}	
+.load_img .jzxz2{animation:xz2 7s infinite linear;}
+	@keyframes xz2 {
+	  from {
+	  transform:rotate(0deg);
+	  }
+	  50% {
+	    transform:rotate(-180deg);
+	  }
+	  to{
+	  	transform:rotate(-360deg);
+	  }
+	}
+  .load_hide{
+    z-index: -1 !important;
+    opacity: 0;
+    -webkit-transition: all 1.3s ease-in;  
+    -moz-transition: all 1.3s ease-in;  
+    transition: all 1.3s ease-in;  
+  }
 </style>

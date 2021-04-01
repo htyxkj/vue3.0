@@ -6,7 +6,7 @@
 			<table>
 				<tr>
 					<td>
-						<div class="staff-cust-time"><span class="label-name">预计营收(亿)</span><br><span
+						<div class="staff-cust-time"><span class="label-name">计划营收(亿)</span><br><span
 								class="label-value">{{item.yjrmb}}</span></div>
 					</td>
 					<td>
@@ -30,7 +30,7 @@
 			<table>
 				<tr>
 					<td>
-						<div class="staff-cust-time"><span class="label-name">预计利润(亿)</span><br><span
+						<div class="staff-cust-time"><span class="label-name">计划利润(亿)</span><br><span
 								class="label-value">{{item.yjfcy}}</span></div>
 					</td>
 					<td>
