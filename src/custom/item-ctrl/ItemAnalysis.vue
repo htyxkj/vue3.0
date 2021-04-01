@@ -70,6 +70,7 @@
               @click="aClick"
               >第四季度</a
             >
+            <a href="javascript:;" class="goto-list" @click="gotoList('L')">列表</a>
           </div>
           <el-carousel
             height="200px"
@@ -163,8 +164,8 @@
               href="javascript:;"
               :class="rightCenterabs1 == 4 ? 'active' : ''"
               @click="aClick"
-              >第四季度</a
-            >
+              >第四季度</a>
+            <a href="javascript:;" class="goto-list" @click="gotoList('R')">列表</a>
           </div>
           <el-carousel
             height="200px"
@@ -286,6 +287,39 @@
         </el-row>
       </div>
     </template>
+
+    <!-- 左右两侧轮播块列表弹出框 -->
+    <template v-if="showCarouselTable">
+      <div class="filterbg"></div>
+      <div class="popup" :style="showCarouselTable ? 'width: 82%;height: 76%;' : ''">
+        <a href="javascript:;" class="popupClose" @click="showCarouselTable = false"></a>
+        <el-row>
+          <vxe-table height="438px" size="mini" resizable border show-header-overflow show-overflow 
+          :footer-method="footerMethod" show-footer
+          style="width:90%;margin: auto;margin-top:0.9rem;"
+          highlight-hover-row :data="carouselTableData">
+            <vxe-table-column align="center" type="seq" title="序号" width="60"></vxe-table-column>
+            <vxe-table-column align="center" field="name" :title="carouselTableType=='L'?'区域公司':'业务板块'"></vxe-table-column>
+            <vxe-table-column align="center" field="yjrmb" title="营业收入计划(亿元)" width="130"></vxe-table-column>
+            <vxe-table-column align="center" field="sjrmb" title="营业收入实际(亿元)" width="130"></vxe-table-column>
+            <vxe-table-column align="center" field="rmbbl" title="完成比例" width="75">
+              <template v-slot="{row}">
+                {{(row.rmbbl*1).toFixed(2)+'%'}}
+              </template>
+            </vxe-table-column>
+            <vxe-table-column align="center" field="pm1" title="完成率排名" width="82"></vxe-table-column>
+            <vxe-table-column align="center" field="yjfcy" title="利润总额(亿元)" width="110"></vxe-table-column>
+            <vxe-table-column align="center" field="sjfcy" title="实际完成(亿元)" width="110"></vxe-table-column>
+            <vxe-table-column align="center" field="fcybl" title="完成比例" width="75">
+              <template v-slot="{ row }">
+                {{(row.fcybl*1).toFixed(2)+'%'}}
+              </template>
+            </vxe-table-column>
+            <vxe-table-column align="center" field="pm2" title="完成率排名" width="82"></vxe-table-column>
+          </vxe-table>
+        </el-row>
+      </div>
+    </template>
   </div>
 </template>
 <script lang="ts">
@@ -370,6 +404,11 @@ export default class ItemAnalysis extends Vue {
   rightB1C1: any = null;
   rightB1ConName: any = "";
 
+  /************** 左右两侧轮播图弹出表格 ****************/
+  showCarouselTable:any = false;
+  carouselTableData:any = [];
+  carouselTableType:any = "";
+
   async mounted() {
     this.loading = true;
     this.time();
@@ -447,6 +486,36 @@ export default class ItemAnalysis extends Vue {
         dataIndex: this.leftTopTabsCCurrInd,
       });
     }, 5000);
+  }
+  /**
+   * 左右两边轮播列表点击
+   */
+  gotoList(type:any){
+    this.showCarouselTable = true;
+    this.carouselTableType = type;
+    if(type == 'R'){
+      this.carouselTableData = this.rightTableData[this.rightCenterabs1]
+    }else if(type =='L'){
+      this.carouselTableData = this.leftTableData[this.leftCenterabs1]
+    }
+  }
+  //表尾合计
+  footerMethod({ columns, data }:any) {
+    let yjrmb =0,sjrmb=0,rmbbl='',yjfcy=0,sjfcy=0,fcybl='';
+    for(var i=0;i<data.length;i++){
+      yjrmb += data[i].yjrmb
+      sjrmb += data[i].sjrmb
+      yjfcy += data[i].yjfcy
+      sjfcy += data[i].sjfcy
+    }
+    rmbbl = (sjrmb/yjrmb).toFixed(4)+"%"
+    fcybl = (sjfcy/yjfcy).toFixed(4)+"%"
+    yjrmb = parseFloat(yjrmb.toFixed(4))
+    sjrmb = parseFloat(sjrmb.toFixed(4))
+    yjfcy = parseFloat(yjfcy.toFixed(4))
+    sjfcy = parseFloat(sjfcy.toFixed(4))
+    let dt = ['合计','',yjrmb,sjrmb,rmbbl,'',yjfcy,sjfcy,fcybl,''] 
+    return [dt];
   }
 
   async chartClickLeft1Function(param: any) {
@@ -741,7 +810,7 @@ export default class ItemAnalysis extends Vue {
       // 绘制图表
       this.centerTC1Con.series[0].data.push(parseFloat(values.rmbbl)/100)
       this.centerTC1Con.series[0].name="营收目标"
-      this.centerTC1Con.title.text="营收目标"
+      this.centerTC1Con.title.text="营收："+values.yjrmb+"亿，完成："+values.sjrmb+"亿";
       this.centerTC1.setOption(this.centerTC1Con);
       this.centerTC1.getZr().on('click',this.centerTC1Click);
       
@@ -750,7 +819,7 @@ export default class ItemAnalysis extends Vue {
       // 绘制图表
       this.centerTC2Con.series[0].data.push(parseFloat(values.fcybl)/100)
       this.centerTC2Con.series[0].name="利润目标"
-      this.centerTC2Con.title.text="利润目标"
+      this.centerTC2Con.title.text="利润："+values.yjfcy+"亿，完成："+values.sjfcy+"亿";
       this.centerTC2.setOption(this.centerTC2Con);
       this.centerTC2.getZr().on('click',this.centerTC2Click);
     }
@@ -1075,7 +1144,7 @@ export default class ItemAnalysis extends Vue {
       let labers = ins.labers;
       let showColsIndex = ins.showColsIndex;
       for(var i=1;i<labers.length;i++){
-          let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {}, emphasis: { focus: 'series' },data: [] }
+          let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {opacity:0.6,}, emphasis: { focus: 'series' },data: [] }
           this.leftB1Con.series.push(dd)
           let lb1 = {
             name: labers[i],
@@ -1204,15 +1273,19 @@ export default class ItemAnalysis extends Vue {
   initConfig() {
     let leftT1Con = {
       color: [
-        "#065aab",
-        "#066eab",
-        "#0682ab",
-        "#0696ab",
-        "#06a0ab",
-        "#06b4ab",
-        "#06c8ab",
-        "#06dcab",
-        "#06f0ab",
+        "#0f56ea",
+        "#1fc4f4",
+        "#f5dc30",
+        "#ff9110",
+        "#f8224a",
+        "#f92598",
+        "#c31ced",
+        "#621bf1",
+        "#2ff0ce",
+        "#18e47d",
+        "#b5f813",
+        "#f8492d",
+        "#2b3de7",    
       ],
       tooltip: {
         trigger: "item",
@@ -1225,6 +1298,12 @@ export default class ItemAnalysis extends Vue {
           center: ["50%", "50%"],
           itemStyle: {
             borderRadius: 8,
+            normal:{ 
+              label:{ 
+                show: true, 
+                formatter: '{b} ({d}%)' 
+              }
+            } 
           },
           data: [],
         },
@@ -1239,11 +1318,11 @@ export default class ItemAnalysis extends Vue {
       // 图表主标题
       title: {
         text: '', // 主标题文本，支持使用 \n 换行
-        bottom: 0, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
+        bottom: -6, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
         left: 'center', // 值: 'left', 'center', 'right' 同上
         textStyle: { // 文本样式
-          fontSize: 20,
-          fontWeight: 300,
+          fontSize: 16,
+          fontWeight: 200,
           color: '#fff'
         }
       },
@@ -1325,16 +1404,17 @@ export default class ItemAnalysis extends Vue {
     this.centerTC2Con =  JSON.parse(JSON.stringify(centerTC1Con))
 
     let leftB1Con = {
-      color: [
-        "#065aab",
-        "#066eab",
-        "#0682ab",
-        "#0696ab",
-        "#06a0ab",
-        "#06b4ab",
-        "#06c8ab",
-        "#06dcab",
-        "#06f0ab",
+       color: [
+        "#155dff",
+        "#0ef6a7",
+        "#ffe535",
+        "#19f1ff",
+        "#1860f4",
+        "#1fc4f4",
+        "#f5dc30",
+        "#ff9110",
+        "#f8224a",
+        "#f92598",
       ],
       tooltip: {
         trigger: "axis",
@@ -1815,6 +1895,11 @@ a {
 }
 .filter a.active {
   color: #fff;
+}
+.filter .goto-list{
+  right: 0px;
+  position: absolute;
+  color: #ffffff;
 }
 @keyframes rotate1 {
   from {

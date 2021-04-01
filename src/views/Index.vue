@@ -1,5 +1,5 @@
 <template >
-    <div class="m-rpt" :style="styles"> 
+    <div class="m-rpt" :style="styles" v-if="haveKb"> 
         <div class="contain">
         <ul>
             <li>
@@ -21,15 +21,15 @@
 
 <script lang="ts">
 import { Component, Vue,  } from "vue-property-decorator";
-
+import { Getter, Mutation } from "vuex-class";
 import { Menu } from "@/classes/Menu";
-import {   Getter } from 'vuex-class';
 @Component({
 })
 export default class Index extends Vue {
     styles:string = ''
     boards:Array<any> = []
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
+    @Mutation("isOtherePage", {  namespace: 'login' }) setIsOtherePage: any;
     mounted(){
         this.styles="width:"+document.documentElement.clientWidth+'px;';
         this.styles+='height:'+document.documentElement.clientHeight+'px;';
@@ -38,17 +38,18 @@ export default class Index extends Vue {
             let lastNode = this.menusList[_s];
             if(lastNode.menuName == "SYSKB"){
                 this.boards = lastNode.childMenu;
-                if(this.boards.length==1){
-                    // this.$router.push({
-                    //     path:'/ItemAnalysis',
-                    //     name:'ItemAnalysis',
-                    // })
-                }
             }
+        }
+        if(!this.haveKb){
+            this.gotoIndex("");
         }
     }
     gotoIndex(url:any){
-        this.$bus.$emit("otherPagehange",false);
+        this.setIsOtherePage(false)
+        this.$router.push({
+            path:'/',
+            name:"Home",
+        })
     }
 
     gotoPage(e:any){
@@ -56,6 +57,10 @@ export default class Index extends Vue {
             path:'/'+e.command,
             name:e.command,
         })
+    }
+
+    get haveKb(){
+        return this.boards && this.boards.length>0
     }
 }
 </script>

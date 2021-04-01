@@ -66,6 +66,7 @@ export default class Login extends Vue {
   @Mutation("snkey", { namespace }) setSnkey: any;
   @Mutation("user", { namespace }) setUserInfo: any;
   @Mutation("menulist", { namespace }) setMenusInfo: any;
+  @Mutation("isOtherePage", {  namespace: 'login' }) setIsOtherePage: any;
   @Provide() checked:boolean =false;
   @Provide() loginTitle = "";
   @Provide() COPYRIGHT ="";
@@ -78,6 +79,7 @@ export default class Login extends Vue {
     this.getlocalStorage()
     this.loginTitle = BaseVariable.Project_Name;
     this.COPYRIGHT = BaseVariable.COPYRIGHT;
+    this.setIsOtherePage(true)
   }
   //注册
   registered(){
@@ -109,12 +111,6 @@ export default class Login extends Vue {
           this.setSnkey(snkey);
           this.setUserInfo(userI);
           this.setMenusInfo(ms);
-          this.$notify.success({
-            title:"",
-            type: 'success',
-            message: '登录成功',
-            offset: 40
-          })
           // 判断记住账户是否为true,是将新账户存储至localStroge，否则清除localStroge中的账户
           if(this.checked){
             if(_u){
@@ -124,12 +120,19 @@ export default class Login extends Vue {
             this.clear()
           }
           setTimeout(() => {
+            this.$notify.success({
+              title:"",
+              type: 'success',
+              message: '登录成功',
+              offset: 40
+            })
             this.gotoPage();
+            loading.close();
           }, 500);
         } else {
           this.$notify.error(data.message);
+          loading.close();
         }
-        loading.close();
         this.fullscreenLoading = false;
       })
       .catch((res: any) => {
@@ -178,7 +181,6 @@ export default class Login extends Vue {
         this.$router.push({ path: "/airSuperBI", name: "airSuperBI" });
       }
     }else{
-      // this.$router.push({ path: "/", name: "home" });
       this.$router.push({ path: "/report", name: "Report" });
     }
   }

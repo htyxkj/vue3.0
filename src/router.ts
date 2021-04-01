@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import Index from './views/Index.vue'
 
 Vue.use(Router)
 
@@ -14,20 +12,13 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Home,//默认首页
-      // component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
-      meta: {
-        keepAlive: true // 需要被缓存
-      }
+      component: () => import('./views/Home.vue'),//默认首页
+      // component: () => import('./custom/air-super/RealTimeTrack.vue'),//飞防首页
     },
     {
       path: '/report',
       name: 'Report',
-      component: Index,//默认首页
-      // component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue'),//飞防首页
-      meta: {
-        keepAlive: false // 需要被缓存
-      }
+      component :()=> import('./views/Index.vue')
     },
     {
       path: '/layout',

@@ -4,7 +4,7 @@
       <h1>飞防数据可视化分析</h1>
       <div class="showTime">{{ showtime }}</div>
       <template v-if="isFormalLogin">
-        <div class="homeBtn"><el-button type="text" class="btn" @click="gaotoPage('')">业务系统</el-button></div>
+        <div class="homeBtn"><el-button type="text" class="btn" @click="gaotoPage">业务系统</el-button></div>
       </template>
     </div>
     <!-- 页面主体部分 -->
@@ -156,6 +156,7 @@ export default class followTimesLine extends Vue {
   @Mutation("snkey", { namespace: "login" }) setSnkey: any;
   @Mutation("user", { namespace: "login" }) setUserInfo: any;
   @Mutation("menulist", { namespace: "login" }) setMenusInfo: any;
+  @Mutation("isOtherePage", {  namespace: 'login' }) setIsOtherePage: any;
   isFormalLogin:boolean = true;
   page: any = { pageSize: 2000, currPage: 1, total: 0 };
   showtime: String = "";
@@ -974,12 +975,12 @@ export default class followTimesLine extends Vue {
       this.initPortal();
     }
   }
-  gaotoPage(url:any){
+  gaotoPage(){
+    this.setIsOtherePage(false)
     this.$router.push({
-      path:'/'+url,
-      name:url,
+        path:'/',
+        name:"Home",
     })
-    this.$bus.$emit("otherPagehange",false);
   }
 }
 </script>
@@ -1201,6 +1202,18 @@ li {
     font-size: 0.225rem;
     color: rgba(255, 255, 255, 0.7);
     padding-top: 0.1rem;
+}
+.mainbox .no .no-bd ul {
+  display: flex;
+}
+.mainbox .no .no-bd ul li {
+  flex: 1;
+  text-align: center;
+  height: 0.5rem;
+  line-height: 0.5rem;
+  font-size: 0.225rem;
+  color: rgba(255, 255, 255, 0.7);
+  padding-top: 0.125rem;
 }
 .map {
   position: relative;

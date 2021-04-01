@@ -8,4 +8,5 @@ export interface LoginState {
     menulist: Menu[]
     isOpenMenu:boolean
     bipComHeight:number
+    isOtherePage:boolean
   }
