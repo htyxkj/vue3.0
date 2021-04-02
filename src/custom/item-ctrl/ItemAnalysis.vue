@@ -810,7 +810,7 @@ export default class ItemAnalysis extends Vue {
       // 绘制图表
       this.centerTC1Con.series[0].data.push(parseFloat(values.rmbbl)/100)
       this.centerTC1Con.series[0].name="营收目标"
-      this.centerTC1Con.title.text="营收："+values.yjrmb+"亿，完成："+values.sjrmb+"亿";
+      this.centerTC1Con.title.text="营收:"+values.yjrmb+"亿，完成:"+values.sjrmb+"亿";
       this.centerTC1.setOption(this.centerTC1Con);
       this.centerTC1.getZr().on('click',this.centerTC1Click);
       
@@ -819,7 +819,7 @@ export default class ItemAnalysis extends Vue {
       // 绘制图表
       this.centerTC2Con.series[0].data.push(parseFloat(values.fcybl)/100)
       this.centerTC2Con.series[0].name="利润目标"
-      this.centerTC2Con.title.text="利润："+values.yjfcy+"亿，完成："+values.sjfcy+"亿";
+      this.centerTC2Con.title.text="利润:"+values.yjfcy+"亿，完成:"+values.sjfcy+"亿";
       this.centerTC2.setOption(this.centerTC2Con);
       this.centerTC2.getZr().on('click',this.centerTC2Click);
     }
@@ -1189,8 +1189,9 @@ export default class ItemAnalysis extends Vue {
         let values = cc.data.data.data.values;
         for (var i = 0; i < values.length; i++) {
           let vl = values[i];
-          this.rightB1Con.xAxis[0].data.push(vl.name);
-          this.rightB1Con.series[0].data.push(vl.lrbl);
+          console.log(vl);
+          this.rightB1Con.xAxis3D.data.push(vl.name);
+          this.rightB1Con.series[0].data.push([0,(i+1),vl.lrbl]);
         }
       }
       // 基于准备好的dom，初始化echarts实例
@@ -1479,75 +1480,123 @@ export default class ItemAnalysis extends Vue {
     };
     this.leftB1Con = JSON.parse(JSON.stringify(leftB1Con));
 
+    // let rightB1Con = {
+    //   color: ["#2f89cf"],
+    //   tooltip: {
+    //     trigger: "axis",
+    //     axisPointer: {
+    //       // 坐标轴指示器，坐标轴触发有效
+    //       type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+    //     },
+    //   },
+    //   grid: {
+    //     left: "0%",
+    //     top: "10px",
+    //     right: "0%",
+    //     bottom: "4%",
+    //     containLabel: true,
+    //   },
+    //   xAxis: [
+    //     {
+    //       type: "category",
+    //       data: [],
+    //       axisTick: {
+    //         alignWithLabel: true,
+    //       },
+    //       axisLabel: {
+    //         textStyle: {
+    //           color: "rgba(255,255,255,.6)",
+    //           fontSize: "12",
+    //         },
+    //       },
+    //       axisLine: {
+    //         show: false,
+    //       },
+    //     },
+    //   ],
+    //   yAxis: [
+    //     {
+    //       type: "value",
+    //       axisLabel: {
+    //         textStyle: {
+    //           color: "rgba(255,255,255,.6)",
+    //           fontSize: "12",
+    //         },
+    //       },
+    //       axisLine: {
+    //         lineStyle: {
+    //           color: "rgba(255,255,255,.1)",
+    //           // width: 1,
+    //           // type: "solid"
+    //         },
+    //       },
+    //       splitLine: {
+    //         lineStyle: {
+    //           color: "rgba(255,255,255,.1)",
+    //         },
+    //       },
+    //     },
+    //   ],
+    //   series: [
+    //     {
+    //       name: "",
+    //       type: "bar",
+    //       barWidth: "35%",
+    //       data: [],
+    //       itemStyle: {
+    //         barBorderRadius: 5,
+    //       },// 基准线
+    //     },
+    //   ],
+    // };
     let rightB1Con = {
-      color: ["#2f89cf"],
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          // 坐标轴指示器，坐标轴触发有效
-          type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-        },
-      },
-      grid: {
-        left: "0%",
-        top: "10px",
-        right: "0%",
-        bottom: "4%",
-        containLabel: true,
-      },
-      xAxis: [
-        {
-          type: "category",
+      tooltip: {},
+        xAxis3D: {
+          type: 'category',
           data: [],
-          axisTick: {
-            alignWithLabel: true,
-          },
-          axisLabel: {
-            textStyle: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-          },
-          axisLine: {
-            show: false,
-          },
+          name:''
         },
-      ],
-      yAxis: [
-        {
-          type: "value",
-          axisLabel: {
-            textStyle: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-          },
-          axisLine: {
-            lineStyle: {
-              color: "rgba(255,255,255,.1)",
-              // width: 1,
-              // type: "solid"
-            },
-          },
-          splitLine: {
-            lineStyle: {
-              color: "rgba(255,255,255,.1)",
-            },
-          },
-        },
-      ],
-      series: [
-        {
-          name: "",
-          type: "bar",
-          barWidth: "35%",
+        yAxis3D: {
+          type: 'category',
           data: [],
-          itemStyle: {
-            barBorderRadius: 5,
-          },
+          name:''
         },
-      ],
-    };
+        zAxis3D: {
+          type: 'value',
+          name:''
+        },
+        grid3D: {
+          boxWidth: 200,
+          boxDepth: 8,
+          light: {
+            main: {
+              intensity: 1.2,
+              shadow: true
+            },
+            ambient: {
+              intensity: 0.3
+            }
+          }
+        },
+        series: [{
+          type: 'bar3D',
+          data: [],
+          shading: 'lambert',
+          label: {
+            fontSize: 16,
+            borderWidth: 1
+          },
+          emphasis: {
+            label: {
+              fontSize: 20,
+              color: '#900'
+            },
+            itemStyle: {
+              color: '#900'
+            }
+          }
+        }]
+      }
     this.rightB1Con = JSON.parse(JSON.stringify(rightB1Con));
 
     this.mapCon={
