@@ -227,27 +227,27 @@ export default class BaseApplet extends Vue{
                 });
                 return;
             }
-            var currRecord = this.dsm.currRecord;
+            let oldData = Object.assign({},this.dsm.currRecord.data);
             let oldPage = Object.assign({},this.dsm.page);
             let u = window.sessionStorage.getItem('user');
             if(u){
                 this.dsm.currRecord = this.dsm.createRecord();
                 this.dsm.currRecord.c_state=3; 
-                let user = JSON.parse(u)
                 for(var i=0;i<this.dsm.ccells.cels.length;i++){
                     let cell = this.dsm.ccells.cels[i]
                     if(!cell.initValue && (cell.attr & 1) <= 0 && (cell.attr & 0x8000)<=0){
-                        this.dsm.currRecord.data[cell.id] = currRecord.data[cell.id]
+                        this.dsm.currRecord.data[cell.id] = oldData[cell.id]
                     }
                 }
                 this.dsm.page = oldPage;
-                this.dsm.page.index++;
-                let row = this.dsm.cdata.data.length - 1;
-                let crd = this.dsm.cdata.getDataAtIndex(row)
-                this.dsm.currRecord  = crd 
-                let newD = this.dsm.cdata.data[row];
-                this.dsm.cdata.data.splice(row,1)
-                this.dsm.cdata.data.splice(this.dsm.page.index,1,newD)
+                let crd = this.dsm.currRecord;
+                this.dsm.page.index = this.dsm.cdata.data.length - 1;
+                // let row = this.dsm.cdata.data.length - 1;
+                // let newD = this.dsm.cdata.data[row];
+                // this.dsm.cdata.data.splice(row,1)
+                // this.dsm.cdata.data.splice(this.dsm.page.index,0,newD)
+                // let crd = this.dsm.cdata.data(this.dsm.page.index)
+                // this.dsm.currRecord = crd;
                 this.setListMenuName();
                 //设置当前记录审批流程信息
                 if(crd != null && this.dsm.opera){
