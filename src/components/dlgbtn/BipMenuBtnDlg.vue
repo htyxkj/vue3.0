@@ -79,7 +79,8 @@ import { BIPUtils } from "@/utils/BaseUtil";
 import CRecord from '@/classes/pub/CRecord';
 import VueQr from 'vue-qr'
 let baseTool = BIPUtils.baseUtil;
-
+import { GlobalVariable } from '@/utils/ICL';
+import {BaseVariable} from "@/utils/BaseICL"
 import BipYgxzDia from './BipYGXZDia.vue';
 @Component({
     components: {BipYgxzDia,VueQr}
@@ -107,7 +108,7 @@ export default class BipMenuBtnDlg extends Vue {
     showPayQR:boolean = false;//微信收款二维码弹框
     code_url:any ="";//二维码内容
     total_fee:any = 0;//支付金额
-
+    uri:string=""//附件操作接口
     mounted() {
 
     }
@@ -115,6 +116,7 @@ export default class BipMenuBtnDlg extends Vue {
      * DLG入口
      */
     async open(btn:any,env:CCliEnv){
+        this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
         console.log(btn)
         this.btn = btn; 
         this.env = env;
@@ -281,6 +283,13 @@ export default class BipMenuBtnDlg extends Vue {
                 await tools.getDlgRunClass(v,b).then(res =>{
                     if(res){
                         if(res.data.id == 0 ){
+                            if(res.data.data){
+                                let fj_root = res.data.data.fj_root;
+                                let fj_name = res.data.data.fj_name;
+                                if(fj_root && fj_name){
+                                    this.handleDown(fj_root,fj_name);
+                                }
+                            }
                             if(cc[2] && cc[2] =='1'){
                                 this.$emit("selData")
                             }
@@ -648,6 +657,17 @@ export default class BipMenuBtnDlg extends Vue {
             return this.finCellData(dsm.ds_sub[i],obj_id)
         }
         return null;
+    }
+    /**
+     * 下载文件
+     */
+    handleDown(fjroot:any,name:any) {
+        let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');
+        let updid =  '36';
+        snkey = encodeURIComponent(snkey);
+        let url = this.uri+'?snkey='+snkey+'&fjroot='+fjroot+'&updid='+updid+'&fjname='+name;
+        console.log(url)
+        window.open(url);
     }
 }
 </script>
