@@ -1,19 +1,27 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <template v-if="mbs&&mbs.initOK">
+        <template v-if="mbs&&mbs.initOK&&mbs.menuList.length>4">
             <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
         </template>
         <template v-if="searchdia">
             <bip-search-dialog ref="se" :cds_cont="dsm" @makeOK="searchfindData"></bip-search-dialog>
         </template>
-        <div class="bip-main-container" v-if="lay.binit">            
-            <el-scrollbar :style="style">
+        <!--:style="'height:'+(height-40)+'px !important;'"-->
+        <div class="bip-main-container" v-if="lay.binit" >            
+            <el-scrollbar :style="style" >
                 <!-- <el-form :model="dsm.currRecord.data" :rules="rules" @submit.native.prevent label-position="right" label-width="120px"> -->
-                <el-form @submit.native.prevent label-position="right" label-width="120px">
+                <el-form @submit.native.prevent label-position="right" label-width="120px" :style="fromStyle">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
+                
+                    <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4">
+                        <div class="bip-btn-small">
+                            <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
+                        </div>
+                    </template>
                 </el-form>
             </el-scrollbar>
         </div>
+      
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
        <bip-work-process ref="work_process"></bip-work-process>
         <template>
@@ -80,6 +88,7 @@ export default class BaseApplet extends Vue{
     @Provide() rowClickBusID:number =0;
     @Provide() switchHide:any={};
     @Provide() switchShow:any={};
+    fromStyle:string='';
     rules:any={};//form 表单验证
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -661,26 +670,6 @@ export default class BaseApplet extends Vue{
         }
 
     }
-
-    // initRules(){
-    //     this.rules={};
-    //     if(this.dsm && this.dsm.ccells){
-    //         for(var i =0;i<this.dsm.ccells.cels.length;i++){
-    //             let vl = [];
-    //             let cel = this.dsm.ccells.cels[i];
-    //             if(cel.isReq){
-    //                 let req = { required: true, message: cel.labelString+'不能为空', trigger: 'blur' };
-    //                 // vl.push(req)
-    //             }
-    //             if(cel.ccLeng){
-    //                 let leng = { min: 0, max: cel.ccLeng, message: '字符长度应<='+cel.ccLeng, trigger: 'blur' } 
-    //                 vl.push(leng)
-    //             }
-    //             this.rules[cel.id] = vl;
-    //         }
-    //     }
-    // }
-
     
 //#endregion
 //#region 保存数据
@@ -1078,7 +1067,12 @@ export default class BaseApplet extends Vue{
     async mounted(){
         // console.log(this.uriParams,'bbb')
         if(this.height>0){
-            this.style = "margin-bottom:0px;  margin-right: 0px; height:"+(this.height-30)+"px;"
+            this.style = "margin-bottom:0px;  margin-right: 0px;"
+            if(this.mbs){
+                if(this.mbs.menuList.length>4){
+                    this.style+="height:"+(this.height-30)+"px;"
+                }
+            }
         }else{
              this.style = "margin-bottom:0px;  margin-right: 0px; ";
         }
@@ -1086,6 +1080,14 @@ export default class BaseApplet extends Vue{
         await this.uriParamsChange()
         if(!this.params || !this.params.method){
             if(this.uriParams && this.uriParams.pbds){
+                let st = this.uriParams.pbds.BGSTYLE;
+                if(st=="0"){
+                    st = "width:100%;";
+                }
+                if(st){
+                    this.fromStyle="margin:auto;"
+                    this.fromStyle += st;
+                }
                 if(this.uriParams.pbds.polnk){
                     this.dsm.polnk = this.uriParams.pbds.polnk;
                 }
@@ -1255,7 +1257,12 @@ export default class BaseApplet extends Vue{
     @Watch('height')
     heightChanges(){
         if(this.height>0){
-            this.style = "margin-bottom:0px;  margin-right: 0px; height:"+(this.height-30)+"px;"
+            this.style = "margin-bottom:0px;  margin-right: 0px; ";
+            if(this.mbs){
+                if(this.mbs.menuList.length>4){
+                    this.style+="height:"+(this.height-30)+"px;"
+                }
+            }
         }else{
              this.style = "margin-bottom:0px;  margin-right: 0px; ";
         }
@@ -1263,4 +1270,21 @@ export default class BaseApplet extends Vue{
 //#endregion
 }
 </script>
+
+<style lang="scss" scoped>
+.bip-main-container{
+    background-color: #f9f9f9;
+}
+.bip-btn-small{
+    text-align:center;
+    padding-top:180px;
+}
+.bip-btn-small .menubar{
+    padding-top: 10px !important;
+    background-color: transparent !important;
+}
+.bip-tabs .el-tab-pane{
+    background-color: #ffffff !important;
+}
+</style>
 
