@@ -171,6 +171,10 @@ export default class BipNumberEditor extends Vue {
           chkr = true;
         }
         if (chkr) {
+          //保留小数位数
+          if(this.cell.ccPoint){
+            this.model1 = parseFloat(this.model1).toFixed(this.cell.ccPoint);
+          }
           this.cds.currRecord.data[this.cell.id] = this.model1;
           this.cds.cellChange(this.cell.id, this.model1);
           if (this.cds.baseI) {
