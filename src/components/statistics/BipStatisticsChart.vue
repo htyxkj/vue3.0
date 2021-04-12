@@ -6,7 +6,7 @@
                 <el-col :span="24" >
                     <div class="main-title">
                         <el-row>
-                            <el-col :span="20">
+                            <el-col :span="16">
                                 <template v-if="showBack">
                                     <el-button icon="iconfont icon-bip-back" @click="goTable" size="mini">
                                         返回
@@ -21,7 +21,7 @@
                                     统计维度：{{this.getTitle()}}
                                 </template>
                             </el-col>
-                            <el-col :span="4" class="main-title-icon pointer"  >
+                            <el-col :span="8" class="main-title-icon pointer"  >
                                 <el-button icon="el-icon-refresh" @click="searchData" circle size="mini" style="margin-right:5px"></el-button>
                                 <el-button icon="el-icon-full-screen" v-if="!isFullScreen" @click="openFullScreen" circle size="mini" style="margin-right:15px"></el-button>
                                 <i class="iconfont icon-bip-kucun"></i> &nbsp;

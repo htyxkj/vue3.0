@@ -175,14 +175,7 @@ export default class Login extends Vue {
   }
 
   gotoPage(){
-    if(BaseVariable.ITEMTYPE == 'air-super'){
-      let menu = baseTool.findMenu("M0330"); 
-      if(menu){
-        this.$router.push({ path: "/airSuperBI", name: "airSuperBI" });
-      }
-    }else{
-      this.$router.push({ path: "/report", name: "Report" });
-    }
+    this.$router.push({ path: "/report", name: "Report" });
   }
 
 }

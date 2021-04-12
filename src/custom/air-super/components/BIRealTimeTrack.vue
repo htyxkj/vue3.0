@@ -625,6 +625,7 @@ export default class BIRealTimeTrack extends Vue {
             this._timer2 = null;
         } 
         this.tMap.clearOverLays();
+        this.plane=null;
     }
     /**
      * 地图缩放结束

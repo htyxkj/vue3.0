@@ -265,6 +265,12 @@ export default new Router({
           path: '/AgvRTVideo',
           name: 'AgvRTVideo',
           component :()=> import('./custom/agv/AgvRTVideo.vue')
+      },
+      {
+          //CRM 工作台
+          path:'/workBench',
+          name: 'workBench',
+          component :()=> import('./custom/bip-crm/workBench.vue')
       }
   ]
 })

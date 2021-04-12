@@ -23,6 +23,7 @@
 import { Component, Vue,  } from "vue-property-decorator";
 import { Getter, Mutation } from "vuex-class";
 import { Menu } from "@/classes/Menu";
+import { BaseVariable } from "@/utils/BaseICL";
 @Component({
 })
 export default class Index extends Vue {
@@ -42,6 +43,10 @@ export default class Index extends Vue {
         }
         if(!this.haveKb){
             this.gotoIndex("");
+        }else{
+            if(BaseVariable.ITEMTYPE == 'air-super'){
+                this.gotoPage(this.boards[0])
+            }
         }
     }
     gotoIndex(url:any){

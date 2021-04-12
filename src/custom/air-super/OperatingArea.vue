@@ -537,7 +537,7 @@ export default class OperatingArea extends Vue {
 
     //避让点
     showSaveOperaBrDia:boolean = false;//显示比避让区 保存弹框
-    operaBrCellID:string ="F2015A";//避让
+    operaBrCellID:string ="F2015AWEB";//避让
     operaBrCell:CDataSet = new CDataSet(""); //避让对象(保存)
     operaBrLine:any =null;//天地图架区避让点 画线对象
     operaBrPolygon:any = null;//天地图架区避让点 画面对象

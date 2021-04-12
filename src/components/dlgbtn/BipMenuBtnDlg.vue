@@ -277,16 +277,6 @@ export default class BipMenuBtnDlg extends Vue {
                 if(!bok){
                     return ; 
                 }
-                // if ((this.env.dsm.currRecord.c_state & 2) > 0) {
-                //     this.$alert(
-                //         `当前数据没有保存，请先保存当前行数据`,
-                //         `系统提醒`,
-                //         { type: "info" }
-                //     ).catch(() => {
-                //         console.log("取消");
-                //     });
-                //     return;
-                // }
                 this.$message.success("操作执行中。。。。。")
                 await tools.getDlgRunClass(v,b).then(res =>{
                     if(res){

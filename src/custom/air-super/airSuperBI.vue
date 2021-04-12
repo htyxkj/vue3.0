@@ -3,9 +3,9 @@
     <div class="header">
       <h1>飞防数据可视化分析</h1>
       <div class="showTime">{{ showtime }}</div>
-      <template v-if="isFormalLogin">
+      <!-- <template v-if="isFormalLogin">
         <div class="homeBtn"><el-button type="text" class="btn" @click="gaotoPage">业务系统</el-button></div>
-      </template>
+      </template> -->
     </div>
     <!-- 页面主体部分 -->
     <div class="mainbox">
@@ -1021,7 +1021,7 @@ li {
 }
 .header .showTime {
   position: absolute;
-  right: 1.975rem;
+  right: 1rem;
   top: 0;
   line-height: 0.9375rem;
   color: rgba(255, 255, 255, 0.7);

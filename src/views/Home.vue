@@ -73,6 +73,7 @@ var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
 
 
+import { BaseVariable } from "@/utils/BaseICL";
 import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
@@ -111,6 +112,13 @@ export default class Home extends Vue {
       this.initHeight();
     }
     async created(){
+      if(BaseVariable.ITEMTYPE == 'air-super'){
+        this.$router.push({
+          path:'/RealTimeTrack',
+          name:'RealTimeTrack',
+        })
+        return;
+      }
       this.isDraggable = false;
       this.isResizable = false;
       let dataStr = "usrcode = '*' ";
@@ -495,7 +503,14 @@ export default class Home extends Vue {
     }
     @Watch("$route")
     changeRoute(){
-      if(this.$route && this.$route.name =="home"){
+      if(this.$route && this.$route.name =="Home"){
+        if(BaseVariable.ITEMTYPE == 'air-super'){
+          this.$router.push({
+            path:'/RealTimeTrack',
+            name:'RealTimeTrack',
+          })
+          return;
+        }
         this.layoutStyle = "width:90%";  
         setTimeout(() => {
           this.layoutStyle = "width:100%";

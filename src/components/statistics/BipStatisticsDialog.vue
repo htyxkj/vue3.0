@@ -177,7 +177,7 @@ export default class BipStatisticsDialog extends Vue {
         'line-0':'折线图', 'line-1':'折线面积图', 'line-2':'平滑折线图', 'line-3':'平滑面积折线图', 'line-4':'堆叠折线图',
         'line-5':'堆叠面积折线图', 'line-6':'平滑堆叠折线图', 'line-7':'平滑堆叠面积折线图',
         'bar-0':'柱状图','bar-1':'条形图','bar-2':'堆叠柱状图','bar-3':'堆叠条形图','bar-4':'堆叠柱状图','bar-5':'堆叠条形图',
-        'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图','gantt-0':'甘特图'
+        'pie-0':'饼状图','pie-1':'环形图','pie-2':'玫瑰图','scatter-0':'散点图',"radar-0":'雷达图',"funnel-0":"漏斗图",'gantt-0':'甘特图'
     };
     desktopListDlg:boolean = false;
     dlProgram:any={name:"",menuid:'',ishowtj:false};

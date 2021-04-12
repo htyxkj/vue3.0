@@ -197,7 +197,7 @@ export default class TrackShow extends Vue {
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
             qe.page.pageSize = 50000;
-            let cont =" speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
+            let cont ="speedtime >=" +"'" +bgtime +"'" +" and " +"speedtime<=" + "'" +edtime +"'";
             if(tkid){
                 cont+= " and tkid ='" +tkid +"' ";
             }
@@ -341,7 +341,9 @@ export default class TrackShow extends Vue {
         }
         this.taskData=[];
         let t1 = this.tMap.getViewport(this.points);
-        this.tMap.panTo(t1.center, t1.zoom);
+        if(t1){
+            this.tMap.panTo(t1.center, t1.zoom);
+        }
         this.zoomend();
         this.loading = !this.loading;
         if(this.isShowPoint){

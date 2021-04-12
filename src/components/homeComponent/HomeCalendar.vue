@@ -180,11 +180,13 @@ export default class HomeCalendar extends Vue {
         oneCont.push(qCont);
         qe.cont = "~["+JSON.stringify(oneCont)+"]";
         let cc = await tools.getBipInsAidInfo("MYNOTEBK",210,qe)
+        console.log(cc)
         if(cc.data.id == 0) {
             let vl:Array<any> = cc.data.data.data.values;
             this.taskData = [];
             vl.forEach((item:any) => {
-                let className = "mark1";
+                let className = "";
+                // let className = "mark1";
                 if(className == ""){
                     // 创建我们的样式表
                     var style = document.createElement('style');

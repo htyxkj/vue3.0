@@ -1,189 +1,205 @@
 <template>
-  <div class="analysis">
-    <div id="load" :class="!loading?'load_hide':''">
-      <div class="load_img">
-        <!-- 加载动画 -->
-        <img class="jzxz1" src="../../assets/item-ctrl/jzxz1.png">
-        <img class="jzxz2" src="../../assets/item-ctrl/jzxz2.png">
-      </div>
-    </div>
-    <div class="header">
-      <h1>融通农发经营数据可视化分析</h1>
-      <div class="showTime">{{ showtime }}</div>
-    </div>
-    <!-- 页面主体部分 -->
-    <div class="mainbox">
-      <div class="column">
-        <div class="panel">
-          <div class="filter">
-            <a
-              data-id="1"
-              data-type="leftTopTabs1"
-              href="javascript:;"
-              :class="leftTopTabs1 == 1 ? 'active' : ''"
-              @click="aClick"
-              >营业收入</a
-            >
-            <a
-              data-id="2"
-              data-type="leftTopTabs1"
-              href="javascript:;"
-              :class="leftTopTabs1 == 2 ? 'active' : ''"
-              @click="aClick"
-              >利润</a
-            >
-          </div>
-          <div class="chart" ref="leftTopTabsC"></div>
-          <div class="panel-footer"></div>
-        </div>
-        <div class="panel">
-          <div class="filter">
-            <a
-              data-id="1"
-              data-type="leftCenterabs1"
-              href="javascript:;"
-              :class="leftCenterabs1 == 1 ? 'active' : ''"
-              @click="aClick"
-              >第一季度</a
-            >
-            <a
-              data-id="2"
-              data-type="leftCenterabs1"
-              href="javascript:;"
-              :class="leftCenterabs1 == 2 ? 'active' : ''"
-              @click="aClick"
-              >第二季度</a
-            >
-            <a
-              data-id="3"
-              data-type="leftCenterabs1"
-              href="javascript:;"
-              :class="leftCenterabs1 == 3 ? 'active' : ''"
-              @click="aClick"
-              >第三季度</a
-            >
-            <a
-              data-id="4"
-              data-type="leftCenterabs1"
-              href="javascript:;"
-              :class="leftCenterabs1 == 4 ? 'active' : ''"
-              @click="aClick"
-              >第四季度</a
-            >
-            <a href="javascript:;" class="goto-list" @click="gotoList('L')">列表</a>
-          </div>
-          <el-carousel
-            height="200px"
-            indicator-position="none"
-            :interval="7000"
-          >
-            <el-carousel-item
-              v-for="(item, index) in leftTableData[leftCenterabs1]"
-              :key="index"
-            >
-              <CardInfo :item="item"></CardInfo>
-            </el-carousel-item>
-          </el-carousel>
-          <div class="panel-footer"></div>
+  <div>
+    <div class="analysis">
+      <div id="load" :class="!loading?'load_hide':''">
+        <div class="load_img">
+          <!-- 加载动画 -->
+          <img class="jzxz1" src="../../assets/item-ctrl/jzxz1.png">
+          <img class="jzxz2" src="../../assets/item-ctrl/jzxz2.png">
         </div>
       </div>
-      <div class="column columnCenter">
-        <div class="leftTop2">
-          <div class="wrapper">
-            <div class="inner">
-              <div class="chart" ref="centerTC1"></div>
-              <div class="btm"></div>
+      <div class="header">
+        <h1>融通农发经营数据可视化分析</h1>
+        <div class="showTime">{{ showtime }}</div>
+      </div>
+      <!-- 页面主体部分 -->
+      <div class="mainbox">
+        <div class="ml1 column" style="-webkit-perspective: 200px;">
+          <div class="ml1-1">
+            <div class="panel">
+              <div class="filter">
+                <a
+                  data-id="1"
+                  data-type="leftTopTabs1"
+                  href="javascript:;"
+                  :class="leftTopTabs1 == 1 ? 'active' : ''"
+                  @click="aClick"
+                  >营业收入</a
+                >
+                <a
+                  data-id="2"
+                  data-type="leftTopTabs1"
+                  href="javascript:;"
+                  :class="leftTopTabs1 == 2 ? 'active' : ''"
+                  @click="aClick"
+                  >利润</a
+                >
+              </div>
+              <div class="chart" ref="leftTopTabsC"></div>
+              <div class="panel-footer"></div>
             </div>
-            <div class="inner">
-              <div class="chart" ref="centerTC2"></div>
-              <div class="btm"></div>
+            <div class="panel">
+              <div class="filter">
+                <a
+                  data-id="1"
+                  data-type="leftCenterabs1"
+                  href="javascript:;"
+                  :class="leftCenterabs1 == 1 ? 'active' : ''"
+                  @click="aClick"
+                  >第一季度</a
+                >
+                <a
+                  data-id="2"
+                  data-type="leftCenterabs1"
+                  href="javascript:;"
+                  :class="leftCenterabs1 == 2 ? 'active' : ''"
+                  @click="aClick"
+                  >第二季度</a
+                >
+                <a
+                  data-id="3"
+                  data-type="leftCenterabs1"
+                  href="javascript:;"
+                  :class="leftCenterabs1 == 3 ? 'active' : ''"
+                  @click="aClick"
+                  >第三季度</a
+                >
+                <a
+                  data-id="4"
+                  data-type="leftCenterabs1"
+                  href="javascript:;"
+                  :class="leftCenterabs1 == 4 ? 'active' : ''"
+                  @click="aClick"
+                  >第四季度</a
+                >
+                <a href="javascript:;" class="goto-list" @click="gotoList('L')">列表</a>
+              </div>
+              <el-carousel
+                height="200px"
+                indicator-position="none"
+                :interval="7000"
+              >
+                <el-carousel-item
+                  v-for="(item, index) in leftTableData[leftCenterabs1]"
+                  :key="index"
+                >
+                  <CardInfo :item="item"></CardInfo>
+                </el-carousel-item>
+              </el-carousel>
+              <div class="panel-footer"></div>
+            </div>
+            <div class="panel bottomChart">
+              <h2>{{ leftB1ConName }}</h2>
+              <div class="chart" ref="leftB1Con"></div>
+              <div class="panel-footer"></div>
             </div>
           </div>
-          <div class="panel-footer"></div>
         </div>
-        <!-- 地图模块 -->
-        <div class="map">
-          <div class="chart" ref="itemAnaMap"></div>
-          <div class="map1"></div>
-          <div class="map2"></div>
-          <div class="map3"></div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="panel">
-          <div class="filter">
-            <a
-              data-id="1"
-              data-type="rightTopTabs1"
-              href="javascript:;"
-              :class="rightTopTabs1 == 1 ? 'active' : ''"
-              @click="aClick"
-              >营业收入</a
-            >
-            <a
-              data-id="2"
-              data-type="rightTopTabs1"
-              href="javascript:;"
-              :class="rightTopTabs1 == 2 ? 'active' : ''"
-              @click="aClick"
-              >利润</a
-            >
+        <div class="column columnCenter">
+          <div class="leftTop2">
+            <div class="wrapper">
+              <div class="inner">
+                <div class="chart" ref="centerTC1"></div>
+                <div class="btm"></div>
+              </div>
+              <div class="inner">
+                <div class="chart" ref="centerTC2"></div>
+                <div class="btm"></div>
+              </div>
+            </div>
+            <div class="panel-footer"></div>
           </div>
-          <div class="chart" ref="rightTopTabsC"></div>
-          <div class="panel-footer"></div>
-        </div>
-        <div class="panel">
-          <div class="filter">
-            <a
-              data-id="1"
-              data-type="rightCenterabs1"
-              href="javascript:;"
-              :class="rightCenterabs1 == 1 ? 'active' : ''"
-              @click="aClick"
-              >第一季度</a
-            >
-            <a
-              data-id="2"
-              data-type="rightCenterabs1"
-              href="javascript:;"
-              :class="rightCenterabs1 == 2 ? 'active' : ''"
-              @click="aClick"
-              >第二季度</a
-            >
-            <a
-              data-id="3"
-              data-type="rightCenterabs1"
-              href="javascript:;"
-              :class="rightCenterabs1 == 3 ? 'active' : ''"
-              @click="aClick"
-              >第三季度</a
-            >
-            <a
-              data-id="4"
-              data-type="rightCenterabs1"
-              href="javascript:;"
-              :class="rightCenterabs1 == 4 ? 'active' : ''"
-              @click="aClick"
-              >第四季度</a>
-            <a href="javascript:;" class="goto-list" @click="gotoList('R')">列表</a>
+          <!-- 地图模块 -->
+          <div class="map">
+            <div class="chart" ref="itemAnaMap"></div>
+            <div class="map1"></div>
+            <div class="map2"></div>
+            <div class="map3"></div>
           </div>
-          <el-carousel
-            height="200px"
-            indicator-position="none"
-            :interval="7000"
-          >
-            <el-carousel-item
-              v-for="(item, index) in rightTableData[rightCenterabs1]"
-              :key="index"
-            >
-              <CardInfo :item="item"></CardInfo>
-            </el-carousel-item>
-          </el-carousel>
-          <div class="panel-footer"></div>
+        </div>
+        <div class="column mr1">
+          <div class="mr1-1">
+            <div class="panel">
+              <div class="filter">
+                <a
+                  data-id="1"
+                  data-type="rightTopTabs1"
+                  href="javascript:;"
+                  :class="rightTopTabs1 == 1 ? 'active' : ''"
+                  @click="aClick"
+                  >营业收入</a
+                >
+                <a
+                  data-id="2"
+                  data-type="rightTopTabs1"
+                  href="javascript:;"
+                  :class="rightTopTabs1 == 2 ? 'active' : ''"
+                  @click="aClick"
+                  >利润</a
+                >
+              </div>
+              <div class="chart" ref="rightTopTabsC"></div>
+              <div class="panel-footer"></div>
+            </div>
+            <div class="panel">
+              <div class="filter">
+                <a
+                  data-id="1"
+                  data-type="rightCenterabs1"
+                  href="javascript:;"
+                  :class="rightCenterabs1 == 1 ? 'active' : ''"
+                  @click="aClick"
+                  >第一季度</a
+                >
+                <a
+                  data-id="2"
+                  data-type="rightCenterabs1"
+                  href="javascript:;"
+                  :class="rightCenterabs1 == 2 ? 'active' : ''"
+                  @click="aClick"
+                  >第二季度</a
+                >
+                <a
+                  data-id="3"
+                  data-type="rightCenterabs1"
+                  href="javascript:;"
+                  :class="rightCenterabs1 == 3 ? 'active' : ''"
+                  @click="aClick"
+                  >第三季度</a
+                >
+                <a
+                  data-id="4"
+                  data-type="rightCenterabs1"
+                  href="javascript:;"
+                  :class="rightCenterabs1 == 4 ? 'active' : ''"
+                  @click="aClick"
+                  >第四季度</a>
+                <a href="javascript:;" class="goto-list" @click="gotoList('R')">列表</a>
+              </div>
+              <el-carousel
+                height="200px"
+                indicator-position="none"
+                :interval="7000"
+              >
+                <el-carousel-item
+                  v-for="(item, index) in rightTableData[rightCenterabs1]"
+                  :key="index"
+                >
+                  <CardInfo :item="item"></CardInfo>
+                </el-carousel-item>
+              </el-carousel>
+              <div class="panel-footer"></div>
+            </div>
+            <div class="panel bottomChart">
+              <h2>{{ rightB1ConName }}</h2>
+              <div class="chart" ref="rightB1Con"></div>
+              <div class="panel-footer"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="mainbox bottombox">
+    <!-- <div class="mainbox bottombox">
       <div class="column">
         <div class="panel bottomChart">
           <h2>{{ leftB1ConName }}</h2>
@@ -198,141 +214,143 @@
           <div class="panel-footer"></div>
         </div>
       </div>
-    </div>
-
-    <!--左侧弹出框--->
-    <template v-if="leftTopTabs1Chart">
-      <div class="filterbg"></div>
-      <div
-        class="popup"
-        :style="leftTopTabs1Chart ? 'width: 82%;height: 76%;' : ''"
-      >
-        <a
-          href="javascript:;"
-          class="popupClose"
-          @click="leftTopTabs1Chart = false"
-        ></a>
-        <el-row style="color: #f7f8fe; text-align: center"
-          ><h3>
-            {{ popItemLeft1.name }}-各个板块-
-            {{ leftTopTabs1 == 1 ? "营业收入" : "利润" }}占比
-          </h3></el-row
+    </div> -->
+    <div style="display:flex;">
+      <!--左侧弹出框--->
+      <template v-if="leftTopTabs1Chart">
+        <div class="filterbg"></div>
+        <div
+          class="popup"
+          :style="leftTopTabs1Chart ? 'width: 82%;height: 76%;' : ''"
         >
-        <el-row>
-          <div
-            class="summaryPie"
-            v-for="(item, index) in popValues"
-            :id="'summaryPie' + (index + 1)"
-            :ref="'summaryPie' + (index + 1)"
-            :key="index"
-          ></div>
-          <!-- <div  ></div>
-             <div id="summaryPie2" ref="summaryPie2" class="summaryPie" ></div> -->
-        </el-row>
-      </div>
-    </template>
-    
-    <!--右侧弹出框-->
-    <template v-if="rightTopTabs1Chart">
-      <div class="filterbg"></div>
-      <div
-        class="popup"
-        :style="rightTopTabs1Chart ? 'width: 82%;height: 76%;' : ''"
-      >
-        <a
-          href="javascript:;"
-          class="popupClose"
-          @click="rightTopTabs1Chart = false"
-        ></a>
-        <el-row style="color: #f7f8fe; text-align: center"
-          ><h3>
-           各个公司- {{ popItemRight1.name }}-
-            {{ rightTopTabs1 == 1 ? "营业收入" : "利润" }}对比
-          </h3></el-row >
-        <el-row>
-             <div  ref="popRightChart" style="width:100%;height:400px;"></div>
-        </el-row>
-      </div>
-    </template>
+          <a
+            href="javascript:;"
+            class="popupClose"
+            @click="leftTopTabs1Chart = false"
+          ></a>
+          <el-row style="color: #f7f8fe; text-align: center"
+            ><h3>
+              {{ popItemLeft1.name }}-各个板块-
+              {{ leftTopTabs1 == 1 ? "营业收入" : "利润" }}占比
+            </h3></el-row
+          >
+          <el-row>
+            <div
+              class="summaryPie"
+              v-for="(item, index) in popValues"
+              :id="'summaryPie' + (index + 1)"
+              :ref="'summaryPie' + (index + 1)"
+              :key="index"
+            ></div>
+            <!-- <div  ></div>
+              <div id="summaryPie2" ref="summaryPie2" class="summaryPie" ></div> -->
+          </el-row>
+        </div>
+      </template>
+      
+      <!--右侧弹出框-->
+      <template v-if="rightTopTabs1Chart">
+        <div class="filterbg"></div>
+        <div
+          class="popup"
+          :style="rightTopTabs1Chart ? 'width: 82%;height: 76%;' : ''"
+        >
+          <a
+            href="javascript:;"
+            class="popupClose"
+            @click="rightTopTabs1Chart = false"
+          ></a>
+          <el-row style="color: #f7f8fe; text-align: center"
+            ><h3>
+            各个公司- {{ popItemRight1.name }}-
+              {{ rightTopTabs1 == 1 ? "营业收入" : "利润" }}对比
+            </h3></el-row >
+          <el-row>
+              <div  ref="popRightChart" style="width:100%;height:400px;"></div>
+          </el-row>
+        </div>
+      </template>
 
-    <!---中间营收和利润完成比-->
-    <template v-if="centerPopShow">
-      <div class="filterbg"></div>
-      <div
-        class="popup"
-        :style="centerPopShow ? 'width: 82%;height: 76%;' : ''"
-      >
-        <a
-          href="javascript:;"
-          class="popupClose"
-          @click="centerPopShow = false"
-        ></a>
-        <el-row style="color: #f7f8fe; text-align: center"
-          ><h3>
-           各区域公司{{ popCenterType == 1 ? "营业收入" : "利润" }}完成情况
-          </h3>
-          <div>
-            <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿&nbsp;&nbsp;</span>
-             <span>已完成:{{popItemCenter.wcfcy}}亿</span>
-          </div>
-          </el-row >
-        <el-row>
-            <div class="popView" v-for="(item,index) in popItemCenter.data" :key="index">
-              <div class="summaryPie2">
-                 <div class="chart" :ref="'popCenterTC'+(index+1)"></div>
-              </div>
-             
-              <div class="btm"></div>
+      <!---中间营收和利润完成比-->
+      <template v-if="centerPopShow">
+        <div class="filterbg"></div>
+        <div
+          class="popup"
+          :style="centerPopShow ? 'width: 82%;height: 76%;' : ''"
+        >
+          <a
+            href="javascript:;"
+            class="popupClose"
+            @click="centerPopShow = false"
+          ></a>
+          <el-row style="color: #f7f8fe; text-align: center"
+            ><h3>
+            各区域公司{{ popCenterType == 1 ? "营业收入" : "利润" }}完成情况
+            </h3>
+            <div>
+              <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿&nbsp;&nbsp;</span>
+              <span>已完成:{{popItemCenter.wcfcy}}亿</span>
             </div>
-        </el-row>
-      </div>
-    </template>
+            </el-row >
+          <el-row>
+              <div class="popView" v-for="(item,index) in popItemCenter.data" :key="index">
+                <div class="summaryPie2">
+                  <div class="chart" :ref="'popCenterTC'+(index+1)"></div>
+                </div>
+              
+                <div class="btm"></div>
+              </div>
+          </el-row>
+        </div>
+      </template>
 
-    <!-- 左右两侧轮播块列表弹出框 -->
-    <template v-if="showCarouselTable">
-      <div class="filterbg"></div>
-      <div class="popup" :style="showCarouselTable ? 'width: 82%;height: 76%;' : ''">
-        <a href="javascript:;" class="popupClose" @click="showCarouselTable = false"></a>
-        <el-row>
-          <vxe-table height="438px" size="mini" resizable border show-header-overflow show-overflow 
-          :footer-method="footerMethod" show-footer
-          style="width:90%;margin: auto;margin-top:0.9rem;"
-          highlight-hover-row :data="carouselTableData">
-            <vxe-table-column align="center" type="seq" title="序号" width="60"></vxe-table-column>
-            <vxe-table-column align="center" field="name" :title="carouselTableType=='L'?'区域公司':'业务板块'"></vxe-table-column>
-            <vxe-table-column align="center" field="yjrmb" title="营业收入计划(亿元)" width="130"></vxe-table-column>
-            <vxe-table-column align="center" field="sjrmb" title="营业收入实际(亿元)" width="130"></vxe-table-column>
-            <vxe-table-column align="center" field="rmbbl" title="完成比例" width="75">
-              <template v-slot="{row}">
-                {{(row.rmbbl*1).toFixed(2)+'%'}}
-              </template>
-            </vxe-table-column>
-            <vxe-table-column align="center" field="pm1" title="完成率排名" width="82"></vxe-table-column>
-            <vxe-table-column align="center" field="yjfcy" title="利润总额(亿元)" width="110"></vxe-table-column>
-            <vxe-table-column align="center" field="sjfcy" title="实际完成(亿元)" width="110"></vxe-table-column>
-            <vxe-table-column align="center" field="fcybl" title="完成比例" width="75">
-              <template v-slot="{ row }">
-                {{(row.fcybl*1).toFixed(2)+'%'}}
-              </template>
-            </vxe-table-column>
-            <vxe-table-column align="center" field="pm2" title="完成率排名" width="82"></vxe-table-column>
-          </vxe-table>
-        </el-row>
-      </div>
-    </template>
+      <!-- 左右两侧轮播块列表弹出框 -->
+      <template v-if="showCarouselTable">
+        <div class="filterbg"></div>
+        <div class="popup" :style="showCarouselTable ? 'width: 82%;height: 76%;' : ''">
+          <a href="javascript:;" class="popupClose" @click="showCarouselTable = false"></a>
+          <el-row style="height:90%">
+            <vxe-table height="auto" size="mini" resizable border show-header-overflow show-overflow 
+            :footer-method="footerMethod" show-footer header-row-class-name="itemAnalysisTableHeader" footer-row-class-name="itemAnalysisTableHeader"
+            :row-class-name="itemAnalysisTableRowClass" border="none" class="itemAnalyTable"
+            highlight-hover-row :data="carouselTableData">
+              <vxe-table-column align="center" type="seq" title="序号" width="60"></vxe-table-column>
+              <vxe-table-column align="center" v-if="carouselTableType == 'L'" field="orgnamexa" title="区域公司"></vxe-table-column>
+              <vxe-table-column align="center" v-if="carouselTableType == 'R'"  field="name" title="业务板块"></vxe-table-column>
+              <vxe-table-column align="center" field="yjrmb" title="营业收入计划(亿元)" width="135"></vxe-table-column>
+              <vxe-table-column align="center" field="sjrmb" title="营业收入实际(亿元)" width="135"></vxe-table-column>
+              <vxe-table-column align="center" field="rmbbl" title="完成比例" width="75">
+                <template v-slot="{row}">
+                  {{(row.rmbbl*1).toFixed(2)+'%'}}
+                </template>
+              </vxe-table-column>
+              <vxe-table-column align="center" field="pm1" title="完成率排名" width="83"></vxe-table-column>
+              <vxe-table-column align="center" field="yjfcy" title="利润总额(亿元)" width="111"></vxe-table-column>
+              <vxe-table-column align="center" field="sjfcy" title="实际完成(亿元)" width="111"></vxe-table-column>
+              <vxe-table-column align="center" field="fcybl" title="完成比例" width="76">
+                <template v-slot="{ row }">
+                  {{(row.fcybl*1).toFixed(2)+'%'}}
+                </template>
+              </vxe-table-column>
+              <vxe-table-column align="center" field="pm2" title="完成率排名" width="83"></vxe-table-column>
+            </vxe-table>
+          </el-row>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import echarts from "echarts";
 import "echarts/map/js/china";
 import "echarts-liquidfill";
+import 'echarts-gl';
 import { Component, Vue } from "vue-property-decorator";
 import { Mutation } from "vuex-class";
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import CardInfo from "@/custom/item-ctrl/components/CardInfo.vue";
-import { Map } from "@/custom/item-ctrl/components/china";
 let _ = require("lodash");
 @Component({
   components: { CardInfo },
@@ -982,7 +1000,6 @@ export default class ItemAnalysis extends Vue {
    */
   async initMap() {
     this.map = echarts.init(this.$refs.itemAnaMap as HTMLCanvasElement);
-    echarts.registerMap("中华人民共和国", Map);
     let qe: QueryEntity = new QueryEntity("", "");
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
@@ -1022,13 +1039,19 @@ export default class ItemAnalysis extends Vue {
             tipHtml += label+'<span style="color:#f48225;margin:0 6px;">'+text+'</span>'+''+'</p>'
           }
           tipHtml += '</div></div>';
-          let d1 = { name: name, value: addr,message:tipHtml}
-          this.mapCon.series[0].data.push(d1);
+          let d1 = { name: name, value: addr,message:tipHtml,itemStyle:{color:'#fff'}}
+          this.mapCon.series[1].data.push(d1);
         }
       }
     }
     // 绘制图表
     this.map.setOption(this.mapCon);
+    let _this = this;
+    this.map.on("mouseover", function (){
+      _this.map.dispatchAction({
+      type: 'downplay'
+      });
+    });
   }
   /**
    * 左侧列表
@@ -1189,9 +1212,10 @@ export default class ItemAnalysis extends Vue {
         let values = cc.data.data.data.values;
         for (var i = 0; i < values.length; i++) {
           let vl = values[i];
-          console.log(vl);
-          this.rightB1Con.xAxis3D.data.push(vl.name);
-          this.rightB1Con.series[0].data.push([0,(i+1),vl.lrbl]);
+          // this.rightB1Con.xAxis3D.data.push(vl.name);
+          // this.rightB1Con.series[0].data.push([(i+1),0,vl.lrbl]);
+          this.rightB1Con.xAxis[0].data.push(vl.name);
+          this.rightB1Con.series[0].data.push(vl.lrbl);
         }
       }
       // 基于准备好的dom，初始化echarts实例
@@ -1295,7 +1319,7 @@ export default class ItemAnalysis extends Vue {
         {
           name: "",
           type: "pie",
-          radius: ["30%", "70%"],
+          radius: ["20%", "60%"],
           center: ["50%", "50%"],
           itemStyle: {
             borderRadius: 8,
@@ -1480,123 +1504,123 @@ export default class ItemAnalysis extends Vue {
     };
     this.leftB1Con = JSON.parse(JSON.stringify(leftB1Con));
 
-    // let rightB1Con = {
-    //   color: ["#2f89cf"],
-    //   tooltip: {
-    //     trigger: "axis",
-    //     axisPointer: {
-    //       // 坐标轴指示器，坐标轴触发有效
-    //       type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-    //     },
-    //   },
-    //   grid: {
-    //     left: "0%",
-    //     top: "10px",
-    //     right: "0%",
-    //     bottom: "4%",
-    //     containLabel: true,
-    //   },
-    //   xAxis: [
-    //     {
-    //       type: "category",
-    //       data: [],
-    //       axisTick: {
-    //         alignWithLabel: true,
-    //       },
-    //       axisLabel: {
-    //         textStyle: {
-    //           color: "rgba(255,255,255,.6)",
-    //           fontSize: "12",
-    //         },
-    //       },
-    //       axisLine: {
-    //         show: false,
-    //       },
-    //     },
-    //   ],
-    //   yAxis: [
-    //     {
-    //       type: "value",
-    //       axisLabel: {
-    //         textStyle: {
-    //           color: "rgba(255,255,255,.6)",
-    //           fontSize: "12",
-    //         },
-    //       },
-    //       axisLine: {
-    //         lineStyle: {
-    //           color: "rgba(255,255,255,.1)",
-    //           // width: 1,
-    //           // type: "solid"
-    //         },
-    //       },
-    //       splitLine: {
-    //         lineStyle: {
-    //           color: "rgba(255,255,255,.1)",
-    //         },
-    //       },
-    //     },
-    //   ],
-    //   series: [
-    //     {
-    //       name: "",
-    //       type: "bar",
-    //       barWidth: "35%",
-    //       data: [],
-    //       itemStyle: {
-    //         barBorderRadius: 5,
-    //       },// 基准线
-    //     },
-    //   ],
-    // };
     let rightB1Con = {
-      tooltip: {},
-        xAxis3D: {
-          type: 'category',
+      color: ["#2f89cf"],
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          // 坐标轴指示器，坐标轴触发有效
+          type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+        },
+      },
+      grid: {
+        left: "0%",
+        top: "10px",
+        right: "0%",
+        bottom: "4%",
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: "category",
           data: [],
-          name:''
-        },
-        yAxis3D: {
-          type: 'category',
-          data: [],
-          name:''
-        },
-        zAxis3D: {
-          type: 'value',
-          name:''
-        },
-        grid3D: {
-          boxWidth: 200,
-          boxDepth: 8,
-          light: {
-            main: {
-              intensity: 1.2,
-              shadow: true
-            },
-            ambient: {
-              intensity: 0.3
-            }
-          }
-        },
-        series: [{
-          type: 'bar3D',
-          data: [],
-          shading: 'lambert',
-          label: {
-            fontSize: 16,
-            borderWidth: 1
+          axisTick: {
+            alignWithLabel: true,
           },
-          emphasis: {
-            label: {
-              fontSize: 20,
-              color: '#900'
+          axisLabel: {
+            textStyle: {
+              color: "rgba(255,255,255,.6)",
+              fontSize: "12",
             },
-            itemStyle: {
-              color: '#900'
-            }
-          }
-        }]
-      }
+          },
+          axisLine: {
+            show: false,
+          },
+        },
+      ],
+      yAxis: [
+        {
+          type: "value",
+          axisLabel: {
+            textStyle: {
+              color: "rgba(255,255,255,.6)",
+              fontSize: "12",
+            },
+          },
+          axisLine: {
+            lineStyle: {
+              color: "rgba(255,255,255,.1)",
+              // width: 1,
+              // type: "solid"
+            },
+          },
+          splitLine: {
+            lineStyle: {
+              color: "rgba(255,255,255,.1)",
+            },
+          },
+        },
+      ],
+      series: [
+        {
+          name: "",
+          type: "bar",
+          barWidth: "35%",
+          data: [],
+          itemStyle: {
+            barBorderRadius: 5,
+          },// 基准线
+        },
+      ],
+    };
+    // let rightB1Con = {
+    //   tooltip: {},
+    //     xAxis3D: {
+    //       type: 'category',
+    //       data: [],
+    //       name:''
+    //     },
+    //     yAxis3D: {
+    //       type: 'category',
+    //       data: [],
+    //       name:''
+    //     },
+    //     zAxis3D: {
+    //       type: 'value',
+    //       name:''
+    //     },
+    //     grid3D: {
+    //       boxWidth: 200,
+    //       boxDepth: 8,
+    //       light: {
+    //         main: {
+    //           intensity: 1.2,
+    //           shadow: true
+    //         },
+    //         ambient: {
+    //           intensity: 0.3
+    //         }
+    //       }
+    //     },
+    //     series: [{
+    //       type: 'bar3D',
+    //       data: [],
+    //       shading: 'lambert',
+    //       label: {
+    //         fontSize: 16,
+    //         borderWidth: 1
+    //       },
+    //       emphasis: {
+    //         label: {
+    //           fontSize: 20,
+    //           color: '#900'
+    //         },
+    //         itemStyle: {
+    //           color: '#900'
+    //         }
+    //       }
+    //     }]
+    //   }
     this.rightB1Con = JSON.parse(JSON.stringify(rightB1Con));
 
     this.mapCon={
@@ -1630,49 +1654,32 @@ export default class ItemAnalysis extends Vue {
           },
         },
         roam: false,
-        zoom: 1,
         itemStyle: {
           normal: {
-            areaColor: "rgba(43, 196, 243, 0.42)",
-            borderColor: "rgba(43, 196, 243, 1)",
-            borderWidth: 1,
+            borderWidth: 0,
+            shadowColor:'rgb(255,255,255,0.7)',
+            shadowOffsetX: 7,
+            shadowOffsetY: 8
           },
           emphasis: {
             areaColor: "#2B91B7"
           }
         },
-        regions: [
-          {name: '黑龙江',itemStyle: {areaColor: '#3580ed',color: '#3580ed',borderWidth:0}},
-          {name: '吉林',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
-          {name: '内蒙古',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
-          {name: '辽宁',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
-          {name: '北京',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-          {name: '天津',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-          {name: '河北',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-          {name: '山西',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-          {name: '山东',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
-          {name: '河南',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
-          {name: '重庆',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
-          {name: '江苏',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
-          {name: '安徽',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
-          {name: '浙江',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-          {name: '上海',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-          {name: '福建',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-          {name: '江西',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-          {name: '广东',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
-          {name: '广西',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
-          {name: '海南',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
-          {name: '云南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
-          {name: '贵州',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
-          {name: '湖南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
-          {name: '湖北',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
-          {name: '陕西',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
-          {name: '新疆',itemStyle: {areaColor: '#18d186',color: '#18d186',borderWidth:0}},
-          {name: '青海',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-          {name: '宁夏',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-          {name: '甘肃',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-          {name: '四川',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-        ]
+        regions: [{
+          name: '南海诸岛',
+          itemStyle: {
+              areaColor: 'rgba(0, 10, 52, 1)',
+
+              borderColor: 'rgba(0, 10, 52, 1)',
+              normal: {
+                  opacity: 0,
+                  label: {
+                      show: false,
+                      color: "#009cc9",
+                  }
+              }
+          },
+        }],
       },
       // 提示框，鼠标移入
       tooltip: {
@@ -1685,6 +1692,56 @@ export default class ItemAnalysis extends Vue {
       },
       //配置地图的数据，并且显示
       series: [
+         {
+            type: 'map',
+            roam: false,
+            label: {
+                normal: {
+                    show: true,
+                    textStyle: {
+                        color: '#000000'
+                    }
+                },
+                emphasis: {
+                    textStyle: {
+                        color: 'rgb(183,185,14)'
+                    }
+                }
+            },
+            data:[
+              {name: '黑龙江',itemStyle: {areaColor: '#3580ed',color: '#3580ed',borderWidth:0}},
+              {name: '吉林',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
+              {name: '内蒙古',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
+              {name: '辽宁',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
+              {name: '北京',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+              {name: '天津',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+              {name: '河北',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+              {name: '山西',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
+              {name: '山东',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
+              {name: '河南',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
+              {name: '重庆',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
+              {name: '江苏',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
+              {name: '安徽',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
+              {name: '浙江',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+              {name: '上海',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+              {name: '福建',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+              {name: '江西',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
+              {name: '广东',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
+              {name: '广西',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
+              {name: '海南',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
+              {name: '云南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
+              {name: '贵州',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
+              {name: '湖南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
+              {name: '湖北',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
+              {name: '陕西',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
+              {name: '新疆',itemStyle: {areaColor: '#18d186',color: '#18d186',borderWidth:0}},
+              {name: '青海',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+              {name: '宁夏',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+              {name: '甘肃',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+              {name: '四川',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
+            ], 
+            map: 'china'
+          },
         {
           type: "effectScatter",
           showEffectOn: "render", //配置什么时候显示特效
@@ -1723,7 +1780,13 @@ export default class ItemAnalysis extends Vue {
       y + "年" + mt + "月" + day + "-" + h + "时" + m + "分" + s + "秒";
     this.t = setTimeout(this.time, 1000); //设定定时器，循环运行
   }
-
+  itemAnalysisTableRowClass(column:any){
+    if(column.$rowIndex%2 ==0){
+      return "itemAnalysisTableRow1";
+    }else{
+      return "itemAnalysisTableRow2";
+    }
+  }
   getColor(value:any){
     console.log(value)
     if(value>=0&&value<10){
@@ -1752,13 +1815,13 @@ export default class ItemAnalysis extends Vue {
 </script>
 <style lang="scss" scoped>
 .analysis {
-  background: url(../../assets/bip-erp/image/bg.jpg) top center;
+  background: url(../../assets/item-ctrl/images/bg.png) no-repeat;
   overflow-y: auto;
   height: 100%;
   position: absolute;
   width: 100%;
+  background-size: 100% 100%;
   background-attachment: local;
-  // color:#00deb7
 }
 .analysis::-webkit-scrollbar {
   width: 4px;
@@ -1802,8 +1865,8 @@ export default class ItemAnalysis extends Vue {
     position: relative;
     height: 3.28rem;
     border: 1px solid rgba(25, 186, 139, 0.17);
-    background: url(../../assets/bip-erp/image/line.png)
-      rgba(255, 255, 255, 0.04);
+    background: url(../../assets/bip-erp/image/line.png);
+    background-color: #111d40d7;
     padding: 0 0.1875rem 0.5rem;
     margin-bottom: 0.1875rem;
     .panel-footer {
@@ -1875,7 +1938,8 @@ h2{
   }
 }
 .leftTop2{
-  // height: 3.2rem !important;
+  height: 1.5rem !important;
+  padding-top: 0.5rem;
   width: 100%;
 }
 .mainbox .panel .chart {
@@ -1933,8 +1997,8 @@ a {
   display: block;
   line-height: 1;
   padding: 0 8px;
-  color: #00f2f1;
-  border-right: 0.033rem solid #00f2f1;
+  color: #fff;
+  border-right: 0.033rem solid #fff;
 }
 .filter a:first-child {
   padding-left: 0;
@@ -1943,7 +2007,7 @@ a {
   border-right: none;
 }
 .filter a.active {
-  color: #fff;
+  color: #00f2f1;
 }
 .filter .goto-list{
   right: 0px;
@@ -2106,5 +2170,45 @@ a {
     -webkit-transition: all 1.3s ease-in;  
     -moz-transition: all 1.3s ease-in;  
     transition: all 1.3s ease-in;  
+  }
+  .ml1{
+    -webkit-perspective: 200px;
+  }
+  .ml1-1{
+    transform: rotateY(4deg);
+    transform-origin: 0 100% 0;
+  }
+  .mr1{
+    -webkit-perspective: 200px;
+  }
+  .mr1-1{
+    transform: rotateY(-4deg);
+    transform-origin: 100% 0 0;
+  }
+
+</style>
+<style lang="scss">
+  .itemAnalysisTableHeader{
+    color: white;
+    background-color: #082173;
+    .vxe-resizable{
+      display: none;
+    }
+  }
+  .itemAnalysisTableRow1{
+    color: white;
+    background-color: #0E2C8B !important;
+  }
+  .itemAnalysisTableRow2{
+    color: white;
+    background-color: #08257E !important;
+  }
+  .itemAnalyTable{
+    width:90%;
+    margin: auto;
+    margin-top:0.5rem;
+    .vxe-table--footer-wrapper{
+      border:0px solid;
+    }
   }
 </style>
