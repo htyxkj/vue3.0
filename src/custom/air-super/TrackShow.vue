@@ -215,7 +215,7 @@ export default class TrackShow extends Vue {
                 let values = cc.data.data.data.values;
                 this.taskData = values;
                 setTimeout(() => {
-                    this.drawTrack();
+                    this.drawTrack(0);
                 }, 200);
             }else{
                 this.loading = !this.loading;
@@ -262,10 +262,10 @@ export default class TrackShow extends Vue {
     /**
      * 绘制 航带 航迹 
      */
-    drawTrack(){
+    drawTrack(index:number){
         this.points = [];
         let zoom = this.tMap.getZoom();
-        for(var i=0;i<this.taskData.length;i++){
+        for(var i = index ;i<this.taskData.length;i++){
             let data = this.taskData[i];
             if(data){
                 let lnglat = [data.latitude, data.longitude]
@@ -338,7 +338,19 @@ export default class TrackShow extends Vue {
                 }
                 this.PreviousFlowPoint = lgt;
             }
+            index = i;
+            if(i !=0 && i%5000 == 0){
+                setTimeout(() => {
+                    this.drawTrack(index+1);
+                }, 600);
+                break;
+            }
         }
+        if(index >= this.taskData.length-1){
+            this.drawLine();
+        }
+    }
+    drawLine(){
         this.taskData=[];
         let t1 = this.tMap.getViewport(this.points);
         if(t1){
@@ -374,7 +386,7 @@ export default class TrackShow extends Vue {
             this.tMap.addOverLay(this.sprayLine2[i]);
         }
     }
-        /**
+    /**
      * 初始化起降点信息
      */
     async initTakeoff(sid:any){
