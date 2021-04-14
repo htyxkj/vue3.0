@@ -7,8 +7,10 @@
 </template>
 
 <script lang="ts">
+/**
+ * 自定义布局  树状结构组件
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
-import { BipLayout } from '@/classes/ui/BipLayout';
 import BipLayConf from '@/classes/ui/BipLayConf';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
@@ -21,14 +23,14 @@ export default class BipTreeLayout extends Vue{
     @Prop() env?:CCliEnv
     @Prop() config?:any
     @Prop() laycell!:BipLayCells 
-    @Provide() comps:Array<BipLayConf> = []
-    @Provide() data:Array<any> = [];
-    @Provide() defaultProps:any ={};
-    @Provide() cds:CDataSet = new CDataSet(null)
-    @Provide() fatherID = '';
-    @Provide() keyID = '';
-    @Provide() expandedKeys:any = [];
-    @Provide() expandedLevel = -1;
+    comps:Array<BipLayConf> = []
+    data:Array<any> = [];
+    defaultProps:any ={};
+    cds:CDataSet = new CDataSet(null)
+    fatherID = '';
+    keyID = '';
+    expandedKeys:any = [];
+    expandedLevel = -1;
     mounted(){
        
     }

@@ -17,6 +17,9 @@
     </el-dialog>
 </template>
 <script lang="ts">
+/**
+ * 前端开资录入表人员选择
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator" 
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CDataSet from "@/classes/pub/CdataSet"
@@ -26,15 +29,15 @@ let tools = BIPUtil.ServApi
 export default class BipYGXZDia extends Vue{
     @Prop() row!:number
     @Prop() value!:string
-    @Provide() visibles:boolean = false;
-    @Provide() checkUser:any=[];
-    @Provide() userList:any=[]; 
-    @Provide() btn:any = null;
-    @Provide() lbno:any = null;
-    @Provide() yymm:any = null;
-    @Provide() jsonVal:any={};
-    @Provide() env: CCliEnv = new CCliEnv();
-    @Provide() refer:any=null;
+    visibles:boolean = false;
+    checkUser:any=[];
+    userList:any=[]; 
+    btn:any = null;
+    lbno:any = null;
+    yymm:any = null;
+    jsonVal:any={};
+    env: CCliEnv = new CCliEnv();
+    refer:any=null;
     mounted(){
         
     }

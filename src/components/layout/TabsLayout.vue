@@ -16,7 +16,7 @@
     </el-tabs>
 </template>
 <script lang="ts">
-//多页面布局
+//多页面布局 选项卡布局
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipLayConf from '@/classes/ui/BipLayConf';
 import LayCell from './LayCell.vue'

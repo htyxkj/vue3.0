@@ -88,43 +88,44 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 审批流弹出界面
+ */
 import { Component, Vue, Provide, Prop, Watch, Emit } from "vue-property-decorator"
 import BipInputAutograph from '../editorn/BipInputAutograph.vue'
 import CeaPars from "@/classes/cenv/CeaPars";
 import { BIPUtil } from "@/utils/Request";
 import { User } from '@/classes/User';
 import { State, Action, Getter, Mutation } from 'vuex-class';
-import { LoginState } from '@/store/modules/login/types';
 import CDataSet from '../../classes/pub/CDataSet';
-import { values } from 'xe-utils/methods';
 let tools = BIPUtil.ServApi
 @Component({
     components:{BipInputAutograph}
 })
 export default class BipWork extends Vue{
-    @Provide() centerDialogVisible:boolean = false
-    @Provide() loading:boolean = false
-    @Provide() remark:string = '审批通过'
-    @Provide() stateId:string = ''//下一状态
-    @Provide() bchked:boolean = true
-    @Provide() userList:any = []//审批人列表
-    @Provide() userListSelect:any = []//审批人选中列表
-    @Provide() nodeList :Array<any> = []
-    @Provide() currState:string = ""
-    @Provide() cea:CeaPars = new CeaPars({});
-    @Provide() chkInfos:any = null;
-    @Provide() isReview:boolean = false;//是否是当前节点审批人
-    @Provide() canBack:boolean = false;//是否可以退回
-    @Provide() canRetrial:boolean = false;//是否可以重新审核
-    @Provide() smakefld:String = "";//制单人
+    centerDialogVisible:boolean = false
+    loading:boolean = false
+    remark:string = '审批通过'
+    stateId:string = ''//下一状态
+    bchked:boolean = true
+    userList:any = []//审批人列表
+    userListSelect:any = []//审批人选中列表
+    nodeList :Array<any> = []
+    currState:string = ""
+    cea:CeaPars = new CeaPars({});
+    chkInfos:any = null;
+    isReview:boolean = false;//是否是当前节点审批人
+    canBack:boolean = false;//是否可以退回
+    canRetrial:boolean = false;//是否可以重新审核
+    smakefld:String = "";//制单人
 
-    @Provide() signature:boolean = false;//是否需要审批人签名
-    @Provide() signatureValue:any= null;//签名信息
-    @Provide() cell:any={
+    signature:boolean = false;//是否需要审批人签名
+    signatureValue:any= null;//签名信息
+    cell:any={
         id:"signature",
         labelString:"签名",
     }
-    @Provide() cds:CDataSet = new CDataSet("");
+    cds:CDataSet = new CDataSet("");
     @Getter('user', { namespace: 'login' }) user?: User;//当前登录人
 
     open(info:any,cea:CeaPars,smakefld:String){ 

@@ -64,24 +64,24 @@ export default class HomeCUnivSelect extends Vue {
     @Prop() params:any;
     @Prop() cont:any;
     @Prop() height!:number;
-    @Provide() fullscreenLoading: boolean = false;
-    @Provide() cells: Array<Cells> = new Array<Cells>();
-    @Provide() mbs: BipMenuBar = new BipMenuBar(0);
-    @Provide() dsm: CDataSet = new CDataSet(null);
-    @Provide() dsm_cont: CDataSet = new CDataSet(null);
-    @Provide() ds_ext: Array<CDataSet> = Array<CDataSet>();
-    @Provide() lay: BipLayout = new BipLayout("");
-    @Provide() env: CCliEnv = new CCliEnv();
-    @Provide() listIndex: number = -1;
-    @Provide() qe: QueryEntity = new QueryEntity("","");
-    @Provide() TJ :boolean = false;//是否是统计图
-    @Provide() TJDlog :boolean = false;//是否显示统计dlog
-    @Provide() Statistics:any=null;//统计条件集
-    @Provide() pmenuid:string = "";
-    @Provide() handleSizeChangeBusID:number = 0
-    @Provide() handleCurrentChangeBusID:number = 0
-    @Provide() initShowChar:boolean = false;
-    @Provide() biType?:string;
+    fullscreenLoading: boolean = false;
+    cells: Array<Cells> = new Array<Cells>();
+    mbs: BipMenuBar = new BipMenuBar(0);
+    dsm: CDataSet = new CDataSet(null);
+    dsm_cont: CDataSet = new CDataSet(null);
+    ds_ext: Array<CDataSet> = Array<CDataSet>();
+    lay: BipLayout = new BipLayout("");
+    env: CCliEnv = new CCliEnv();
+    listIndex: number = -1;
+    qe: QueryEntity = new QueryEntity("","");
+    TJ :boolean = false;//是否是统计图
+    TJDlog :boolean = false;//是否显示统计dlog
+    Statistics:any=null;//统计条件集
+    pmenuid:string = "";
+    handleSizeChangeBusID:number = 0
+    handleCurrentChangeBusID:number = 0
+    initShowChar:boolean = false;
+    biType?:string;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;

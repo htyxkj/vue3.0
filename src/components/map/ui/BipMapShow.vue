@@ -5,6 +5,9 @@
 </template>
 
 <script lang="ts">
+/**
+ * 报表地图展示页面  地图上打点
+ */
 import { Vue, Provide, Component, Prop, Watch} from 'vue-property-decorator';
 import { State, Action, Getter, Mutation } from "vuex-class";
 import BipInsAidNew from '@/classes/BipInsAidNew';

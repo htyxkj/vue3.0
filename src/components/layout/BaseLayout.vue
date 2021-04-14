@@ -20,6 +20,9 @@
 
 <script lang="ts">
 //B:(@60HT111#40726[-remark];T:60HTA111#725;@60HT111#70725[jyfs-])
+/**
+ * 布局拆分入口
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import { BipLayout } from '@/classes/ui/BipLayout';
 import BorderLayout from '@/components/layout/BorderLayout.vue'
@@ -36,7 +39,7 @@ export default class BaseLayout extends Vue{
     @Prop() layout?:BipLayout
     @Prop() env?:CCliEnv
     @Prop() config?:any
-    @Provide() comps:Array<BipLayConf> = []
+    comps:Array<BipLayConf> = []
     mounted(){
         if(this.layout)
             this.comps = this.layout.compconfs

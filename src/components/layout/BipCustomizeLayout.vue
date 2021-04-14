@@ -10,8 +10,10 @@
 </template>
 
 <script lang="ts">
+/**
+ * 自定义布局页面
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
-import { BipLayout } from '@/classes/ui/BipLayout';
 import BipTreeLayout from '@/components/layout/customize/BipTreeLayout.vue'
 import BipLayConf from '@/classes/ui/BipLayConf';
 import CCliEnv from '@/classes/cenv/CCliEnv'
@@ -23,8 +25,8 @@ export default class BipCustomizeLayout extends Vue{
     @Prop() env?:CCliEnv
     @Prop() height!:number
     @Prop() config?:any
-    @Provide() comps:Array<BipLayConf> = []
-    @Provide() layType:string = ""
+    comps:Array<BipLayConf> = []
+    layType:string = ""
     mounted(){
         this.initInfo();
     }

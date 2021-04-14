@@ -10,6 +10,9 @@
 </div>  
 </template>
 <script lang="ts">
+/**
+ * 甘特图组件
+ */
 import { Vue, Provide, Prop, Component,Watch } from 'vue-property-decorator';
 import GanttElastic from "gantt-elastic";
 @Component({

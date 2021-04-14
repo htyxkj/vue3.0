@@ -2,6 +2,9 @@
     <div ref="chart" :style="chartStyle" class="chart"></div>
 </template>
 <script lang="ts">
+/**
+ * echarts 图表通用组件
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import echarts from 'echarts'; 
 @Component({})
@@ -9,8 +12,8 @@ export default class BipChart extends Vue {
     @Prop() stat!:any; 
     @Prop() option!:any;
     @Prop() chartStyle!:string;
-    @Provide() myChart:any = null;
-    @Provide() componentsizechangeBusID:any = null;
+    myChart:any = null;
+    componentsizechangeBusID:any = null;
     mounted() {  
         this.myChart = echarts.init(this.$refs.chart as HTMLCanvasElement); 
         if(this.option){

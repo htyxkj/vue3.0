@@ -24,7 +24,9 @@
     
 </template>
 <script lang="ts">
-//垂直布局 上下
+/**
+ * 布局 左右结构
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipLayConf from '@/classes/ui/BipLayConf';
 import LayCell from './LayCell.vue'

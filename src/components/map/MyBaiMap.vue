@@ -2,16 +2,18 @@
     <div id="bMapDiv" style="width:100%;height:100%"></div>
 </template>
 <script lang="ts">
+/**
+ * 百度地图
+ */
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
-import { State, Action, Getter, Mutation } from "vuex-class";
 @Component({
   components: {
 
   }
 }) 
 export default class MyTianMap extends Vue {
-    @Provide() bMap:any=null;
-    @Provide() bZoom:number=12;
+    bMap:any=null;
+    bZoom:number=12;
     created(){
 
     }

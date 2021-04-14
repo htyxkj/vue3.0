@@ -85,8 +85,6 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import { Menu } from "@/classes/Menu";
-import { BIPUtils } from "@/utils/BaseUtil";
-let baseTool = BIPUtils.baseUtil;
 import CDataSet from "@/classes/pub/CDataSet";
 import { Cells } from "@/classes/pub/coob/Cells";
 import QueryEntity from "@/classes/search/QueryEntity";
@@ -101,13 +99,13 @@ export default class HomeNews extends Vue {
   @Prop() type!: string; //新闻或公告
   @Getter("menulist", { namespace: "login" }) menusList!: Menu[];
   @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
-  @Provide() menuList: Array<any> = new Array<any>();
-  @Provide() showMenuList: boolean = false;
-  @Provide() selection: Array<any> = new Array<any>();
-  @Provide() optionalMenu: Array<any> = new Array<any>();
-  @Provide() ggList: Array<any> = new Array<any>();
-  @Provide() showContentDialog: boolean = false;
-  @Provide() content: string = "";
+  menuList: Array<any> = new Array<any>();
+  showMenuList: boolean = false;
+  selection: Array<any> = new Array<any>();
+  optionalMenu: Array<any> = new Array<any>();
+  ggList: Array<any> = new Array<any>();
+  showContentDialog: boolean = false;
+  content: string = "";
   sname:any = "";
   mounted() {
     this.init();

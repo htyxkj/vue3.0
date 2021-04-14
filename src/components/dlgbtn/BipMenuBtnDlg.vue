@@ -65,14 +65,14 @@
     </el-row>
 </template>
 <script lang="ts">
+/**
+ * 常量定义 DLG.  解析
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BIPUtil } from "@/utils/Request"; 
-let tools = BIPUtil.ServApi; 
-import { CommICL } from "@/utils/CommICL";
-
-let icl = CommICL;
+let tools = BIPUtil.ServApi;
 import { Cells } from "@/classes/pub/coob/Cells";
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtils } from "@/utils/BaseUtil";
@@ -86,25 +86,21 @@ import BipYgxzDia from './BipYGXZDia.vue';
     components: {BipYgxzDia,VueQr}
 })
 export default class BipMenuBtnDlg extends Vue { 
-    @Provide() btn:any = ""; 
-    @Provide() env:CCliEnv = new CCliEnv();
-
-    @Provide() sqlDlg0:boolean = false;//sql弹框是否显示
-    @Provide() sqlDlg1:boolean = false;//sql弹框是否显示
-    @Provide() sqlStyle:Array<any> = [];//sql样式
-    @Provide() sqlCont:Array<any> = [];//sql提示内容
-    @Provide() Title:string = "";//sql弹框标题
-    @Provide() bok:boolean = false;//对象弹框是否显示
-
-    @Provide() laycell:any;
-    @Provide() uiCels:any = [];
-    @Provide() openCell:boolean = false;//是否打开对象
-    @Provide() cellKey:string = '';//B 打开对象的主键 字段
-    @Provide() cellCds:CDataSet = new CDataSet('');
-
-    @Provide() dlgDCell: CDataSet = new CDataSet("");//D: 弹出对象
-    @Provide() showDCell:boolean =false;
-
+    btn:any = ""; 
+    env:CCliEnv = new CCliEnv();
+    sqlDlg0:boolean = false;//sql弹框是否显示
+    sqlDlg1:boolean = false;//sql弹框是否显示
+    sqlStyle:Array<any> = [];//sql样式
+    sqlCont:Array<any> = [];//sql提示内容
+    Title:string = "";//sql弹框标题
+    bok:boolean = false;//对象弹框是否显示
+    laycell:any;
+    uiCels:any = [];
+    openCell:boolean = false;//是否打开对象
+    cellKey:string = '';//B 打开对象的主键 字段
+    cellCds:CDataSet = new CDataSet('');
+    dlgDCell: CDataSet = new CDataSet("");//D: 弹出对象
+    showDCell:boolean =false;
     showPayQR:boolean = false;//微信收款二维码弹框
     code_url:any ="";//二维码内容
     total_fee:any = 0;//支付金额

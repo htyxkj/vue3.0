@@ -26,11 +26,11 @@ export default class HomeReport extends Vue {
     @Prop() rech!:string;
     @Prop() sid!:string;
     @Prop() type!:string;
-    @Provide() menuid:string = '';
-    @Provide() uriParams: URIParams = new URIParams();
-    @Provide() message:any = null;
-    @Provide() chartHeight:number = 400;
-    @Provide() componentsizechangeBusID:any = null;
+    menuid:string = '';
+    uriParams: URIParams = new URIParams();
+    message:any = null;
+    chartHeight:number = 400;
+    componentsizechangeBusID:any = null;
     mounted() {   
         this.message = null;
         this.init();

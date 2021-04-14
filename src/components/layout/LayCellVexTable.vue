@@ -276,6 +276,9 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 表格模块
+ */
 import { DateUtils } from "../../utils/DateUtils";
 import { GlobalVariable } from "../../utils/ICL";
 import BipScriptProc from "../../classes/pub/BipScriptProc";
@@ -306,37 +309,37 @@ export default class LayCelVexTable extends Vue {
     @Prop() env!:CCliEnv;
     @Prop() config?:any
 
-    @Provide() activeNames:any = ['1'];
-    @Provide() height:string = "300px";
-    @Provide() info: string = "infos";
-    @Provide() clearable: boolean = true;
-    @Provide() widths: Array<string> = new Array<string>();
-    @Provide() id: string = "";
-    @Provide() fixedColumn:number=0;//固定列数
-    @Provide() span_id:any={};//合并列id
-    @Provide() sum_id:any={};//合计列id
-    @Provide() celClickTime:number =0;
-    @Provide() removeData :Array<CRecord> =[];
-    @Provide() rowClass:any = {};
-    @Provide() isTable:boolean = false;
-    @Provide() cardMenuList:any = []; 
-    @Provide() addDrawer:boolean = false;//子表抽屉样式添加
-    @Provide() lay: BipLayout = new BipLayout("");
-    @Provide() drawerCurrRecord:CRecord = new CRecord();//子表抽屉样式时  当前选中行  用来处理 抽屉中 取消 操作
+    activeNames:any = ['1'];
+    height:string = "300px";
+    info: string = "infos";
+    clearable: boolean = true;
+    widths: Array<string> = new Array<string>();
+    id: string = "";
+    fixedColumn:number=0;//固定列数
+    span_id:any={};//合并列id
+    sum_id:any={};//合计列id
+    celClickTime:number =0;
+    removeData :Array<CRecord> =[];
+    rowClass:any = {};
+    isTable:boolean = false;
+    cardMenuList:any = []; 
+    addDrawer:boolean = false;//子表抽屉样式添加
+    lay: BipLayout = new BipLayout("");
+    drawerCurrRecord:CRecord = new CRecord();//子表抽屉样式时  当前选中行  用来处理 抽屉中 取消 操作
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     
-    @Provide() datachangeBusID:number=0;
-    @Provide() tableShapeBusID:number=0;
-    @Provide() findBtnBusID:number=0;
-    @Provide() groupCells:any = [];
+    datachangeBusID:number=0;
+    tableShapeBusID:number=0;
+    findBtnBusID:number=0;
+    groupCells:any = [];
 
-    @Provide() multiple:boolean = false;//是否是多选
-    @Provide() checkSelected:any = [];//当前页选中行集合
-    @Provide() multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
+    multiple:boolean = false;//是否是多选
+    checkSelected:any = [];//当前页选中行集合
+    multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
 
     @Inject('isNoHomeTable') isNoHomeTable!:boolean;//显示分页
     created() {

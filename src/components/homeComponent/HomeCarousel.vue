@@ -10,7 +10,6 @@
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
-import { Menu } from "@/classes/Menu";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import {BaseVariable} from "@/utils/BaseICL"

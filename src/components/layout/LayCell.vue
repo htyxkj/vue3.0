@@ -21,9 +21,11 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 单据模块布局
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipLayCells from '@/classes/ui/BipLayCells';
-import {Cell} from '@/classes/pub/coob/Cell';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
 import LayCellVexTable from './LayCellVexTable.vue'
@@ -35,14 +37,14 @@ export default class LayCell extends Vue{
     @Prop() laycell!:BipLayCells
     @Prop() env!:CCliEnv
     @Prop() config?:any
-    @Provide() info:string = 'infos'
-    @Provide() clearable:boolean = true
+    info:string = 'infos'
+    clearable:boolean = true
 
-    @Provide() cds:CDataSet = new CDataSet(null)
-    @Provide() widths:Array<string> = new Array<string>()
-    @Provide() beBill:boolean = true
-    @Provide() cdata:CData = new CData("")
-    @Provide() pbuid:string = "";
+    cds:CDataSet = new CDataSet(null)
+    widths:Array<string> = new Array<string>()
+    beBill:boolean = true
+    cdata:CData = new CData("")
+    pbuid:string = "";
     uiCels:Array<any> = new Array<any>();
 
     created(){

@@ -50,15 +50,18 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 审批流程查看页面
+ */
 import { Component, Vue, Provide, Prop, Watch, Emit } from "vue-property-decorator"
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi
 @Component({})
 export default class BipWorkProcess extends Vue{
-    @Provide() chkinfo:any;
-    @Provide() info:Array<any> = [];
-    @Provide() oneRow:any = {};
-    @Provide() opendlg:boolean = false;
+    chkinfo:any;
+    info:Array<any> = [];
+    oneRow:any = {};
+    opendlg:boolean = false;
 
     async open(ceaParams:any){ 
         let res = await tools.getCheckInfo(ceaParams,35);

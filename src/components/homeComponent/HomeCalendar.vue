@@ -78,7 +78,6 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import Calendar from 'mpvue-calendar'
 import 'mpvue-calendar/src/browser-style.css' 
-import { Menu } from "@/classes/Menu";
 import { User } from '@/classes/User';
 import CDataSet from "@/classes/pub/CDataSet"; 
 import { Cells } from "@/classes/pub/coob/Cells";
@@ -98,27 +97,23 @@ export default class HomeCalendar extends Vue {
     @Prop() cont!:string;
     @Prop() rech!:string;
     @Getter('user', { namespace: 'login' }) user?: User;
-    @Provide() cds:CDataSet = new CDataSet('');
-    @Provide() markDate:Array<any> = new Array<any>();//全部样式
-    @Provide() taskData:Array<any> = new Array<any>();
-    
-
-    @Provide() dayClass:any = {};
-    @Provide() holidayDialog:boolean = false;//是否显示节日弹框
-    @Provide() showItemHoliday:boolean  = false;//是否显示修改卡片
-    @Provide() addOrUpHoliday:boolean = true;//是 新增节日，还是修改节日
-
-
-    @Provide() calendarYear:any=0;//日历年
-    @Provide() calendarMonth:any=0;//日历月
-    @Provide() holidayDate:Array<any> = new Array<any>();//自定义节日列表
-    @Provide() taskClass:Array<any> = new Array<any>();//任务样式class集合 
-    @Provide() hdayClass:Array<any> = new Array<any>();//节假日class集合 
-    @Provide() chekcDate:any = null;//选中日期
-    @Provide() canAddHoliday:boolean = false;//是否有新建节日权限
-    @Provide() holidayCell:CDataSet = new CDataSet('');//节日对象
-    @Provide() tileContent:any = [];//自定义日期样式
-    @Provide() almanacs:any={};
+    cds:CDataSet = new CDataSet('');
+    markDate:Array<any> = new Array<any>();//全部样式
+    taskData:Array<any> = new Array<any>();
+    dayClass:any = {};
+    holidayDialog:boolean = false;//是否显示节日弹框
+    showItemHoliday:boolean  = false;//是否显示修改卡片
+    addOrUpHoliday:boolean = true;//是 新增节日，还是修改节日
+    calendarYear:any=0;//日历年
+    calendarMonth:any=0;//日历月
+    holidayDate:Array<any> = new Array<any>();//自定义节日列表
+    taskClass:Array<any> = new Array<any>();//任务样式class集合 
+    hdayClass:Array<any> = new Array<any>();//节假日class集合 
+    chekcDate:any = null;//选中日期
+    canAddHoliday:boolean = false;//是否有新建节日权限
+    holidayCell:CDataSet = new CDataSet('');//节日对象
+    tileContent:any = [];//自定义日期样式
+    almanacs:any={};
 
     async created(){
         let menu = baseTool.findMenu("KQ0303");

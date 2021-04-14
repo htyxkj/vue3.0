@@ -68,11 +68,11 @@ export default class HomeMenu extends Vue {
     @Prop() rech!:string;
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
-    @Provide() menuList:Array<any> = new Array<any>();
-    @Provide() showMenuList:boolean = false;
-    @Provide() selection:Array<any> = new Array<any>();
-    @Provide() optionalMenu:Array<any> = new Array<any>();
-    @Provide() uri:string = '';
+    menuList:Array<any> = new Array<any>();
+    showMenuList:boolean = false;
+    selection:Array<any> = new Array<any>();
+    optionalMenu:Array<any> = new Array<any>();
+    uri:string = '';
     sname:any = "快捷菜单";
     created(){
         this.uri = BaseVariable.BaseUri+'/'

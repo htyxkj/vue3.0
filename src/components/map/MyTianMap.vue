@@ -2,8 +2,10 @@
     <div :id="tMapDiv" class="TMap"></div>
 </template>
 <script lang="ts">
+/**
+ * 天地图
+ */
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
-import { State, Action, Getter, Mutation } from "vuex-class";
 // import {TMap} from "@/lib/TMap";
 import {T} from "./js/TMap"
 @Component({
@@ -12,9 +14,9 @@ import {T} from "./js/TMap"
   }
 })
 export default class MyTianMap extends Vue {
-    @Provide() tMap:any=null;
-    @Provide() tZoom:number=12;
-    @Provide() tMapDiv:any= "MAP"+new Date().getTime();
+    tMap:any=null;
+    tZoom:number=12;
+    tMapDiv:any= "MAP"+new Date().getTime();
     created(){
 
     }

@@ -8,6 +8,9 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 菜单
+ */
 import { Component, Vue, Provide, Prop } from "vue-property-decorator";
 import { Menu } from "@/classes/Menu";
 // import BipMenuItem from "./BipMenuItem.vue";

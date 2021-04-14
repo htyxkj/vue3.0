@@ -48,21 +48,23 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 菜单
+ */
 import { Component, Vue,Provide,Prop,Watch} from "vue-property-decorator";
 import { Menu } from '@/classes/Menu';
-import { LoginState } from '../../store/modules/login/types';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import {BaseVariable} from "@/utils/BaseICL"
 
 @Component({
 })
 export default class BipMenuItem extends Vue{
-    @Provide() name:string="BipMenuItem"
+    name:string="BipMenuItem"
     @Prop() private item!:Menu;
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
-    @Provide() uri:string='';
-    @Provide() canShowChile:boolean = true;
+    uri:string='';
+    canShowChile:boolean = true;
     closeMenu(command:any){
         if(command.indexOf("&") >-1){
             let cc = command.split("&");

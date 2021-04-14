@@ -82,6 +82,9 @@
 </template>
 
 <script lang="ts">
+/**
+ * 计算器 输入字段是数字格式时用到
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 @Component({})
 export default class Calculator extends Vue {

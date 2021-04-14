@@ -26,25 +26,10 @@
     </div>
 </template>
 <script lang="ts">
+/**
+ * 手风琴
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import CDataSet from "@/classes/pub/CDataSet";
-import SearchEntity from "@/classes/SearchEntity";
-import CCliEnv from "@/classes/cenv/CCliEnv";
-import { BIPUtil } from "@/utils/Request"; 
-import echarts from 'echarts'; 
-let tools = BIPUtil.ServApi; 
-import { CommICL } from "@/utils/CommICL";
-
-let icl = CommICL;
-import { State, Action, Getter, Mutation } from "vuex-class";
-import { truncate } from 'fs';
-import { Menu } from "@/classes/Menu";
-import { Cells } from "@/classes/pub/coob/Cells";
-import CData from '../../classes/pub/CData';
-import { BipLayout } from "@/classes/ui/BipLayout";
-import QueryEntity from "@/classes/search/QueryEntity";
-import { BIPUtils } from "@/utils/BaseUtil";
-let baseTool = BIPUtils.baseUtil;
 @Component({
     components: { }
 })
@@ -52,8 +37,8 @@ export default class Accordion extends Vue {
     @Prop() AccordionData:any
     @Prop() Accordionindex:any
     @Prop() isSlotSecond:any
-    @Provide() isshow:any = 0;
-    @Provide() isShrink:boolean = false; 
+    isshow:any = 0;
+    isShrink:boolean = false; 
 
     mounted() {
       this.isshow = this.Accordionindex;

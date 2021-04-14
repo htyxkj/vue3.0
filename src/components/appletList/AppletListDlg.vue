@@ -39,36 +39,22 @@
     </el-row>
 </template>
 <script lang="ts">
+/**
+ * 单据页面弹出列表框  点击页数弹出   1/10
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
-import SearchEntity from "@/classes/SearchEntity";
-import CCliEnv from "@/classes/cenv/CCliEnv";
-import { BIPUtil } from "@/utils/Request"; 
-import echarts from 'echarts'; 
-let tools = BIPUtil.ServApi; 
-import { CommICL } from "@/utils/CommICL";
-
-let icl = CommICL;
-import { State, Action, Getter, Mutation } from "vuex-class";
-import { truncate } from 'fs';
-import { Menu } from "@/classes/Menu";
-import { Cells } from "@/classes/pub/coob/Cells";
-import CData from '../../classes/pub/CData';
-import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
-import { BIPUtils } from "@/utils/BaseUtil";
-let baseTool = BIPUtils.baseUtil;
 @Component({
     components: {BipGridInfo }
 })
 export default class AppletListDlg extends Vue { 
-
-    @Provide() qe: QueryEntity = new QueryEntity("","");
-    @Provide() dsm: CDataSet = new CDataSet(null);
-    @Provide() visibles:boolean = false; 
-    @Provide() data:Array<any> = [];
-    @Provide() rowID:number=0;
+    qe: QueryEntity = new QueryEntity("","");
+    dsm: CDataSet = new CDataSet(null);
+    visibles:boolean = false; 
+    data:Array<any> = [];
+    rowID:number=0;
     mounted() {
 
     }
