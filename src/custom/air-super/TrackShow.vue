@@ -54,7 +54,6 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
-import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
@@ -63,6 +62,7 @@ import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
 import { GPSUtil } from "./class/GPSUtil";
 let Gps = GPSUtil.GPS;
+import {BipMenuBtn} from '@/classes/BipMenuBtn'
 @Component({
     components: {
         tMap,
@@ -71,36 +71,35 @@ let Gps = GPSUtil.GPS;
 })
 export default class TrackShow extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
-    @Provide() style: string =
+    style: string =
         "height:" + (this.height ? this.height - 50 : "400") + "px";
-    @Provide() selMap: string = "tianMap";
-    @Provide() tMap: any = null;
-    @Provide() tZoom: number = 12;
-    @Provide() areaWidth: number = 0; //测边行政区宽度
-    @Provide() areaBtnOpen: boolean = false; //左侧区域是否显示
-    @Provide() PreviousFlowPoint:any = null;//上一个流量点
-    @Provide() loading: boolean = false;
-    @Provide() showTaskTjCell: boolean = false; //是否显示查询对象弹出框
-    @Provide() taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
-    @Provide() taskData:any=[];//任务数据集
-    @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
-    @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
-    @Provide() sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
-    @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
-    @Provide() flightBeltOpacity:number = 0.3;//航道透明度
-    @Provide() flightBeltWidth:number = 0;//航带宽度 米
-    @Provide() trackColor:string = "#FFFF00";//航迹颜色
-    @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
-    @Provide() params:any = null;
-    @Provide() pointMsg:any ={};//数据点提示
-    @Provide() isShowPoint:boolean = false;//是否显示数据提示点
-    @Provide() points:any =[];//点集合
-    @Provide() CloudMarkerCollection:any =null;//海量点对象
-    @Provide() trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
+    selMap: string = "tianMap";
+    tMap: any = null;
+    tZoom: number = 12;
+    areaWidth: number = 0; //测边行政区宽度
+    areaBtnOpen: boolean = false; //左侧区域是否显示
+    PreviousFlowPoint:any = null;//上一个流量点
+    loading: boolean = false;
+    showTaskTjCell: boolean = false; //是否显示查询对象弹出框
+    taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
+    taskData:any=[];//全部数据记录
+    sprayLine0:any=[];//喷洒轨迹（农药范围）
+    sprayLine1:any=[];//喷洒轨迹（一像素的线）
+    sprayLine2:any=[];//飞行轨迹（没有喷洒农药的轨迹线）
+    sprayBreak:boolean = true;//喷洒是否中断
+    flightBeltColor:string = "#ADFF2F"//行带颜色
+    flightBeltOpacity:number = 0.3;//航道透明度
+    flightBeltWidth:number = 0;//航带宽度 米
+    trackColor:string = "#FFFF00";//航迹颜色
+    noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
+    params:any = null;
+    isShowPoint:boolean = false;//是否显示数据提示点
+    points:any =[];//点集合
+    CloudMarkerCollection:any =null;//海量点对象
+    trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
     //起降点信息
-    @Provide() takeoff:any = null;//起降点
-    @Provide() takeoffRange:any = 50;//起降点范围
+    takeoff:any = null;//起降点
+    takeoffRange:any = 50;//起降点范围
     showTKName:boolean = false;//显示任务名称
     async created() {
         this.params = this.$route.params;
@@ -133,7 +132,6 @@ export default class TrackShow extends Vue {
     clearCover() {
         this.showTKName = false;
         this.tMap.clearOverLays();
-        this.taskData = [];
         this.sprayLine0 = [];
         this.sprayLine1 = [];
         this.sprayLine2 = [];
@@ -146,7 +144,6 @@ export default class TrackShow extends Vue {
     async getOneTask() {
         this.showTKName = true;
         this.PreviousFlowPoint = null;        
-        this.taskData = [];
         this.sprayLine0 = [];
         this.sprayLine1 = [];
         this.sprayLine2 = [];
@@ -188,11 +185,36 @@ export default class TrackShow extends Vue {
                     TMapUt.makeRoute(route,"",this.tMap)//路线
                 }
            }
-           this.pointMsg={};
             // TMapUt.getOpera(oaid,this.tMap);//作业区
             // TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             // TMapUt.getOperaBr(oaid,this.tMap);//避让区
             // TMapUt.makeRoute(route,"",this.tMap)//路线
+            this.showTaskTjCell = false;
+            // let condition = {bgTime:bgtime,edTime:edtime,tkid:tkid,sbid:tlid};
+            // let btn1 = new BipMenuBtn("DLG"," 数据建模")
+            // btn1.setDlgType("D")
+            // btn1.setDlgCont("airfence.upgrade.serv.realTime.RealTimeInvoke*240;0;0");//数据建模
+            // let b = JSON.stringify(btn1)
+            // let v = JSON.stringify(condition);
+            // let t1 = new Date().getTime();
+            // let res:any = await tools.getDlgRunClass(v,b);
+            // let t2 = new Date().getTime();
+            // this.$notify.success("查询任务数据用时（秒）" + (t2 - t1) / 1000);
+            // if(res.data.id ==0){
+            //     let data = res.data.data.data;
+            //     let sprayLine0 = data[0];//有流量集合
+            //     let sprayLine1 = data[1];//没有流量集合
+            //     for(var i=0;i<sprayLine0.length;i++){
+            //         this.drawTrack(sprayLine0[i],true)
+            //     }
+            //     for(var i=0;i<sprayLine1.length;i++){
+            //         this.drawTrack(sprayLine1[i],false)
+            //     }
+            //     this.drawLine();
+            // }else{
+            //     this.$notify.error("查询任务数据出错");
+            // }
+            // this.loading = false;
 
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
@@ -212,11 +234,54 @@ export default class TrackShow extends Vue {
             let t2 = new Date().getTime();
             this.$notify.success("查询任务数据用时（秒）" + (t2 - t1) / 1000);
             if (cc.data.id == 0) {
-                let values = cc.data.data.data.values;
-                this.taskData = values;
-                setTimeout(() => {
-                    this.drawTrack(0);
-                }, 200);
+                this.taskData = cc.data.data.data.values;
+                let sprayLine0 = [];//有流量集合
+                let sprayLine1 = [];//没有流量集合
+                for(var i=0;i< this.taskData.length;i++){
+                    this.taskData[i].index =i;
+                    let data = this.taskData[i];
+                    if(data){
+                        let lnglat = [data.latitude, data.longitude]
+                        if(!data.sbid){
+                            lnglat = Gps.bd09_To_gps84(data.latitude,data.longitude);
+                            data.longitude = lnglat[1];
+                            data.latitude = lnglat[0]
+                        }
+                        let flow = data.flow;
+                        if(flow>0){//有流量去划线
+                            if(this.sprayBreak){//中断过需要从起一条线
+                                if(sprayLine1.length>0){
+                                    sprayLine1[sprayLine1.length-1].push(data);
+                                }
+                                sprayLine0.push([data]);
+                            }else{//没有中断需要在最后一条线追加点 或重画最后一条线
+                                sprayLine0[sprayLine0.length-1].push(data);
+                            }
+                            this.sprayBreak = false;
+                        }else{
+                            if(this.trackType =="0" || this.trackType =="2"){
+                                if(this.sprayBreak && sprayLine1.length>0){
+                                    sprayLine1[sprayLine1.length-1].push(data);
+                                }else{
+                                    let points = [];
+                                    if(this.PreviousFlowPoint)
+                                        points.push(this.PreviousFlowPoint);
+                                    points.push(data)
+                                    sprayLine1.push(points);
+                                }
+                            }
+                            this.sprayBreak = true;
+                        }
+                        this.PreviousFlowPoint = data;
+                    }
+                }
+                for(var i=0;i<sprayLine0.length;i++){
+                    this.drawTrack(sprayLine0[i],true)
+                }
+                for(var i=0;i<sprayLine1.length;i++){
+                    this.drawTrack(sprayLine1[i],false)
+                }
+                this.drawLine();
             }else{
                 this.loading = !this.loading;
             }
@@ -260,13 +325,17 @@ export default class TrackShow extends Vue {
         }
     }
     /**
-     * 绘制 航带 航迹 
+     *  绘制 航带 航迹 
+     * @param values:数据
+     * @param isFlow:是否是流量线
      */
-    drawTrack(index:number){
-        this.points = [];
+    drawTrack(values:any,isFlow:any){
         let zoom = this.tMap.getZoom();
-        for(var i = index ;i<this.taskData.length;i++){
-            let data = this.taskData[i];
+        let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
+        let weight = this.flightBeltWidth *cc; //换算一米转多少像素
+        let points = [];
+        for(var i=0;i<values.length;i++){
+            let data = values[i];
             if(data){
                 let lnglat = [data.latitude, data.longitude]
                 if(!data.sbid){
@@ -274,90 +343,36 @@ export default class TrackShow extends Vue {
                     data.longitude = lnglat[1];
                     data.latitude = lnglat[0]
                 }
-                let flow = data.flow;
                 let lgt = new T.LngLat(data.longitude, data.latitude)
-                this.points.push(lgt);
-                let key = data.longitude+"_"+data.latitude;
-                lgt.kid = key;
-                 let msg = "<div>任务编码："+this.taskTjCell.currRecord.data.sid+"<br/>任务名称："+this.taskTjCell.currRecord.data.taskname+"<br/>定位信息:"+
-                lnglat[1]+","+ lnglat[0]+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+data.speedtime+"<br/>"+
-                "瞬时流量："+flow+"m³/h<br />"+`累计流量：${data.sumfolw}m³ <br />速度：${data.speed}km/h <br />高度：${data.height}/m`
-                this.pointMsg[key]= msg;
-
-                if(flow>0){//有流量去划线
-                    if(this.sprayBreak){//中断过需要从起一条线
-                        let points = [];
-                        if(this.sprayLine2.length>0){
-                            let line2 = this.sprayLine2[this.sprayLine2.length-1];
-                            let points2 = line2.getLngLats();
-                            points2.push(lgt);
-                            line2.setLngLats(points2)
-                        }
-                        if(this.trackType == "1" || this.trackType == "2"){
-                            let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
-                            let opts0 = {color:this.flightBeltColor,weight:cc*this.flightBeltWidth,opacity:this.flightBeltOpacity};
-                            points.push(lgt);
-                            var newLine0 = new T.Polyline(points,opts0);
-                            this.sprayLine0.push(newLine0)
-                        }
-
-                        let opts1 = {color:this.trackColor,weight:3,opacity:1};
-                        var newLine1 = new T.Polyline(points,opts1);
-                        this.sprayLine1.push(newLine1)
-                    }else{//没有中断需要在最后一条线追加点 或重画最后一条线
-                        if(this.trackType == "1" || this.trackType == "2"){
-                            let line0 = this.sprayLine0[this.sprayLine0.length-1];
-                            let points0 = line0.getLngLats();
-                            points0.push(lgt);
-                            line0.setLngLats(points0)
-                        }
-                        let line1 = this.sprayLine1[this.sprayLine1.length-1];
-                        let points1 = line1.getLngLats();
-                        points1.push(lgt);
-                        line1.setLngLats(points1)
-                    }
-                    this.sprayBreak = false;
-                }else{
-                    if(this.trackType =="0" || this.trackType =="2"){
-                        if(this.sprayBreak && this.sprayLine2.length>0){
-                            let line2 = this.sprayLine2[this.sprayLine2.length-1];
-                            let points2 = line2.getLngLats();
-                            points2.push(lgt);
-                            line2.setLngLats(points2)
-                        }else{
-                            let opts2 = {color:this.noFlowColor,weight:3,opacity:1};
-                            let points = [];
-                            if(this.PreviousFlowPoint)
-                                points.push(this.PreviousFlowPoint);
-                            points.push(lgt);
-                            var newLine2 = new T.Polyline(points,opts2);
-                            this.sprayLine2.push(newLine2)
-                        }
-                    }
-                    this.sprayBreak = true;
-                }
-                this.PreviousFlowPoint = lgt;
-            }
-            index = i;
-            if(i !=0 && i%5000 == 0){
-                setTimeout(() => {
-                    this.drawTrack(index+1);
-                }, 600);
-                break;
+                lgt.kid = data.index;
+                points.push(lgt);
             }
         }
-        if(index >= this.taskData.length-1){
-            this.drawLine();
+        if(isFlow){
+            if(this.trackType == "1" || this.trackType == "2"){
+                let opts0 = {color:this.flightBeltColor,weight:weight,opacity:this.flightBeltOpacity};
+                var newLine0 = new T.Polyline(points,opts0);
+                this.sprayLine0.push(newLine0)
+            }
+            let opts1 = {color:this.trackColor,weight:3,opacity:1};
+            var newLine1 = new T.Polyline(points,opts1);
+            this.sprayLine1.push(newLine1)
+        }else{
+            if(this.trackType =="0" || this.trackType =="2"){
+                let opts2 = {color:this.noFlowColor,weight:3,opacity:1};
+                var newLine2 = new T.Polyline(points,opts2);
+                this.sprayLine2.push(newLine2)
+            }
         }
+        this.points = this.points.concat(points);
     }
     drawLine(){
-        this.taskData=[];
         let t1 = this.tMap.getViewport(this.points);
         if(t1){
             this.tMap.panTo(t1.center, t1.zoom);
         }
-        this.zoomend();
         this.loading = !this.loading;
+        this.zoomend();
         if(this.isShowPoint){
             this.CloudMarkerCollection = new T.CloudMarkerCollection(this.points,{
                 color:'blue',
@@ -365,13 +380,16 @@ export default class TrackShow extends Vue {
             })
             let _this = this;
             this.CloudMarkerCollection.addEventListener("click", function (e:any) {
-                console.log(e)
                 var lnglat = e.lnglat;
+                let data = _this.taskData[lnglat.kid];
+                let msg = "<div>任务编码："+_this.taskTjCell.currRecord.data.sid+"<br/>任务名称："+_this.taskTjCell.currRecord.data.taskname+"<br/>定位信息:"+
+                data.longitude+","+ data.latitude+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+data.speedtime+"<br/>"+
+                "瞬时流量："+data.flow+"m³/h<br />"+`累计流量：${data.sumfolw}m³ <br />速度：${data.speed}km/h <br />高度：${data.height}/m`
                 //创建信息窗口对象
                 var infoWin = new T.InfoWindow();
                 infoWin.setLngLat(lnglat);
                 //设置信息窗口要显示的内容
-                infoWin.setContent(_this.pointMsg[lnglat.kid]);
+                infoWin.setContent(msg);
                 _this.tMap.addOverLay(infoWin);
             });// 将标注添加到地图中 
             this.tMap.addOverLay(this.CloudMarkerCollection);
@@ -452,11 +470,15 @@ export default class TrackShow extends Vue {
             let _this = this;
             this.CloudMarkerCollection.addEventListener("click", function (e:any) {
                 var lnglat = e.lnglat;
+                let data = _this.taskData[lnglat.kid];
+                let msg = "<div>任务编码："+_this.taskTjCell.currRecord.data.sid+"<br/>任务名称："+_this.taskTjCell.currRecord.data.taskname+"<br/>定位信息:"+
+                data.longitude+","+ data.latitude+"<br/>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间："+data.speedtime+"<br/>"+
+                "瞬时流量："+data.flow+"m³/h<br />"+`累计流量：${data.sumfolw}m³ <br />速度：${data.speed}km/h <br />高度：${data.height}/m`
                 //创建信息窗口对象
                 var infoWin = new T.InfoWindow();
                 infoWin.setLngLat(lnglat);
                 //设置信息窗口要显示的内容
-                infoWin.setContent(_this.pointMsg[lnglat.kid]);
+                infoWin.setContent(msg);
                 _this.tMap.addOverLay(infoWin);
             });// 将标注添加到地图中 
             this.tMap.addOverLay(this.CloudMarkerCollection);
