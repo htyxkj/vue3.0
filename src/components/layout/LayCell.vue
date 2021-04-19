@@ -1,18 +1,41 @@
 <template>
     <div v-if="laycell" class="bip-lay">
         <template v-if="laycell&&!laycell.btable">
-            <template v-if="uiCels.length == 0">
-                <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
+            <template v-if="!isChild">
+                <template v-if="uiCels.length == 0">
+                    <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                </template>
+                <template v-else>
+                    <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
+                        <div slot="header" class="clearfix">
+                            <span>{{item.title}}</span>
+                        </div>
+                        <div>
+                            <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                        </div>
+                    </el-card>
+                </template>
             </template>
             <template v-else>
-                <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
-                    <div slot="header" class="clearfix">
-                        <span>{{item.title}}</span>
-                    </div>
-                    <div>
-                        <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config"/>
-                    </div>
-                </el-card>
+                <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
+                    <el-col class="childBtn">
+                        <el-button size="mini" @click="addRecord">添加</el-button>
+                        <el-button size="mini" type="danger" @click="delRecord(rowId)">删除</el-button>
+                    </el-col>
+                    <template v-if="uiCels.length == 0">
+                        <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                    </template>
+                    <template v-else>
+                        <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
+                            <div slot="header" class="clearfix">
+                                <span>{{item.title}}</span>
+                            </div>
+                            <div>
+                                <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                            </div>
+                        </el-card>
+                    </template>
+                </div>
             </template>
         </template>
         <template v-else>
@@ -43,17 +66,21 @@ export default class LayCell extends Vue{
     cds:CDataSet = new CDataSet(null)
     widths:Array<string> = new Array<string>()
     beBill:boolean = true
-    cdata:CData = new CData("")
     pbuid:string = "";
     uiCels:Array<any> = new Array<any>();
+
+    isChild:boolean = false;
 
     created(){
         this.initWidth();
         this.initSfix();
         this.cds = this.env.getDataSet(this.laycell.obj_id);
         this.beBill = this.env.uriParams.beBill
-        this.cdata = this.cds.cdata
         this.pbuid = this.env.uriParams.pbuid;
+        if(this.cds.ds_par && !this.laycell.btable){
+            this.isChild =true;
+            this.addRecord();
+        }
     }
 
     addRecord(){
@@ -109,6 +136,42 @@ export default class LayCell extends Vue{
         }
     }
 
+    /**
+     * 删除行
+     * @param rowId 行号
+     */
+    delRecord(rowId:any){
+        if(this.cds.currCanEdit() && this.cds.cdata.data.length>1){
+            this.cds.cdata.rmdata.push(this.cds.getRecordAtIndex(rowId));
+            this.cds.cdata.data.splice(rowId,1); 
+            this.cds.setState(2);
+            let xinc = -1;
+            if (this.cds.ccells.pkindex) xinc = this.cds.ccells.pkindex[0];
+            if (xinc >= 0) {
+                let cel = this.cds.ccells.cels[xinc];
+                let s0 = cel.psAutoInc;
+                if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
+                    for(var i=0;i<this.cds.cdata.data.length;i++){
+                        let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                        this.cds.cdata.data[i].oldpk.push(oldKey);
+                        this.cds.cdata.data[i].data[cel.id] = i + 1
+                        this.cds.cdata.data[i].c_state |= 16;
+                    }
+                }
+            }
+            this.cds.currRecord.c_state |= 2;
+            if(this.cds.ds_par){
+                this.cds.ds_par.currRecord.c_state |= 2;
+            }
+        }
+    }
+
+    
+    focus(res:any){
+        this.cds.index = res.rowId;
+        this.cds.currRecord = this.cds.getRecordAtIndex(res.rowId);
+    }
+
     getNumChar(cell:any):number{
         let cn = cell.ccCharleng
         return cn
@@ -127,6 +190,13 @@ export default class LayCell extends Vue{
     }
     invokecmd(btn:any){
         this.$emit("invokecmd",btn)
+    }
+    @Watch("cds.cdata",{deep:true})
+    cdataChange(){
+        if(this.cds.ds_par && !this.laycell.btable && this.cds.cdata.data.length ==0){
+            this.isChild =true;
+            this.addRecord();
+        }
     }
 }
 </script>
@@ -149,6 +219,14 @@ export default class LayCell extends Vue{
     margin-bottom: 5px;
     .el-card__body{
         padding: 5px;
+    }
+}
+.childBtn{
+    text-align: end;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    button{
+        width: 120px;
     }
 }
 </style>
