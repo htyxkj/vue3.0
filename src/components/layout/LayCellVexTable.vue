@@ -523,7 +523,10 @@ export default class LayCelVexTable extends Vue {
                 let s0 = cel.psAutoInc;
                 if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
                     for(var i=0;i<this.cds.cdata.data.length;i++){
+                        let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                        this.cds.cdata.data[i].oldpk.push(oldKey);
                         this.cds.cdata.data[i].data[cel.id] = i + 1
+                        this.cds.cdata.data[i].c_state |= 16;
                     }
                 }
             }
