@@ -50,17 +50,17 @@ export default class BipTreeEditor extends Vue{
     @Prop() model!:string
     @Prop() bgrid!:boolean
     @Prop() bipInsAid!:BipInsAidNew
-    @Provide() span:number = 6
-    @Provide() model1:string = ''
-    // @Provide() disabled:boolean = false
-    @Provide() clearable:boolean = true
-    @Provide() attr:CommATTR = new CommATTR()
-    @Provide() showQueryInfo:boolean =false;
-    @Provide() refLink:BipInsAidNew = new BipInsAidNew("")
-    @Provide() linkName:string = ""    
-    @Provide() aidMarkKey:string = "";
-    @Provide() bcode: boolean = false;//文本编码
-    @Provide() TreeDataChangeID:any =null;
+    span:number = 6
+    model1:string = ''
+    // disabled:boolean = false
+    clearable:boolean = true
+    attr:CommATTR = new CommATTR()
+    showQueryInfo:boolean =false;
+    refLink:BipInsAidNew = new BipInsAidNew("")
+    linkName:string = ""    
+    aidMarkKey:string = "";
+    bcode: boolean = false;//文本编码
+    TreeDataChangeID:any =null;
 
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -110,6 +110,7 @@ export default class BipTreeEditor extends Vue{
     }
 
     iconClick(){
+        this.$emit("focus",{})
         if(this.bipInsAid){
             if (!((this.cell.attr & 0x40) > 0)) {
                 this.showQueryInfo = true;
@@ -165,6 +166,7 @@ export default class BipTreeEditor extends Vue{
 
     getFocus(gets: boolean) {
         if (gets) {
+            this.$emit("focus",{})
             if (this.refLink && this.refLink.realV) {
                 this.model1 = this.refLink.realV;
             } else {

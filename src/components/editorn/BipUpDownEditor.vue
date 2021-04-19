@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="true">
+                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="true" @focus="focus">
                     <i slot="suffix" class="el-input__icon el-icon-document"  :disabled="disabled" @click="iconClick()"></i>
                 </el-input>
                 <template v-if="cell.desc">
@@ -15,7 +15,7 @@
             </el-form-item>
             </template>
         <template v-else>
-                <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="true">
+                <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="true"  @focus="focus">
                     <i slot="suffix" class="el-input__icon el-icon-document"  :disabled="disabled" @click="iconClick()"></i>
                 </el-input>
         </template>
@@ -36,43 +36,46 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
     components:{BipFileInfo}
 })
 export default class BipUpDownEditor extends Vue{
-  @Prop() env!:CCliEnv    
-  @Prop() cds!: CDataSet;
-  @Prop() cell!: Cell;
-  @Prop() row!:number
-  @Prop() bgrid!:boolean
-  @Prop() model?: any ;
-  @Provide() model1: any = "";
-  @Provide() clearable: boolean = false;
-  @Provide() disabled: boolean = false;
-  @Provide() fj_root:string = ''
-  @Provide() span:number = 6
+    @Prop() env!:CCliEnv    
+    @Prop() cds!: CDataSet;
+    @Prop() cell!: Cell;
+    @Prop() row!:number
+    @Prop() bgrid!:boolean
+    @Prop() model?: any ;
+    model1: any = "";
+    clearable: boolean = false;
+    disabled: boolean = false;
+    fj_root:string = ''
+    span:number = 6
   
-  mounted(){
-    //   if(this.cds&&this.cell){
-          this.model1 = this.model
-          this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
-    //   }
-  }
+    mounted(){
+        //   if(this.cds&&this.cell){
+            this.model1 = this.model
+            this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
+        //   }
+    }
 
-  iconClick(){
-    if(!this.disabled){
-        setTimeout(()=>{
+    iconClick(){
+        this.focus();
+        if(!this.disabled){
+            setTimeout(()=>{
+                let file:any = this.$refs.file
+                file.open()
+            },100);
+        }  
+    }
+
+    selectOK(bok:boolean){
             let file:any = this.$refs.file
-            file.open()
-        },100);
-    }  
-  }
-
-  selectOK(bok:boolean){
-        let file:any = this.$refs.file
-        file.close()
-  }
-
-  @Watch('model')
-  dataChange(){
-      this.model1 = this.model;
-  }
+            file.close()
+    }
+    focus(){
+        this.$emit("focus",{})
+    }
+    @Watch('model')
+    dataChange(){
+        this.model1 = this.model;
+    }
 
 }
 </script>

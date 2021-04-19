@@ -55,27 +55,27 @@ export default class BipInsAidEditor extends Vue{
     @Prop() row!:number
     @Prop() bgrid!:boolean
     @Prop() bipInsAid!:BipInsAidNew
-    @Provide() model1:any = ""
-    @Provide() clearable:boolean = false
-    @Provide() multiple:boolean = false
-    @Provide() refId:string = ''
-    @Provide() initOK:boolean = false
-    @Provide() span:number = 6
+    model1:any = ""
+    clearable:boolean = false
+    multiple:boolean = false
+    refId:string = ''
+    initOK:boolean = false
+    span:number = 6
 
-    @Provide() methodName:string = ''
+    methodName:string = ''
 
-    @Provide() dia:boolean = false;
+    dia:boolean = false;
 
     readonly:boolean = false;//非输入
 
-    @Provide() mulcols: boolean = false;//多列
-    @Provide() bcode: boolean = false;//文本编码
-    @Provide() bfmt: boolean = false;//格式化
-    @Provide() othCols: Array<string> = [];
-    @Provide() othColsIndex: Array<number> = [];
-    @Provide() refLink:BipInsAidNew = new BipInsAidNew("")
-    @Provide() linkName:string = ""
-    @Provide() aidMarkKey:string = "";
+    mulcols: boolean = false;//多列
+    bcode: boolean = false;//文本编码
+    bfmt: boolean = false;//格式化
+    othCols: Array<string> = [];
+    othColsIndex: Array<number> = [];
+    refLink:BipInsAidNew = new BipInsAidNew("")
+    linkName:string = ""
+    aidMarkKey:string = "";
 
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -152,6 +152,7 @@ export default class BipInsAidEditor extends Vue{
 
     iconClick(checkCell:boolean = true) {
         console.log("iconClick")
+        this.$emit("focus",{})
         if(checkCell && this.bipInsAid && this.bipInsAid.cells && this.bipInsAid.cells.cels.length ==0){
             this.$emit("refInsAid")
             return;
@@ -370,11 +371,12 @@ export default class BipInsAidEditor extends Vue{
 
     getFocus(gets: boolean) {
         if (gets) {
-                if (this.refLink && this.refLink.realV) {
-                    this.model1 = this.refLink.realV;
-                } else {
-                    this.model1 = this.model;
-                }
+            this.$emit("focus",{})
+            if (this.refLink && this.refLink.realV) {
+                this.model1 = this.refLink.realV;
+            } else {
+                this.model1 = this.model;
+            }
         } else {
             if (this.refLink && this.refLink.showV) {
                 if (this.bcode) {

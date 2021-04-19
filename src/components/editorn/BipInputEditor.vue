@@ -1,8 +1,16 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
-            <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input :type="cell.ccVerCell>1?'textarea':'text'" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange"></el-input>
+            <template v-if="cell.ccVerCell>1 && span == cell.ccHorCell">
+                <el-row class="el-form-item__label title">
+                    <span :class="cell.isReq?'is-required':''">
+                        <template v-if="cell.isReq">
+                            *
+                        </template>
+                        {{cell.labelString}}
+                    </span>
+                </el-row>
+                <el-input type="textarea" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
                 <template v-if="cell.desc">
                     <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
                         <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
@@ -10,11 +18,23 @@
                         </el-tooltip>
                     </span>
                 </template>
-                <div v-if="cell.type <=90 && model1.length>cell.ccLeng" class="el-form-item__error">长度应小于等于{{cell.ccLeng}}个字符</div>
-            </el-form-item>
+            </template>
+            <template v-else>
+                <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                    <el-input :type="cell.ccVerCell>1?'textarea':'text'" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
+                    <template v-if="cell.desc">
+                        <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                            <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                                <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                            </el-tooltip>
+                        </span>
+                    </template>
+                    <div v-if="cell.type <=90 && model1.length>cell.ccLeng" class="el-form-item__error">长度应小于等于{{cell.ccLeng}}个字符</div>
+                </el-form-item>
+            </template>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange"></el-input>
+             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
         </template>
     </el-col>
 </template>
@@ -70,6 +90,9 @@ export default class BipInputEditor extends Vue{
             }
         }   
     }
+    focus(){
+        this.$emit("focus",{});
+    }
     @Watch("model")
     cdataSetRecordChange(){
         if(this.cds&&this.cell){
@@ -81,5 +104,13 @@ export default class BipInputEditor extends Vue{
     }
 }
 </script>
-
+<style scoped>
+.title{
+    width: 100%;
+    margin: 0px;
+}
+.is-required {
+    color: #d62121;
+}
+</style>
 

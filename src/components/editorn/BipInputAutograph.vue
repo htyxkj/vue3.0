@@ -81,6 +81,7 @@ export default class BipAutograph extends Vue{
         }
     } 
     write(){
+        this.$emit("focus",{})
         this.showSignature = true; 
         if(this.model1 != null && this.model1 !=''){
             this.canvas_isimg = true;
