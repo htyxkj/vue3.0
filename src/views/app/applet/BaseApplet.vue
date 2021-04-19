@@ -1276,8 +1276,12 @@ export default class BaseApplet extends Vue{
     background-color: #f9f9f9;
 }
 .bip-btn-small{
-    text-align:center;
-    padding-top:180px;
+    // text-align:center;
+    // padding-top:180px;
+    text-align: center;
+    position: fixed;
+    bottom: 10px;
+    width: inherit;
 }
 .bip-btn-small .menubar{
     padding-top: 10px !important;
