@@ -148,6 +148,7 @@ export default class TrackShow extends Vue {
         this.sprayLine1 = [];
         this.sprayLine2 = [];
         this.sprayBreak = true;
+        this.points = [];
         try {
             let bok = TMapUt.checkNotNull(this.taskTjCell);
             if(bok.length>1){
