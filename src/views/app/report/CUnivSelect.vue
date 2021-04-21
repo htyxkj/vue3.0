@@ -67,7 +67,6 @@ let baseTool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from "vuex-class";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 import { Cells } from "@/classes/pub/coob/Cells";
-// import BipLayCells from "@/classes/ui/BipLayCells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipMenuBar from "@/classes/pub/BipMenuBar"; 
 import CCliEnv from "@/classes/cenv/CCliEnv";
@@ -77,37 +76,31 @@ import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
 import { Menu } from '../../../classes/Menu';
 let _ = require('lodash');
-// import { on } from 'cluster';
-// import { types } from 'util';
-// import { connect } from 'echarts';
-// import { throws } from 'assert';
-// import BipLayConf from '../../../classes/ui/BipLayConf';
-// import { truncate } from 'fs';
 @Component({
     components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg,ImExFile,BipMapShow}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
-    @Provide() fullscreenLoading: boolean = false;
-    @Provide() cells: Array<Cells> = new Array<Cells>();
-    @Provide() mbs: BipMenuBar = new BipMenuBar(0);
-    @Provide() dsm: CDataSet = new CDataSet(null);
-    @Provide() dsm_cont: CDataSet = new CDataSet(null);
-    @Provide() ds_ext: Array<CDataSet> = Array<CDataSet>();
-    @Provide() lay: BipLayout = new BipLayout("");
-    @Provide() env: CCliEnv = new CCliEnv();
-    @Provide() listIndex: number = -1;
-    @Provide() qe: QueryEntity = new QueryEntity("","");
-    @Provide() TJ :boolean = false;//是否是统计图
-    @Provide() TJDlog :boolean = false;//是否显示统计dlog
-    @Provide() Statistics:any=null;//统计条件集
-    @Provide() pmenuid:string = "";
-    @Provide() handleSizeChangeBusID:number = 0
-    @Provide() handleCurrentChangeBusID:number = 0
-    @Provide() initShowChar:boolean = false;
-    @Provide() biType?:string;
-    @Provide() config:any={};
+    fullscreenLoading: boolean = false;
+    cells: Array<Cells> = new Array<Cells>();
+    mbs: BipMenuBar = new BipMenuBar(0);
+    dsm: CDataSet = new CDataSet(null);
+    dsm_cont: CDataSet = new CDataSet(null);
+    ds_ext: Array<CDataSet> = Array<CDataSet>();
+    lay: BipLayout = new BipLayout("");
+    env: CCliEnv = new CCliEnv();
+    listIndex: number = -1;
+    qe: QueryEntity = new QueryEntity("","");
+    TJ :boolean = false;//是否是统计图
+    TJDlog :boolean = false;//是否显示统计dlog
+    Statistics:any=null;//统计条件集
+    pmenuid:string = "";
+    handleSizeChangeBusID:number = 0
+    handleCurrentChangeBusID:number = 0
+    initShowChar:boolean = false;
+    biType?:string;
+    config:any={};
 
     CondiyionShow:boolean = true;
     isMap:boolean = false;      //是否是地图页面
@@ -206,7 +199,9 @@ export default class CUnivSelect extends Vue {
                     this.dsm.polnk = this.uriParams.pbds.polnk;
                 }
             }
-            this.initData(); 
+            let bok = this.checkNotNull(this.dsm_cont,false); 
+            if(bok)
+                this.initData(); 
         }else{
             this.pmenuid = this.$route.query.pmenuid+'';
             this.initVal(); 
@@ -406,7 +401,7 @@ export default class CUnivSelect extends Vue {
         this.findServerData(this.qe);
     }
     //条件非空校验
-    checkNotNull(cds:CDataSet):boolean{ 
+    checkNotNull(cds:CDataSet,showMsg:boolean=true):boolean{ 
         let bok = true;
         cds.ccells.cels.forEach(item => {
             if (item.unNull&&bok) {
@@ -414,6 +409,7 @@ export default class CUnivSelect extends Vue {
                 if(cds.currRecord.data[item.id]!=null)
                     vl = cds.currRecord.data[item.id]+'';
                 if (!vl) {
+                    if(showMsg)
                     this.$notify.warning( "【" + item.labelString + "】不能为空!");
                     bok =  false;
                     return false;
@@ -624,7 +620,9 @@ export default class CUnivSelect extends Vue {
             });
             if(this.dsm.cdata.data.length==0 && b){
                 this.qe.page.currPage =1;
-                this.find();
+                let bok = this.checkNotNull(this.dsm_cont,false); 
+                if(bok)
+                    this.find();
             }
         }
     }
