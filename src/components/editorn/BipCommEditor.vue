@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-if="assit&&bipInsAid!=null"> 
-            <template  v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor')">
+            <template  v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor') || editName=='Y'">
                 <bip-date-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-date-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CFlowEditor'">
