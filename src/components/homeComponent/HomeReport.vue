@@ -36,7 +36,8 @@ export default class HomeReport extends Vue {
         this.init();
         setTimeout(() => {
             var x:any =document.getElementById(this.sid);
-            this.chartHeight = x.clientHeight-42
+            if(x)
+                this.chartHeight = x.clientHeight-42
         }, 200);        
         this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.itemChange)
     }
@@ -90,7 +91,8 @@ export default class HomeReport extends Vue {
     }
     itemChange(){
         var x:any =document.getElementById(this.sid);
-        this.chartHeight = x.clientHeight-42
+        if(x)
+            this.chartHeight = x.clientHeight-42
     }
     beforeDestroy(){
         this.$bus.$off('componentsizechange',this.componentsizechangeBusID)

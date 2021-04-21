@@ -98,7 +98,7 @@ export default class BipNumberEditor extends Vue {
       if (this.model1 !== this.model) {
         let chkr = true;
         if (this.model1) {
-          if(this.model1.indexOf("~") ==-1){
+          if((this.model1+"").indexOf("~") ==-1){
             if (!this.isNumber(this.model1)) {
               let errInfo: string = "请输入数字...";
               this.$message({

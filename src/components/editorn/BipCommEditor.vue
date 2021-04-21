@@ -97,28 +97,28 @@ export default class BipCommEditor extends Vue{
     @Prop() row!:number
     @Prop() bgrid!:boolean
     @Prop() cdsCount!:CDataSet
-    @Provide() editorType:number = 0
-    @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
-    @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
-    @Provide() I_EDITOR_CHECK = ICL.I_EDITOR_CHECK 
-    @Provide() I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
-    @Provide() I_EDITOR_AUTOGRAPH = ICL.I_EDITOR_AUTOGRAPH
-    @Provide() I_EDITOR_NUM = ICL.I_EDITOR_NUM
-    @Provide() I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
-    @Provide() I_EDITOR_COLOR = ICL.I_EDITOR_COLOR
+    editorType:number = 0
+    I_EDITOR_LIST = ICL.I_EDITOR_LIST
+    I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
+    I_EDITOR_CHECK = ICL.I_EDITOR_CHECK 
+    I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
+    I_EDITOR_AUTOGRAPH = ICL.I_EDITOR_AUTOGRAPH
+    I_EDITOR_NUM = ICL.I_EDITOR_NUM
+    I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
+    I_EDITOR_COLOR = ICL.I_EDITOR_COLOR
     I_EDITOR_IMG = ICL.I_EDITOR_IMG
-    @Provide() model:any = ''
-    @Provide() bsearch:boolean = false
-    @Provide() assit:boolean = false
-    @Provide() editName:any = ''
-    @Provide() aidMarkKey:string = "";
-    @Provide() bipInsAid:BipInsAidNew|null = null
-    @Provide() qe:QueryEntity = new QueryEntity("","")
+    model:any = ''
+    bsearch:boolean = false
+    assit:boolean = false
+    editName:any = ''
+    aidMarkKey:string = "";
+    bipInsAid:BipInsAidNew|null = null
+    qe:QueryEntity = new QueryEntity("","")
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-    @Provide() eventId:number = 0
+    eventId:number = 0
     async mounted(){
         await this.init();
     }
