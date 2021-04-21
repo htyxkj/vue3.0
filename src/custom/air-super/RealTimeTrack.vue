@@ -636,7 +636,6 @@ export default class RealTimeTrack extends Vue {
             this.maxTime = this.maxTime -5000;
         }
         this.getPointList(sbid,true,sbtype)
-        this.tMap.setZoom(17)//设置地图放大级次
     }
     
     /***
@@ -682,7 +681,7 @@ export default class RealTimeTrack extends Vue {
                 }
             }
             if(frist){
-                this.drawPointLine(key,false,trtype);
+                this.drawPointLine(key,frist,trtype);
             }
             this.loading = false;
             // this._timer1 = window.setTimeout(() => {
@@ -1285,6 +1284,7 @@ export default class RealTimeTrack extends Vue {
                 });
                 //向地图上添加自定义标注
                 this.takeoff = new T.LngLat(boundary[0], boundary[1]);
+                this.tMap.panTo(this.takeoff,12)
                 var marker = new T.Marker(this.takeoff,{icon: icon});
                 this.tMap.addOverLay(marker);
             }
