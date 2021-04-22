@@ -21,7 +21,7 @@
                 type: 'pie',
                 options3d: {
                 enabled: true,
-                alpha: 45,
+                alpha: 60,
                 beta: 0
                 },
                     backgroundColor: 'rgba(0,0,0,0)'
@@ -39,14 +39,17 @@
                 pie: {
                     allowPointSelect: true,
                     cursor: 'pointer',
-                    depth: 35,
-                    size:120,
+                    depth: 55,
+                    size:140,
                     dataLabels: {
                         enabled: true, 
                         textOutline:"none",
                         formatter:function(){ 
                             let _this:any = this;
-                            return  '<div><p style="color:'+ _this.color+';font-family:Arial,Helvetica,sans-serif;">'+ _this.point.name +'：'+ (_this.percentage).toFixed(1)+'%</p></div>';
+                            return  '<div><p style="color:'+ _this.color+';font-family:Arial,Helvetica,sans-serif;font-size:12px;">'+ _this.point.name +'：'+ (_this.percentage).toFixed(1)+'%</p></div>';
+                        },
+                        style: {
+                            textOutline: 'none'
                         }
                     }
                 }

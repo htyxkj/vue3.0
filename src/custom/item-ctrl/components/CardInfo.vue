@@ -1,20 +1,20 @@
 <template>
 	<div class="card">
 		<template v-if="item">
-		<div class="head"><span>{{item.name}}</span></div>
+		<div class="head"><span style="color:#5599FF;">{{item.name}}</span></div>
 		<div class="info">
 			<table>
 				<tr>
 					<td>
-						<div class="staff-cust-time"><span class="label-name">计划营收(亿)</span><br><span
+						<div  class="staff-cust-time"><span class="label-name" style="color:#FFFF00;font-weight: bold;">计划营收(亿)</span><br><span
 								class="label-value">{{item.yjrmb}}</span></div>
 					</td>
 					<td>
-						<div class="staff-cust-time"><span class="label-name">实际营收(亿)</span><br><span
+						<div class="staff-cust-time"><span class="label-name" style="color:#F00;font-weight: bold;">实际营收(亿)</span><br><span
 								class="label-value"> {{item.sjrmb}}</span></div>
 					</td>
 					<td style="width: 20%;">
-						<div class="staff-cust-time"><span class="label-name">完成比%</span><br><span
+						<div class="staff-cust-time"><span class="label-name" style="color:#5555FF;font-weight: bold;" >完成比%</span><br><span
 								class="label-value">{{percent1}}</span></div>
 					</td>
 					<!-- <td style="width: 12%;">
@@ -30,15 +30,15 @@
 			<table>
 				<tr>
 					<td>
-						<div class="staff-cust-time"><span class="label-name">计划利润(亿)</span><br><span
+						<div class="staff-cust-time"><span class="label-name" style="color:#FFFF00;font-weight: bold;">计划利润(亿)</span><br><span
 								class="label-value">{{item.yjfcy}}</span></div>
 					</td>
 					<td>
-						<div class="staff-cust-time"><span class="label-name">实际利润(亿)</span><br><span
+						<div class="staff-cust-time"><span class="label-name" style="color:#F00;font-weight: bold;">实际利润(亿)</span><br><span
 								class="label-value">{{item.sjfcy}}</span></div>
 					</td>
 					<td style="width: 20%;">
-						<div class="staff-cust-time"><span class="label-name">完成比%</span><br><span
+						<div class="staff-cust-time"><span class="label-name" style="color:#5555FF;font-weight: bold;">完成比%</span><br><span
 								class="label-value">{{percent2}}</span></div>
 					</td>
 					<!-- <td style="width: 12%;">

@@ -88,7 +88,7 @@
               <el-col :span="9">
                 <div @click="centerTC1Click">
                   <el-row v-if="centerTC1Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="12" class="progress">
+                    <el-col :span="12" class="progress" style="font-size:50px;">  
                       <el-progress type="circle" :width="70" :stroke-width='4' :percentage="centerTC1Con.bl"></el-progress>
                     </el-col>
                     <el-col :span="12" class="content">
@@ -109,7 +109,7 @@
                 <div @click="centerTC2Click">
                   <el-row v-if="centerTC2Con" class="my-card" type="flex" align="middle">
                     <el-col :span="12" class="progress">
-                      <el-progress type="circle" :width="70" :stroke-width='4' :percentage="centerTC2Con.bl"></el-progress>
+                      <el-progress type="circle" :width="70"  :stroke-width='4' :percentage="centerTC2Con.bl"></el-progress>
                     </el-col>
                     <el-col :span="12" class="content">
                       <el-row>
@@ -716,15 +716,16 @@ export default class ItemAnalysis extends Vue {
                 },
                 pointer: {
                   width:3,//指针的宽度
-                  length:"40%", //指针长度，按照半圆半径的百分比
+                  length:"50%", //指针长度，按照半圆半径的百分比
                   shadowColor : '#ccc', //默认透明
                   shadowBlur: 5
                 },
                 axisLabel: {
                     backgroundColor: 'auto',
                     borderRadius: 2,
+                    interval: 2,
                     color: '#eee',
-                    padding: 3,
+                    padding: -2,
                     textShadowBlur: 2,
                     textShadowOffsetX: 1,
                     textShadowOffsetY: 1,
@@ -836,7 +837,6 @@ export default class ItemAnalysis extends Vue {
                 textStyle: {
                   color: "rgba(255,255,255,.6)",
                   fontSize: "12",
-                  
                 },
               },
               axisLine: {
@@ -1899,6 +1899,7 @@ export default class ItemAnalysis extends Vue {
     background-color: #111d40d7;
     padding: 0 0.1875rem 0.5rem;
     margin-bottom: 0.1875rem;
+    width: 90%;
     .panel-footer {
       position: absolute;
       left: 0;
@@ -1971,6 +1972,7 @@ h2{
   height: 1.5rem !important;
   padding-bottom: 0.5rem;
   width: 100%;
+  font-size: 15px;
 }
 .mainbox .panel .chart {
   height: 100%;
