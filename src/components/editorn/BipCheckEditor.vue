@@ -91,6 +91,7 @@ export default class BipCheckEditor extends Vue{
 
 
     dataChange(value:any){
+        this.$emit("focus",{})
         let str = ""
         this.model1 = []
         value.forEach((item:string)=>{

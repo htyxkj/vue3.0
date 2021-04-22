@@ -61,6 +61,7 @@ export default class BipInputImgEditor extends Vue{
         this.url = BaseVariable.BaseUri+"/db_"+BaseVariable.COMM_FLD_VALUE_DBID+"/"+this.model1
     }
     imgClick(){
+        this.$emit("focus",{})
         this.outerVisible = !this.outerVisible
     }
     //上传图片

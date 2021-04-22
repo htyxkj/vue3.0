@@ -2,11 +2,11 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-switch v-model="model1" style="padding-top:8px;" :disabled="(cell.attr&0x40)>0" @change="dataChange"></el-switch>
+                <el-switch v-model="model1" style="padding-top:8px;" :disabled="(cell.attr&0x40)>0" @focus="focus" @change="dataChange"></el-switch>
             </el-form-item>
         </template>
         <template v-else>
-            <el-switch v-model="model1" style="padding-top:8px;" :disabled="(cell.attr&0x40)>0" @change="dataChange"></el-switch>
+            <el-switch v-model="model1" style="padding-top:8px;" :disabled="(cell.attr&0x40)>0" @focus="focus" @change="dataChange"></el-switch>
         </template>
     </el-col>
 </template>
@@ -24,11 +24,11 @@ export default class BipSwitchEditor extends Vue{
     @Prop() row!:number
     @Prop() model:any
     @Prop() bgrid!:boolean
-    @Provide() model1:boolean = false;
-    @Provide() clearable:boolean = true
-    @Provide() methodName:string = ''
-    @Provide() span:number = 6
-    @Provide() switchBtn:Array<any>=[];
+    model1:boolean = false;
+    clearable:boolean = true
+    methodName:string = ''
+    span:number = 6
+    switchBtn:Array<any>=[];
     
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -64,6 +64,7 @@ export default class BipSwitchEditor extends Vue{
     }
 
     dataChange(value:any){
+        this.focus()
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
                 this.cds.currRecord.data[this.cell.id] = this.model1 == true?1:0;
@@ -141,6 +142,9 @@ export default class BipSwitchEditor extends Vue{
                 this.model1 = this.model == 0 ?false:true;
             }
         }
+    }
+    focus(){
+        this.$emit("focus",{})
     }
 }
 </script>

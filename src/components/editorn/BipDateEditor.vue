@@ -6,6 +6,7 @@
                     <template v-if="condition"><!-- 报表条件 -->
                         <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
+                            @focus='focus'
                             :picker-options="pickerOptions"
                             :type="dateType"
                             range-separator="~"
@@ -19,6 +20,7 @@
                     <template v-else>
                         <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
+                            @focus='focus'
                             :type="dateType"
                             :format="dateFormat"
                             :value-format="dateFormat"
@@ -38,6 +40,7 @@
             <template v-else>
                 <el-date-picker size="medium" style="width:100%"
                     v-model="model1"
+                    @focus='focus'
                     :type="dateType"
                     :format="dateFormat"
                     :value-format="dateFormat"
@@ -52,6 +55,7 @@
                     <template v-if="condition"><!-- 报表条件 -->
                         <el-time-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
+                            @focus='focus'
                             :picker-options="pickerOptions"
                             range-separator="~"
                             :format="dateFormat"
@@ -64,6 +68,7 @@
                     <template v-else>
                         <el-time-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
+                            @focus='focus'
                             :format="dateFormat"
                             :value-format="dateFormat"
                             :picker-options="optionaIint"
@@ -82,6 +87,7 @@
             <template v-else>
                 <el-time-picker size="medium" style="width:100%"
                     v-model="model1"
+                    @focus='focus'
                     :format="dateFormat"
                     :value-format="dateFormat"
                     :picker-options="optionaIint"
@@ -100,7 +106,6 @@ let baseTool = BIPUtils.baseUtil;
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import BipInsAidNew from '../../classes/BipInsAidNew';
-import { symlinkSync } from 'fs';
 @Component({})
 export default class BipDateEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -109,16 +114,16 @@ export default class BipDateEditor extends Vue{
     @Prop() bgrid!:boolean
     @Prop() bipInsAid!:BipInsAidNew
     @Prop() row!:number
-    @Provide() model1:any = ''
-    @Provide() clearable:boolean = true
-    @Provide() dateType="date"
-    @Provide() dateFormat="yyyy-MM-dd"
-    @Provide() methodName:string = ''
-    @Provide() condition:boolean = false;
-    @Provide() span:number = 6
-    @Provide() pickerOptions:any = null;
-    @Provide() optionaIint:any = null;
-    @Provide() dateTime:boolean = true;
+    model1:any = ''
+    clearable:boolean = true
+    dateType="date"
+    dateFormat="yyyy-MM-dd"
+    methodName:string = ''
+    condition:boolean = false;
+    span:number = 6
+    pickerOptions:any = null;
+    optionaIint:any = null;
+    dateTime:boolean = true;
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
         if((this.cell.attr&0x400000)>0){
@@ -131,7 +136,10 @@ export default class BipDateEditor extends Vue{
             this.span = 24
         }
         // if(this.cds&&this.cell){
-            if(this.cell.type===93){
+            if(this.cell.type<=12 && this.bipInsAid.id=='Y'){
+                this.dateType = 'year'
+                this.dateFormat = 'yyyy';
+            }else if(this.cell.type===93){
                 this.dateType = 'datetime'
                 this.dateFormat = 'yyyy-MM-dd HH:mm:ss'
                 if(!this.bgrid && this.condition)
@@ -348,6 +356,11 @@ export default class BipDateEditor extends Vue{
             }
         }   
     }
+
+    focus(){
+        this.$emit("focus",{})
+    }
+
     @Watch("model")
     cdataSetRecordChange(){
         if(this.model != 'Invalid date'){

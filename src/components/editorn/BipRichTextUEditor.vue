@@ -1,7 +1,7 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span" style="padding-bottom:8px">
         <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-            <vue-ueditor-wrap v-if="myConfig != null" :id="id" v-model="model1" :config="myConfig"  @before-init="addCustomDialog"></vue-ueditor-wrap>
+            <vue-ueditor-wrap v-if="myConfig != null" :id="id" v-model="model1" :config="myConfig"  @before-init="addCustomDialog" @focus="focus"></vue-ueditor-wrap>
         </el-form-item>
     </el-col>
 </template>
@@ -12,7 +12,6 @@ import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { CommICL } from '@/utils/CommICL';
 import { GlobalVariable } from '@/utils/ICL';
-import E  from 'wangeditor';
 let icl = CommICL
 import VueUeditorWrap from 'vue-ueditor-wrap'
 @Component({
@@ -137,7 +136,9 @@ export default class BipRichTextUEditor extends Vue{
         return btn;
       }, editorId);
     }
-
+    focus(){
+        this.$emit("focus",{})
+    }
     @Watch("model1")
     dataVlaueChange(){
         if(this.haveDateChange){

@@ -7,19 +7,18 @@
             <bip-search-dialog ref="se" :cds_cont="dsm" @makeOK="searchfindData"></bip-search-dialog>
         </template>
         <!--:style="'height:'+(height-40)+'px !important;'"-->
-        <div class="bip-main-container" v-if="lay.binit" >            
+        <div class="bip-main-container" v-if="lay.binit" >
             <el-scrollbar :style="style" >
                 <!-- <el-form :model="dsm.currRecord.data" :rules="rules" @submit.native.prevent label-position="right" label-width="120px"> -->
                 <el-form @submit.native.prevent label-position="right" label-width="120px" :style="fromStyle">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
-                
-                    <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4">
-                        <div class="bip-btn-small">
-                            <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
-                        </div>
-                    </template>
                 </el-form>
             </el-scrollbar>
+            <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4">
+                <div class="bip-btn-small">
+                    <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
+                </div>
+            </template>
         </div>
       
        <bip-work ref="work" @checkOK="checkOK"></bip-work>
@@ -829,7 +828,7 @@ export default class BaseApplet extends Vue{
                             if(isok&&item.unNull){
                                 let vl = crd.data[item.id]+'';
                                 if (!vl) {
-                                    this.$notify.warning( "子表第"+(i+1)+"行"+item.id+"【" + item.labelString + "】不能为空!");
+                                    this.$notify.warning( "【" + cd0.ccells.desc + "】第"+(i+1)+"行【" + item.labelString + "】不能为空!");//"+item.id+"
                                     isok =  false;
                                     return false
                                 }
@@ -1276,8 +1275,12 @@ export default class BaseApplet extends Vue{
     background-color: #f9f9f9;
 }
 .bip-btn-small{
-    text-align:center;
-    padding-top:180px;
+    // text-align:center;
+    // padding-top:180px;
+    text-align: center;
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
 }
 .bip-btn-small .menubar{
     padding-top: 10px !important;

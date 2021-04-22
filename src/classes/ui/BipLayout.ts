@@ -10,6 +10,7 @@ export class BipLayout{
     compconfs:Array<BipLayConf>
     ccells:Cells[] = []
     constructor(_laystr:string,_cells?:Cells[]){
+        console.log(_laystr)
         this.laystr = _laystr
         this.compconfs = new Array<BipLayConf>();
         if(this.laystr){
@@ -30,19 +31,31 @@ export class BipLayout{
                 let str = this.laystr.substring(index+1)
 
                 let index1 = str.lastIndexOf(")");
+                let index2 = str.lastIndexOf("//");
+                let name:any = "";
+                if(index1< str.length && index2>index1){
+                    name = str.substring(index2+2)
+                }
                 str = str.substring(1,index1)
                 //str = '@60JH211#40725[-remark];T:(60JHA211#725//节哀节哀);@60JH211#60725[jyfs-]'
                 let comps:Array<string> = this.doLayout(str);
+                let idx = 0
                 comps.forEach(cmpstr => {
                     if(cmpstr&&!cmpstr.startsWith('#')){
                         if(cmpstr.indexOf(':')>0){
                             let cp = new BipLayout(cmpstr,_cells);
-                            let cc = new BipLayConf(false,cp,'',cp.compconfs[0].span);
+                            let cc = new BipLayConf(false,cp,cp.compconfs[0].name,cp.compconfs[0].span);
                             this.compconfs.push(cc)
                         }else{
                             let objid = BIPUtils.baseUtil.getObjId(cmpstr);
                             let cel = this.getCells(objid,true,this.ccells);
                             let lay = new BipLayCells(cmpstr,cel)
+                            if(idx ==0){
+                                if(!lay.name){
+                                    lay.name = name;
+                                }
+                                idx++;
+                            }
                             let cc = new BipLayConf(true,lay,lay.name,lay.bl);
                             this.compconfs.push(cc)
                         }

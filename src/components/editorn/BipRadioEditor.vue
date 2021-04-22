@@ -87,6 +87,7 @@ export default class BipRadioEditor extends Vue{
 
 
     dataChange(value:any){ 
+        this.$emit("focus",{})
         this.model1 = value 
         if( value !== this.model){
             if(this.cds.currCanEdit()){

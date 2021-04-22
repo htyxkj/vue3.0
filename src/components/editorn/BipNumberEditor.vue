@@ -3,6 +3,7 @@
     <template v-if="!bgrid">
       <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
         <el-input size="medium" v-model="model1" :clearable="clearable"
+        @focus="focus"
           :style="cell.desc ? 'width: calc(100% - 29px);' : 'width:100%'" :disabled="(cell.attr & 0x40) > 0"
           @change="dataChange" :precision="ccPoint" controls-position="right">
           <el-popover  slot="append" placement="top-end" trigger="click">
@@ -42,6 +43,7 @@
         @change="dataChange"
         :precision="ccPoint"
         controls-position="right"
+        @focus="focus"
       ></el-input>
     </template>
     <div></div>
@@ -96,15 +98,17 @@ export default class BipNumberEditor extends Vue {
       if (this.model1 !== this.model) {
         let chkr = true;
         if (this.model1) {
-          if (!this.isNumber(this.model1)) {
-            let errInfo: string = "请输入数字...";
-            this.$message({
-              type: "warning",
-              message: errInfo,
-              offset: 200,
-            });
-            this.model1 = this.model;
-            return;
+          if((this.model1+"").indexOf("~") ==-1){
+            if (!this.isNumber(this.model1)) {
+              let errInfo: string = "请输入数字...";
+              this.$message({
+                type: "warning",
+                message: errInfo,
+                offset: 200,
+              });
+              this.model1 = this.model;
+              return;
+            }
           }
         }
         if (this.cell.chkRule) {
@@ -172,7 +176,7 @@ export default class BipNumberEditor extends Vue {
         }
         if (chkr) {
           //保留小数位数
-          if(this.cell.ccPoint){
+          if(this.cell.ccPoint && this.model1.indexOf("~") ==-1){
             this.model1 = parseFloat(this.model1).toFixed(this.cell.ccPoint);
           }
           this.cds.currRecord.data[this.cell.id] = this.model1;
@@ -213,6 +217,7 @@ export default class BipNumberEditor extends Vue {
     this.$bus.$off("CalculatorClick", this.datachangeBusID);
   }
   calculatorClick(event: any) {
+    this.focus();
     this.$bus.$emit("CalculatorClick", this.cell.id);
     this.showCalculator = !this.showCalculator;
     this.stopBubble(event);
@@ -239,6 +244,9 @@ export default class BipNumberEditor extends Vue {
     let reg = new RegExp("^-?[0-9]+.?[0-9]*$");
     let rr = reg.test(value);
     return rr;
+  }
+  focus(){
+    this.$emit("focus",{})
   }
 }
 </script>

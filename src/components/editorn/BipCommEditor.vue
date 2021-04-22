@@ -1,56 +1,56 @@
 <template>
     <div>
         <template v-if="assit&&bipInsAid!=null"> 
-            <template  v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor')">
-                <bip-date-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-date-editor>
+            <template  v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor') || editName=='Y'">
+                <bip-date-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-date-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CFlowEditor'">
-                <bip-flow-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-flow-editor>
+                <bip-flow-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-flow-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CUpDownEditor'">
-                <bip-up-down-editor class="BJstyle" :env="env" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-up-down-editor>
+                <bip-up-down-editor class="BJstyle" :env="env" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-up-down-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CQueryEditor'">
-                <bip-query-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-query-editor>
+                <bip-query-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-query-editor>
             </template>
              <template v-else-if="bipInsAid.bType === 'CTreePopEditor'">
-                <bip-tree-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-tree-editor>
+                <bip-tree-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-tree-editor>
             </template>
             <template v-else>
-                <bip-ins-aid-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @refInsAid="refInsAid" :ref="cell.id+'insaid'"></bip-ins-aid-editor>
+                <bip-ins-aid-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @refInsAid="refInsAid" :ref="cell.id+'insaid'"  @focus="focus"></bip-ins-aid-editor>
             </template>    
         </template>
         <template v-else>
             <template v-if="editorType==I_EDITOR_NUM">
-                <bip-number-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-number-editor>
+                <bip-number-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-number-editor>
             </template>
             <template v-else-if="editorType==I_EDITOR_SWITCH">
-                <bip-switch-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-switch-editor>
+                <bip-switch-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-switch-editor>
             </template>
             <template v-else-if="editorType==I_EDITOR_LIST">
-                <bip-list-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-list-editor>
+                <bip-list-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-list-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_RTEXT">
                 <!-- <bip-rich-text-editor :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-editor> -->
-                <bip-rich-text-u-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-rich-text-u-editor>
+                <bip-rich-text-u-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-rich-text-u-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_CHECK">
-                <bip-check-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-check-editor>
+                <bip-check-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-check-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_RADIO">
-                <bip-radio-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row"></bip-radio-editor>
+                <bip-radio-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-radio-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_COLOR">
-                <bip-input-color-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-color-editor>
+                <bip-input-color-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-color-editor>
             </template>
             <template v-else-if="editorType == I_EDITOR_AUTOGRAPH">
-                <bip-input-autograph class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-autograph>
+                <bip-input-autograph class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-autograph>
             </template>
             <template v-else-if="editorType == I_EDITOR_IMG">
-                <bip-input-img-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-img-editor>
+                <bip-input-img-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-img-editor>
             </template>
             <template v-else>
-                <bip-input-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row"></bip-input-editor>
+                <bip-input-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-editor>
             </template>   
         </template>  
     </div>
@@ -97,28 +97,28 @@ export default class BipCommEditor extends Vue{
     @Prop() row!:number
     @Prop() bgrid!:boolean
     @Prop() cdsCount!:CDataSet
-    @Provide() editorType:number = 0
-    @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
-    @Provide() I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
-    @Provide() I_EDITOR_CHECK = ICL.I_EDITOR_CHECK 
-    @Provide() I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
-    @Provide() I_EDITOR_AUTOGRAPH = ICL.I_EDITOR_AUTOGRAPH
-    @Provide() I_EDITOR_NUM = ICL.I_EDITOR_NUM
-    @Provide() I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
-    @Provide() I_EDITOR_COLOR = ICL.I_EDITOR_COLOR
+    editorType:number = 0
+    I_EDITOR_LIST = ICL.I_EDITOR_LIST
+    I_EDITOR_RTEXT = ICL.I_EDITOR_RTEXT 
+    I_EDITOR_CHECK = ICL.I_EDITOR_CHECK 
+    I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
+    I_EDITOR_AUTOGRAPH = ICL.I_EDITOR_AUTOGRAPH
+    I_EDITOR_NUM = ICL.I_EDITOR_NUM
+    I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
+    I_EDITOR_COLOR = ICL.I_EDITOR_COLOR
     I_EDITOR_IMG = ICL.I_EDITOR_IMG
-    @Provide() model:any = ''
-    @Provide() bsearch:boolean = false
-    @Provide() assit:boolean = false
-    @Provide() editName:any = ''
-    @Provide() aidMarkKey:string = "";
-    @Provide() bipInsAid:BipInsAidNew|null = null
-    @Provide() qe:QueryEntity = new QueryEntity("","")
+    model:any = ''
+    bsearch:boolean = false
+    assit:boolean = false
+    editName:any = ''
+    aidMarkKey:string = "";
+    bipInsAid:BipInsAidNew|null = null
+    qe:QueryEntity = new QueryEntity("","")
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-    @Provide() eventId:number = 0
+    eventId:number = 0
     async mounted(){
         await this.init();
     }
@@ -330,12 +330,14 @@ export default class BipCommEditor extends Vue{
     @Watch('model')
     modelChange(){
         this.$bus.$emit('datachange','')
-        if(this.cds.currRecord)
-        if(this.cds.currRecord.data[this.cell.id] != this.model){
-            this.cds.currRecord.data[this.cell.id] = this.model
-            this.cds.cdata.data[this.row] = this.cds.currRecord
+        if(this.cds.currRecord && this.cds.index == this.row){
+            if(this.cds.currRecord.data[this.cell.id] != this.model){
+                this.cds.currRecord.data[this.cell.id] = this.model
+                this.cds.cdata.data[this.row] = this.cds.currRecord
+            }
         }
     }
+
     //刷新辅助缓存
     async refInsAid(){
         if(this.bipInsAid){
@@ -351,6 +353,10 @@ export default class BipCommEditor extends Vue{
             }
         }
 
+    }
+    focus(res:any){
+        res["rowId"] = this.row;
+        this.$emit("focus",res)
     }
 }
 </script>

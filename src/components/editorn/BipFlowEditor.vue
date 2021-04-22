@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange">
+                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange" @focus='focus'>
                     <el-button slot="append" icon="el-icon-tickets" @click="iconClick"></el-button>
                 </el-input>
                 <template v-if="cell.desc">
@@ -15,7 +15,7 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange">
+             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange" @focus='focus'>
                  <el-button slot="append" icon="el-icon-tickets" @click="iconClick"></el-button>
              </el-input>
         </template>
@@ -37,12 +37,8 @@ import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
-
-import { State, Action, Getter, Mutation } from "vuex-class";
 import BipInsAidNew from '../../classes/BipInsAidNew';
-import { BIPUtil } from '@/utils/Request';
 import BipCopyInfo from './cutil/BipCopyInfo.vue'
-let tools = BIPUtil.ServApi
 @Component({
     components:{BipCopyInfo}
 })
@@ -53,23 +49,23 @@ export default class BipFlowEditor extends Vue{
     @Prop() row!:number
     @Prop() bgrid!:boolean
     @Prop() bipInsAid!:BipInsAidNew
-    @Provide() model1:any = ""
-    @Provide() clearable:boolean = true
-    @Provide() multiple:boolean = false
-    @Provide() refId:string = ''
-    @Provide() initOK:boolean = false
-    @Provide() span:number = 6
+    model1:any = ""
+    clearable:boolean = true
+    multiple:boolean = false
+    refId:string = ''
+    initOK:boolean = false
+    span:number = 6
 
-    @Provide() methodName:string = ''
+    methodName:string = ''
 
-    @Provide() dia:boolean = false;
+    dia:boolean = false;
 
 
-    @Provide() mulcols: boolean = false;//多列
-    @Provide() bcode: boolean = false;//文本编码
-    @Provide() bfmt: boolean = false;//格式化
-    @Provide() othCols: Array<string> = [];
-    @Provide() othColsIndex: Array<number> = [];
+    mulcols: boolean = false;//多列
+    bcode: boolean = false;//文本编码
+    bfmt: boolean = false;//格式化
+    othCols: Array<string> = [];
+    othColsIndex: Array<number> = [];
 
     mounted(){
         this.multiple = (this.cds.ccells.attr&0x80)>0
@@ -131,6 +127,7 @@ export default class BipFlowEditor extends Vue{
     }
 
     iconClick() {
+        this.focus();
         if (!((this.cell.attr & 0x40) > 0)) {
             // this.dia = true;
             setTimeout(() => {
@@ -168,7 +165,10 @@ export default class BipFlowEditor extends Vue{
             }
         }
     }
-
+    
+    focus(){
+        this.$emit("focus",{})
+    }
 //#endregion
 
     @Watch('model')

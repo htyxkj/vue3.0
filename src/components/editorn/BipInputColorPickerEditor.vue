@@ -54,6 +54,7 @@ export default class BipInputColorPickerEditor extends Vue{
     }
 
     dataChange(value:string|number){
+        this.$emit("focus",{})
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
                 this.cds.currRecord.data[this.cell.id] = this.model1;
