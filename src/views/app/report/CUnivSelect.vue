@@ -630,8 +630,17 @@ export default class CUnivSelect extends Vue {
     /**
      * DLG 弹出框后重新查询
      */
-    Recheck(){
+    Recheck(res:any){
+        if(res && res.type=='imp'){
+            let imp_batch = res.imp_batch;
+            if(imp_batch && imp_batch>1){
+                this.dsm_cont.currRecord.data['imp_batch'] = imp_batch;
+            }
+        }
         this.find()
+        setTimeout(() => {
+            this.dsm_cont.currRecord.data['imp_batch'] = null;
+        }, 1000);
     }
 
     getCRecordByPk2(value:any=null){

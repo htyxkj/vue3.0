@@ -103,7 +103,9 @@ export default class ImExFile extends Vue {
                 this.$notify.error("导入失败！");
             }else{
                 this.$notify.success( "导入完成！")
-                this.$emit("Recheck")
+                let imp_batch = res.data.data.imp_batch;
+                let rt = {type:"imp",imp_batch:imp_batch}
+                this.$emit("Recheck",rt)
             }
         });
         this.outerVisible = false;

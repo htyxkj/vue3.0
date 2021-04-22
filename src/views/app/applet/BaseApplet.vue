@@ -472,8 +472,15 @@ export default class BaseApplet extends Vue{
         }
         await this.findData(cont); 
     }
-    Recheck(){
-        this.searchfindData({}); 
+    Recheck(res:any){
+        let cont:any = {};
+        if(res && res.type=='imp'){
+            let imp_batch = res.imp_batch;
+            if(imp_batch && imp_batch>1){
+                cont['imp_batch'] = imp_batch;
+            }
+        }
+        this.searchfindData(cont); 
     }
     /**
      * 点击按钮执行后端程序后刷新当前单据
