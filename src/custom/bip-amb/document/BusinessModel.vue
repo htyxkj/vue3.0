@@ -13,6 +13,12 @@
                     <i class="el-icon-refresh-right" ></i>
                     <span>刷新</span>
                 </el-button>
+            </div>
+            <div class="topdiv2"><!-- 日志 -->
+                <el-button style="border:0px" @click="openLogs">      
+                    <i class="el-icon-document" ></i>
+                    <span>日志</span>
+                </el-button>
             </div> 
             <div class="topdiv2"><!-- 导入 -->
                 <el-button style="border:0px" @click="impExcel">      
@@ -95,6 +101,7 @@
             </span>
         </el-dialog>
         <im-ex-file :cellID="'IMP300104A2WEB'" ref="imExFile" @Recheck="initModelData"></im-ex-file>
+        <bip-log ref="bipLog" :nodeId="'IMP300104A2WEB'" :nodeType="'import'"></bip-log>
     </el-container>
 </template>
 <script lang="ts">
@@ -106,6 +113,7 @@ import CDataSet from "@/classes/pub/CDataSet";
 import QueryEntity from "@/classes/search/QueryEntity";
 
 import ImExFile from '@/components/file/ImExFile.vue';
+import BipLog from '@/components/file/BipLog.vue';
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
@@ -113,7 +121,8 @@ import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
     components: {
         Accounting,
         BipGridInfo,
-        ImExFile
+        ImExFile,
+        BipLog
     }
 })
 /**
@@ -438,6 +447,11 @@ export default class BusinessModel extends Vue {
     impExcel(){
         let file:any = this.$refs.imExFile
         file.open()
+    }
+
+    openLogs(){
+        let file:any = this.$refs.bipLog
+        file.show()
     }
     @Watch("height")
     heightChange() {

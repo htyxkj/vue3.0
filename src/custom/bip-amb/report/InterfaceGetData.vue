@@ -118,8 +118,6 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
-import XEUtils from 'xe-utils'
-import { values } from 'xe-utils/methods';
 import moment from 'moment'
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cells } from "@/classes/pub/coob/Cells";
