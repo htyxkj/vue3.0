@@ -45,6 +45,9 @@
                 </template>
             </el-scrollbar>
         </div>
+         <template v-if="nodeId">
+            <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
+        </template>
     </el-row>
 </template>
 <script lang="ts">
@@ -75,9 +78,10 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
 import { Menu } from '../../../classes/Menu';
+import BipLog from '@/components/file/BipLog.vue';
 let _ = require('lodash');
 @Component({
-    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg,ImExFile,BipMapShow}
+    components: { BipMenuBarUi,BipStatisticsDlog,BipStatisticsChart,BipMenuBtnDlg,ImExFile,BipMapShow,BipLog}
 })
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
@@ -101,7 +105,7 @@ export default class CUnivSelect extends Vue {
     initShowChar:boolean = false;
     biType?:string;
     config:any={};
-
+    nodeId:string = '';
     CondiyionShow:boolean = true;
     isMap:boolean = false;      //是否是地图页面
     isShowMap:boolean = false;  //是否是显示地图
@@ -113,6 +117,10 @@ export default class CUnivSelect extends Vue {
     async initUI() {
         if (this.uriParams&&this.uriParams.pcell) {
             let pcell = this.uriParams.pcell
+            let drId = this.uriParams.pbds.importCellId;
+            if(drId){
+                this.nodeId = drId.split(';')[0];
+            }
             let res = await tools.getCCellsParams(pcell)
             this.fullscreenLoading = false;
             let rtn: any = res.data;
@@ -129,7 +137,10 @@ export default class CUnivSelect extends Vue {
                 if(this.uriParams && this.uriParams.pbds.importCellId){
                     let btn = new BipMenuBtn(ICL.B_CMD_UPFILE,"导入")
                     btn.setIconFontIcon('ruku');
-                    this.mbs.menuList.push(btn)
+                    this.mbs.menuList.push(btn);
+                    let btn_log = new BipMenuBtn(ICL.B_CMD_UPFILE_LOG,"日志")
+                    btn_log.setIconFontIcon('shuji');
+                    this.mbs.menuList.push(btn_log)
                 }
                 let _isMp = false;
                 if(this.uriParams && this.uriParams.pbds.ismap){
@@ -288,6 +299,9 @@ export default class CUnivSelect extends Vue {
         }else if(cmd === ICL.B_CMD_UPFILE){
             let file:any = this.$refs.imExFile
             file.open()
+        }else if(cmd === ICL.B_CMD_UPFILE_LOG){
+            let log:any = this.$refs.bipLog
+            log.show()
         }else if(cmd === 'ROWCOLUMN'){
             if(this.uriParams){
                 this.$bus.$emit('ReportTableShape',[this.uriParams.pbuid,this.mbs])
