@@ -14,6 +14,18 @@
                     <span>刷新</span>
                 </el-button>
             </div> 
+            <div class="topdiv2"><!-- 日志 -->
+                <el-button style="border:0px" @click="openLogs">      
+                    <i class="el-icon-document" ></i>
+                    <span>日志</span>
+                </el-button>
+            </div> 
+            <div class="topdiv2"><!-- 导入 -->
+                <el-button style="border:0px" @click="impExcel">      
+                    <i class="iconfont icon-bip-ruku" ></i>
+                    <span>导入</span>
+                </el-button>
+            </div> 
         </el-header>
         <el-container style="border-top: 1px solid #CCCCCC;">
             <el-aside width="400px" class="tree">
@@ -49,6 +61,8 @@
                 <el-container>
                     <el-header class="rightHeader">
                         <el-button type="primary" @click="saveUnit" :disabled="!canSaveAMB" icon="el-icon-document-add" size="small">保存</el-button>
+                        <el-button type="success" @click="impExcel2" icon="el-icon-document-copy" size="small">导入业务单元</el-button>
+                        <el-button type="success" @click="openLogs2" icon="el-icon-document" size="small">日志</el-button>
                         <div class="rightTitle">{{title}}</div>
                     </el-header>
                     <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
@@ -59,6 +73,10 @@
                 </el-container>
             </el-main>
         </el-container>
+         <im-ex-file :cellID="'AMBGROUPIMP'" ref="imExFile" @Recheck="initTreeData"></im-ex-file>
+        <bip-log ref="bipLog" :nodeId="'AMBGROUPIMP'" :nodeType="'import'"></bip-log>
+        <im-ex-file :cellID="'AMBGROUPLINEIMP'" ref="imExFile2"></im-ex-file>
+        <bip-log ref="bipLog2" :nodeId="'AMBGROUPLINEIMP'" :nodeType="'import'"></bip-log>
     </el-container>
 </template>
 <script lang="ts">
@@ -75,10 +93,13 @@ import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
-import {BipMenuBtn} from '@/classes/BipMenuBtn'
+import ImExFile from '@/components/file/ImExFile.vue';
+import BipLog from '@/components/file/BipLog.vue';
 @Component({
     components: {
-        Accounting
+        Accounting,
+        ImExFile,
+        BipLog
     }
 })
 /**
@@ -492,6 +513,25 @@ export default class AMBUnit extends Vue {
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -120
+    }
+
+     //导入
+    impExcel(){
+        let file:any = this.$refs.imExFile
+        file.open()
+    }
+     //导入
+    impExcel2(){
+        let file:any = this.$refs.imExFile2
+        file.open()
+    }
+    openLogs(){
+        let file:any = this.$refs.bipLog
+        file.show()
+    }
+    openLogs2(){
+        let file:any = this.$refs.bipLog2
+        file.show()
     }
 }
 </script>
