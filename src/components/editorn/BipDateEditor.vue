@@ -139,6 +139,9 @@ export default class BipDateEditor extends Vue{
             if(this.cell.type<=12 && this.bipInsAid.id=='Y'){
                 this.dateType = 'year'
                 this.dateFormat = 'yyyy';
+            }else if(this.cell.type<=12 && this.bipInsAid.id=='M'){
+                this.dateType = 'month'
+                this.dateFormat = 'MM';
             }else if(this.cell.type===93){
                 this.dateType = 'datetime'
                 this.dateFormat = 'yyyy-MM-dd HH:mm:ss'

@@ -483,6 +483,9 @@ $--bip-comm-color:#ffffff;//f4f6fb
 .el-tabs--border-card > .el-tabs__header .el-tabs__item {
     @include tabs_pane();
 }
+.el-tabs--border-card > .el-tabs__header .el-tabs__nav-next, .el-tabs__nav-prev {
+    line-height: 30px;
+}
 
 .bip-tabs-layout .el-tabs__nav-scroll{
     background-color: white;
@@ -498,6 +501,9 @@ $--bip-comm-color:#ffffff;//f4f6fb
     background: $--bip-comm-color;
 }
 
+.el-menu-item.is-active{
+    @include menu_item_is_active();
+}
 // 页面单元格样式
 .bip-input-item {
     margin-bottom: 2px !important;

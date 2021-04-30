@@ -1271,10 +1271,11 @@ export default class LayCelVexTable extends Vue {
     height: 32px;
     text-align: center;
     line-height: 32px;
-    background: #1ab394;
+    background: #fff;
     border-radius: 20px;
-    color: #fff;
+    color: #1ab394;
     font-size: 14px;
+    border: 1px solid;
 }
 .Accordion{
     background-color: #fff;

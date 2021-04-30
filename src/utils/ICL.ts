@@ -37,4 +37,5 @@ export const GlobalVariable = Object.assign({},{
     DATE_FMT_YM:'YYYY-MM',
     DATE_FMT_Y2M:'YY-MM',
     DATE_FMT_Y:'YYYY',
+    DATE_FMT_M:'MM',
 });

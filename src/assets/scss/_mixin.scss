@@ -2,7 +2,7 @@
 @charset "utf-8";
 @import "./_varibale.scss";/*引入配置*/
 
-//右侧菜单列表样式
+//左侧菜单列表样式
 @mixin menu_list_style(){
   width: 300px !important;
   background-color:$menu-background-color-theme;
@@ -14,7 +14,7 @@
     height: calc(100% - #{$head-height-theme1}) !important;
   }
 }
-//右侧菜单头部样式
+//左侧菜单头部样式
 @mixin menu_head_style(){
   background-color:$head-background-color-theme;
   height:$head-height-theme !important;
@@ -25,7 +25,15 @@
     line-height:$head-height-theme1 !important;
   }
 }
-
+//左侧菜单选中样式
+@mixin menu_item_is_active(){
+  background-color:$menu-is-active-background-color-theme;
+  color:$menu-is-active-text-color-theme;
+  [data-theme="theme1"] & {
+    background-color:$menu-is-active-background-color-theme1;
+    color:$menu-is-active-text-color-theme1;
+  }
+}
 // 头部样式
 @mixin head_all_style(){
   @include menu_head_style();

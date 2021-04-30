@@ -546,6 +546,12 @@ export default class CDataSet {
         if(iniVl.indexOf("[Y]")>-1){
           iniVl = iniVl.replace("[Y]",DateUtils.DateTool.now(GlobalVariable.DATE_FMT_Y))
         }
+        if (iniVl == "[M]") {
+          iniVl = DateUtils.DateTool.now(GlobalVariable.DATE_FMT_M);
+        }
+        if(iniVl.indexOf("[M]")>-1){
+          iniVl = iniVl.replace("[M]",DateUtils.DateTool.now(GlobalVariable.DATE_FMT_M))
+        }
         if (item.type <= 5 && item.type != 1) {
           if (!iniVl) iniVl = "";
           else {

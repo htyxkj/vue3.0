@@ -76,7 +76,7 @@
                           预计营收：{{centerTC1Con.curr_yjrmb}}亿
                         </el-col>
                         <el-col :span="24">
-                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(2)}}亿
+                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(1)}}亿
                         </el-col>
                       </el-row>
                     </el-col>
@@ -102,7 +102,7 @@
                           预计利润：{{centerTC2Con.curr_yjfcy}}亿
                         </el-col>
                         <el-col :span="24">
-                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(2)}}亿
+                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(1)}}亿
                         </el-col>
                       </el-row>
                     </el-col>
@@ -616,90 +616,6 @@ export default class ItemAnalysis extends Vue {
           show: true,
           position: 'top'
         }
-        // option.xAxis= [{
-        //   type: "category",
-        //   data: [],
-        //   axisTick: {
-        //     alignWithLabel: true,
-        //   },
-        //   axisLabel: {
-        //     textStyle: {
-        //       color: "#fff",
-        //       fontSize: "12",
-        //     },
-        //   },
-        //   axisLine: {
-        //     show: false,
-        //   },
-        // }]
-        // let option:any = {
-        //   color: ["#14C4F0"],
-        //   tooltip: {
-        //     trigger: "axis",
-        //     axisPointer: {
-        //       // 坐标轴指示器，坐标轴触发有效
-        //       type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-        //     },
-        //   },
-        //   grid: {
-        //     left: "10%",
-        //     top: "10px",
-        //     right: "20%",
-        //     bottom: "4%",
-        //     containLabel: true,
-        //   },
-        //   xAxis: [
-        //     {
-        //       type: "category",
-        //       data: [],
-        //       axisTick: {
-        //         alignWithLabel: true,
-        //       },
-        //       axisLabel: {
-        //         textStyle: {
-        //           color: "#fff",
-        //           fontSize: "12",
-        //         },
-        //       },
-        //       axisLine: {
-        //         show: false,
-        //       },
-        //     },
-        //   ],
-        //   yAxis: [
-        //     {
-        //       type: "value",
-        //       axisLabel: {
-        //         formatter:'{value} 亿',
-        //         textStyle: {
-        //           color: "rgba(255,255,255,.6)",
-        //           fontSize: "12",
-        //         },
-        //       },
-        //       axisLine: {
-        //         lineStyle: {
-        //           color: "rgba(255,255,255,.1)",
-        //         },
-        //       },
-        //       splitLine: {
-        //         lineStyle: {
-        //           color: "rgba(255,255,255,.1)",
-        //         },
-        //       },
-        //     },
-        //   ],
-        //   series: [
-        //     {
-        //       name: "",
-        //       type: "bar",
-        //       barWidth: "35%",
-        //       data: [],
-        //       itemStyle: {
-        //         barBorderRadius: 0,
-        //       },
-        //     },
-        //   ],
-        // };
         option.xAxis[0].data = [];
         option.series[0].data = [];
         _.forEach(values,(item:any,index:any) => {
