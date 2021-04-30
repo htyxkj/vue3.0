@@ -1062,6 +1062,7 @@ export default class BaseApplet extends Vue{
                     btn1.setDlgType(type)
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
                     btn1.setIconFontIcon(cc.split(",")[1])
+                    btn1.setType("primary");
                     this.mbs.menuList.push(btn1)
                 });
             }
