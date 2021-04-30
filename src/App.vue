@@ -21,7 +21,7 @@
                 <el-container> 
                     <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
                     <el-container>
-                        <el-header style="background-color:#20a0ff;height:50px"> 
+                        <el-header class="my-el-header"> 
                             <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
                         </el-header>
                         <el-main class="bip-main">
@@ -380,7 +380,7 @@ export default class App extends Vue {
     }
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
 .yw-sys{
     position: absolute;
     color: rgba(255, 255, 255, 0.7);
@@ -389,5 +389,11 @@ export default class App extends Vue {
     top: .1rem;
     font-size: 17px;
     font-weight: 600;
+}
+.my-el-header{
+    @include head_all_style();
+}
+#app{
+    @include overall_bg_color();
 }
 </style>

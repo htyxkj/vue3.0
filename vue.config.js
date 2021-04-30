@@ -30,5 +30,12 @@ module.exports = {
         'zh_CN'
       ]
     }
+  },
+  css: {
+    loaderOptions: {
+      sass: {
+        data: `@import "@/assets/scss/_mixin.scss";`
+      }
+    }
   }
 }

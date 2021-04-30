@@ -574,7 +574,8 @@ export default class CDataSet {
           if (xinc >= 0) {
             let cel = cell.cels[xinc];
             let s0 = cel.psAutoInc;
-            if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
+            if (s0 == null || s0 == undefined || s0.length < 1) {
+              if( cel.type !== 12){
                 let cc = this.cdata.data[this.cdata.data.length - 1];
                 // if((cel.attr & (0x80)) >0){
                   if (cc) {
@@ -588,7 +589,8 @@ export default class CDataSet {
                       modal.data[cel.id] = this.cdata.data.length + 1;
                   }
                 // }
-                return modal;
+              }
+              return modal;
             }
             let ilnk = cel.lnk_inn;
             s0 = this.incCalc2(cell.cels, s0, ilnk, modal);

@@ -261,6 +261,12 @@ export default new Router({
           component :()=> import('./custom/item-ctrl/ItemAnalysis.vue')
       },
       {
+          //融通 进度分析
+          path: '/ItemSchedule',
+          name: 'ItemSchedule',
+          component :()=> import('./custom/item-ctrl/ItemSchedule.vue')
+      },
+      {
           //巡检机器人实时视频页面
           path: '/AgvRTVideo',
           name: 'AgvRTVideo',
