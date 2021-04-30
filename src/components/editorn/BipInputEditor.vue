@@ -10,7 +10,7 @@
                         {{cell.labelString}}
                     </span>
                 </el-row>
-                <el-input type="textarea" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
+                <el-input style="margin-bottom:5px" type="textarea" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
                 <template v-if="cell.desc">
                     <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
                         <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">

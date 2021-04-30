@@ -1,6 +1,6 @@
 <template>
     <div v-loading="loading">
-        <el-tabs v-model="selMap" type="card" @tab-click="mapChnage" style="min-height: -webkit-fill-available">
+        <el-tabs class="ff-tabs" v-model="selMap" type="card" @tab-click="mapChnage" style="min-height: -webkit-fill-available">
             <el-tab-pane :style="style" label="天地图" name="tianMap">
                 <el-container class="padding0" :style="style">
                     <el-container class="padding0 mapMain">
@@ -1624,6 +1624,18 @@ export default class RealTimeTrack extends Vue {
     font-size: 0px !important;
     .el-checkbox__label {
         font-size: 0px !important;
+    }
+}
+.ff-tabs{
+    .el-tabs__header{
+        margin-left: 0px;
+        padding: 0;
+        margin: 0px;
+        background-color: #fff !important;
+    }
+    .el-tabs__item{
+        height: 30px !important;
+        line-height: 30px !important;
     }
 }
 </style>

@@ -26,6 +26,7 @@ export default class BipMenuBar{
             this.menuList.splice(0);
             if((menuAttr&CommICL.B_IADD)>0){
                 let btn = new BipMenuBtn(CommICL.B_CMD_ADD,"新建")
+                btn.setType("primary");
                 btn.setIconFontIcon('EDIT');
                 this.menuList.push(btn)
                 this.bcheck = true
@@ -37,6 +38,7 @@ export default class BipMenuBar{
             }
             if((menuAttr&CommICL.B_ISAVE)>0){
                 let btn = new BipMenuBtn(CommICL.B_CMD_SAVE,"保存")
+                btn.setType("primary");
                 btn.setIconFontIcon('save');
                 this.menuList.push(btn)
             }
@@ -47,6 +49,7 @@ export default class BipMenuBar{
             }
             if((menuAttr&CommICL.B_IWORKEA)>0){
                 let btn = new BipMenuBtn(CommICL.B_CMD_SUBMIT,"提交")
+                btn.setType("primary");
                 btn.setIconFontIcon('tijiao');
                 this.menuList.push(btn)
                 // btn = new BipMenuBtn(CommICL.B_CMD_CHECK,"审核")

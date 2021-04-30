@@ -9,7 +9,7 @@
     :before-close="selectOK"
   >
     <el-tabs v-model="activeName">
-      <el-tab-pane v-if="showUpPage" label="文件上传" name="file-up">
+      <el-tab-pane v-if="showUpPage" label="　文件上传　" name="file-up">
         <el-upload
           class="upload-demo"
           ref="upload"
@@ -35,7 +35,7 @@
           <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane label="文件下载" name="file-down">
+      <el-tab-pane label="　文件下载　" name="file-down">
         <el-table size="small" stripe :data="fileList" style="width: 100%">
           <el-table-column label="文件名称" :show-overflow-tooltip="true">
             <template slot-scope="scope">

@@ -1,15 +1,15 @@
 <template>
   <div style="width:100%">
-    <el-aside width="280px" style="float:left; position: absolute;" >
+    <el-aside width="300px" style="float:left; position: absolute;" >
         <el-row>
-            <el-col :span="24" class="menu-title" style="overflow: hidden;height:50px;line-height: 50px;" >
-                <div style="overflow: hidden;height:50px;line-height: 50px;">{{loginTitle}}</div>
+            <el-col :span="24" class="menu-title" style="overflow: hidden;" >
+                {{loginTitle}}
             </el-col>
         </el-row>
         <el-row>
-            <el-col :span="24">
+          <el-col :span="24">
             <bip-menu :menuList="menus"></bip-menu>
-            </el-col>
+          </el-col>
         </el-row>
     </el-aside>
     <div style="width:100%;background-color: #5d5d5d61; float:right;height: 100%;" @click="showMenu"></div>
@@ -47,19 +47,11 @@ export default class BipAside extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .menu-title{
-    height:60px;
-    text-align: center;
-    color: #ffffff;
-    background-color:#20a0ff;
-}
-.menu-title div {
-  line-height: 60px;
-  font-size: 17px;
-  letter-spacing: 1.5px;
-}
-.el-row {
-  margin-bottom: 20px; 
+  text-align: center;
+  color: #ffffff;
+  font-size: 18px;
+  @include menu_head_style();
 }
 </style>

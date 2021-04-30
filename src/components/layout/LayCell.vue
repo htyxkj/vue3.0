@@ -1,5 +1,5 @@
 <template>
-    <div v-if="laycell" class="bip-lay">
+    <div v-if="laycell" class="bip-lay" :style="isNoHomeTable?'padding:0 18px':''">
         <template v-if="laycell&&!laycell.btable">
             <template v-if="!isChild">
                 <template v-if="uiCels.length == 0">
@@ -19,7 +19,6 @@
             <template v-else>
                 <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
                     <el-col class="childBtn">
-                        <el-button size="mini" @click="addRecord">添加</el-button>
                         <el-button size="mini" type="danger" @click="delRecord(rowId)">删除</el-button>
                     </el-col>
                     <template v-if="uiCels.length == 0">
@@ -36,6 +35,7 @@
                         </el-card>
                     </template>
                 </div>
+                <el-button style="width:100%;color:#1890FF" size="mini" @click="addRecord">添加</el-button>
             </template>
         </template>
         <template v-else>
@@ -47,12 +47,11 @@
 /**
  * 单据模块布局
  */
-import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
+import { Component, Vue, Provide, Prop, Watch,Inject } from "vue-property-decorator"
 import BipLayCells from '@/classes/ui/BipLayCells';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 import CDataSet from '@/classes/pub/CDataSet';
 import LayCellVexTable from './LayCellVexTable.vue'
-import CData from '../../classes/pub/CData';
 @Component({
     components:{LayCellVexTable}
 })
@@ -60,6 +59,7 @@ export default class LayCell extends Vue{
     @Prop() laycell!:BipLayCells
     @Prop() env!:CCliEnv
     @Prop() config?:any
+    @Inject('isNoHomeTable') isNoHomeTable!:boolean;//是否是首页调用
     info:string = 'infos'
     clearable:boolean = true
 
@@ -141,7 +141,7 @@ export default class LayCell extends Vue{
      * @param rowId 行号
      */
     delRecord(rowId:any){
-        if(this.cds.currCanEdit() && this.cds.cdata.data.length>1){
+        if(this.cds.currCanEdit()){
             this.cds.cdata.rmdata.push(this.cds.getRecordAtIndex(rowId));
             this.cds.cdata.data.splice(rowId,1); 
             this.cds.setState(2);
@@ -191,19 +191,19 @@ export default class LayCell extends Vue{
     invokecmd(btn:any){
         this.$emit("invokecmd",btn)
     }
-    @Watch("cds.cdata",{deep:true})
-    cdataChange(){
-        if(this.cds.ds_par && !this.laycell.btable && this.cds.cdata.data.length ==0){
-            this.isChild =true;
-            this.addRecord();
-        }
-    }
+    // @Watch("cds.cdata",{deep:true})
+    // cdataChange(){
+    //     if(this.cds.ds_par && !this.laycell.btable && this.cds.cdata.data.length ==0){
+    //         this.isChild =true;
+    //         this.addRecord();
+    //     }
+    // }
 }
 </script>
 
 <style lang="scss">
 .bip-lay{
-    width: 100%;
+    // width: 100%;
     max-width: 100%;
     .el-form-item__content{
         line-height: 0px !important

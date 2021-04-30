@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="bip-con-main">
     <template v-if="layout&&layout.layType === 'B'">
         <border-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></border-layout>
     </template>
@@ -68,3 +68,8 @@ export default class BaseLayout extends Vue{
     }
 }
 </script>
+<style scoped lang="scss">
+.bip-con-main{
+    background-color: white;
+}
+</style>

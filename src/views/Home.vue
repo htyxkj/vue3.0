@@ -9,7 +9,7 @@
             :minH="item.minh" :minW="item.minw" :maxH="item.maxh" :maxW="item.maxw" 
             :isDraggable="isDraggable" :isResizable="isResizable"
             @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
-            style="margin:5px;"
+            style="margin:0 5px 5px 0;"
             >
             <home-component :type="item.comtype" :cont="item.cont" :rech="item.rech" @menuChange="menuChange" :sid="item.sid"></home-component>
           </grid-item>

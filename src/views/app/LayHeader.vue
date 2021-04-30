@@ -1,64 +1,71 @@
 <template>
     <div>
-        <el-row style="margin-bottom:0px"> 
-            <el-col :span="4"> 
-                <el-row style="text-align:start;margin: 2px 0px;"> 
-                    <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer" aria-hidden="true" @click="showMenu" style="width:1em;height: 1em;">
-                        <use xlink:href="#icon-bip-rongtong "></use>
-                     </svg>
-                    <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i>
-                </el-row>
+        <el-row> 
+            <el-col :span="4" style="text-align:start" class="my-header"> 
+                <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true" @click="showMenu">
+                    <use xlink:href="#icon-bip-rongtong "></use>
+                 </svg>
+                <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i>
             </el-col>
-            <el-col :span="20">
-                <el-row style="text-align:end;margin: 2px 0px;height:50px" > 
-                    <el-badge :value="taskNum" class="header_badge_item">
-                        <i class="el-icon-mobile pointer" @click="myTask"></i>    
-                    </el-badge>
-                    <el-badge :value="msgNum" class="header_badge_item">
-                        <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
-                    </el-badge> 
-                    <el-badge    class="header_badge_item">
-                        <i :class="icon "  @click="isQP"></i>    
-                    </el-badge> 
-                    
-                    <el-popover  width="160" placement="bottom-end" >
-                        <el-row style="margin: 0px;">
-                            <el-col :span="24">
-                                <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
-                                <el-row class="user_code user_padding">{{user.userCode}}</el-row>
-                                <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
-                                <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
-                                <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
-                                <el-row class="user_padding user_hr" v-if="user.mulscm && user.mulscm.length>0">
-                                    <el-popover  width="160" placement="left-start" >
-                                        <el-row style="margin: 0px;">
-                                            <el-col :span="24"> 
-                                                <el-row class="user_padding user_hr" v-for="(item,index) in user.mulscm" :key="index">
-                                                    <el-button type="text" class="user_button" @click="switchCMC(item)">{{item.cmcName}}</el-button>
-                                                </el-row>                            
-                                            </el-col>
-                                        </el-row>  
-                                        <el-button slot="reference" type="text" class="user_button">切换公司</el-button>
-                                    </el-popover>
-                                </el-row>
-                                <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">退出登录</el-button></el-row>
-                            </el-col>
-                        </el-row>  
-                        <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
-                    </el-popover>
-                </el-row>
+            <el-col :span="20" style="text-align:end" class="my-header">
+                <el-badge :value="taskNum" class="header_badge_item" style="margin-left: auto;">
+                    <i class="el-icon-mobile pointer" @click="myTask"></i>    
+                </el-badge>
+                <el-badge :value="msgNum" class="header_badge_item">
+                    <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
+                </el-badge> 
+                <el-badge class="header_badge_item">
+                    <i :class="icon "  @click="isQP"></i>    
+                </el-badge> 
+                <el-popover  width="160" placement="bottom-end" >
+                    <el-row style="margin: 0px;">
+                        <el-col :span="24">
+                            <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
+                            <el-row class="user_code user_padding">{{user.userCode}}</el-row>
+                            <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
+                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
+                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
+                            <el-row class="user_padding user_hr" v-if="user.mulscm && user.mulscm.length>0">
+                                <el-popover  width="160" placement="left-start" >
+                                    <el-row style="margin: 0px;">
+                                        <el-col :span="24"> 
+                                            <el-row class="user_padding user_hr" v-for="(item,index) in user.mulscm" :key="index">
+                                                <el-button type="text" class="user_button" @click="switchCMC(item)">{{item.cmcName}}</el-button>
+                                            </el-row>                            
+                                        </el-col>
+                                    </el-row>  
+                                    <el-button slot="reference" type="text" class="user_button">切换公司</el-button>
+                                </el-popover>
+                            </el-row>
+                            <!-- <el-row class="user_padding user_hr" >
+                                <el-popover  width="160" placement="left-start" >
+                                    <el-row style="margin: 0px;">
+                                        <el-col :span="24"> 
+                                            <el-row class="user_padding user_hr" v-for="(item,index) in skin" :key="index">
+                                                <el-button type="text" class="user_button" @click="switchSKIN(item)">{{item.name}}</el-button>
+                                            </el-row>                            
+                                        </el-col>
+                                    </el-row>  
+                                    <el-button slot="reference" type="text" class="user_button">换肤</el-button>
+                                </el-popover>
+                            </el-row> -->
+                            <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">退出登录</el-button></el-row>
+                        </el-col>
+                    </el-row>  
+                    <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
+                </el-popover>
             </el-col>
         </el-row>
         <el-row>
             <el-dialog title="修改密码"  :visible.sync="uppwddia" width="35%"  class="changePass">
-                <el-form ref="pwdForm" :model="pwdForm" label-width="80px" :rules="rules">
-                    <el-form-item label="旧密码" prop="oldPwd" style="padding-top:20px;">
+                <el-form ref="pwdForm" :model="pwdForm" label-width="120px" :rules="rules">
+                    <el-form-item label="旧密码" prop="oldPwd" class="bip-password-input-item" style="padding-top:20px;">
                         <el-input type="password" v-model="pwdForm.oldPwd" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="密码" prop="newPwd" style="padding-top:20px;">
+                    <el-form-item label="密码" prop="newPwd" class="bip-password-input-item" style="padding-top:20px;">
                         <el-input type="password" v-model="pwdForm.newPwd" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="确认密码" prop="newPwd1" style="padding-top:20px;">
+                    <el-form-item label="确认密码" prop="newPwd1" class="bip-password-input-item" style="padding-top:20px;">
                         <el-input type="password" v-model="pwdForm.newPwd1" autocomplete="off"></el-input>
                     </el-form-item>
                 </el-form>
@@ -86,13 +93,13 @@ const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG";
 })
 export default class LayHeader extends Vue { 
     base_variable = BaseVariable;
-    @Provide() haveTask:boolean = false;
-    @Provide() client:any = null;
-    @Provide() taskNum:Number = 0;
-    @Provide() msgNum:Number = 0;
-    @Provide() uppwddia:boolean = false;
-    @Provide() pwdForm:any={oldPwd:"",newPwd:"",newPwd1:"",};
-    @Provide() rules:any = null;
+    haveTask:boolean = false;
+    client:any = null;
+    taskNum:Number = 0;
+    msgNum:Number = 0;
+    uppwddia:boolean = false;
+    pwdForm:any={oldPwd:"",newPwd:"",newPwd1:"",};
+    rules:any = null;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Mutation("user", { namespace: 'login' }) setUserInfo: any;
     @Mutation("menulist", { namespace: 'login' }) setMenusInfo: any;
@@ -102,9 +109,13 @@ export default class LayHeader extends Vue {
     @State('login') profile!: LoginState 
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
-    @Provide() qp:boolean = false;
-    @Provide() icon:String = "el-icon-full-screen pointer"
+    qp:boolean = false;
+    icon:String = "el-icon-full-screen pointer"
+    skin:any=[];
     async mounted() {
+        this.skin = [
+            {name:'默认',id:'theme'},{name:'默认1',id:'theme1'}
+        ];
         this.rules={
             // oldPwd: [
             //     { required: true, message: '请填写旧密码！', trigger: 'blur' }
@@ -313,6 +324,10 @@ export default class LayHeader extends Vue {
             }
         }
     }
+    //切换皮肤
+    switchSKIN(item:any){
+      window.document.documentElement.setAttribute('data-theme', item.id)
+    }
     @Watch('taskNum')
     uptaskNum(){
         if(this.taskNum >0 || this.msgNum>0)
@@ -362,7 +377,7 @@ export default class LayHeader extends Vue {
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .menuicon{
     color: #fff;
     font-size: 46px; 
@@ -371,7 +386,29 @@ export default class LayHeader extends Vue {
     cursor:pointer;
 }
 .userimg{
-    border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 3px;margin-right:10px 
+    border-radius: 50%;padding: 0px;width: 40px;height: 40px;margin-top: 3px;margin-right:10px;
+}
+.my-icon{
+    width: .8rem;
+    height: .8rem;
+}
+.header_badge_item{
+    color: white;
+    font-size: 22px;
+    margin-right: 25px;
+}
+.my-header{
+    @include head_height_style;
+    display: flex;
+    align-items: center;
 }
 
+</style>
+<style lang="scss">
+.bip-password-input-item{
+    .el-form-item__label{
+        height: 40px !important;
+        margin-top: 1px;
+    }
+}
 </style>

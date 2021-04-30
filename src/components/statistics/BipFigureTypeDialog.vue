@@ -157,6 +157,7 @@
                     </el-col>
                 </el-row>
             </el-tab-pane>
+            <!-- 
             <el-tab-pane>
                 <span slot="label" class="echarts-label"><i class="el-icon-date"></i>散点图</span>
                 <el-row :gutter="20">
@@ -185,6 +186,7 @@
                     </el-col>
                 </el-row>
             </el-tab-pane>
+            -->
             <el-tab-pane>
                 <span slot="label" class="echarts-label"><i class="el-icon-date"></i>漏斗图</span>
                 <el-row :gutter="20">

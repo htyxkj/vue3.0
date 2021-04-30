@@ -2,7 +2,7 @@
     <el-row class="menubar">
         <el-button-group v-if="mbs">
             <template  v-for="(btn,index) in mbs.menuList">
-                <el-button :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                <el-button class="bip-menu-bar" :class="'bip_btn_'+btn.type" :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                     <template v-if="btn.hasIcon">
                         <template v-if="btn.icon&&btn.bIconleft">
                             <i :class="btn.icon"></i>{{btn.name}}
@@ -17,6 +17,7 @@
                 </el-button>
             </template>
         </el-button-group>
+        <hr class="menubar-hr"/>
     </el-row>
 
 </template>
@@ -50,4 +51,12 @@ export default class BipMenuBarUI extends Vue{
     }
 }
 </script>
-
+<style lang="scss" scoped>
+.bip-menu-bar{
+    @include bip_menu_bar();
+}
+.menubar-hr{
+    margin: 0px;
+    border: 2px solid #e6e6e6;
+}
+</style>

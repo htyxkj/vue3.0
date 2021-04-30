@@ -1,6 +1,6 @@
 <template>
     <div v-loading="loading">
-        <el-tabs v-model="selMap" type="card" @tab-click="mapChnage" style="min-height: -webkit-fill-available">
+        <el-tabs v-model="selMap" type="card" @tab-click="mapChnage" class="ff-tabs" style="min-height: -webkit-fill-available">
             <el-tab-pane :style="style" label="天地图" name="tianMap">
                 <el-container class="padding0" :style="style">
                     <el-main class="padding0" style="overflow: hidden;position: relative;">
@@ -618,5 +618,17 @@ export default class TrackShow extends Vue {
 }
 .tdt-map-pane canvas {
     z-index: 300 !important;
+}
+.ff-tabs{
+    .el-tabs__header{
+        margin-left: 0px;
+        padding: 0;
+        margin: 0px;
+        background-color: #fff !important;
+    }
+    .el-tabs__item{
+        height: 30px !important;
+        line-height: 30px !important;
+    }
 }
 </style>

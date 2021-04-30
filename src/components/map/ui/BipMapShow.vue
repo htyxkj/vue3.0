@@ -94,7 +94,7 @@ export default class BipMapShow extends Vue {
 							msg+= (this.cels[j].labelString + "："+val+"<br/>");
 						}
 					}
-					if(this.fj_root_cell && this.fj_name_cell &&((this.fj_root_cell.attr &  0x400) ==0 || (this.fj_name_cell.attr &  0x400)) ){
+					if(this.fj_root_cell && this.fj_name_cell &&( (this.fj_name_cell.attr &  0x400)<=0) ){
 						let fj_root = data[this.fj_root_cell.id];
 						let fj_name = data[this.fj_name_cell.id];
 						if(fj_root && fj_name){

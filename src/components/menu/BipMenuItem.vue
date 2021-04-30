@@ -2,26 +2,28 @@
     <div>
         <template v-if="item.haveChild && canShowChile">
             <template v-if="item.childMenu.length === 0">
-                <el-menu-item :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command" -->
+                <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command" -->
                     <i class="el-icon-menu"></i>
                     {{item.menuName}}
                 </el-menu-item>
             </template>
 
             <el-submenu v-else :index="item.menuId">
-                <template slot="title" >
-                    <template v-if="item.menuIcon">
-                        <img class="imgpointer" :src="uri+item.menuIcon"/>
-                    </template>
-                    <template v-else>
-                        <i class="el-icon-menu"></i>
-                    </template>
-                    {{item.menuName}}
+                <template slot="title">
+                    <div  class="my-menu-item">
+                        <template v-if="item.menuIcon">
+                            <img class="imgpointer" :src="uri+item.menuIcon"/>
+                        </template>
+                        <template v-else>
+                            <i class="el-icon-menu"></i>
+                        </template>
+                        {{item.menuName}}
+                    </div>
                 </template>
                 <template v-for="child in item.childMenu">
-                    <bip-menu-item v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
+                    <bip-menu-item class="my-menu-item" v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
                     <template v-else>
-                        <el-menu-item v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  @click="closeMenu(child.command)"> <!-- :route="'layout?'+child.command"  -->
+                        <el-menu-item class="my-menu-item" v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  @click="closeMenu(child.command)"> <!-- :route="'layout?'+child.command"  -->
                             <template v-if="child.menuIcon">
                                 <img class="imgpointer" :src="uri+child.menuIcon"/>
                             </template>
@@ -35,7 +37,7 @@
             </el-submenu>
         </template>
         <template v-else>
-            <el-menu-item :key="item.menuId" :index="item.menuId" v-if="item.menuattr != 4" @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command"  -->
+            <el-menu-item class="my-menu-item" :key="item.menuId" :index="item.menuId" v-if="item.menuattr != 4" @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command"  -->
                 <template v-if="item.menuIcon">
                     <img class="imgpointer" :src="uri+item.menuIcon"/>
                     </template>
@@ -106,6 +108,9 @@ export default class BipMenuItem extends Vue{
 .imgpointer{
     width: 18px;
     height: 18px;
+}
+.my-menu-item{
+    font-size: 16px;
 }
 </style>
 

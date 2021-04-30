@@ -1,6 +1,6 @@
 <template>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane v-for="(cfg,index) in laycfg" :key="index" :label="cfg.name" :name="index+''">
+    <el-tabs class="bip-tabs-layout" v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane v-for="(cfg,index) in laycfg" :key="index" :label="'　'+cfg.name+'　'" :name="index+''">
             <!-- {{cfg.name}} -->
             <template v-if="!cfg.bcells">
                 <!-- {{111}} -->

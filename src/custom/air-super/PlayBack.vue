@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading">
         <el-tabs
-            v-model="selMap"
+            v-model="selMap" class="ff-tabs"
             type="card"
             @tab-click="mapChnage"
             style="min-height: -webkit-fill-available"
@@ -1180,6 +1180,18 @@ export default class OperatingArea extends Vue {
     font-size: 0px !important;
     .el-checkbox__label {
         font-size: 0px !important;
+    }
+}
+.ff-tabs{
+    .el-tabs__header{
+        margin-left: 0px;
+        padding: 0;
+        margin: 0px;
+        background-color: #fff !important;
+    }
+    .el-tabs__item{
+        height: 30px !important;
+        line-height: 30px !important;
     }
 }
 </style>

@@ -63,7 +63,7 @@ import { on } from 'cluster';
 export default class SortiesInvoke extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
     @Getter('user', { namespace: 'login' }) user?: User;
-    @Provide() style1: string = ""+ (this.height ? this.height - 85 : "400");
+    @Provide() style1: string = ""+ (this.height ? this.height - 105 : "400");
     @Provide() tableData: Array<any> = [];
     @Provide() sortiesCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
     @Provide() loading:boolean = false;
@@ -73,7 +73,7 @@ export default class SortiesInvoke extends Vue {
     @Provide() 
     async created() {
         if (this.height) {
-            this.style1 = ""+ (this.height - 250);
+            this.style1 = ""+ (this.height - 300);
         }
         // 初始化条件查询区域
         this.sortiesCell = await this.getCell("WF0317TJ");
@@ -299,7 +299,7 @@ export default class SortiesInvoke extends Vue {
     }
     @Watch("height")
         heightChange() {
-            this.style1 = "" + (this.height - 250) ;
+            this.style1 = "" + (this.height - 300) ;
         }
 }
 </script>

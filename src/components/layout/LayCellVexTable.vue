@@ -1,6 +1,6 @@
 <template>
     <div v-if="laycell" class="bip-lay" style="position: relative;">
-        <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0 && this.cds.page.total>0" style="padding-bottom: 20px;">
+        <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0 && this.cds.page.total>0" style="padding:5px 0px;">
             <template v-for="(item,index) in this.cds.cdata.sumData">
                 <span class="sum" :key="index">{{item.labelString}}: {{item.initval}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
             </template>
@@ -1019,6 +1019,7 @@ export default class LayCelVexTable extends Vue {
     }
     //组成表头分组
     initGroup(){
+        console.log("initGroup");
         let cells = [];
         let sfix = this.laycell.cells.sfix;
         if(sfix){
@@ -1029,16 +1030,28 @@ export default class LayCelVexTable extends Vue {
                 let g:any = {type:'',name:'',cel:null};
                 let cel = this.laycell.uiCels[j];
                 cel.widthIndex = j;
-                let cc = null;
                 for(var i=0;i<group.length;i++){//day2,0,2,1,下班时间
                     let oneG = group[i].split(",");
                     if(cel.id == oneG[0]){
                         let num:number = parseInt(oneG[2]);
                         let cels =[]
-                        for(var p=0;p<num;p++){
-                            let cc = this.laycell.uiCels[j+p];
-                            cc.widthIndex = j+p
-                            cels.push(cc);
+                        if(isNaN(num)){
+                            num =0;
+                            for(var z =0;z<this.laycell.uiCels.length;z++){
+                                num++;
+                                let cc = this.laycell.uiCels[j+z];
+                                cc.widthIndex = j+z
+                                cels.push(cc);
+                                if(cc.id == oneG[2]){
+                                    break;
+                                }
+                            }
+                        }else{
+                            for(var p=0;p<num;p++){
+                                let cc = this.laycell.uiCels[j+p];
+                                cc.widthIndex = j+p
+                                cels.push(cc);
+                            }
                         }
                         g.type = 'g';
                         g.name = oneG[4];
@@ -1288,5 +1301,13 @@ export default class LayCelVexTable extends Vue {
             height: 100%;
         }
     }
+}
+</style>
+<style>
+.vxe-table--body-wrapper .body--wrapper::-webkit-scrollbar {
+    width: 4px;
+}
+.vxe-table--body-wrapper .body--wrapper::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
 }
 </style>

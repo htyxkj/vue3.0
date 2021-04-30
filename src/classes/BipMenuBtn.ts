@@ -6,6 +6,7 @@ export class BipMenuBtn{
     bIconleft:boolean = true
     enable:boolean = true
     hasIcon:boolean = true
+    type:string = "";//按钮类型
 
     /**自定义DLG按钮 */
     dlgType:string
@@ -59,5 +60,8 @@ export class BipMenuBtn{
     }
     public setDlgSname(value:string):void{
         this.dlgSname = value
-    }    
+    }   
+    public setType(value:string):void{
+        this.type = value;
+    }
 }

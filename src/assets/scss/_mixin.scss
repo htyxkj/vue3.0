@@ -1,0 +1,117 @@
+/** 定义mixin方法的文件 **/
+@charset "utf-8";
+@import "./_varibale.scss";/*引入配置*/
+
+//右侧菜单列表样式
+@mixin menu_list_style(){
+  width: 300px !important;
+  background-color:$menu-background-color-theme;
+  top: $head-height-theme !important;
+  height: calc(100% - #{$head-height-theme}) !important;
+  [data-theme="theme1"] & {
+    background-color:$menu-background-color-theme1;
+    top: $head-height-theme1 !important;
+    height: calc(100% - #{$head-height-theme1}) !important;
+  }
+}
+//右侧菜单头部样式
+@mixin menu_head_style(){
+  background-color:$head-background-color-theme;
+  height:$head-height-theme !important;
+  line-height:$head-height-theme !important;
+  [data-theme="theme1"] & {
+    background-color:$head-background-color-theme1;
+    height:$head-height-theme1 !important;
+    line-height:$head-height-theme1 !important;
+  }
+}
+
+// 头部样式
+@mixin head_all_style(){
+  @include menu_head_style();
+  line-height:unset !important;
+}
+@mixin head_height_style(){
+  height:$head-height-theme !important;
+  [data-theme="theme1"] & {
+    height:$head-height-theme1 !important;
+  }
+}
+//头部背景色样式
+@mixin head_bg_style() {
+  background-color:$head-background-color-theme;
+  [data-theme="theme1"] & {
+    background-color:$head-background-color-theme1;
+  }
+}
+
+//页面整体背景色
+@mixin overall_bg_color(){
+  background-color:$overall-background-color-theme !important;
+  [data-theme="theme1"] & {
+    background-color:$overall-background-color-theme1 !important;
+  }
+}
+
+//菜单选项卡样式
+@mixin tabs_pane(){
+  padding: 0 20px;
+  height: 30px !important;
+  line-height: 30px !important;
+  list-style: none;
+  color: #606266 !important;
+  background-color:$tabs-pane-background-color-theme;
+  font-size: 14px;
+  margin-right: 10px;
+  border-radius: 2px;
+  [data-theme="theme1"] & {
+    background-color:$tabs-pane-background-color-theme1; 
+  }
+}
+//选项卡选中样式
+@mixin tabs_pane_is_active(){
+  height: 30px !important;
+  line-height: 30px !important;
+  background-color:$tabs-pane-is-active-background-color-theme;
+  color: white !important;
+  [data-theme="theme1"] & {
+    background-color:$tabs-pane-is-active-background-color-theme1 !important;
+  }
+}
+//按钮栏样式（默认按钮）
+@mixin bip_menu_bar(){
+  height: 30px !important;
+  margin-left: 20px !important;
+  border-radius: 6px !important;
+  background-color: $bip-menu-bar-background-color-theme !important;
+  color: $bip-menu-bar-color-theme !important;
+  [data-theme="theme1"] & {
+    background-color: $bip-menu-bar-background-color-theme1 !important;
+    color: $bip-menu-bar-color-theme1 !important;
+  }
+}
+//按钮栏样式（主要按钮）
+@mixin bip_menu_bar_primary(){
+  background-color: $bip-menu-bar-primary-background-color-theme !important;
+  color: $bip-menu-bar-primary-color-theme !important;
+  [data-theme="theme1"] & {
+    background-color:$bip-menu-bar-primary-background-color-theme1 !important;
+    color:$bip-menu-bar-primary-color-theme1 !important;
+  }
+}
+//按钮栏样式（成功按钮）
+@mixin bip_menu_bar_success(){
+
+}
+//按钮栏样式（信息按钮）
+@mixin bip_menu_bar_info(){
+
+}
+//按钮栏样式（警告按钮）
+@mixin bip_menu_bar_warning(){
+
+}
+//按钮栏样式（危险按钮）
+@mixin bip_menu_bar_danger(){
+
+}
