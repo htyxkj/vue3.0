@@ -113,17 +113,18 @@ export default class CardInfo extends Vue{
 	.card .info{
 		margin:10px 0;
 		border-radius: 5px;
+		height: 1rem;
 	}
 
 	.info .el-avatar--small{
 		background-color: goldenrod;
 		position: absolute;
-		margin-top: -66px;
+		margin-top: -1.1rem;
 	}
 
 	.staff-cust-time {
-		height: 4em;
-		line-height: 2em;
+		height: 1rem;
+		line-height: 0.5rem;
 		/* vertical-align: middle; */
 		text-align: center;
 		color: #fff;

@@ -20,48 +20,21 @@
               <div class="filter">
                 <a data-id="1" data-type="leftTopTabs1" href="javascript:;" :class="leftTopTabs1 == 1 ? 'active' : ''" @click="aClick">营业收入</a>
                 <a data-id="2" data-type="leftTopTabs1" href="javascript:;" :class="leftTopTabs1 == 2 ? 'active' : ''" @click="aClick">利润</a>
+                <a href="javascript:;" class="goto-list pieTitle">计划占比</a>
               </div>
               <div class="chart" id="leftTopTabsC" ref="leftTopTabsC"></div>
               <div class="panel-footer"></div>
             </div>
             <div class="panel">
               <div class="filter">
-                <a
-                  data-id="1"
-                  data-type="leftCenterabs1"
-                  href="javascript:;"
-                  :class="leftCenterabs1 == 1 ? 'active' : ''"
-                  @click="aClick"
-                  >第一季度</a
-                >
-                <a
-                  data-id="2"
-                  data-type="leftCenterabs1"
-                  href="javascript:;"
-                  :class="leftCenterabs1 == 2 ? 'active' : ''"
-                  @click="aClick"
-                  >第二季度</a
-                >
-                <a
-                  data-id="3"
-                  data-type="leftCenterabs1"
-                  href="javascript:;"
-                  :class="leftCenterabs1 == 3 ? 'active' : ''"
-                  @click="aClick"
-                  >第三季度</a
-                >
-                <a
-                  data-id="4"
-                  data-type="leftCenterabs1"
-                  href="javascript:;"
-                  :class="leftCenterabs1 == 4 ? 'active' : ''"
-                  @click="aClick"
-                  >第四季度</a
-                >
+                <a data-id="1" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 1 ? 'active' : ''" @click="aClick" >第一季度</a>
+                <a data-id="2" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 2 ? 'active' : ''" @click="aClick" >第二季度</a>
+                <a data-id="3" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 3 ? 'active' : ''" @click="aClick" >第三季度</a>
+                <a data-id="4" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 4 ? 'active' : ''" @click="aClick" >第四季度</a >
                 <a href="javascript:;" class="goto-list" @click="gotoList('L')">列表</a>
               </div>
               <el-carousel
-                height="200px"
+                height="3.1rem"
                 indicator-position="none"
                 :interval="7000"
               >
@@ -88,16 +61,22 @@
               <el-col :span="9">
                 <div @click="centerTC1Click">
                   <el-row v-if="centerTC1Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="12" class="progress" style="font-size:50px;">  
+                    <el-col :span="10" class="progress">  
                       <el-progress type="circle" :width="70" :stroke-width='4' :percentage="centerTC1Con.bl"></el-progress>
                     </el-col>
-                    <el-col :span="12" class="content">
+                    <el-col :span="14" class="content">
                       <el-row>
                         <el-col :span="24">
-                          营收：{{centerTC1Con.yjrmb}}亿
+                          全年营收：{{centerTC1Con.yjrmb}}亿
                         </el-col>
                         <el-col :span="24">
-                          完成：{{centerTC1Con.sjrmb}}亿
+                          累计完成：{{centerTC1Con.sjrmb}}亿
+                        </el-col>
+                        <el-col :span="24">
+                          预计营收：{{centerTC1Con.curr_yjrmb}}亿
+                        </el-col>
+                        <el-col :span="24">
+                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(2)}}亿
                         </el-col>
                       </el-row>
                     </el-col>
@@ -108,16 +87,22 @@
               <el-col :span="9">
                 <div @click="centerTC2Click">
                   <el-row v-if="centerTC2Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="12" class="progress">
+                    <el-col :span="10" class="progress">
                       <el-progress type="circle" :width="70"  :stroke-width='4' :percentage="centerTC2Con.bl"></el-progress>
                     </el-col>
-                    <el-col :span="12" class="content">
+                    <el-col :span="14" class="content">
                       <el-row>
                         <el-col :span="24">
-                          利润：{{centerTC2Con.yjfcy}}亿
+                          全年利润：{{centerTC2Con.yjfcy}}亿
                         </el-col>
                         <el-col :span="24">
-                          完成：{{centerTC2Con.sjfcy}}亿
+                          累计完成：{{centerTC2Con.sjfcy}}亿
+                        </el-col>
+                        <el-col :span="24">
+                          预计利润：{{centerTC2Con.curr_yjfcy}}亿
+                        </el-col>
+                        <el-col :span="24">
+                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(2)}}亿
                         </el-col>
                       </el-row>
                     </el-col>
@@ -139,22 +124,9 @@
           <div>
             <div class="panel">
               <div class="filter">
-                <a
-                  data-id="1"
-                  data-type="rightTopTabs1"
-                  href="javascript:;"
-                  :class="rightTopTabs1 == 1 ? 'active' : ''"
-                  @click="aClick"
-                  >营业收入</a
-                >
-                <a
-                  data-id="2"
-                  data-type="rightTopTabs1"
-                  href="javascript:;"
-                  :class="rightTopTabs1 == 2 ? 'active' : ''"
-                  @click="aClick"
-                  >利润</a
-                >
+                <a data-id="1" data-type="rightTopTabs1" href="javascript:;" :class="rightTopTabs1 == 1 ? 'active' : ''" @click="aClick">营业收入</a>
+                <a data-id="2" data-type="rightTopTabs1" href="javascript:;" :class="rightTopTabs1 == 2 ? 'active' : ''" @click="aClick">利润</a>
+                <a href="javascript:;" class="goto-list pieTitle">计划占比</a>
               </div>
               <div class="chart" id="rightTopTabsC" ref="rightTopTabsC"></div>
               <div class="panel-footer"></div>
@@ -195,7 +167,7 @@
                 <a href="javascript:;" class="goto-list" @click="gotoList('R')">列表</a>
               </div>
               <el-carousel
-                height="200px"
+                height="3.1rem"
                 indicator-position="none"
                 :interval="7000"
               >
@@ -209,7 +181,11 @@
               <div class="panel-footer"></div>
             </div>
             <div class="panel bottomChart">
-              <h2>{{ rightB1ConName }}</h2>
+              <div class="filter">
+                <a data-id="1" data-type="rightBottomTabs1" href="javascript:;" :class="rightBottomTabs1 == 1 ? 'active' : ''" @click="aClick" >月度营收对比分析</a>
+                <a data-id="2" data-type="rightBottomTabs1" href="javascript:;" :class="rightBottomTabs1 == 2 ? 'active' : ''" @click="aClick" >月度利润对比分析</a>
+              </div>
+              <!-- <h2>{{ rightB1ConName }}</h2> -->
               <div class="chart" ref="rightB1Con"></div>
               <div class="panel-footer"></div>
             </div>
@@ -217,22 +193,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="mainbox bottombox">
-      <div class="column">
-        <div class="panel bottomChart">
-          <h2>{{ leftB1ConName }}</h2>
-          <div class="chart" ref="leftB1Con"></div>
-          <div class="panel-footer"></div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="panel bottomChart">
-          <h2>{{ rightB1ConName }}</h2>
-          <div class="chart" ref="rightB1Con"></div>
-          <div class="panel-footer"></div>
-        </div>
-      </div>
-    </div> -->
     <div style="display:flex;">
       <!--左侧弹出框--->
       <template v-if="leftTopTabs1Chart">
@@ -246,7 +206,8 @@
           <el-row style="color: #f7f8fe; text-align: center"
             ><h3>
               {{ popItemLeft1.name }}-各个板块-
-              {{ leftTopTabs1 == 1 ? "营业收入" : "利润" }}占比
+              {{ leftTopTabs1 == 1 ? "营业收入" : "利润" }}占比&nbsp;&nbsp;&nbsp;&nbsp;
+              总金额：{{ popItemLeft1.value }} （亿）
             </h3></el-row
           >
           <el-row>
@@ -278,7 +239,8 @@
           <el-row style="color: #f7f8fe; text-align: center"
             ><h3>
             各个公司- {{ popItemRight1.name }}-
-              {{ rightTopTabs1 == 1 ? "营业收入" : "利润" }}对比
+              {{ rightTopTabs1 == 1 ? "营业收入" : "利润" }}对比&nbsp;&nbsp;&nbsp;&nbsp;
+              总金额：{{ popItemRight1.value }} （亿）
             </h3></el-row >
           <el-row>
               <div  ref="popRightChart" style="width:100%;height:400px;"></div>
@@ -312,7 +274,6 @@
                 <div class="summaryPie2">
                   <div class="chart" :ref="'popCenterTC'+(index+1)"></div>
                 </div>
-              
                 <div class="btm"></div>
               </div>
           </el-row>
@@ -324,30 +285,30 @@
         <div class="filterbg"></div>
         <div class="popup" :style="showCarouselTable ? 'width: 82%;height: 76%;' : ''">
           <a href="javascript:;" class="popupClose" @click="showCarouselTable = false"></a>
-          <el-row style="height:90%">
+          <el-row style="height:90%" class="dlgTable">
             <vxe-table height="auto" size="mini" resizable border show-header-overflow show-overflow 
             :footer-method="footerMethod" show-footer header-row-class-name="itemAnalysisTableHeader" footer-row-class-name="itemAnalysisTableHeader"
-            :row-class-name="itemAnalysisTableRowClass" border="none" class="itemAnalyTable"
+            :row-class-name="itemAnalysisTableRowClass" border="none" class="itemAnalyTable" style="font-size:14px"
             highlight-hover-row :data="carouselTableData">
               <vxe-table-column align="center" type="seq" title="序号" width="60"></vxe-table-column>
-              <vxe-table-column align="center" v-if="carouselTableType == 'L'" field="orgnamexa" title="区域公司"></vxe-table-column>
-              <vxe-table-column align="center" v-if="carouselTableType == 'R'"  field="name" title="业务板块"></vxe-table-column>
-              <vxe-table-column align="center" field="yjrmb" title="营业收入计划(亿元)" width="135"></vxe-table-column>
-              <vxe-table-column align="center" field="sjrmb" title="营业收入实际(亿元)" width="135"></vxe-table-column>
-              <vxe-table-column align="center" field="rmbbl" title="完成比例" width="75">
+              <vxe-table-column align="center" min-width="76" v-if="carouselTableType == 'L'" field="orgnamexa" title="区域公司"></vxe-table-column>
+              <vxe-table-column align="center" min-width="76" v-if="carouselTableType == 'R'"  field="name" title="业务板块"></vxe-table-column>
+              <vxe-table-column align="center" field="yjrmb" title="计划营收(亿)" min-width="100"></vxe-table-column>
+              <vxe-table-column align="center" field="sjrmb" title="实际营收(亿)" min-width="100"></vxe-table-column>
+              <vxe-table-column align="center" field="rmbbl" title="完成比例" min-width="75">
                 <template v-slot="{row}">
                   {{(row.rmbbl*1).toFixed(2)+'%'}}
                 </template>
               </vxe-table-column>
-              <vxe-table-column align="center" field="pm1" title="完成率排名" width="83"></vxe-table-column>
-              <vxe-table-column align="center" field="yjfcy" title="利润总额(亿元)" width="111"></vxe-table-column>
-              <vxe-table-column align="center" field="sjfcy" title="实际完成(亿元)" width="111"></vxe-table-column>
-              <vxe-table-column align="center" field="fcybl" title="完成比例" width="76">
+              <vxe-table-column align="center" field="pm1" title="排名" min-width="43"></vxe-table-column>
+              <vxe-table-column align="center" field="yjfcy" title="利润总额(亿)" min-width="100"></vxe-table-column>
+              <vxe-table-column align="center" field="sjfcy" title="实际完成(亿)" min-width="100"></vxe-table-column>
+              <vxe-table-column align="center" field="fcybl" title="完成比例" min-width="76">
                 <template v-slot="{ row }">
                   {{(row.fcybl*1).toFixed(2)+'%'}}
                 </template>
               </vxe-table-column>
-              <vxe-table-column align="center" field="pm2" title="完成率排名" width="83"></vxe-table-column>
+              <vxe-table-column align="center" field="pm2" title="排名" min-width="43"></vxe-table-column>
             </vxe-table>
           </el-row>
         </div>
@@ -439,7 +400,9 @@ export default class ItemAnalysis extends Vue {
   leftB1C1: any = null;
   leftB1ConName: any = "";
   /************** 右下图表 *****************/
+  rightBottomTabs1:any=1;
   rightB1Con: any = null;
+  rightB2Con: any = null;
   rightB1C1: any = null;
   rightB1ConName: any = "";
 
@@ -464,9 +427,9 @@ export default class ItemAnalysis extends Vue {
     this.initLeftCenter1();
     //右侧列表
     this.initRightCenter1();
-    //左侧下方面积图
+    //左侧下方柱状图
     this.initleftBottom1();
-    //右侧柱状图
+    //右侧下方面积图
     this.initRightBottom1();
     let _this = this;
     setTimeout(() => {
@@ -541,7 +504,7 @@ export default class ItemAnalysis extends Vue {
       console.log("利润");
     }
      let point = param.point
-    let data ={scm:point.scm,name:point.name,value:point.value};
+    let data ={scm:point.scm,name:point.name,value:parseFloat(point.value).toFixed(2)};
     let name = param.name;
     this.popItemLeft1 = data;
     console.log(name, this.popItemLeft1);
@@ -583,177 +546,22 @@ export default class ItemAnalysis extends Vue {
         }
         
       });
-      
+      let option = ChartConfig.Config.getPictorialBar();
+      let k = "summaryPie" + ( 1);
+          let _r:any = this.$refs[k];
+          let summaryPie: any = echarts.init(
+            _r[0] as HTMLCanvasElement
+          );
       _.forEach(vrs, (item: any, index: any) => {
-        let k = "summaryPie" + (index + 1);
-        let _r:any = this.$refs[k];
-        let summaryPie: any = echarts.init(
-          _r[0] as HTMLCanvasElement
-        );
-        // var pieOption1 = {
-        //   title: {
-        //     // x: "center",
-        //     // y: pieData.pieTop,
-        //     text: item.title,
-        //     bottom:'-4%',
-        //     left :'center',
-        //     textStyle: {
-        //       fontWeight: "300",
-        //       color: "#f7f8fe",
-        //       fontSize: 14,
-
-        //     },
-        //     textAlign:'auto',
-        //     // subtext:'1,7亿'
-        //   },
-        //   tooltip: {
-        //     show: false,
-        //   },
-        //   toolbox: {
-        //     show: false,
-        //   },
-
-        //   series: [
-        //     {
-        //       type: "pie",
-        //       clockWise: false,
-        //       radius: [40, 46],
-        //       hoverAnimation: false,
-        //       center: ["50%", "50%"],
-        //       labelLine: {
-        //         show: false
-        //       },
-        //       data: [
-        //         {
-        //           value: this.leftTopTabs1==1?item.rmb:item.fcy,
-        //           label: {
-        //             normal: {
-        //               formatter: " {d}% \n "+(this.leftTopTabs1==1?item.rmb:item.fcy)+"亿",
-        //               position: "center",
-        //               show: true,
-        //               textStyle: {
-        //                 fontSize: 12,
-        //                 fontWeight: "300",
-        //                 color: '#f7f8fe',
-        //               },
-        //             },
-        //           },
-        //           itemStyle: {
-        //             normal: {
-        //               color:  item.color,
-        //               shadowColor:  item.color,
-        //               shadowBlur: 10,
-        //             },
-        //           },
-        //         },
-        //         {
-        //           value: this.leftTopTabs1==1?item.syrmb:item.syfcy,
-        //           name: "",
-        //           itemStyle: {
-        //             normal: {
-        //               color: "rgba(44,59,70,1)", // 未完成的圆环的颜色
-        //               label: {
-        //                 position:'inside',
-        //                 show: false,
-        //               }
-        //             },
-        //             emphasis: {
-        //               color: "rgba(44,59,70,1)", // 未完成的圆环的颜色
-        //             },
-        //           }
-        //         }
-        //       ]
-        //     }
-        //   ]
-        // };
-        console.log(item)
-        let value = (this.leftTopTabs1==1?item.rmb/item.totalrmb:item.fcy/item.totalfcy)*100;
-        value = parseFloat(value.toFixed(2));
-        let pieOption1 = {
-          series : [
-            {
-                name: '速度',
-                type: 'gauge',
-                z: 3,
-                min: 0,
-                max: 100,
-                splitNumber: 10,
-                radius: '80%',
-                axisLine: {
-                  show: true,
-                  lineStyle: {
-                    width:7,
-                    color: [
-                      [1,new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                        {
-                          offset: 0.1,
-                          color: "#FFC600"
-                        },
-                        {
-                          offset: 0.6,
-                          color: "#30D27C"
-                        },
-                        {
-                          offset: 1,
-                          color: "#0B95FF"
-                        }
-                      ])
-                    ]
-                  ]
-                  }
-                },
-                axisTick: {            // 坐标轴小标记
-                    length: 2,        // 属性length控制线长
-                    lineStyle: {       // 属性lineStyle控制线条样式
-                        color: 'auto'
-                    }
-                },
-                splitLine: {           // 分隔线
-                    length: 4,         // 属性length控制线长
-                    lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
-                        color: 'auto'
-                    }
-                },
-                pointer: {
-                  width:3,//指针的宽度
-                  length:"50%", //指针长度，按照半圆半径的百分比
-                  shadowColor : '#ccc', //默认透明
-                  shadowBlur: 5
-                },
-                axisLabel: {
-                    backgroundColor: 'auto',
-                    borderRadius: 2,
-                    interval: 2,
-                    color: '#eee',
-                    padding: -2,
-                    textShadowBlur: 2,
-                    textShadowOffsetX: 1,
-                    textShadowOffsetY: 1,
-                    textShadowColor: '#222'
-                },
-                title: {
-                    // 其余属性默认使用全局文本样式，详见TEXTSTYLE
-                    fontWeight: 'bolder',
-                    fontSize: 12,
-                    fontStyle: 'italic',
-                    color :"#fff",
-                    offsetCenter:[0,'90%']
-                },
-                detail: {
-                    // 其余属性默认使用全局文本样式，详见TEXTSTYLE
-                    formatter: function (value:any) {
-                      return value+"%";
-                    },
-                    offsetCenter:[0,'65%'],
-                    color: '#fff',
-                    fontSize:10,
-                },
-                data: [{value: value, name: item.title}]
-            },
-          ]
-      };
-        summaryPie.setOption(pieOption1);
+          console.log(item)
+          let value = (this.leftTopTabs1==1?item.rmb/item.totalrmb:item.fcy/item.totalfcy)*100;
+          value = parseFloat(value.toFixed(2));
+          option.xAxis.data.push(item.title);
+          let msg = item.title+"<br/>金额："+(this.leftTopTabs1==1?item.rmb:item.fcy).toFixed(2) +"（亿）<br/>占比："+value+"%<br/>";
+          let vl = {value:value,message:msg}
+          option.series[0].data.push(vl);
       });
+      summaryPie.setOption(option);
     });
   }
 
@@ -782,7 +590,7 @@ export default class ItemAnalysis extends Vue {
 
   async chartClickRight1Function(param: any){
     let point = param.point
-    let data ={id:point.myid,name:point.name,value:point.value};
+    let data ={id:point.myid,name:point.name,value:parseFloat(point.value).toFixed(2)};
     this.popItemRight1 = data
     this.rightTopTabs1Chart = true
      let qe: QueryEntity = new QueryEntity("", "");
@@ -795,74 +603,103 @@ export default class ItemAnalysis extends Vue {
       console.log(values);
       if(values){
         let rpopChart:any = echarts.init(this.$refs.popRightChart as HTMLCanvasElement);
-        let option:any = {
-          color: ["#14C4F0"],
-          tooltip: {
-            trigger: "axis",
-            axisPointer: {
-              // 坐标轴指示器，坐标轴触发有效
-              type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-            },
-          },
-          grid: {
+        let option:any = ChartConfig.Config.getColumn();
+        option.color= ["#14C4F0"],
+        option.grid= {
             left: "10%",
-            top: "10px",
+            top: "20px",
             right: "20%",
             bottom: "4%",
             containLabel: true,
-          },
-          xAxis: [
-            {
-              type: "category",
-              data: [],
-              axisTick: {
-                alignWithLabel: true,
-              },
-              axisLabel: {
-                textStyle: {
-                  color: "#fff",
-                  fontSize: "12",
-                },
-              },
-              axisLine: {
-                show: false,
-              },
-            },
-          ],
-          yAxis: [
-            {
-              type: "value",
-              axisLabel: {
-                formatter:'{value} 亿',
-                textStyle: {
-                  color: "rgba(255,255,255,.6)",
-                  fontSize: "12",
-                },
-              },
-              axisLine: {
-                lineStyle: {
-                  color: "rgba(255,255,255,.1)",
-                },
-              },
-              splitLine: {
-                lineStyle: {
-                  color: "rgba(255,255,255,.1)",
-                },
-              },
-            },
-          ],
-          series: [
-            {
-              name: "",
-              type: "bar",
-              barWidth: "35%",
-              data: [],
-              itemStyle: {
-                barBorderRadius: 0,
-              },
-            },
-          ],
-        };
+        }
+        option.series[0]. label={
+          show: true,
+          position: 'top'
+        }
+        // option.xAxis= [{
+        //   type: "category",
+        //   data: [],
+        //   axisTick: {
+        //     alignWithLabel: true,
+        //   },
+        //   axisLabel: {
+        //     textStyle: {
+        //       color: "#fff",
+        //       fontSize: "12",
+        //     },
+        //   },
+        //   axisLine: {
+        //     show: false,
+        //   },
+        // }]
+        // let option:any = {
+        //   color: ["#14C4F0"],
+        //   tooltip: {
+        //     trigger: "axis",
+        //     axisPointer: {
+        //       // 坐标轴指示器，坐标轴触发有效
+        //       type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+        //     },
+        //   },
+        //   grid: {
+        //     left: "10%",
+        //     top: "10px",
+        //     right: "20%",
+        //     bottom: "4%",
+        //     containLabel: true,
+        //   },
+        //   xAxis: [
+        //     {
+        //       type: "category",
+        //       data: [],
+        //       axisTick: {
+        //         alignWithLabel: true,
+        //       },
+        //       axisLabel: {
+        //         textStyle: {
+        //           color: "#fff",
+        //           fontSize: "12",
+        //         },
+        //       },
+        //       axisLine: {
+        //         show: false,
+        //       },
+        //     },
+        //   ],
+        //   yAxis: [
+        //     {
+        //       type: "value",
+        //       axisLabel: {
+        //         formatter:'{value} 亿',
+        //         textStyle: {
+        //           color: "rgba(255,255,255,.6)",
+        //           fontSize: "12",
+        //         },
+        //       },
+        //       axisLine: {
+        //         lineStyle: {
+        //           color: "rgba(255,255,255,.1)",
+        //         },
+        //       },
+        //       splitLine: {
+        //         lineStyle: {
+        //           color: "rgba(255,255,255,.1)",
+        //         },
+        //       },
+        //     },
+        //   ],
+        //   series: [
+        //     {
+        //       name: "",
+        //       type: "bar",
+        //       barWidth: "35%",
+        //       data: [],
+        //       itemStyle: {
+        //         barBorderRadius: 0,
+        //       },
+        //     },
+        //   ],
+        // };
         option.xAxis[0].data = [];
         option.series[0].data = [];
         _.forEach(values,(item:any,index:any) => {
@@ -884,23 +721,8 @@ export default class ItemAnalysis extends Vue {
     let cc = await tools.getBipInsAidInfo("BOARD_M1", 210, qe);
     if (cc.data.id == 0) {
       let values = cc.data.data.data.values[0];
-      this.centerTC1Con = {yjrmb:values.yjrmb,sjrmb:values.sjrmb,bl:parseInt((values.sjrmb/values.yjrmb*100).toFixed(0))}
-      this.centerTC2Con = {yjfcy:values.yjfcy,sjfcy:values.sjfcy,bl:parseInt((values.sjfcy/values.yjfcy*100).toFixed(0))}
-      // // 基于准备好的dom，初始化echarts实例
-      // this.centerTC1 = echarts.init(this.$refs.centerTC1 as HTMLCanvasElement);
-      // // 绘制图表
-      // this.centerTC1Con.series[0].data.push(parseFloat(values.rmbbl)/100)
-      // this.centerTC1Con.series[0].name="营收目标"
-      
-      // this.centerTC1.setOption(this.centerTC1Con);
-      // this.centerTC1.getZr().on('click',this.centerTC1Click);
-      // // 基于准备好的dom，初始化echarts实例
-      // this.centerTC2 = echarts.init(this.$refs.centerTC2 as HTMLCanvasElement);
-      // // 绘制图表
-      // this.centerTC2Con.series[0].data.push(parseFloat(values.fcybl)/100)
-      // this.centerTC2Con.series[0].name="利润目标"
-      // this.centerTC2.setOption(this.centerTC2Con);
-      // this.centerTC2.getZr().on('click',this.centerTC2Click);
+      this.centerTC1Con = {yjrmb:values.yjrmb,sjrmb:values.sjrmb,bl:parseInt((values.sjrmb/values.yjrmb*100).toFixed(0)),curr_yjrmb:values.curr_yjrmb}
+      this.centerTC2Con = {yjfcy:values.yjfcy,sjfcy:values.sjfcy,bl:parseInt((values.sjfcy/values.yjfcy*100).toFixed(0)),curr_yjfcy:values.curr_yjfcy}
     }
   }
 
@@ -1067,7 +889,6 @@ export default class ItemAnalysis extends Vue {
     let ins:any = await tools.getBipInsAidInfo("BOARD_M2", 200, qe);
     if(ins.data.id >=0){
             ins = ins.data.data.data
-      this.leftB1ConName = ins.title;
       let labers = ins.labers;
       let showColsIndex = ins.showColsIndex;
       let cc = await tools.getBipInsAidInfo("BOARD_M2", 210, qe);
@@ -1102,6 +923,49 @@ export default class ItemAnalysis extends Vue {
           tipHtml += '</div></div>';
           let d1 = { name: name, value: addr,message:tipHtml,itemStyle:{color:'#fff'}}
           this.mapCon.series[1].data.push(d1);
+          if(name=="哈尔滨"){
+            this.mapCon.series[0].data[0].message = tipHtml;
+          }else if(name =="沈阳"){
+            for(var z=1;z<=3;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name =="北京"){
+            for(var z=4;z<=7;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name =="济南"){
+            for(var z=8;z<=10;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name == "南京"){
+            for(var z=11;z<=12;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name == "杭州"){
+            for(var z=13;z<=16;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name == "广州"){
+            for(var z=17;z<=19;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name =="昆明"){
+            for(var z=20;z<=22;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name=="武汉"){
+            for(var z=23;z<=24;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name=="乌鲁木齐"){
+            for(var z=25;z<=25;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }else if(name =="成都"){
+            for(var z=26;z<=29;z++){
+              this.mapCon.series[0].data[z].message = tipHtml;
+            }
+          }
         }
       }
     }
@@ -1110,7 +974,7 @@ export default class ItemAnalysis extends Vue {
     let _this = this;
     this.map.on("mouseover", function (){
       _this.map.dispatchAction({
-      type: 'downplay'
+        type: 'downplay'
       });
     });
   }
@@ -1214,41 +1078,25 @@ export default class ItemAnalysis extends Vue {
     f4 = this.sort(f4, "rmbbl", "pm1", "name", "desc");
     this.rightTableData["4"] = f4;
   }
+
   /**
-   * 左下面积图
+   * 左下柱状图
    */
-  async initleftBottom1() {
+  async initleftBottom1(){
     let qe: QueryEntity = new QueryEntity("", "");
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
-    let ins:any = await tools.getBipInsAidInfo("BOARD_L3", 200, qe);
-    if(ins.data.id >=0){
-      ins = ins.data.data.data
+    let ins: any = await tools.getBipInsAidInfo("BOARD_R3", 200, qe);
+    if (ins.data.id >= 0) {
+      ins = ins.data.data.data;
       this.leftB1ConName = ins.title;
-      let labers = ins.labers;
-      let showColsIndex = ins.showColsIndex;
-      for(var i=1;i<labers.length;i++){
-          let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {opacity:0.6,}, emphasis: { focus: 'series' },data: [] }
-          this.leftB1Con.series.push(dd)
-          let lb1 = {
-            name: labers[i],
-            textStyle: {
-              color: '#ffffff'
-            }
-          }
-          this.leftB1Con.legend.data.push(lb1)
-      }
-      let cc = await tools.getBipInsAidInfo("BOARD_L3", 210, qe);
+      let cc = await tools.getBipInsAidInfo("BOARD_R3", 210, qe);
       if (cc.data.id == 0) {
         let values = cc.data.data.data.values;
         for (var i = 0; i < values.length; i++) {
           let vl = values[i];
-          this.leftB1Con.xAxis[0].data.push(vl.iym);
-          for (var j = 1; j < labers.length; j++) {
-            this.leftB1Con.series[j - 1].data.push(
-              vl[ins.cells.cels[showColsIndex[j]].id]
-            );
-          }
+          this.leftB1Con.xAxis[0].data.push(vl.name);
+          this.leftB1Con.series[0].data.push(vl.lrbl);
         }
       }
       // 基于准备好的dom，初始化echarts实例
@@ -1257,26 +1105,54 @@ export default class ItemAnalysis extends Vue {
       this.leftB1C1.setOption(this.leftB1Con);
     }
   }
+
+
   /**
-   * 右下柱状图
+   * 右下面积图
    */
   async initRightBottom1() {
     let qe: QueryEntity = new QueryEntity("", "");
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
-    let ins: any = await tools.getBipInsAidInfo("BOARD_R3", 200, qe);
-    if (ins.data.id >= 0) {
-      ins = ins.data.data.data;
+    let ins:any = await tools.getBipInsAidInfo("BOARD_L3", 200, qe);
+    if(ins.data.id >=0){
+      ins = ins.data.data.data
       this.rightB1ConName = ins.title;
-      let cc = await tools.getBipInsAidInfo("BOARD_R3", 210, qe);
+      let labers = ins.labers;
+      let showColsIndex = ins.showColsIndex;
+      for(var i=1;i<3;i++){
+          let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {opacity:0.6,}, emphasis: { focus: 'series' },data: [] }
+          this.rightB1Con.series.push(dd)
+          let lb1 = {
+            name: labers[i],
+            textStyle: {
+              color: '#ffffff'
+            }
+          }
+          this.rightB1Con.legend.data.push(lb1)
+      }
+      for(var i=3;i<labers.length;i++){
+          let dd = { name: labers[i], type: 'line', smooth: true,stack: labers[i], areaStyle: {opacity:0.6,}, emphasis: { focus: 'series' },data: [] }
+          this.rightB2Con.series.push(dd)
+          let lb1 = {
+            name: labers[i],
+            textStyle: {
+              color: '#ffffff'
+            }
+          }
+          this.rightB2Con.legend.data.push(lb1)
+      }
+      let cc = await tools.getBipInsAidInfo("BOARD_L3", 210, qe);
       if (cc.data.id == 0) {
         let values = cc.data.data.data.values;
         for (var i = 0; i < values.length; i++) {
           let vl = values[i];
-          // this.rightB1Con.xAxis3D.data.push(vl.name);
-          // this.rightB1Con.series[0].data.push([(i+1),0,vl.lrbl]);
-          this.rightB1Con.xAxis[0].data.push(vl.name);
-          this.rightB1Con.series[0].data.push(vl.lrbl);
+          this.rightB1Con.xAxis[0].data.push(vl.iym);
+          this.rightB2Con.xAxis[0].data.push(vl.iym);
+          this.rightB1Con.series[0].data.push(vl.yjrmb);
+          this.rightB1Con.series[1].data.push(vl.sjrmb);
+          this.rightB2Con.series[0].data.push(vl.yjfcy);
+          this.rightB2Con.series[1].data.push(vl.sjfcy);
         }
       }
       // 基于准备好的dom，初始化echarts实例
@@ -1354,438 +1230,24 @@ export default class ItemAnalysis extends Vue {
       }
     } else if (type == "rightCenterabs1") {
       this.rightCenterabs1 = e.currentTarget.dataset.id;
+    }else if(type == "rightBottomTabs1"){
+      this.rightBottomTabs1 = e.currentTarget.dataset.id;
+      if (this.rightBottomTabs1 == 1) {
+        this.rightB1C1.setOption(this.rightB1Con);
+      } else {
+        this.rightB1C1.setOption(this.rightB2Con);
+      }
     }
   }
   initConfig() { 
-    
-
     this.leftT1C1Con = ChartConfig.Config.getPie3D();
     this.leftT1C2Con = ChartConfig.Config.getPie3D();
     this.rightT1C1Con = ChartConfig.Config.getPie3D();
-    this.rightT1C2Con = ChartConfig.Config.getPie3D();
-
-    //水滴图作废
-    // let centerTC1Con ={
-    //   // 图表主标题
-    //   title: {
-    //     text: '', // 主标题文本，支持使用 \n 换行
-    //     bottom: -6, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
-    //     left: 'center', // 值: 'left', 'center', 'right' 同上
-    //     textStyle: { // 文本样式
-    //       fontSize: 16,
-    //       fontWeight: 200,
-    //       color: '#fff'
-    //     }
-    //   },
-    //   // 提示框组件
-    //   tooltip: {
-    //     trigger: 'item', // 触发类型, 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
-    //     formatter: function (value:any) {
-    //       return value.seriesName + ': ' + value.data * 100 + '%'
-    //     }
-    //   },
-    //   series: [{
-    //     type: 'liquidFill',
-    //     name: '', // 系列名称，用于tooltip的显示，legend 的图例筛选
-    //     radius: '60%', // 水球图的半径
-    //     center: ['50%', '51%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
-    //     // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形  
-    //     // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
-    //     shape: 'circle',
-    //     phase: 0, // 波的相位弧度 不设置  默认自动
-    //     direction: 'right', // 波浪移动的速度  两个参数  left 从右往左 right 从左往右
-    //     // 图形上的文本标签
-    //     label: {
-    //       fontSize: 30,
-    //       fontWeight: 200,
-    //       color: '#fff'
-    //     },
-    //     // label: {
-    //     //   show: true,
-    //     //   fontSize: 14,
-    //     //   position: ['50%', '50%'],
-    //     //   color: 'rgba(254, 253, 244, 1.00)',
-    //     //   insideColor: 'rgba(244, 120, 34, 1.00)',
-    //     //   formatter: 'XXXXXXXXXX',
-    //     //   rich: {
-    //     //       total: {
-    //     //           fontSize: 37,
-    //     //           fontFamily: "微软雅黑",
-    //     //       }, total2: {
-    //     //           fontSize: 25,
-    //     //           fontFamily: "微软雅黑",
-    //     //       },
-    //     //       active: {
-    //     //           fontFamily: "微软雅黑",
-    //     //           fontSize: 14,
-    //     //       },
-    //     //   }
-    //     // },
-    //     outline: {
-    //       show: true,
-    //       borderDistance: 0, // 边框线与图表的距离 数字
-    //       itemStyle: {
-    //         opacity: 1, // 边框的透明度   默认为 1
-    //         borderWidth: 1, // 边框的宽度
-    //         shadowBlur: 1, // 边框的阴影范围 一旦设置了内外都有阴影
-    //         shadowColor: '#fff', // 边框的阴影颜色,
-    //         borderColor: '#41dcd8' // 边框颜色
-    //       }
-    //     },
-    //     // 图形样式
-    //     itemStyle: {
-    //       color: '#4077eb', // 水球显示的背景颜色
-    //       opacity: 0.5, // 波浪的透明度
-    //       shadowBlur: 10 // 波浪的阴影范围
-    //     },
-    //     backgroundStyle: {
-    //       color: '#407bf3', // 水球未到的背景颜色
-    //       opacity: 0.5
-    //     },
-    //     // 图形的高亮样式
-    //     emphasis: {
-    //       itemStyle: {
-    //         opacity: 0.8 // 鼠标经过波浪颜色的透明度
-    //       }
-    //     },
-    //     data: [] // 系列中的数据内容数组
-    //   }]
-    // }
-    // this.centerTC1Con =  JSON.parse(JSON.stringify(centerTC1Con))
-    // this.centerTC2Con =  JSON.parse(JSON.stringify(centerTC1Con))
-
-    let leftB1Con = {
-       color: [
-        "#155dff",
-        "#0ef6a7",
-        "#ffe535",
-        "#19f1ff",
-        "#1860f4",
-        "#1fc4f4",
-        "#f5dc30",
-        "#ff9110",
-        "#f8224a",
-        "#f92598",
-      ],
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "cross",
-          label: {
-            backgroundColor: "#6a7985",
-          },
-        },
-      },
-      legend: {
-          data: []
-      },
-      grid: {
-        left: "0%",
-        top: "10px",
-        right: "0%",
-        bottom: "4%",
-        containLabel: true,
-      },
-      xAxis: [
-          {
-              type: 'category',
-              boundaryGap: false,
-              data: [],
-              axisTick: {
-                alignWithLabel: true
-              },
-              axisLabel: {
-                textStyle: {
-                  color: "rgba(255,255,255,.6)",
-                  fontSize: "12"
-                }
-              },
-              axisLine: {
-                show: false
-              }
-          }
-      ],
-      yAxis: [
-        {
-          type: "value",
-          axisLabel: {
-            textStyle: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-          },
-          axisLine: {
-            lineStyle: {
-              color: "rgba(255,255,255,.1)",
-            },
-          },
-          splitLine: {
-            lineStyle: {
-              color: "rgba(255,255,255,.1)",
-            },
-          },
-        },
-      ],
-      series: [],
-    };
-    this.leftB1Con = JSON.parse(JSON.stringify(leftB1Con));
-
-    let rightB1Con = {
-      color: ["#2f89cf"],
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          // 坐标轴指示器，坐标轴触发有效
-          type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-        },
-      },
-      grid: {
-        left: "0%",
-        top: "10px",
-        right: "0%",
-        bottom: "4%",
-        containLabel: true,
-      },
-      xAxis: [
-        {
-          type: "category",
-          data: [],
-          axisTick: {
-            alignWithLabel: true,
-          },
-          axisLabel: {
-            textStyle: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-          },
-          axisLine: {
-            show: false,
-          },
-        },
-      ],
-      yAxis: [
-        {
-          type: "value",
-          axisLabel: {
-            textStyle: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-          },
-          axisLine: {
-            lineStyle: {
-              color: "rgba(255,255,255,.1)",
-              // width: 1,
-              // type: "solid"
-            },
-          },
-          splitLine: {
-            lineStyle: {
-              color: "rgba(255,255,255,.1)",
-            },
-          },
-        },
-      ],
-      series: [
-        {
-          name: "",
-          type: "bar",
-          barWidth: "35%",
-          data: [],
-          itemStyle: {
-            barBorderRadius: 5,
-          },// 基准线
-        },
-      ],
-    };
-    // let rightB1Con = {
-    //   tooltip: {},
-    //     xAxis3D: {
-    //       type: 'category',
-    //       data: [],
-    //       name:''
-    //     },
-    //     yAxis3D: {
-    //       type: 'category',
-    //       data: [],
-    //       name:''
-    //     },
-    //     zAxis3D: {
-    //       type: 'value',
-    //       name:''
-    //     },
-    //     grid3D: {
-    //       boxWidth: 200,
-    //       boxDepth: 8,
-    //       light: {
-    //         main: {
-    //           intensity: 1.2,
-    //           shadow: true
-    //         },
-    //         ambient: {
-    //           intensity: 0.3
-    //         }
-    //       }
-    //     },
-    //     series: [{
-    //       type: 'bar3D',
-    //       data: [],
-    //       shading: 'lambert',
-    //       label: {
-    //         fontSize: 16,
-    //         borderWidth: 1
-    //       },
-    //       emphasis: {
-    //         label: {
-    //           fontSize: 20,
-    //           color: '#900'
-    //         },
-    //         itemStyle: {
-    //           color: '#900'
-    //         }
-    //       }
-    //     }]
-    //   }
-    this.rightB1Con = JSON.parse(JSON.stringify(rightB1Con));
-
-    this.mapCon={
-      color: [
-        "#ffffff",
-        "#065aab",
-        "#066eab",
-        "#0682ab",
-        "#0696ab",
-        "#06a0ab",
-        "#06b4ab",
-        "#06c8ab",
-        "#06dcab",
-        "#06f0ab"
-      ],
-      title: {
-        text: "",
-        subtext: "",
-        left: "center",
-        textStyle: {
-          color: "#7bbfea",
-        },
-      },
-      geo: {
-        map: "china",
-        label: {
-          show:true,
-          emphasis: {
-            show: true,
-            color: "#fff",
-          },
-        },
-        roam: false,
-        itemStyle: {
-          normal: {
-            borderWidth: 0,
-            shadowColor:'rgb(255,255,255,0.7)',
-            shadowOffsetX: 7,
-            shadowOffsetY: 8
-          },
-          emphasis: {
-            areaColor: "#2B91B7"
-          }
-        },
-        regions: [{
-          name: '南海诸岛',
-          itemStyle: {
-              areaColor: 'rgba(0, 10, 52, 1)',
-
-              borderColor: 'rgba(0, 10, 52, 1)',
-              normal: {
-                  opacity: 0,
-                  label: {
-                      show: false,
-                      color: "#009cc9",
-                  }
-              }
-          },
-        }],
-      },
-      // 提示框，鼠标移入
-      tooltip: {
-        show: true, //鼠标移入是否触发数据
-        trigger: "item", //出发方式
-        // formatter: "{b}-公司数量：{c}",
-        formatter:function(params:any){
-          if(params.data){
-            return  params.data.message;
-          }else{
-            return "";
-          }
-        }
-      },
-      //配置地图的数据，并且显示
-      series: [
-         {
-            type: 'map',
-            roam: false,
-            label: {
-                normal: {
-                    show: true,
-                    textStyle: {
-                        color: '#000000'
-                    }
-                },
-                emphasis: {
-                    textStyle: {
-                        color: 'rgb(183,185,14)'
-                    }
-                }
-            },
-            data:[
-              {name: '黑龙江',itemStyle: {areaColor: '#3580ed',color: '#3580ed',borderWidth:0}},
-              {name: '吉林',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
-              {name: '内蒙古',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
-              {name: '辽宁',itemStyle: {areaColor: '#32b4ed',color: '#32b4ed',borderWidth:0}},
-              {name: '北京',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-              {name: '天津',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-              {name: '河北',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-              {name: '山西',itemStyle: {areaColor: '#F43749',color: '#F43749',borderWidth:0}},
-              {name: '山东',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
-              {name: '河南',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
-              {name: '重庆',itemStyle: {areaColor: '#ff971a',color: '#ff971a',borderWidth:0}},
-              {name: '江苏',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
-              {name: '安徽',itemStyle: {areaColor: '#bfff43',color: '#bfff43',borderWidth:0}},
-              {name: '浙江',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-              {name: '上海',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-              {name: '福建',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-              {name: '江西',itemStyle: {areaColor: '#3ae8c6',color: '#3ae8c6',borderWidth:0}},
-              {name: '广东',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
-              {name: '广西',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
-              {name: '海南',itemStyle: {areaColor: '#603de0',color: '#603de0',borderWidth:0}},
-              {name: '云南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
-              {name: '贵州',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
-              {name: '湖南',itemStyle: {areaColor: '#d156ef',color: '#d156ef',borderWidth:0}},
-              {name: '湖北',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
-              {name: '陕西',itemStyle: {areaColor: '#ffe266',color: '#ffe266',borderWidth:0}},
-              {name: '新疆',itemStyle: {areaColor: '#18d186',color: '#18d186',borderWidth:0}},
-              {name: '青海',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-              {name: '宁夏',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-              {name: '甘肃',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-              {name: '四川',itemStyle: {areaColor: '#f75e34',color: '#f75e34',borderWidth:0}},
-            ], 
-            map: 'china'
-          },
-        {
-          type: "effectScatter",
-          showEffectOn: "render", //配置什么时候显示特效
-          coordinateSystem: "geo", //该系列使用的坐标系
-          symbolSize: 10, //标记的大小
-          rippleEffect:{              //涟漪特效相关配置。
-            period:1.2,               //动画的时间。
-            scale:3.5,              //动画中波纹的最大缩放比例。
-            brushType:'fill', 
-          },
-          data: []
-        },
-      ]
-    };
+    this.rightT1C2Con = ChartConfig.Config.getPie3D(); 
+    this.rightB1Con = ChartConfig.Config.getArea();
+    this.rightB2Con = ChartConfig.Config.getArea();
+    this.leftB1Con = ChartConfig.Config.getColumn();
+    this.mapCon= ChartConfig.Config.getMap();
   }
   // 定时器执行获取当前时间
   time() {
@@ -2080,7 +1542,7 @@ a {
 .filterbg {
   width: 100%;
   height: 100%;
-  background: rgba(30, 182, 254, 0.5);
+  // background: rgba(30, 182, 254, 0.5);
   position: absolute;
   top: 0;
   left: 0;
@@ -2125,11 +1587,11 @@ a {
 //    transition-duration: 0.3s;
 // }
 .summaryPie {
-  height: 100%;
+  // height: 100%;
   float: left;
-  // width: 33%;
-  width: 200px;
-  height: 150px;
+  width: 100%;
+  // width: 200px;
+  height: 400px;
   margin-bottom: 10px;
 }
 .summaryPie2 {
@@ -2187,7 +1649,13 @@ a {
     -moz-transition: all 1.3s ease-in;  
     transition: all 1.3s ease-in;  
   }
-
+  .pieTitle{
+    color: rgb(85, 153, 255) !important;
+    font-weight: bold;
+    text-align: center;
+    font-size: 17px;
+    right: 12px !important;
+  }
 </style>
 <style lang="scss">
   .itemAnalysisTableHeader{
@@ -2211,6 +1679,11 @@ a {
     margin-top:0.5rem;
     .vxe-table--footer-wrapper{
       border:0px solid;
+    }
+  }
+  .panel {
+    .el-carousel__arrow{
+      background-color: rgba(23,116,222,.8);
     }
   }
 </style>
