@@ -28,6 +28,10 @@
             <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
             <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @Recheck="Recheck"></im-ex-file>
         </template>
+        <template v-if="nodeId">
+            <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
+        </template>
+        
     </el-row>
     
 </template>
@@ -54,14 +58,13 @@ import DataCache from "@/classes/DataCache";
 import PageInfo from "@/classes/search/PageInfo";
 import BipWork from '@/components/cwork/BipWork.vue';
 import BipWorkProcess from '@/components/cwork/BipWorkProcess.vue';
-import { stringify } from 'querystring';
 import CRecord from '../../../classes/pub/CRecord';
 import CData from '../../../classes/pub/CData';
-import { clear } from 'xe-utils/methods';
+import BipLog from '@/components/file/BipLog.vue';
 let icl = CommICL;
 let tools = BIPUtil.ServApi
 @Component({
-    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg,ImExFile}
+    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg,ImExFile,BipLog}
 })
 export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
@@ -89,7 +92,7 @@ export default class BaseApplet extends Vue{
     @Provide() switchShow:any={};
     fromStyle:string='';
     rules:any={};//form 表单验证
-
+    nodeId:string = '';
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -279,6 +282,9 @@ export default class BaseApplet extends Vue{
         }else if(cmd === icl.B_CMD_UPFILE){
             let file:any = this.$refs.imExFile
             file.open()
+        }else if(cmd === icl.B_CMD_UPFILE_LOG){
+            let log:any = this.$refs.bipLog
+            log.show()
         }
     }
 
@@ -973,6 +979,11 @@ export default class BaseApplet extends Vue{
     async uriParamsChange() {
         if (this.uriParams&&this.uriParams.pcell) {
             let pcell = this.uriParams.pcell
+            let drId = this.uriParams.pbds.importCellId;
+            if(drId){
+                this.nodeId = drId.split(';')[0];
+            }
+            
             let res = await tools.getCCellsParams(pcell)
             this.fullscreenLoading = false;
             let rtn: any = res.data;
@@ -990,6 +1001,9 @@ export default class BaseApplet extends Vue{
                     let btn = new BipMenuBtn(icl.B_CMD_UPFILE,"导入")
                     btn.setIconFontIcon('ruku');
                     this.mbs.menuList.push(btn)
+                    let btn_log = new BipMenuBtn(icl.B_CMD_UPFILE_LOG,"日志")
+                    btn_log.setIconFontIcon('shuji');
+                    this.mbs.menuList.push(btn_log)
                 }
                 // console.log(this.mbs, "mbs");
                 this.listIndex = this.findListMenuIndex("LIST");

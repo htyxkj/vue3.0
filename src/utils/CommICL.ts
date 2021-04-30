@@ -50,6 +50,7 @@ export const CommICL = Object.assign({
     B_CMD_ISTAT:'ISTAT',//统计
     B_CMD_IFILE:'DOWNLOADFILE',//文件
     B_CMD_UPFILE:'UPLOADFILE',//文件
+    B_CMD_UPFILE_LOG:'UPLOADFILE_LOG',//文件
     B_CMD_ROWCOLUMN:'ROWCOLUMN',//行转列
     B_CMD_SHOWMAP:'SHOWMAP',//显示地图页面
     B_CMD_DESKTOPLIST:'DESKTOPLIST',//将报表界面保存为桌面组件
