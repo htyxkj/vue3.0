@@ -19,6 +19,9 @@
             <template v-else>
                 <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
                     <el-col class="childBtn">
+                        <!-- <el-button size="mini" @click="insertRow(rowId)">插入</el-button>
+                        <el-button size="mini" :disabled="rowId == 0" @click="moveUp(rowId)">上移</el-button>
+                        <el-button size="mini" :disabled="rowId == cds.cdata.data.length-1" @click="moveDown(rowId)">下移</el-button> -->
                         <el-button size="mini" type="danger" @click="delRecord(rowId)">删除</el-button>
                     </el-col>
                     <template v-if="uiCels.length == 0">
@@ -145,20 +148,7 @@ export default class LayCell extends Vue{
             this.cds.cdata.rmdata.push(this.cds.getRecordAtIndex(rowId));
             this.cds.cdata.data.splice(rowId,1); 
             this.cds.setState(2);
-            let xinc = -1;
-            if (this.cds.ccells.pkindex) xinc = this.cds.ccells.pkindex[0];
-            if (xinc >= 0) {
-                let cel = this.cds.ccells.cels[xinc];
-                let s0 = cel.psAutoInc;
-                if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
-                    for(var i=0;i<this.cds.cdata.data.length;i++){
-                        let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
-                        this.cds.cdata.data[i].oldpk.push(oldKey);
-                        this.cds.cdata.data[i].data[cel.id] = i + 1
-                        this.cds.cdata.data[i].c_state |= 16;
-                    }
-                }
-            }
+            this.updateKeyVl();
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){
                 this.cds.ds_par.currRecord.c_state |= 2;
@@ -166,6 +156,69 @@ export default class LayCell extends Vue{
         }
     }
 
+    /**
+     * 插入行
+     */
+    ins1ertRow(rowId:any){
+
+    }
+    /**
+     * 上移
+     */
+    moveUp(rowId:any){
+        this.swapArray(rowId,rowId-1);
+        this.updateKeyVl();
+    }
+    /**
+     * 下移
+     */
+    moveDown(rowId:any){
+        this.swapArray(rowId,rowId+1);
+        this.updateKeyVl();
+    }
+    swapArray(index1:any, index2:any) {
+        if(index1 >=0 && index2 >=0){
+            let arr = this.cds.cdata.data;
+            let idx_1 = arr[index1]; 
+            let idx_2 = arr[index2];
+            if(index1 > index2){
+                this.cds.cdata.data.splice(index1,1)
+                this.cds.cdata.data.splice(index2,1)
+                this.cds.cdata.data.splice(index2,0,idx_1);
+                setTimeout(() => {
+                    this.cds.cdata.data.splice(index1,0,idx_2);    
+                }, 1000);
+            }else{
+                this.cds.cdata.data.splice(index2,1)
+                this.cds.cdata.data.splice(index1,1)
+                this.cds.cdata.data.splice(index1,0,idx_2);
+                setTimeout(() => {
+                    this.cds.cdata.data.splice(index2,0,idx_1);
+                }, 1000);
+            }
+        }
+    }
+    /**
+     * 更新主健值
+     */
+    updateKeyVl(){
+        let xinc = -1;
+        if (this.cds.ccells.pkindex) xinc = this.cds.ccells.pkindex[0];
+        if (xinc >= 0) {
+            let cel = this.cds.ccells.cels[xinc];
+            let s0 = cel.psAutoInc;
+            if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
+                for(var i=0;i<this.cds.cdata.data.length;i++){
+                    let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                    if(this.cds.cdata.data[i].oldpk.length == 0){
+                        this.cds.cdata.data[i].oldpk.push(oldKey);
+                    }
+                    this.cds.cdata.data[i].data[cel.id] = i + 1
+                    this.cds.cdata.data[i].c_state |= 16;
+                }
+            }
+        }
+    }
     
     focus(res:any){
         this.cds.index = res.rowId;

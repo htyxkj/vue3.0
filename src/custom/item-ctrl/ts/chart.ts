@@ -175,7 +175,7 @@ export namespace ChartConfig {
                 },
                 grid: {
                     left: "0%",
-                    top: "10px",
+                    top: "20px",
                     right: "0%",
                     bottom: "4%",
                     containLabel: true,
@@ -238,16 +238,22 @@ export namespace ChartConfig {
         getMap() {
             let mapCon = {
                 color: [
-                    "#ffffff",
-                    "#065aab",
+                    "#3580ed",
+                    "#32b4ed",
+                    "#F43749",
+                    "#ff971a",
+                    "#bfff43",
+                    "#3ae8c6",
+                    "#603de0",
+                    "#06c8ab",
+                    "#d156ef",
+                    "#ffe266",
+                    "#18d186",
                     "#066eab",
                     "#0682ab",
                     "#0696ab",
                     "#06a0ab",
                     "#06b4ab",
-                    "#06c8ab",
-                    "#06dcab",
-                    "#06f0ab"
                 ],
                 title: {
                     text: "",
@@ -324,6 +330,9 @@ export namespace ChartConfig {
                                 }
                             }
                         },
+                        // itemStyle:{
+                        //     areaColor : '#1A4888'
+                        // },
                         data: [
                             { name: '黑龙江', itemStyle: { areaColor: '#3580ed', color: '#3580ed', borderWidth: 0 },message:""},
                             { name: '吉林', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 },message:""},
@@ -355,6 +364,38 @@ export namespace ChartConfig {
                             { name: '宁夏', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
                             { name: '甘肃', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
                             { name: '四川', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
+
+                            // { name: '黑龙江',message:""},
+                            // { name: '吉林',message:""},
+                            // { name: '内蒙古',message:""},
+                            // { name: '辽宁',message:""},
+                            // { name: '北京',message:""},
+                            // { name: '天津',message:""},
+                            // { name: '河北',message:""},
+                            // { name: '山西',message:""},
+                            // { name: '山东',message:""},
+                            // { name: '河南',message:""},
+                            // { name: '重庆',message:""},
+                            // { name: '江苏',message:""},
+                            // { name: '安徽',message:""},
+                            // { name: '浙江',message:""},
+                            // { name: '上海',message:""},
+                            // { name: '福建',message:""},
+                            // { name: '江西',message:""},
+                            // { name: '广东',message:""},
+                            // { name: '广西',message:""},
+                            // { name: '海南',message:""},
+                            // { name: '云南',message:""},
+                            // { name: '贵州',message:""},
+                            // { name: '湖南',message:""},
+                            // { name: '湖北',message:""},
+                            // { name: '陕西',message:""},
+                            // { name: '新疆',message:""},
+                            // { name: '青海',message:""},
+                            // { name: '宁夏',message:""},
+                            // { name: '甘肃',message:""},
+                            // { name: '四川',message:""},
+
                         ],
                         map: 'china'
                     },
@@ -379,9 +420,9 @@ export namespace ChartConfig {
             let option:any = {  
                 xAxis: {
                     data: [ ],
-                   axisTick: {
-                             show: false
-                         },
+                    axisTick: {
+                        show: false
+                    },
                     axisLine: {
                         lineStyle: {
                             color: 'rgba(255, 129, 109,.1)',
@@ -446,6 +487,9 @@ export namespace ChartConfig {
                         color: '#08DFFE',
                         fontWeight: 'bolder',
                         fontSize: 15,
+			            formatter: function (params: any) {
+                            return params.value+"%-"+params.data.fcy+"(亿)"
+                        },
                     },
                     itemStyle: {
                         normal: {

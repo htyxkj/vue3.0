@@ -111,6 +111,7 @@ export default class App extends Vue {
 
     style:string="height:"+(this.height?this.height:'400')+"px";
     @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
+    otherPage:any=["airSuperBI","Report","ItemAnalysis"];//单独展示页面,不在UI框架内的页面
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
@@ -329,7 +330,7 @@ export default class App extends Vue {
                 this.editableTabsValue2 = 'myMsg';
             }
         }else{
-            if(to.name == 'airSuperBI' || to.name =="Report"){
+            if(this.otherPage.indexOf(to.name) !=-1){
                 this.editableTabs2 = [];
                 this.setIsOtherePage(true)
                 return;

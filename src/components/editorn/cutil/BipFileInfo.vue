@@ -70,7 +70,9 @@
   </el-dialog>
 </template>
 <script lang="ts">
-//辅助query
+/**
+ * 文件上传下载弹出框
+ */
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { BIPUtil } from "@/utils/Request";
 import {BaseVariable} from "@/utils/BaseICL"

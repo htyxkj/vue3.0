@@ -48,7 +48,11 @@
               <div class="panel-footer"></div>
             </div>
             <div class="panel bottomChart">
-              <h2>{{ leftB1ConName }}</h2>
+              <div class="filter">
+                <a data-id="1" data-type="leftBottomTabs1" href="javascript:;" :class="leftBottomTabs1 == 1 ? 'active' : ''" @click="aClick" >实际利润贡献比(万元)</a>
+                <a data-id="2" data-type="leftBottomTabs1" href="javascript:;" :class="leftBottomTabs1 == 2 ? 'active' : ''" @click="aClick" >实际营收贡献比(万元)</a>
+              </div>
+              <!-- <h2>{{ leftB1ConName }}</h2> -->
               <div class="chart" ref="leftB1Con"></div>
               <div class="panel-footer"></div>
             </div>
@@ -57,54 +61,78 @@
         <div class="column columnCenter">
           <div class="leftTop2">
             <el-row>
-              <el-col :span="2">&nbsp;</el-col>
-              <el-col :span="9">
+              <el-col :span="1">&nbsp;</el-col>
+              <el-col :span="10">
                 <div @click="centerTC1Click">
                   <el-row v-if="centerTC1Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="10" class="progress">  
-                      <el-progress type="circle" :width="70" :stroke-width='4' :percentage="centerTC1Con.bl"></el-progress>
-                    </el-col>
                     <el-col :span="14" class="content">
                       <el-row>
-                        <el-col :span="24">
-                          全年营收：{{centerTC1Con.yjrmb}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>全年营收：</el-col>
+                            <el-col> {{centerTC1Con.yjrmb}}亿</el-col>
+                          </el-row>
                         </el-col>
-                        <el-col :span="24">
-                          累计完成：{{centerTC1Con.sjrmb}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>累计完成：</el-col>
+                            <el-col> {{centerTC1Con.sjrmb}}亿</el-col>
+                          </el-row>
                         </el-col>
-                        <el-col :span="24">
-                          预计营收：{{centerTC1Con.curr_yjrmb}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>预计营收：</el-col>
+                            <el-col> {{centerTC1Con.curr_yjrmb}}亿</el-col>
+                          </el-row>
                         </el-col>
-                        <el-col :span="24">
-                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(1)}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：</el-col>
+                            <el-col> {{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(1)}}亿</el-col>
+                          </el-row>
                         </el-col>
                       </el-row>
+                    </el-col>
+                    <el-col :span="10" class="progress">  
+                      <el-progress type="circle" :width="70" :stroke-width='4' :percentage="centerTC1Con.bl"></el-progress>
                     </el-col>
                   </el-row>
                 </div>
               </el-col>
               <el-col :span="2">&nbsp;</el-col>
-              <el-col :span="9">
+              <el-col :span="10">
                 <div @click="centerTC2Click">
                   <el-row v-if="centerTC2Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="10" class="progress">
-                      <el-progress type="circle" :width="70"  :stroke-width='4' :percentage="centerTC2Con.bl"></el-progress>
-                    </el-col>
                     <el-col :span="14" class="content">
                       <el-row>
-                        <el-col :span="24">
-                          全年利润：{{centerTC2Con.yjfcy}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>全年利润：</el-col>
+                            <el-col> {{centerTC2Con.yjfcy}}亿</el-col>
+                          </el-row>
                         </el-col>
-                        <el-col :span="24">
-                          累计完成：{{centerTC2Con.sjfcy}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>累计完成：</el-col>
+                            <el-col> {{centerTC2Con.sjfcy}}亿</el-col>
+                          </el-row>
                         </el-col>
-                        <el-col :span="24">
-                          预计利润：{{centerTC2Con.curr_yjfcy}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>预计利润：</el-col>
+                            <el-col> {{centerTC2Con.curr_yjfcy}}亿</el-col>
+                          </el-row>
                         </el-col>
-                        <el-col :span="24">
-                          差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：{{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(1)}}亿
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col>差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：</el-col>
+                            <el-col> {{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(1)}}亿</el-col>
+                          </el-row>
                         </el-col>
                       </el-row>
+                    </el-col>
+                    <el-col :span="10" class="progress">
+                      <el-progress type="circle" :width="70"  :stroke-width='4' :percentage="centerTC2Con.bl"></el-progress>
                     </el-col>
                   </el-row>
                 </div>
@@ -396,7 +424,9 @@ export default class ItemAnalysis extends Vue {
     4: [],
   };
   /************** 左下图表 *****************/
+  leftBottomTabs1:any=1;
   leftB1Con: any = null;
+  leftB2Con: any = null;
   leftB1C1: any = null;
   leftB1ConName: any = "";
   /************** 右下图表 *****************/
@@ -498,17 +528,10 @@ export default class ItemAnalysis extends Vue {
   }
 
   async chartClickLeft1Function(param: any) {
-    if (this.leftTopTabs1 == 1) {
-      console.log("营业收入");
-    } else {
-      console.log("利润");
-    }
      let point = param.point
     let data ={scm:point.scm,name:point.name,value:parseFloat(point.value).toFixed(2)};
     let name = param.name;
     this.popItemLeft1 = data;
-    console.log(name, this.popItemLeft1);
-    console.log(param, "chartClickLeft1Function");
     this.leftTopTabs1Chart = true;
     //获取辅助
     let qe: QueryEntity = new QueryEntity("", "");
@@ -522,7 +545,6 @@ export default class ItemAnalysis extends Vue {
       this.popValues = values;
     }
     this.$nextTick(() => {
-      console.log(this.$refs);
       let vrs:Array<any> = []
       let totalFcy = 0,totalRmb=0;
       _.forEach(this.popValues, (item: any, index: any) => {
@@ -553,12 +575,12 @@ export default class ItemAnalysis extends Vue {
             _r[0] as HTMLCanvasElement
           );
       _.forEach(vrs, (item: any, index: any) => {
-          console.log(item)
           let value = (this.leftTopTabs1==1?item.rmb/item.totalrmb:item.fcy/item.totalfcy)*100;
           value = parseFloat(value.toFixed(2));
           option.xAxis.data.push(item.title);
-          let msg = item.title+"<br/>金额："+(this.leftTopTabs1==1?item.rmb:item.fcy).toFixed(2) +"（亿）<br/>占比："+value+"%<br/>";
-          let vl = {value:value,message:msg}
+          let fcy = (this.leftTopTabs1==1?item.rmb:item.fcy).toFixed(2);
+          let msg = item.title+"<br/>金额："+ fcy +"（亿）<br/>占比："+value+"%<br/>";
+          let vl = {value:value,message:msg,fcy:fcy}
           option.series[0].data.push(vl);
       });
       summaryPie.setOption(option);
@@ -837,7 +859,7 @@ export default class ItemAnalysis extends Vue {
             tipHtml += label+'<span style="color:#f48225;margin:0 6px;">'+text+'</span>'+''+'</p>'
           }
           tipHtml += '</div></div>';
-          let d1 = { name: name, value: addr,message:tipHtml,itemStyle:{color:'#fff'}}
+          let d1 = { name: name, value: addr,message:tipHtml,itemStyle:{color:"#fff"}}//this.mapCon.color[i]
           this.mapCon.series[1].data.push(d1);
           if(name=="哈尔滨"){
             this.mapCon.series[0].data[0].message = tipHtml;
@@ -1013,6 +1035,8 @@ export default class ItemAnalysis extends Vue {
           let vl = values[i];
           this.leftB1Con.xAxis[0].data.push(vl.name);
           this.leftB1Con.series[0].data.push(vl.lrbl);
+          this.leftB2Con.xAxis[0].data.push(vl.name);
+          this.leftB2Con.series[0].data.push(vl.ysbl);
         }
       }
       // 基于准备好的dom，初始化echarts实例
@@ -1153,6 +1177,13 @@ export default class ItemAnalysis extends Vue {
       } else {
         this.rightB1C1.setOption(this.rightB2Con);
       }
+    }else if(type =='leftBottomTabs1'){
+      this.leftBottomTabs1 = e.currentTarget.dataset.id;
+      if (this.leftBottomTabs1 == 1) {
+        this.leftB1C1.setOption(this.leftB1Con);
+      } else {
+        this.leftB1C1.setOption(this.leftB2Con);
+      }
     }
   }
   initConfig() { 
@@ -1163,6 +1194,7 @@ export default class ItemAnalysis extends Vue {
     this.rightB1Con = ChartConfig.Config.getArea();
     this.rightB2Con = ChartConfig.Config.getArea();
     this.leftB1Con = ChartConfig.Config.getColumn();
+    this.leftB2Con = ChartConfig.Config.getColumn();
     this.mapCon= ChartConfig.Config.getMap();
   }
   // 定时器执行获取当前时间

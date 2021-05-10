@@ -91,6 +91,8 @@
   height: 30px !important;
   margin-left: 20px !important;
   border-radius: 6px !important;
+}
+@mixin bip_menu_bar_default(){
   background-color: $bip-menu-bar-background-color-theme !important;
   color: $bip-menu-bar-color-theme !important;
   [data-theme="theme1"] & {

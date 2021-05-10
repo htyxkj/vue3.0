@@ -244,7 +244,6 @@ export default class BipCommEditor extends Vue{
         }
         return this.model||''
     }
-
     /**
      * 获取辅助类型
      */

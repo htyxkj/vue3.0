@@ -49,7 +49,11 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/registered/Registered.vue')
     },
-    
+    {
+      path:'/menuAuth',
+      name:'/menuAuth',
+      component: () => import(/* webpackChunkName: "about" */ './custom/bip/menuAuth.vue')
+    },
     {
         path: '/myTask',
         name: 'myTask',

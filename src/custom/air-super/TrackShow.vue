@@ -98,7 +98,6 @@ export default class TrackShow extends Vue {
     CloudMarkerCollection:any =null;//海量点对象
     trackType:string = "1";//线路类型  航迹：0  航带：1    混合：2  
     //起降点信息
-    takeoff:any = null;//起降点
     takeoffRange:any = 50;//起降点范围
     showTKName:boolean = false;//显示任务名称
     async created() {
@@ -172,7 +171,12 @@ export default class TrackShow extends Vue {
                 this.$notify.warning("任务编码和设备标识不能同时为空！");
                 return;
             }
-            this.initTakeoff(takeoff);
+            if(takeoff){
+                let ofs = takeoff.split(";");
+                for(var i=0;i<ofs.length;i++){
+                    this.initTakeoff(ofs[i]);
+                }
+            }
             if(showarea == '1'){
                 TMapUt.getOpera(oaid,this.tMap);//作业区
                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
@@ -438,8 +442,8 @@ export default class TrackShow extends Vue {
                     iconAnchor:new T.Point(35,70),
                 });
                 //向地图上添加自定义标注
-                this.takeoff = new T.LngLat(boundary[0], boundary[1]);
-                var marker = new T.Marker(this.takeoff,{icon: icon});
+                let takeoff = new T.LngLat(boundary[0], boundary[1]);
+                var marker = new T.Marker(takeoff,{icon: icon});
                 this.tMap.addOverLay(marker);
             }
         }
