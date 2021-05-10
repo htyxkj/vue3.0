@@ -245,6 +245,27 @@ export namespace BIPUtil {
         let param = tool.getDlgRunClassParams(env,btn);
         return this.getFromServer(param)
     }
+    /**
+     * 获取全部菜单，全部人员，全部岗位，以及当前权限信息
+     * @returns 
+     */
+    getMenuAuth(){
+        let param = tool.menuAuthParams();
+        return this.getFromServer(param)
+    }
+    /**
+     * 设置权限信息
+     * @param isgw 是否是岗位权限保存
+     * @param  权限列表
+     * @returns 
+     */
+    setMenuAuth(isgw:any,authMenu:any){
+        let param = tool.menuAuthParams();
+        param.type = "set";
+        param.authMenu = authMenu;
+        param.isgw = isgw;
+        return this.getFromServer(param);
+    }
 
     /**
      * @description 获取任务 或 消息

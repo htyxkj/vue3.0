@@ -329,6 +329,18 @@ export namespace BIPUtils {
         btn:btn, 
       });
     }
+    /**
+     * 菜单权限处理
+     * @returns 
+     */
+    menuAuthParams(){
+      return Object.assign({
+        apiId: GlobalVariable.APIID_AUTH,
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        type:'get'
+      });
+    }
 
     /**
      * @description 字符串base64编码
