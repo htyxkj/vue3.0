@@ -24,7 +24,8 @@ export namespace ChartConfig {
                         alpha: 60,
                         beta: 0
                     },
-                    backgroundColor: 'rgba(0,0,0,0)'
+                    backgroundColor: 'rgba(0,0,0,0)',
+
                 },
                 credits: {
                     enabled: false // 禁用版权信息
@@ -42,8 +43,8 @@ export namespace ChartConfig {
                     pie: {
                         allowPointSelect: true,
                         cursor: 'pointer',
-                        depth: 55,
-                        size: 140,
+                        depth: 20,
+                        size: "68%",
                         dataLabels: {
                             enabled: true,
                             textOutline: "none",
@@ -87,7 +88,7 @@ export namespace ChartConfig {
                 tooltip: {
                     formatter: '{b0}: {c0}(亿)',
                 },
-                legend:{
+                legend: {
                     icon: 'rectangle',
                     data: [],
                     textStyle: {
@@ -96,9 +97,9 @@ export namespace ChartConfig {
                     }
                 },
                 grid: {
-                    left: "0%",
-                    top: "24px",
-                    right: "0%",
+                    left: "20px",
+                    top: "20px",
+                    right: "20px",
                     bottom: "4%",
                     containLabel: true,
                 },
@@ -113,8 +114,10 @@ export namespace ChartConfig {
                         axisLabel: {
                             textStyle: {
                                 color: "#fff",
-                                fontSize: "12"
-                            }
+                                fontSize: "10"
+                            },
+                            interval:0,
+                            rotate:40,
                         },
                         axisLine: {
                             show: false
@@ -149,22 +152,15 @@ export namespace ChartConfig {
         getColumn() {
             let leftB1Con = {
                 color: ["#2f89cf"],
-                // tooltip: {
-                //     trigger: "axis",
-                //     axisPointer: {
-                //         // 坐标轴指示器，坐标轴触发有效
-                //         type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-                //     },
-                // },
                 tooltip: {
                     // pointFormat: '{point.name}: <b>{point.y}</b>',
-                    formatter :function (params: any) {
+                    formatter: function (params: any) {
                         if (params.data) {
-                            if(params.data.message)
+                            if (params.data.message)
                                 return params.data.message;
                         } else {
                             let d1 = params[0];
-                            return d1.name+":"+d1.value;
+                            return d1.name + ":" + d1.value+"(亿)-" +d1.data.bl+"%";
                         }
                     },
                     trigger: "axis",
@@ -174,9 +170,9 @@ export namespace ChartConfig {
                     },
                 },
                 grid: {
-                    left: "0%",
+                    left: "20px",
                     top: "20px",
-                    right: "0%",
+                    right: "20px",
                     bottom: "4%",
                     containLabel: true,
                 },
@@ -190,8 +186,10 @@ export namespace ChartConfig {
                         axisLabel: {
                             textStyle: {
                                 color: "#fff",
-                                fontSize: "12",
+                                fontSize: "10",
                             },
+                            interval:0,
+                            rotate:40,
                         },
                         axisLine: {
                             show: false,
@@ -235,7 +233,7 @@ export namespace ChartConfig {
             };
             return leftB1Con;
         }
-        getMap() {
+        getMap1() {
             let mapCon = {
                 color: [
                     "#3580ed",
@@ -334,36 +332,36 @@ export namespace ChartConfig {
                         //     areaColor : '#1A4888'
                         // },
                         data: [
-                            { name: '黑龙江', itemStyle: { areaColor: '#3580ed', color: '#3580ed', borderWidth: 0 },message:""},
-                            { name: '吉林', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 },message:""},
-                            { name: '内蒙古', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 },message:""},
-                            { name: '辽宁', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 },message:""},
-                            { name: '北京', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 },message:""},
-                            { name: '天津', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 },message:""},
-                            { name: '河北', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 },message:""},
-                            { name: '山西', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 },message:""},
-                            { name: '山东', itemStyle: { areaColor: '#ff971a', color: '#ff971a', borderWidth: 0 },message:""},
-                            { name: '河南', itemStyle: { areaColor: '#ff971a', color: '#ff971a', borderWidth: 0 },message:""},
-                            { name: '重庆', itemStyle: { areaColor: '#ff971a', color: '#ff971a', borderWidth: 0 },message:""},
-                            { name: '江苏', itemStyle: { areaColor: '#bfff43', color: '#bfff43', borderWidth: 0 },message:""},
-                            { name: '安徽', itemStyle: { areaColor: '#bfff43', color: '#bfff43', borderWidth: 0 },message:""},
-                            { name: '浙江', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 },message:""},
-                            { name: '上海', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 },message:""},
-                            { name: '福建', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 },message:""},
-                            { name: '江西', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 },message:""},
-                            { name: '广东', itemStyle: { areaColor: '#603de0', color: '#603de0', borderWidth: 0 },message:""},
-                            { name: '广西', itemStyle: { areaColor: '#603de0', color: '#603de0', borderWidth: 0 },message:""},
-                            { name: '海南', itemStyle: { areaColor: '#603de0', color: '#603de0', borderWidth: 0 },message:""},
-                            { name: '云南', itemStyle: { areaColor: '#d156ef', color: '#d156ef', borderWidth: 0 },message:""},
-                            { name: '贵州', itemStyle: { areaColor: '#d156ef', color: '#d156ef', borderWidth: 0 },message:""},
-                            { name: '湖南', itemStyle: { areaColor: '#d156ef', color: '#d156ef', borderWidth: 0 },message:""},
-                            { name: '湖北', itemStyle: { areaColor: '#ffe266', color: '#ffe266', borderWidth: 0 },message:""},
-                            { name: '陕西', itemStyle: { areaColor: '#ffe266', color: '#ffe266', borderWidth: 0 },message:""},
-                            { name: '新疆', itemStyle: { areaColor: '#18d186', color: '#18d186', borderWidth: 0 },message:""},
-                            { name: '青海', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
-                            { name: '宁夏', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
-                            { name: '甘肃', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
-                            { name: '四川', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 },message:""},
+                            { name: '黑龙江', itemStyle: { areaColor: '#3580ed', color: '#3580ed', borderWidth: 0 }, message: "" },
+                            { name: '吉林', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 }, message: "" },
+                            { name: '内蒙古', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 }, message: "" },
+                            { name: '辽宁', itemStyle: { areaColor: '#32b4ed', color: '#32b4ed', borderWidth: 0 }, message: "" },
+                            { name: '北京', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 }, message: "" },
+                            { name: '天津', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 }, message: "" },
+                            { name: '河北', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 }, message: "" },
+                            { name: '山西', itemStyle: { areaColor: '#F43749', color: '#F43749', borderWidth: 0 }, message: "" },
+                            { name: '山东', itemStyle: { areaColor: '#ff971a', color: '#ff971a', borderWidth: 0 }, message: "" },
+                            { name: '河南', itemStyle: { areaColor: '#ff971a', color: '#ff971a', borderWidth: 0 }, message: "" },
+                            { name: '重庆', itemStyle: { areaColor: '#ff971a', color: '#ff971a', borderWidth: 0 }, message: "" },
+                            { name: '江苏', itemStyle: { areaColor: '#bfff43', color: '#bfff43', borderWidth: 0 }, message: "" },
+                            { name: '安徽', itemStyle: { areaColor: '#bfff43', color: '#bfff43', borderWidth: 0 }, message: "" },
+                            { name: '浙江', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 }, message: "" },
+                            { name: '上海', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 }, message: "" },
+                            { name: '福建', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 }, message: "" },
+                            { name: '江西', itemStyle: { areaColor: '#3ae8c6', color: '#3ae8c6', borderWidth: 0 }, message: "" },
+                            { name: '广东', itemStyle: { areaColor: '#603de0', color: '#603de0', borderWidth: 0 }, message: "" },
+                            { name: '广西', itemStyle: { areaColor: '#603de0', color: '#603de0', borderWidth: 0 }, message: "" },
+                            { name: '海南', itemStyle: { areaColor: '#603de0', color: '#603de0', borderWidth: 0 }, message: "" },
+                            { name: '云南', itemStyle: { areaColor: '#d156ef', color: '#d156ef', borderWidth: 0 }, message: "" },
+                            { name: '贵州', itemStyle: { areaColor: '#d156ef', color: '#d156ef', borderWidth: 0 }, message: "" },
+                            { name: '湖南', itemStyle: { areaColor: '#d156ef', color: '#d156ef', borderWidth: 0 }, message: "" },
+                            { name: '湖北', itemStyle: { areaColor: '#ffe266', color: '#ffe266', borderWidth: 0 }, message: "" },
+                            { name: '陕西', itemStyle: { areaColor: '#ffe266', color: '#ffe266', borderWidth: 0 }, message: "" },
+                            { name: '新疆', itemStyle: { areaColor: '#18d186', color: '#18d186', borderWidth: 0 }, message: "" },
+                            { name: '青海', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 }, message: "" },
+                            { name: '宁夏', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 }, message: "" },
+                            { name: '甘肃', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 }, message: "" },
+                            { name: '四川', itemStyle: { areaColor: '#f75e34', color: '#f75e34', borderWidth: 0 }, message: "" },
 
                             // { name: '黑龙江',message:""},
                             // { name: '吉林',message:""},
@@ -415,60 +413,179 @@ export namespace ChartConfig {
             };
             return mapCon;
         }
-
-        getPictorialBar(){
-            let option:any = {  
+        getMap() {
+            let mapCon = {
+                // 提示框，鼠标移入
+                tooltip: {
+                    show: true, //鼠标移入是否触发数据
+                    trigger: "item", //出发方式
+                    position: { left: '8%', bottom: "-6%" },
+                    backgroundColor: 'rgba(255,255,255,0)',
+                    // formatter: "{b}-公司数量：{c}",
+                    formatter: function (params: any) {
+                        if (params.data) {
+                            return params.data.message;
+                        } else {
+                            return "";
+                        }
+                    },
+                    axisPointer: {
+                        animation: false
+                    }
+                },
+                geo: {
+                    map: 'china',
+                    show: true,
+                    roam: false,
+                    zoom: 1.2,
+                    label: {
+                        emphasis: {
+                            show: false
+                        }
+                    },
+                    layoutSize: "100%",
+                },
+                series: [{
+                    type: 'map',
+                    map: 'china',
+                    aspectScale: 0.75,
+                    zoom: 1.2,
+                    label: {
+                        normal: {
+                            show: false,
+                        },
+                        emphasis: {
+                            show: false,
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaColor: {
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: '#0E173C' // 0% 处的颜色
+                                }, {
+                                    offset: 1,
+                                    color: '#0E173C' // 100% 处的颜色
+                                }],
+                            },
+                            borderColor: '#259CE7',
+                            borderWidth: 3,
+                        },
+                        emphasis: {
+                            areaColor: {
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: '#0E173C' // 0% 处的颜色
+                                }, {
+                                    offset: 1,
+                                    color: '#0E173C' // 100% 处的颜色
+                                }],
+                            },
+                        }
+                    },
+                    data: [
+                        { name: '黑龙江', message: "" },
+                        { name: '吉林', message: "" },
+                        { name: '内蒙古', message: "" },
+                        { name: '辽宁', message: "" },
+                        { name: '北京', message: "" },
+                        { name: '天津', message: "" },
+                        { name: '河北', message: "" },
+                        { name: '山西', message: "" },
+                        { name: '山东', message: "" },
+                        { name: '河南', message: "" },
+                        { name: '重庆', message: "" },
+                        { name: '江苏', message: "" },
+                        { name: '安徽', message: "" },
+                        { name: '浙江', message: "" },
+                        { name: '上海', message: "" },
+                        { name: '福建', message: "" },
+                        { name: '江西', message: "" },
+                        { name: '广东', message: "" },
+                        { name: '广西', message: "" },
+                        { name: '海南', message: "" },
+                        { name: '云南', message: "" },
+                        { name: '贵州', message: "" },
+                        { name: '湖南', message: "" },
+                        { name: '湖北', message: "" },
+                        { name: '陕西', message: "" },
+                        { name: '新疆', message: "" },
+                        { name: '青海', message: "" },
+                        { name: '宁夏', message: "" },
+                        { name: '甘肃', message: "" },
+                        { name: '四川', message: "" },
+                    ],
+                },
+                {
+                    type: "effectScatter",
+                    showEffectOn: "render", //配置什么时候显示特效
+                    coordinateSystem: "geo", //该系列使用的坐标系
+                    symbolSize: 10, //标记的大小
+                    rippleEffect: {              //涟漪特效相关配置。
+                        period: 1.2,               //动画的时间。
+                        scale: 3.5,              //动画中波纹的最大缩放比例。
+                        brushType: 'fill',
+                    },
+                    data: []
+                }]
+            };
+            return mapCon;
+        }
+        getPictorialBar() {
+            let option: any = {
                 xAxis: {
-                    data: [ ],
+                    data: [],
                     axisTick: {
                         show: false
                     },
-                    axisLine: {
-                        lineStyle: {
-                            color: 'rgba(255, 129, 109,.1)',
-                            width: 1 //这里是为了突出显示加上的
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fff',
+                            width:1,//这里是为了突出显示加上的
                         }
                     },
                     axisLabel: {
-                        textStyle: {
-                            color: '#fff',
-                            fontSize: 12
-                        }
+                        fontSize: 16,
+                        padding:[10,0,0,0]
                     }
                 },
                 yAxis: [{
-                        axisTick: {
-                            show: false
-                        },
-                        axisLine: {
-                            lineStyle: {
-                                color: 'rgba(255, 129, 109, 0.1)',
-                                width: 1 //这里是为了突出显示加上的
-                            }
-                        },
-                        axisLabel: {
-                            textStyle: {
-                                color: '#999'
-                            }
-                        },
-                        splitArea: {
-                            areaStyle: {
-                                color: 'rgba(255,255,255,.5)'
-                            }
-                        },
-                        splitLine: {
-                            show: true,
-                            lineStyle: {
-                                color: 'rgba(255, 129, 109, 0.1)',
-                                width: 0.5,
-                                type: 'dashed'
-                            }
+                    axisTick: {
+                        show: false
+                    },
+                    splitArea: {
+                        areaStyle: {
+                            color: 'rgba(255,255,255,.5)'
                         }
-                    }
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fff',
+                            width:1,//这里是为了突出显示加上的
+                        }
+                    },
+                    splitLine: {
+                        show: false,
+                        lineStyle: {
+                            type: 'dashed',
+                            width: 0.5,
+                            color:'#fff'
+                        }
+                    },
+                }
                 ],
                 tooltip: {
                     // pointFormat: '{point.name}: <b>{point.y}</b>',
-                    formatter :function (params: any) {
+                    formatter: function (params: any) {
                         if (params.data) {
                             return params.data.message;
                         } else {
@@ -483,12 +600,10 @@ export namespace ChartConfig {
                     label: {
                         show: true,
                         position: 'top',
-                        distance: 15,
                         color: '#08DFFE',
-                        fontWeight: 'bolder',
-                        fontSize: 15,
-			            formatter: function (params: any) {
-                            return params.value+"%-"+params.data.fcy+"(亿)"
+                        fontSize: 12,
+                        formatter: function (params: any) {
+                            return  params.data.fcy + "(亿)-"+params.value + "%"
                         },
                     },
                     itemStyle: {
@@ -501,11 +616,11 @@ export namespace ChartConfig {
                                 y2: 1,
                                 colorStops: [{
                                     offset: 0,
-                                    color:'#9A11FF'
+                                    color: '#9A11FF'
                                 },
                                 {
                                     offset: 1,
-                                    color:'#08DFFE'
+                                    color: '#08DFFE'
                                 }],
                                 global: false //  缺省为  false
                             }
@@ -514,11 +629,106 @@ export namespace ChartConfig {
                             opacity: 1
                         }
                     },
-                    data: [ ]
+                    data: []
                 }]
             };
             return option;
         }
+
+        getBar3D() {
+            let option = {
+                xAxis: {
+                    data: [],
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fff',
+                            width:1,//这里是为了突出显示加上的
+                        }
+                    },
+                    axisLabel: {
+                        fontSize: 16,
+                        padding:[10,0,0,0]
+                    }
+                },grid: {
+                    left: "10%",
+                    top: "10%",
+                    right: "10%",
+                    bottom: "20px",
+                    containLabel: true,
+                },
+                tooltip: {
+                    formatter: function (params: any) {
+                        if (params.data) {
+                            if (params.data.message)
+                                return params.data.message;
+                        } else {
+                            let d1 = params[0];
+                            return d1.name + ":" + d1.value;
+                        }
+                    },
+                    trigger: "axis",
+                    axisPointer: {
+                        type: "shadow", 
+                    },
+                },
+                yAxis: {
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fff',
+                            width:1,//这里是为了突出显示加上的
+                        }
+                    },
+                    splitLine: {
+                        show: false,
+                        lineStyle: {
+                            type: 'dashed',
+                            width: 0.5,
+                            color:'#fff'
+                        }
+                    },
+                },
+                series: [{
+                    type: 'bar',
+                    barWidth: 37,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        color: '#FFF',
+                        fontSize: 12,
+                    },
+                    itemStyle: {
+                        normal: {
+                            barBorderRadius: 20,
+                        },
+                    },
+                    data: []
+                }, {
+                    name: 'a',
+                    tooltip: {
+                        show: false
+                    },
+                    type: 'pictorialBar',
+                    symbol: 'circle',
+                    symbolSize: ['38', '22'],
+                    symbolPosition: 'end',
+                    data: [],
+                    z: 3
+                }, {
+                    name: 'a',
+                    tooltip: {
+                        show: false
+                    },
+                    type: 'pictorialBar',
+                    symbol: 'circle',
+                    symbolSize: ['38', '22'],
+                    data: [],
+                    z: 3
+                }
+                ]
+            };
+            return option;
+        }
+
     }
     export let Config = new ConfigUtils();
 }
