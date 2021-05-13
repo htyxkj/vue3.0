@@ -272,7 +272,7 @@ export default class BaseApplet extends Vue{
                     this.cea = new CeaPars(params);
                     this.dsm.ceaPars = this.cea;
                 }
-                this.dsm.checkAllGS()
+                await this.dsm.checkAllGS()
                 this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
                 // if (page.total > 0) {
                 //     this.JumpToIndexCRecord(_idx);

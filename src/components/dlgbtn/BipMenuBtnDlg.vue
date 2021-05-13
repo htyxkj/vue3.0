@@ -262,7 +262,7 @@ export default class BipMenuBtnDlg extends Vue {
             let cc = dlgCont.split(";")
             if(cc.length<4){
                 let b = JSON.stringify(this.btn);
-                let _env = {
+                let _env:any = {
                     uriParams:this.env.uriParams,
                     cells:this.env.cells,
                     dsm:this.env.dsm.currRecord,
@@ -270,6 +270,8 @@ export default class BipMenuBtnDlg extends Vue {
                     ds_cont:this.env.ds_cont,
                     ds_ext:this.env.ds_ext
                 }
+                _env.ds_cont.scriptProc = null;
+                _env.ds_ext.scriptProc = null;
                 let v = JSON.stringify(_env);
                 let bok = this.checkNotNull(this.env.dsm);
                 if(!bok){

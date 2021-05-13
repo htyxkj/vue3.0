@@ -245,6 +245,7 @@
                     :page-size="cds.page.pageSize"
                     :page-sizes="[10, 20, 30,40,50]"
                     layout="slot,total,prev, pager, next,sizes"
+                    background
                     :total="cds.page.total"
                 >
                 <el-col :span="18" :xs="18" :sm="18" :md="18" >
@@ -260,6 +261,7 @@
         <template v-else>
             <el-row style="margin-bottom:7px;" v-if="isNoHomeTable">
                 <el-pagination  
+                    background
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page.sync="cds.page.currPage"
@@ -438,11 +440,14 @@ export default class LayCelVexTable extends Vue {
                     return ;
                 }
             }
-            this.cds.createRecord();
+            await this.cds.createRecord();
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){ 
-                cc.setCurrentRow(this.cds.currRecord); 
+                cc.clearCurrentRow();
+                cc.setCurrentRow(this.cds.currRecord);
+                cc.syncData();
             }
+            
             this.openInitEdit();
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){

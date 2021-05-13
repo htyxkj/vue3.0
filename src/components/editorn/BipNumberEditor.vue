@@ -174,7 +174,7 @@ export default class BipNumberEditor extends Vue {
 
           chkr = true;
         }
-        if (chkr) {
+        if (chkr && this.model1) {
           //保留小数位数
           if(this.cell.ccPoint && this.model1.indexOf("~") ==-1){
             this.model1 = parseFloat(this.model1).toFixed(this.cell.ccPoint);
