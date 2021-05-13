@@ -1,0 +1,289 @@
+<template>
+  <div class="rd-login">
+    <div class="login-left"></div>
+    <div class="login-right" :style="styleR">
+      <div class="login-card">
+        <div class="login-title">{{ loginTitle }}</div>
+        <div class="login-cont" @keyup.enter="login">
+          <el-input placeholder="账户" v-model="user.userCode" :style="'margin-bottom:20px'">
+            <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
+              <!-- <template slot="prepend">账户</template> -->
+            </el-input>
+          <el-input placeholder="密码" id="pwd"
+                v-model="user.password"
+                :show-password="true"
+                type="password">
+              <el-button slot="prepend" icon="el-icon-lock"></el-button>
+            </el-input>
+          <el-row type="flex" justify="start">
+            <el-col :span="12">
+              <el-row type="flex" justify="start">
+                <el-col :span="12">
+                <el-button @click="registered" type="text" :style="'font-size:10px'"> 没有账号,立即注册</el-button>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row type="flex" justify="end">
+                <el-col :span="12">
+                  <el-checkbox v-model="checked" class="bip-rem" style="color: #a0a0a0"
+                    >记住账户</el-checkbox>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24" style="margin-top: 10px">
+              <el-button
+                id="login"
+                style="width: 100%"
+                type="primary"
+                :disabled="canClick"
+                @click="login"
+                >登录</el-button
+              >
+            </el-col>
+          </el-row>
+        </div>
+        <div class="login-footer">
+          <address>&copy;{{ COPYRIGHT }}</address>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { User } from "@/classes/User";
+import { Menu } from "@/classes/Menu";
+import qs from "qs";
+import { BIPUtil } from "@/utils/Request";
+import { BaseVariable } from "@/utils/BaseICL";
+import { State, Action, Getter, Mutation } from "vuex-class";
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
+const namespace: string = "login";
+@Component
+export default class LoginRD extends Vue {
+  @Provide() fullscreenLoading: boolean = false;
+  @Getter("user", { namespace }) user?: User;
+  @Getter("menulist", { namespace }) menus?: Menu[];
+  @Mutation("isLogin", { namespace }) setIsLogin: any;
+  @Mutation("snkey", { namespace }) setSnkey: any;
+  @Mutation("user", { namespace }) setUserInfo: any;
+  @Mutation("menulist", { namespace }) setMenusInfo: any;
+  @Mutation("isOtherePage", { namespace: "login" }) setIsOtherePage: any;
+  checked: boolean = false;
+  loginTitle = "";
+  COPYRIGHT = "";
+  SCM = "";
+  styleR = "";
+  mounted() {
+    if (!this.user) {
+      this.user = new User("", "", "");
+    } else {
+      this.user.userCode = "";
+    }
+    this.getlocalStorage();
+    this.loginTitle = BaseVariable.Project_Name;
+    this.COPYRIGHT = BaseVariable.COPYRIGHT;
+    this.SCM = BaseVariable.SMC;
+    this.setIsOtherePage(true);
+    let screenWidth = document.body.clientWidth;
+    let screenHeight = document.body.clientHeight;
+    this.styleR =
+      "text-align: center;width:" +
+      screenWidth / 2 +
+      "px;height:" +
+      screenHeight +
+      "px";
+  }
+  //注册
+  registered() {
+    this.$router.push({ path: "/registered", name: "registered" });
+  }
+  login() {
+    if (this.fullscreenLoading) return;
+    this.fullscreenLoading = true;
+    const loading = this.$loading({
+      lock: true,
+      text: "登陆中",
+      spinner: "el-icon-loading",
+      background: "background:'rgba(0, 0, 0, 0.7)'",
+    });
+    if (!this.user) {
+      return;
+    }
+    BIPUtil.ServApi.login(this.user)
+      .then((res: any) => {
+        let data = res.data;
+        let _u: any = Object.assign({}, this.user);
+        if (data.id === 0) {
+          let userI = data.data.user;
+          let snkey = data.data.snkey;
+          userI.password = "";
+          let ms = data.data.menulist;
+          this.setIsLogin(true);
+          this.setSnkey(snkey);
+          this.setUserInfo(userI);
+          this.setMenusInfo(ms);
+          // 判断记住账户是否为true,是将新账户存储至localStroge，否则清除localStroge中的账户
+          if (this.checked) {
+            if (_u) {
+              this.setlocalStorage(_u.userCode);
+            }
+          } else {
+            this.clear();
+          }
+          setTimeout(() => {
+            this.$notify.success({
+              title: "",
+              type: "success",
+              message: "登录成功",
+              offset: 40,
+            });
+            this.gotoPage();
+            loading.close();
+          }, 500);
+        } else {
+          this.$notify.error(data.message);
+          loading.close();
+        }
+        this.fullscreenLoading = false;
+      })
+      .catch((res: any) => {
+        this.$notify.error("服务没有启动！");
+        loading.close();
+        this.fullscreenLoading = false;
+      });
+  }
+
+  get canClick() {
+    if (!this.user) {
+      return false;
+    }
+    return this.user.userCode === "";
+  }
+  // 将账户信息存储值localStroge
+  setlocalStorage(c_name: String) {
+    if (c_name && c_name != "undefined") {
+      localStorage.siteName = c_name;
+    }
+  }
+  // 获取localStroge中的账户信息
+  getlocalStorage() {
+    var c_usrname = localStorage.getItem("siteName");
+    if (this.user) {
+      if (c_usrname && c_usrname != "undefined") {
+        this.user.userCode = c_usrname;
+        this.checked = true;
+      }
+    }
+  }
+  // 清除localStroge中的账户信息
+  clear() {
+    localStorage.removeItem("siteName");
+  }
+  @Watch("BaseVariable")
+  titleWatch() {
+    this.loginTitle = BaseVariable.Project_Name;
+    this.COPYRIGHT = BaseVariable.COPYRIGHT;
+  }
+
+  gotoPage() {
+    this.$router.push({ path: "/report", name: "Report" });
+  }
+}
+</script>
+
+
+<style lang="scss" scoped>
+.rd-login {
+  position: absolute;
+  background-color: #f0fcfa;
+  // width: 1096px;
+  // height: 768px;
+}
+.login-left {
+  width: 50%;
+  position: fixed;
+  height: 100%;
+  background-image: url("../../assets/login/bk.png");
+  background-size: 100% 100%;
+}
+.login-right {
+  left: 50%;
+  position: fixed;
+}
+
+.login-img {
+  top: 0%;
+  left: 0%;
+  position: fixed;
+  width: 50%;
+  height: 100%;
+  background-image: url("../../assets/login/bk.png");
+  background-size: 100% 100%;
+}
+.login-card {
+  height: 3rem;
+  width: 8rem;
+  position: fixed;
+  left: 60%;
+  top: 20%;
+}
+.login-cont {
+  background-color: #fffccc;
+  padding: 40px 70px;
+}
+.login-title {
+  height: 60px;
+  line-height: 60px;
+  text-align: left;
+  font-size: 20px;
+  color: #000;
+  font-family: "华文楷体";
+}
+
+
+.el-row {
+  margin-bottom: 20px !important;
+  height: 20px;
+  line-height: 20px;
+  font-size: 16px;
+  &:last-child {
+    margin-bottom: 20px;
+  }
+}
+.bip-form-item {
+  margin-bottom: 22px !important;
+}
+.login-footer {
+  text-align: center;
+  font-family: Arial;
+  font-size: 10px;
+  height: 30px;
+  line-height: 30px;
+}
+address {
+  color: #000;
+}
+.rt {
+  text-align: right;
+  width: 120px;
+  float: right;
+}
+.reg {
+  width: 50px;
+  float: left;
+  padding-left: 60px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #a0a0a0;
+}
+.bip-rem {
+  .el-checkbox__input.is-checked .el-checkbox__label{
+    font-size: 10px !important;
+  }
+}
+</style>
