@@ -384,12 +384,13 @@ export default class App extends Vue {
 <style scoped lang="scss">
 .yw-sys{
     position: absolute;
+    right: 0.2rem;
+    top: 0;
+    height: .625rem;
+    line-height: .625rem;
     color: rgba(255, 255, 255, 0.7);
-    z-index: 99;
-    right: .5rem;
-    top: .1rem;
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 0.25rem;
+    z-index: 999;
 }
 .my-el-header{
     @include head_all_style();

@@ -1,21 +1,31 @@
 <template >
     <div class="m-rpt" :style="styles" v-if="haveKb"> 
         <div class="contain">
-        <ul>
-            <li>
+            <div class="one_menu">
                 <a href="javascript:;" @click="gotoIndex">
-                    <img src="../assets/item-ctrl/jinrong.png" alt="">
-                    <span>业务系统</span>
+                    <el-row>
+                        <el-col :span="24">
+                            <img src="../assets/bip/index/1.png" alt="">
+                        </el-col>
+                        <el-col :span="24">
+                            <span>业务系统</span>
+                        </el-col>
+                    </el-row>
                 </a>
-            </li>
-            <li v-for="(item,index) in boards" :key="index">
+            </div>
+            <div v-for="(item,index) in boards" :key="index" class="one_menu">
                 <a href="javascript:;" @click="gotoPage(item)">
-                    <img src="../assets/item-ctrl/xinyong.png" alt="">
-                    <span>{{item.menuName}}</span>
+                     <el-row>
+                        <el-col :span="24">
+                            <img :src="uri+item.menuIcon"/>
+                        </el-col>
+                        <el-col :span="24">
+                            <span>{{item.menuName.replace(/\s/g,"")}}</span>
+                        </el-col>
+                    </el-row>
                 </a>
-            </li>
-        </ul>
-    </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -31,7 +41,9 @@ export default class Index extends Vue {
     boards:Array<any> = []
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Mutation("isOtherePage", {  namespace: 'login' }) setIsOtherePage: any;
+    uri:any = "";
     mounted(){
+        this.uri = BaseVariable.BaseUri+'/'
         this.styles="width:"+document.documentElement.clientWidth+'px;';
         this.styles+='height:'+document.documentElement.clientHeight+'px;';
         if(this.menusList){
@@ -70,68 +82,38 @@ export default class Index extends Vue {
 }
 </script>
 
-<style scoped>
-
-
+<style lang="scss" scoped>
 .m-rpt{
   top: 0%;
   left: 0%;
-  position: fixed;
   width: 100%;
   height: 100%;
-  /* background-image: url("../assets/login/login.png"); */
+  background-image: url("../assets/bip/index/bj.jpg");
   background-size: 100% 100%;
-  background-color: #0a6863;
 }
-.m-rpt li{
-    list-style: none;
-}
-
 .contain{
-    width: 1260px;
-    margin: 0 auto;
-    margin-top: 80px;
-    height: 400px;
-}
-.contain ul li img{
-    display: inline-block;
-    margin-left: -45px;
-}
-.contain ul li span{
-    display: inline-block;
-    vertical-align:16px;
-    font-size: 30px;
-    color: #57daff;
-    margin-left: 20px;
-}
-.contain ul{
     width: 100%;
     height: 100%;
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    a{
+        text-align: center;
+        text-decoration:none;
+        color: #fff;
+        font-size: .4rem;
+        width: 100%;
+        height: 100%;
+        letter-spacing: .064rem;
+    }
+    .one_menu{
+        width: 4rem;
+        height: 4.7rem;
+        margin: 0 .5rem;
+    }
+    img{
+        width: 100%;
+        height: 100%;
+    }
 }
-.contain ul li{
-    width: 600px;
-    height: 200px;
-    line-height: 210px;
-    float: left;
-    /* background-image: url('../images/kuang.png'); */
-    background-position: center center;
-    background-repeat: no-repeat;
-    margin-bottom: 50px;
-    background-color:transparent;
-}
-.contain ul li:hover{
-    /* background: url('../images/chooseKuang.png') center center no-repeat; */
-    /*background-color: -webkit-linear-gradient(red, blue); /* Safari 5.1 - 6.0 */
-    /*background-color: -o-linear-gradient(red, blue); /* Opera 11.1 - 12.0 */
-    /*background-color: -moz-linear-gradient(red, blue); /* Firefox 3.6 - 15 */
-    /*background-color: linear-gradient(red, blue); /* 标准的语法 */
-}
-.contain ul li a{
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-}
-        
-      
 </style>

@@ -1,44 +1,44 @@
 <template>
   <div class="login-img">
-       <div class="login-card">
-      <div class="login-title">{{loginTitle}}</div>
-      <div class="login-cont" @keyup.enter="login">
-
-        <el-form @submit.native.prevent label-position="left" label-width="70px" class="login-form">
-          <el-form-item class="bip-form-item" label="账户:">
-            <el-input v-model="user.userCode"></el-input>
-          </el-form-item>
-          <el-form-item class="bip-form-item" label="密码:">
-            <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-row type="flex" justify="start">
-          <el-col :span="12">
-            <el-row type="flex" justify="start">
-              <el-col :span="12">
-                <!-- <el-button @click="registered" type="text">注册</el-button> -->
-              </el-col> 
-            </el-row>
-          </el-col>
-          <el-col :span="12">
-            <el-row type="flex" justify="end">
-              <el-col :span="12">
-                <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
-              </el-col> 
-            </el-row>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24"  style="margin-top:10px">
-            <el-button
-              id="login"
-              style="width:100%"
-              type="primary"
-              :disabled="canClick"
-              @click="login"
-            >登录</el-button>
-          </el-col>
-        </el-row>
+     <particles></particles> <!--粒子特效背景组件-->
+      <div class="login-card">
+        <div class="login-title">{{loginTitle}}</div>
+        <div class="login-cont" @keyup.enter="login">
+          <el-form @submit.native.prevent label-position="left" label-width="70px" class="login-form">
+            <el-form-item class="bip-form-item" label="账户:">
+              <el-input v-model="user.userCode"></el-input>
+            </el-form-item>
+            <el-form-item class="bip-form-item" label="密码:">
+              <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
+            </el-form-item>
+          </el-form>
+          <el-row type="flex" justify="start">
+            <el-col :span="12">
+              <el-row type="flex" justify="start">
+                <el-col :span="12">
+                  <!-- <el-button @click="registered" type="text">注册</el-button> -->
+                </el-col> 
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row type="flex" justify="end">
+                <el-col :span="12">
+                  <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
+                </el-col> 
+              </el-row>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24"  style="margin-top:10px">
+              <el-button
+                id="login"
+                style="width:100%"
+                type="primary"
+                :disabled="canClick"
+                @click="login"
+              >登录</el-button>
+            </el-col>
+          </el-row>
       </div>
       <div class="login-footer">
         <address>&copy;{{COPYRIGHT}}</address>
@@ -47,6 +47,7 @@
   </div>
 </template>
 <script lang="ts">
+import Particles from '@/components/particles/index'
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
@@ -57,7 +58,11 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 const namespace: string = "login";
-@Component
+@Component({
+    components:{
+        Particles
+    }
+})
 export default class Login extends Vue {
   @Provide() fullscreenLoading: boolean = false;
   @Getter("user", { namespace }) user?: User;
@@ -189,7 +194,7 @@ export default class Login extends Vue {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-image: url("../../assets/login/login.png");
+  // background-image: url("../../assets/login/login.png");
   background-size: 100% 100%;
 }
 .login-card {
@@ -198,7 +203,7 @@ export default class Login extends Vue {
   position: fixed;
   left: 50%;
   top: 50%;
-  border: 1px solid #127ACE;
+  border: 1px solid #cfd8e0;
   margin-top: -175px;
   margin-left: -240px;
   border-radius: 5px;

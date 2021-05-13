@@ -9,245 +9,230 @@
         </div>
       </div>
       <div class="header">
-        <h1>融通农发经营数据可视化分析</h1>
+        <p>融通农发经营数据可视化分析</p>
         <div class="showTime">{{ showtime }}</div>
       </div>
       <!-- 页面主体部分 -->
       <div class="mainbox">
-        <div class="column">
-          <div class="">
-            <div class="panel">
-              <div class="filter">
-                <a data-id="1" data-type="leftTopTabs1" href="javascript:;" :class="leftTopTabs1 == 1 ? 'active' : ''" @click="aClick">营业收入</a>
-                <a data-id="2" data-type="leftTopTabs1" href="javascript:;" :class="leftTopTabs1 == 2 ? 'active' : ''" @click="aClick">利润</a>
-                <a href="javascript:;" class="goto-list pieTitle">计划占比</a>
-              </div>
-              <div class="chart" id="leftTopTabsC" ref="leftTopTabsC"></div>
-              <div class="panel-footer"></div>
-            </div>
-            <div class="panel">
-              <div class="filter">
-                <a data-id="1" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 1 ? 'active' : ''" @click="aClick" >第一季度</a>
-                <a data-id="2" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 2 ? 'active' : ''" @click="aClick" >第二季度</a>
-                <a data-id="3" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 3 ? 'active' : ''" @click="aClick" >第三季度</a>
-                <a data-id="4" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 4 ? 'active' : ''" @click="aClick" >第四季度</a >
-                <a href="javascript:;" class="goto-list" @click="gotoList('L')">列表</a>
-              </div>
-              <el-carousel
-                height="3.1rem"
-                indicator-position="none"
-                :interval="7000"
-              >
-                <el-carousel-item
-                  v-for="(item, index) in leftTableData[leftCenterabs1]"
-                  :key="index"
-                >
-                  <CardInfo :item="item"></CardInfo>
-                </el-carousel-item>
-              </el-carousel>
-              <div class="panel-footer"></div>
-            </div>
-            <div class="panel bottomChart">
-              <div class="filter">
-                <a data-id="1" data-type="leftBottomTabs1" href="javascript:;" :class="leftBottomTabs1 == 1 ? 'active' : ''" @click="aClick" >实际利润贡献比(万元)</a>
-                <a data-id="2" data-type="leftBottomTabs1" href="javascript:;" :class="leftBottomTabs1 == 2 ? 'active' : ''" @click="aClick" >实际营收贡献比(万元)</a>
-              </div>
-              <!-- <h2>{{ leftB1ConName }}</h2> -->
-              <div class="chart" ref="leftB1Con"></div>
-              <div class="panel-footer"></div>
-            </div>
-          </div>
-        </div>
-        <div class="column columnCenter">
-          <div class="leftTop2">
+        <el-row>
+          <el-col :span="6">
             <el-row>
-              <el-col :span="1">&nbsp;</el-col>
-              <el-col :span="10">
-                <div @click="centerTC1Click">
-                  <el-row v-if="centerTC1Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="14" class="content">
-                      <el-row>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>全年营收：</el-col>
-                            <el-col> {{centerTC1Con.yjrmb}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>累计完成：</el-col>
-                            <el-col> {{centerTC1Con.sjrmb}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>预计营收：</el-col>
-                            <el-col> {{centerTC1Con.curr_yjrmb}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：</el-col>
-                            <el-col> {{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(1)}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                      </el-row>
-                    </el-col>
-                    <el-col :span="10" class="progress">  
-                      <el-progress type="circle" :width="70" :stroke-width='4' :percentage="centerTC1Con.bl"></el-progress>
-                    </el-col>
-                  </el-row>
+              <el-col :span="24">
+                <!-- 左上角饼状图 -->
+                <div class="panel">
+                  <div class="card_title">
+                    <div class="filter">
+                      <a data-id="1" data-type="leftTopTabs1" href="javascript:;" :class="leftTopTabs1 == 1 ? 'active' : ''" @click="aClick">计划营业收入</a>
+                      <a data-id="2" data-type="leftTopTabs1" href="javascript:;" :class="leftTopTabs1 == 2 ? 'active' : ''" @click="aClick">计划利润</a>
+                    </div>
+                  </div>
+                  <div class="chart" id="leftTopTabsC" ref="leftTopTabsC"></div>
                 </div>
               </el-col>
-              <el-col :span="2">&nbsp;</el-col>
-              <el-col :span="10">
-                <div @click="centerTC2Click">
-                  <el-row v-if="centerTC2Con" class="my-card" type="flex" align="middle">
-                    <el-col :span="14" class="content">
-                      <el-row>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>全年利润：</el-col>
-                            <el-col> {{centerTC2Con.yjfcy}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>累计完成：</el-col>
-                            <el-col> {{centerTC2Con.sjfcy}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>预计利润：</el-col>
-                            <el-col> {{centerTC2Con.curr_yjfcy}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                        <el-col :span="12">
-                          <el-row>
-                            <el-col>差&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额：</el-col>
-                            <el-col> {{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(1)}}亿</el-col>
-                          </el-row>
-                        </el-col>
-                      </el-row>
-                    </el-col>
-                    <el-col :span="10" class="progress">
-                      <el-progress type="circle" :width="70"  :stroke-width='4' :percentage="centerTC2Con.bl"></el-progress>
-                    </el-col>
-                  </el-row>
+              <el-col :span="24">
+                <!-- 左侧中间轮播 -->
+                <div class="panel ouselCard">
+                  <div class="card_title">
+                  <div class="filter">
+                    <a data-id="1" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 1 ? 'active' : ''" @click="aClick" >第一季度</a>
+                    <a data-id="2" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 2 ? 'active' : ''" @click="aClick" >第二季度</a>
+                    <a data-id="3" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 3 ? 'active' : ''" @click="aClick" >第三季度</a>
+                    <a data-id="4" data-type="leftCenterabs1" href="javascript:;" :class="leftCenterabs1 == 4 ? 'active' : ''" @click="aClick" >第四季度</a >
+                    <a href="javascript:;" class="goto-list" @click="gotoList('L')">列表</a>
+                  </div>
+                  </div>
+                  <el-carousel height="3.1rem" indicator-position="none" :interval="7000">
+                    <el-carousel-item v-for="(item, index) in leftTableData[leftCenterabs1]" :key="index">
+                      <CardInfo :item="item"></CardInfo>
+                    </el-carousel-item>
+                  </el-carousel>
+                </div>
+              </el-col>
+              <el-col :span="24">
+                <div class="panel">
+                  <div class="card_title">
+                    <div class="filter">
+                      <a data-id="2" data-type="leftBottomTabs1" href="javascript:;" :class="leftBottomTabs1 == 2 ? 'active' : ''" @click="aClick" >实际营收贡献比</a>
+                      <a data-id="1" data-type="leftBottomTabs1" href="javascript:;" :class="leftBottomTabs1 == 1 ? 'active' : ''" @click="aClick" >实际利润贡献比</a>
+                    </div>
+                  </div>
+                  <div class="chart" ref="leftB1Con"></div>
                 </div>
               </el-col>
             </el-row>
-            <div class="panel-footer"></div>
-          </div>
-          <!-- 地图模块 -->
-          <div class="map">
-            <div class="chart" ref="itemAnaMap"></div>
-            <div class="map1"></div>
-            <div class="map2"></div>
-            <div class="map3"></div>
-          </div>
-        </div>
-        <div class="column">
-          <div>
-            <div class="panel">
-              <div class="filter">
-                <a data-id="1" data-type="rightTopTabs1" href="javascript:;" :class="rightTopTabs1 == 1 ? 'active' : ''" @click="aClick">营业收入</a>
-                <a data-id="2" data-type="rightTopTabs1" href="javascript:;" :class="rightTopTabs1 == 2 ? 'active' : ''" @click="aClick">利润</a>
-                <a href="javascript:;" class="goto-list pieTitle">计划占比</a>
-              </div>
-              <div class="chart" id="rightTopTabsC" ref="rightTopTabsC"></div>
-              <div class="panel-footer"></div>
-            </div>
-            <div class="panel">
-              <div class="filter">
-                <a
-                  data-id="1"
-                  data-type="rightCenterabs1"
-                  href="javascript:;"
-                  :class="rightCenterabs1 == 1 ? 'active' : ''"
-                  @click="aClick"
-                  >第一季度</a
-                >
-                <a
-                  data-id="2"
-                  data-type="rightCenterabs1"
-                  href="javascript:;"
-                  :class="rightCenterabs1 == 2 ? 'active' : ''"
-                  @click="aClick"
-                  >第二季度</a
-                >
-                <a
-                  data-id="3"
-                  data-type="rightCenterabs1"
-                  href="javascript:;"
-                  :class="rightCenterabs1 == 3 ? 'active' : ''"
-                  @click="aClick"
-                  >第三季度</a
-                >
-                <a
-                  data-id="4"
-                  data-type="rightCenterabs1"
-                  href="javascript:;"
-                  :class="rightCenterabs1 == 4 ? 'active' : ''"
-                  @click="aClick"
-                  >第四季度</a>
-                <a href="javascript:;" class="goto-list" @click="gotoList('R')">列表</a>
-              </div>
-              <el-carousel
-                height="3.1rem"
-                indicator-position="none"
-                :interval="7000"
-              >
-                <el-carousel-item
-                  v-for="(item, index) in rightTableData[rightCenterabs1]"
-                  :key="index"
-                >
-                  <CardInfo :item="item"></CardInfo>
-                </el-carousel-item>
-              </el-carousel>
-              <div class="panel-footer"></div>
-            </div>
-            <div class="panel bottomChart">
-              <div class="filter">
-                <a data-id="1" data-type="rightBottomTabs1" href="javascript:;" :class="rightBottomTabs1 == 1 ? 'active' : ''" @click="aClick" >月度营收对比分析</a>
-                <a data-id="2" data-type="rightBottomTabs1" href="javascript:;" :class="rightBottomTabs1 == 2 ? 'active' : ''" @click="aClick" >月度利润对比分析</a>
-              </div>
-              <!-- <h2>{{ rightB1ConName }}</h2> -->
-              <div class="chart" ref="rightB1Con"></div>
-              <div class="panel-footer"></div>
-            </div>
-          </div>
-        </div>
+          </el-col>
+          <el-col :span="12">
+            <el-row class="cen_card">
+              <el-col :span="12">
+                <div @click="centerTC1Click">
+                  <el-row class="cen_card1" type="type" align="middle">
+                      <el-col :span="8"  class="cen_card_row">
+                        <Progress :percentage="centerTC1Con.bl"></Progress>
+                      </el-col>
+                      <el-col :span="16"  class="cen_card_row">
+                        <el-row>
+                          <el-col :span="12">
+                            <el-row>
+                              <el-col :span="24"><span class="cen_title">累计营收</span></el-col>
+                              <el-col :span="24">
+                                <span class="cen_value">{{centerTC1Con.sjrmb}}</span>
+                                <span class="cen_value_d">亿</span>
+                              </el-col>
+                            </el-row>
+                          </el-col>
+                          <el-col :span="12">
+                            <el-row>
+                              <el-col :span="24"><span class="cen_title">全年目标</span></el-col>
+                              <el-col :span="24">
+                                <span class="cen_value">{{centerTC1Con.yjrmb}}</span>
+                                <span class="cen_value_d">亿</span>
+                              </el-col>
+                            </el-row>
+                          </el-col>
+                          <el-col :span="12">
+                            <el-row>
+                              <el-col :span="24"><span class="cen_title">序时营收</span></el-col>
+                              <el-col :span="24">
+                                <span class="cen_value">{{centerTC1Con.curr_yjrmb}}</span>
+                                <span class="cen_value_d">亿</span>
+                              </el-col>
+                            </el-row>
+                          </el-col>
+                          <el-col :span="12">
+                            <el-row>
+                              <el-col :span="24"><span class="cen_title">序时差额</span></el-col>
+                              <el-col :span="24">
+                            <span class="cen_value">{{(centerTC1Con.curr_yjrmb - centerTC1Con.sjrmb).toFixed(1)}}</span>
+                                <span class="cen_value_d">亿</span>
+                              </el-col>
+                            </el-row>
+                          </el-col> 
+                        </el-row>
+                      </el-col>
+                  </el-row>
+                </div>
+              </el-col>
+              <el-col :span="12">
+                <el-row class="cen_card2">
+                  <div  @click="centerTC2Click">
+                    <el-col :span="16" class="cen_card_row">
+                      <el-row>
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col :span="24"><span class="cen_title">累计利润</span></el-col>
+                            <el-col :span="24">
+                              <span class="cen_value">{{centerTC2Con.sjfcy}}</span>
+                              <span class="cen_value_d">亿</span>
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col :span="24"><span class="cen_title">全年目标</span></el-col>
+                            <el-col :span="24">
+                              <span class="cen_value">{{centerTC2Con.yjfcy}}</span>
+                              <span class="cen_value_d">亿</span>
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col :span="24"><span class="cen_title">序时利润</span></el-col>
+                            <el-col :span="24">
+                              <span class="cen_value">{{centerTC2Con.curr_yjfcy}}</span>
+                              <span class="cen_value_d">亿</span>
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <el-col :span="24"><span class="cen_title">序时差额</span></el-col>
+                            <el-col :span="24">
+                              <span class="cen_value">{{(centerTC2Con.curr_yjfcy - centerTC2Con.sjfcy).toFixed(1)}}</span>
+                              <span class="cen_value_d">亿</span>
+                            </el-col>
+                          </el-row>
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                    <el-col :span="8" class="cen_card_row">
+                      <Progress :percentage="centerTC2Con.bl"></Progress>
+                    </el-col>
+                  </div>
+                </el-row>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <!-- 地图模块 -->
+                <div class="map">
+                  <div class="chart" ref="itemAnaMap"></div>
+                </div>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="6">
+            <el-row>
+              <el-col :span="24">
+                <div class="panel">
+                  <div class="card_title">
+                  <div class="filter">
+                    <a data-id="1" data-type="rightTopTabs1" href="javascript:;" :class="rightTopTabs1 == 1 ? 'active' : ''" @click="aClick">计划营业收入</a>
+                    <a data-id="2" data-type="rightTopTabs1" href="javascript:;" :class="rightTopTabs1 == 2 ? 'active' : ''" @click="aClick">计划利润</a>
+                  </div>
+                  </div>
+                  <div class="chart" id="rightTopTabsC" ref="rightTopTabsC"></div>
+                </div>
+              </el-col>
+              <el-col :span="24">
+                <div class="panel ouselCard">
+                  <div class="card_title">
+                  <div class="filter">
+                    <a data-id="1" data-type="rightCenterabs1" href="javascript:;" :class="rightCenterabs1 == 1 ? 'active' : ''" @click="aClick">第一季度</a>
+                    <a data-id="2" data-type="rightCenterabs1" href="javascript:;" :class="rightCenterabs1 == 2 ? 'active' : ''" @click="aClick">第二季度</a>
+                    <a data-id="3" data-type="rightCenterabs1" href="javascript:;" :class="rightCenterabs1 == 3 ? 'active' : ''" @click="aClick">第三季度</a>
+                    <a data-id="4" data-type="rightCenterabs1" href="javascript:;" :class="rightCenterabs1 == 4 ? 'active' : ''" @click="aClick">第四季度</a>
+                    <a href="javascript:;" class="goto-list" @click="gotoList('R')">列表</a>
+                  </div>
+                  </div>
+                  <el-carousel height="3.1rem" indicator-position="none" :interval="7000">
+                    <el-carousel-item v-for="(item, index) in rightTableData[rightCenterabs1]" :key="index">
+                      <CardInfo :item="item"></CardInfo>
+                    </el-carousel-item>
+                  </el-carousel>
+                </div>
+              </el-col>
+              <el-col :span="24">
+                <div class="panel bottomChart">
+                  <div class="card_title">
+                  <div class="filter">
+                    <a data-id="1" data-type="rightBottomTabs1" href="javascript:;" :class="rightBottomTabs1 == 1 ? 'active' : ''" @click="aClick" >月度营收对比分析</a>
+                    <a data-id="2" data-type="rightBottomTabs1" href="javascript:;" :class="rightBottomTabs1 == 2 ? 'active' : ''" @click="aClick" >月度利润对比分析</a>
+                  </div>
+                  </div>
+                  <div class="chart" ref="rightB1Con"></div>
+                </div>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
       </div>
     </div>
+
+
     <div style="display:flex;">
       <!--左侧弹出框--->
       <template v-if="leftTopTabs1Chart">
         <div class="filterbg"></div>
         <div class="popup" :style="leftTopTabs1Chart ? 'width: 82%;height: 76%;' : ''" >
-          <a
-            href="javascript:;"
-            class="popupClose"
-            @click="leftTopTabs1Chart = false"
-          ></a>
-          <el-row style="color: #f7f8fe; text-align: center"
-            ><h3>
+          <a href="javascript:;" class="popupClose" @click="leftTopTabs1Chart = false"></a>
+          <el-row class="chart_title">
               {{ popItemLeft1.name }}-各个板块-
               {{ leftTopTabs1 == 1 ? "营业收入" : "利润" }}占比&nbsp;&nbsp;&nbsp;&nbsp;
               总金额：{{ popItemLeft1.value }} （亿）
-            </h3></el-row
-          >
+          </el-row>
           <el-row>
-            <div
-              class="summaryPie"
-              v-for="(item, index) in popValues"
-              :id="'summaryPie' + (index + 1)"
-              :ref="'summaryPie' + (index + 1)"
-              :key="index"
-            ></div>
-            <!-- <div  ></div>
-              <div id="summaryPie2" ref="summaryPie2" class="summaryPie" ></div> -->
+            <div class="summaryPie" id='summaryPie1' ref='summaryPie1'></div>
           </el-row>
         </div>
       </template>
@@ -255,23 +240,15 @@
       <!--右侧弹出框-->
       <template v-if="rightTopTabs1Chart">
         <div class="filterbg"></div>
-        <div
-          class="popup"
-          :style="rightTopTabs1Chart ? 'width: 82%;height: 76%;' : ''"
-        >
-          <a
-            href="javascript:;"
-            class="popupClose"
-            @click="rightTopTabs1Chart = false"
-          ></a>
-          <el-row style="color: #f7f8fe; text-align: center"
-            ><h3>
+        <div class="popup" :style="rightTopTabs1Chart ? 'width: 82%;height: 76%;' : ''">
+          <a href="javascript:;" class="popupClose" @click="rightTopTabs1Chart = false"></a>
+          <el-row  class="chart_title">
             各个公司- {{ popItemRight1.name }}-
               {{ rightTopTabs1 == 1 ? "营业收入" : "利润" }}对比&nbsp;&nbsp;&nbsp;&nbsp;
               总金额：{{ popItemRight1.value }} （亿）
-            </h3></el-row >
+          </el-row >
           <el-row>
-              <div  ref="popRightChart" style="width:100%;height:400px;"></div>
+              <div ref="popRightChart" class="summaryPie"></div>
           </el-row>
         </div>
       </template>
@@ -283,27 +260,29 @@
           class="popup"
           :style="centerPopShow ? 'width: 82%;height: 76%;' : ''"
         >
-          <a
-            href="javascript:;"
-            class="popupClose"
-            @click="centerPopShow = false"
-          ></a>
-          <el-row style="color: #f7f8fe; text-align: center"
-            ><h3>
+          <a href="javascript:;" class="popupClose" @click="centerPopShow = false"></a>
+          <el-row  class="chart_title">
             各区域公司{{ popCenterType == 1 ? "营业收入" : "利润" }}完成情况
-            </h3>
-            <div>
-              <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿&nbsp;&nbsp;</span>
-              <span>已完成:{{popItemCenter.wcfcy}}亿</span>
-            </div>
-            </el-row >
+          </el-row >
+          <div class="chart_title2">
+            <span>{{ popCenterType == 1 ? "总营业收入" : "总利润" }}:{{popItemCenter.total}}亿&nbsp;&nbsp;</span>
+            <span>已完成:{{popItemCenter.wcfcy}}亿</span>
+          </div>
           <el-row>
-              <div class="popView" v-for="(item,index) in popItemCenter.data" :key="index">
-                <div class="summaryPie2">
+            <div class="popView">
+              <div v-for="(item,index) in popItemCenter.data" :key="index">
+                <div class="summaryPie2" v-if="index<=5">
                   <div class="chart" :ref="'popCenterTC'+(index+1)"></div>
                 </div>
-                <div class="btm"></div>
               </div>
+            </div>
+            <div class="popView">
+              <div v-for="(item,index) in popItemCenter.data" :key="index">
+                <div class="summaryPie2" v-if="index>5">
+                  <div class="chart" :ref="'popCenterTC'+(index+1)"></div>
+                </div>
+              </div>
+            </div>
           </el-row>
         </div>
       </template>
@@ -359,11 +338,12 @@ import { Mutation } from "vuex-class";
 import QueryEntity from "@/classes/search/QueryEntity";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
+import Progress from "@/custom/item-ctrl/components/Progress.vue";
 import CardInfo from "@/custom/item-ctrl/components/CardInfo.vue";
 let _ = require("lodash");
 import { ChartConfig } from "./ts/chart";
 @Component({
-  components: { CardInfo },
+  components: { CardInfo,Progress },
 })
 export default class ItemAnalysis extends Vue {
   @Mutation("snkey", { namespace: "login" }) setSnkey: any;
@@ -384,7 +364,6 @@ export default class ItemAnalysis extends Vue {
   leftTopTabs1Chart: boolean = false;
   rightTopTabs1Chart: boolean = false;
   popItemLeft1: any = null;
-  popValues: Array<any> = [];
   popItemRight1:any =null;
   /************ 左上第一个图 **********/
   leftT1C1Con: any = null;
@@ -399,8 +378,8 @@ export default class ItemAnalysis extends Vue {
   rightTopTabsCCurrInd: any = null;
   rightTopTabsCInterval: any = null;
   /************ 中上第一个图 **********/
-  centerTC1Con: any = null;
-  centerTC2Con: any = null;
+  centerTC1Con: any = {yjrmb:0,sjrmg:0,curr_yjrmb:0};
+  centerTC2Con: any = {yjfcy:0,sjfcy:0,curr_yjfcy:0};
   centerTC1: any = null;
   centerTC2: any = null;
   centerPopShow:boolean = false
@@ -424,7 +403,7 @@ export default class ItemAnalysis extends Vue {
     4: [],
   };
   /************** 左下图表 *****************/
-  leftBottomTabs1:any=1;
+  leftBottomTabs1:any=2;
   leftB1Con: any = null;
   leftB2Con: any = null;
   leftB1C1: any = null;
@@ -539,15 +518,14 @@ export default class ItemAnalysis extends Vue {
     qe.page.currPage = 1;
     qe.page.pageSize = 500;
     let cc = await tools.getBipInsAidInfo("BOARD_L1_1", 210, qe);
+    let values:Array<any> = [];
     if (cc.data.id == 0) {
-      let values = cc.data.data.data.values;
-      console.log(values);
-      this.popValues = values;
+      values = cc.data.data.data.values;
     }
     this.$nextTick(() => {
       let vrs:Array<any> = []
       let totalFcy = 0,totalRmb=0;
-      _.forEach(this.popValues, (item: any, index: any) => {
+      _.forEach(values, (item: any, index: any) => {
         let itm:any = {totalfcy:0,syfcy:0,totalrmb:0,syrmb:0}
         itm.title = item.bkname;
         itm.fcy = parseFloat(item.fcy)
@@ -569,11 +547,7 @@ export default class ItemAnalysis extends Vue {
         
       });
       let option = ChartConfig.Config.getPictorialBar();
-      let k = "summaryPie" + ( 1);
-          let _r:any = this.$refs[k];
-          let summaryPie: any = echarts.init(
-            _r[0] as HTMLCanvasElement
-          );
+      let summaryPie: any = echarts.init(this.$refs.summaryPie1 as HTMLCanvasElement);
       _.forEach(vrs, (item: any, index: any) => {
           let value = (this.leftTopTabs1==1?item.rmb/item.totalrmb:item.fcy/item.totalfcy)*100;
           value = parseFloat(value.toFixed(2));
@@ -625,24 +599,28 @@ export default class ItemAnalysis extends Vue {
       console.log(values);
       if(values){
         let rpopChart:any = echarts.init(this.$refs.popRightChart as HTMLCanvasElement);
-        let option:any = ChartConfig.Config.getColumn();
-        option.color= ["#14C4F0"],
-        option.grid= {
-            left: "10%",
-            top: "20px",
-            right: "20%",
-            bottom: "4%",
-            containLabel: true,
-        }
-        option.series[0]. label={
-          show: true,
-          position: 'top'
-        }
-        option.xAxis[0].data = [];
-        option.series[0].data = [];
+        let option:any = ChartConfig.Config.getBar3D();
+        let rgba = ['24,96,244','31,196,244','245,220,48','255,145,16','248,34,74','249,37,152','195,28,237','98,27,241','47,240,206','24,228,125','181,248,19','248,73,45','43,61,231'];
         _.forEach(values,(item:any,index:any) => {
-          option.xAxis[0].data.push(item.gsname);
-          option.series[0].data.push(this.rightTopTabs1==1?item.rmb:item.fcy);
+          option.xAxis.data.push(item.gsname);
+          let vlaue = this.rightTopTabs1==1?item.rmb:item.fcy
+          let one_data = {name:item.gsname,value:vlaue,
+            itemStyle: {
+                  normal: {
+                    color:  'rgba('+rgba[index]+', 0.4)',
+                }
+            }
+          }
+          option.series[0].data.push(one_data);
+          let one_data1 = {name:item.gsname,value:vlaue,
+            itemStyle: {
+                  normal: {
+                    color:  'rgba('+rgba[index]+', 0.8)',
+                }
+            }
+          }
+          option.series[1].data.push(one_data1);
+          option.series[2].data.push(one_data1);
         });
         rpopChart.setOption(option);
       }
@@ -687,7 +665,6 @@ export default class ItemAnalysis extends Vue {
           this.popItemCenter.data.push(itm);
         });
         this.popItemCenter.wcfcy = this.popItemCenter.wcfcy.toFixed(2);
-        console.log(this.popItemCenter)
         //创建board
         this.$nextTick(()=>{
           _.forEach(this.popItemCenter.data, (item: any, index: any) => {
@@ -713,7 +690,7 @@ export default class ItemAnalysis extends Vue {
                 bottom: -2, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
                 left: 'left', // 值: 'left', 'center', 'right' 同上
                 textStyle: { // 文本样式
-                  fontSize: 20,
+                  fontSize: 14,
                   fontWeight: 300,
                   color: '#fff'
                 },
@@ -731,7 +708,7 @@ export default class ItemAnalysis extends Vue {
               series: [{
                 type: 'liquidFill',
                 name: item.name, // 系列名称，用于tooltip的显示，legend 的图例筛选
-                radius: '40%', // 水球图的半径
+                radius: '53%', // 水球图的半径
                 center: ['50%', '51%'], // 水球图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标
                 // 水填充图的形状 circle 默认圆形  rect 圆角矩形  triangle 三角形  
                 // diamond 菱形  pin 水滴状 arrow 箭头状  还可以是svg的path
@@ -848,62 +825,73 @@ export default class ItemAnalysis extends Vue {
           let vl = values[i];
           let name = vl.name;
           let addr = gps[name];
-          let tipHtml = '<div style="width:300px;height:178px;background:rgba(22,80,158,0.8);border:1px solid rgba(7,166,255,0.7)">'
-            +'<div style="width:100%;height:40px;line-height:40px;border-bottom:2px solid rgba(7,166,255,0.7);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<i style="display:inline-block;width:8px;height:8px;background:#16d6ff;border-radius:40px;">'+'</i>'
-            +'<span style="margin-left:10px;color:#fff;font-size:16px;">'+name+'</span>'+'</div>'
-            +'<div style="padding:5px">'
+          let tipHtml = '<div class="map_msg" style="width:3.275rem;height:1.9rem;overflow: hidden;">'
+            +'<div style="width:100%;height:.35rem;line-height:.5rem;text-align: center;padding-top:10px;overflow: hidden;">'
+            +'<span style="color:#ecf3f8;font-size:.2rem;overflow: hidden;">'+name+'</span>'+'</div>'
+            +'<div style="padding:5px 10px;overflow: auto;overflow: hidden;">'
           for(var j=2;j<showColsIndex.length;j++){
             let text = vl[ins.cells.cels[showColsIndex[j]].id];
             let label = labers[j];
-            tipHtml += '<p style="color:#fff;font-size:12px;width:50%;float:left">'+'<i style="display:inline-block;width:10px;height:10px;background:#16d6ff;border-radius:40px;margin:0 8px">'+'</i>'
-            tipHtml += label+'<span style="color:#f48225;margin:0 6px;">'+text+'</span>'+''+'</p>'
+            tipHtml += '<p style="color:#fff;font-size:0.15rem;width:50%;float:left;margin: 3px 0px;text-align: center;">'
+            tipHtml += label+'<span style="color:#f48225;margin:0 2px;">'+text+'</span>'+''+'</p>'
           }
           tipHtml += '</div></div>';
           let d1 = { name: name, value: addr,message:tipHtml,itemStyle:{color:"#fff"}}//this.mapCon.color[i]
-          this.mapCon.series[1].data.push(d1);
           if(name=="哈尔滨"){
             this.mapCon.series[0].data[0].message = tipHtml;
+            d1.itemStyle.color = "#3580ed";
           }else if(name =="沈阳"){
             for(var z=1;z<=3;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#32b4ed"; 
           }else if(name =="北京"){
             for(var z=4;z<=7;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#F43749"; 
           }else if(name =="济南"){
             for(var z=8;z<=10;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#ff971a"; 
           }else if(name == "南京"){
             for(var z=11;z<=12;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#bfff43"; 
           }else if(name == "杭州"){
             for(var z=13;z<=16;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#3ae8c6"; 
           }else if(name == "广州"){
             for(var z=17;z<=19;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#603de0"; 
           }else if(name =="昆明"){
             for(var z=20;z<=22;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#d156ef"; 
           }else if(name=="武汉"){
             for(var z=23;z<=24;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#06c8ab"; 
           }else if(name=="乌鲁木齐"){
             for(var z=25;z<=25;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#18d186"; 
           }else if(name =="成都"){
             for(var z=26;z<=29;z++){
               this.mapCon.series[0].data[z].message = tipHtml;
             }
+            d1.itemStyle.color = "#ffe266"; 
           }
+          this.mapCon.series[1].data.push(d1);
         }
       }
     }
@@ -1034,15 +1022,19 @@ export default class ItemAnalysis extends Vue {
         for (var i = 0; i < values.length; i++) {
           let vl = values[i];
           this.leftB1Con.xAxis[0].data.push(vl.name);
-          this.leftB1Con.series[0].data.push(vl.lrbl);
+          let b1 = {name:vl.name,value:(vl.lrbl/10000).toFixed(2),bl:vl.lrbl_1}
+          this.leftB1Con.series[0].data.push(b1);
           this.leftB2Con.xAxis[0].data.push(vl.name);
-          this.leftB2Con.series[0].data.push(vl.ysbl);
+          let b2 = {name:vl.name,value:(vl.ysbl/10000).toFixed(2),bl:vl.ysbl_1}
+          this.leftB2Con.series[0].data.push(b2);
         }
       }
+      this.leftB1Con.series[0].barWidth = "18px"
+      this.leftB2Con.series[0].barWidth = "18px"
       // 基于准备好的dom，初始化echarts实例
       this.leftB1C1 = echarts.init(this.$refs.leftB1Con as HTMLCanvasElement);
       // 绘制图表
-      this.leftB1C1.setOption(this.leftB1Con);
+      this.leftB1C1.setOption(this.leftB2Con);
     }
   }
 
@@ -1228,7 +1220,6 @@ export default class ItemAnalysis extends Vue {
     }
   }
   getColor(value:any){
-    console.log(value)
     if(value>=0&&value<10){
       return '#e90c0c'
     }else if(value>=10&&value<20){
@@ -1254,8 +1245,15 @@ export default class ItemAnalysis extends Vue {
 }
 </script>
 <style lang="scss" scoped>
+/* 声明字体*/
+@font-face {
+  font-family: electronicFont;
+  src: url(../../assets/bip-erp/font/DS-DIGIT.TTF);
+}
 .analysis {
-  background: url(../../assets/item-ctrl/images/bg.png) no-repeat;
+  background: url(../../assets/item-ctrl/images/gif.gif) no-repeat,
+              url(../../assets/item-ctrl/images/bj.png) no-repeat,
+              url(../../assets/item-ctrl/images/bg.jpg) no-repeat;
   overflow-y: auto;
   height: 100%;
   position: absolute;
@@ -1271,20 +1269,22 @@ export default class ItemAnalysis extends Vue {
 }
 .header {
   position: relative;
-  height: 1.25rem;
-  background: url(../../assets/bip-erp/image/head_bg.png) no-repeat;
+  height: 1rem;
+  background: url(../../assets/item-ctrl/images/head_bg.png) no-repeat;
   background-size: 100% 100%;
-  h1 {
+  p {
+    margin: 0px !important;
     color: #fff;
     text-align: center;
-    font-size: 0.475rem;
+    font-size: .5rem;
     line-height: 1rem;
   }
   .showTime {
     position: absolute;
-    right: 0.375rem;
+    left: 0.2rem;
     top: 0;
-    line-height: 0.9375rem;
+    height: .625rem;
+    line-height: .625rem;
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.25rem;
   }
@@ -1293,76 +1293,128 @@ export default class ItemAnalysis extends Vue {
   min-width: 1024px;
   max-width: 1920px;
   margin: 0 auto;
-  padding: 0.125rem 0.125rem 0;
-  display: flex;
-  .column {
-    flex: 3;
-  }
-  .columnCenter {
-    flex: 5;
-  }
+  padding: .0625rem 0.125rem 0;
   .panel {
+    height: 3.245rem;
     position: relative;
-    height: 3.28rem;
     border: 1px solid rgba(25, 186, 139, 0.17);
-    background: url(../../assets/bip-erp/image/line.png);
-    background-color: #111d40d7;
-    padding: 0 0.1875rem 0.5rem;
-    margin-bottom: 0.1875rem;
-    width: 90%;
-    .panel-footer {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
+    background: linear-gradient(to left, #1fd8ee, #1fd8ee) left top no-repeat, 
+                linear-gradient(to bottom, #1fd8ee, #1fd8ee) left top no-repeat, 
+                linear-gradient(to left, #1fd8ee, #1fd8ee) right top no-repeat,
+                linear-gradient(to bottom, #1fd8ee, #1fd8ee) right top no-repeat, 
+                linear-gradient(to left, #1fd8ee, #1fd8ee) left bottom no-repeat,
+                linear-gradient(to bottom, #1fd8ee, #1fd8ee) left bottom no-repeat,
+                linear-gradient(to left, #1fd8ee, #1fd8ee) right bottom no-repeat,
+                linear-gradient(to left, #1fd8ee, #1fd8ee) right bottom no-repeat;
+    background-size: 2px 10px, 10px 2px, 2px 10px, 10px 2px;
+    .chart {
+      height: 2.75rem;
     }
   }
+  .ouselCard{
+    margin-bottom: .0625rem;
+    margin-top: .0625rem;
+  }
 }
-.mainbox .panel::before {
+.card_title::before {
   position: absolute;
   top: 0;
   left: 0;
   content: "";
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid #02a6b5;
-  border-left: 2px solid #02a6b5;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #1fd8ee;
+  border-left: 2px solid #1fd8ee;
 }
-.mainbox .panel::after {
+.card_title::after {
   position: absolute;
   top: 0;
   right: 0;
   content: "";
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid #02a6b5;
-  border-right: 2px solid #02a6b5;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #1fd8ee;
+  border-right: 2px solid #1fd8ee;
 }
-.mainbox .panel .panel-footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
+.filter {
+  display: flex;
+  font-size: .2rem;
+  height: .5rem;
+  line-height: .5rem;
+  color:#1fd8ee;
+  background-image: linear-gradient(to right, #093865 , #0c0f19);
 }
-.mainbox .panel .panel-footer::before {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-bottom: 2px solid #02a6b5;
-  border-left: 2px solid #02a6b5;
+.filter a {
+  display: block;
+  color: #fff;
+  padding: 0 .125rem;
 }
-.mainbox .panel .panel-footer::after {
+.filter a:first-child {
+  margin-left:.125rem;
+}
+.filter a:last-child {
+  margin-right:.125rem;
+}
+.filter a.active {
+  color: #00f2f1;
+  border-bottom: 0.033rem solid #00f2f1;
+}
+.filter .goto-list{
+  float: right;
+  color: #ffffff;
+  right: 0px;
   position: absolute;
-  bottom: 0;
-  right: 0;
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-bottom: 2px solid #02a6b5;
-  border-right: 2px solid #02a6b5;
+}
+.cen_card{
+  margin: 0 .25rem .25rem .25rem;
+}
+.cen_card1{
+  text-align: center;
+  border: 1px solid rgba(25, 186, 139, 0.17);
+  background: linear-gradient(to left, #1fd8ee, #1fd8ee) left top no-repeat, 
+              linear-gradient(to bottom, #1fd8ee, #1fd8ee) left top no-repeat, 
+              linear-gradient(to left, #1fd8ee, #1fd8ee) right top no-repeat,
+              linear-gradient(to bottom, #1fd8ee, #1fd8ee) right top no-repeat, 
+              linear-gradient(to left, #1fd8ee, #1fd8ee) left bottom no-repeat,
+              linear-gradient(to bottom, #1fd8ee, #1fd8ee) left bottom no-repeat,
+              linear-gradient(to left, #1fd8ee, #1fd8ee) right bottom no-repeat,
+              linear-gradient(to left, #1fd8ee, #1fd8ee) right bottom no-repeat;
+  background-size: 2px 10px, 10px 2px, 2px 10px, 10px 2px;
+  padding: .125rem;
+  margin-right: .125rem;
+ }
+ .cen_card2{
+  text-align: center;
+  border: 1px solid rgba(25, 186, 139, 0.17);
+  background: linear-gradient(to left, #1fd8ee, #1fd8ee) left top no-repeat, 
+              linear-gradient(to bottom, #1fd8ee, #1fd8ee) left top no-repeat, 
+              linear-gradient(to left, #1fd8ee, #1fd8ee) right top no-repeat,
+              linear-gradient(to bottom, #1fd8ee, #1fd8ee) right top no-repeat, 
+              linear-gradient(to left, #1fd8ee, #1fd8ee) left bottom no-repeat,
+              linear-gradient(to bottom, #1fd8ee, #1fd8ee) left bottom no-repeat,
+              linear-gradient(to left, #1fd8ee, #1fd8ee) right bottom no-repeat,
+              linear-gradient(to left, #1fd8ee, #1fd8ee) right bottom no-repeat;
+  background-size: 2px 10px, 10px 2px, 2px 10px, 10px 2px;
+  padding: .125rem;
+  margin-left: .125rem;  
+ }
+ .cen_card_row{
+   height: 1.8rem;
+ }
+.cen_title{
+  font-size: .2rem;
+  color: #1fd8ee;
+}
+.cen_value{
+  font-size: .4rem;
+  color:#ffeb7b;
+	text-align: left;
+	font-family: electronicFont;
+}
+.cen_value_d{
+  font-size: .2rem;
+  color:#1fd8ee;
+  margin-left: .0625rem;
 }
 h2{
   margin: 0px;
@@ -1372,121 +1424,34 @@ h2{
   color: #ffffff;
   text-align: center;
 }
-.bottombox {
-  padding-top: 0px;
-  .column:nth-child(1) {
-    margin-right: 0.075rem;
-  }
-}
-.leftTop2{
-  height: 1.5rem !important;
-  padding-bottom: 0.5rem;
-  width: 100%;
-  font-size: 15px;
-}
-.mainbox .panel .chart {
-  height: 100%;
-}
 .map {
   position: relative;
-  height: 8rem;
+  height: 7.5rem;
 }
 .map .chart {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 5;
-  height: 8rem;
+  height: 6.2rem;
   width: 100%;
 }
-.map .map1,
-.map .map2,
-.map .map3 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 6.475rem;
-  height: 6.475rem;
-  background: url(../../assets/bip-erp/image/map.png) no-repeat;
-  background-size: 100% 100%;
-  opacity: 0.3;
-}
-.map .map2 {
-  width: 8.0375rem;
-  height: 8.0375rem;
-  background-image: url(../../assets/bip-erp/image/lbx.png);
-  opacity: 0.6;
-  z-index: 2;
-  animation: rotate2 15s linear infinite;
-}
-.map .map3 {
-  width: 7.075rem;
-  height: 7.075rem;
-  background-image: url(../../assets/bip-erp/image/jt.png);
-  animation: rotate1 10s linear infinite;
-}
-
 a {
   text-decoration: none;
 }
-.filter {
-  display: flex;
-  font-size: 32rpx;
-  padding: 16px 0px 0px 0px;
-}
-.filter a {
-  display: block;
-  line-height: 1;
-  padding: 0 8px;
-  color: #fff;
-  border-right: 0.033rem solid #fff;
-}
-.filter a:first-child {
-  padding-left: 0;
-}
-.filter a:last-child {
-  border-right: none;
-}
-.filter a.active {
-  color: #00f2f1;
-}
-.filter .goto-list{
-  right: 0px;
-  position: absolute;
-  color: #ffffff;
-}
-@keyframes rotate1 {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
-}
-@keyframes rotate2 {
-  from {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-}
-
-.my-card{
-  cursor:pointer;
-  background-color: #101C43;
-  padding: 10px 5px 5px 5px;
-  .progress{
-    text-align: center;
-  }
-  .content{
-    text-align: start;
-    color: #fff;
-  }
-}
-
 /**弹出层*/
+.chart_title{
+  color: #f7f8fe; 
+  text-align: center;
+  padding-top:0.625rem;
+  font-size:.4rem
+}
+.chart_title2{
+  color: #f7f8fe; 
+  text-align: center;
+  padding-top:0.15rem;
+  font-size:.2rem
+}
 .filterbg {
   width: 100%;
   height: 100%;
@@ -1498,11 +1463,10 @@ a {
   display: block;
   /* display: none; */
 }
-
 .popup {
   width: 0;
   height: 0;
-  background: #0E2C8B;
+  background: #0A263B;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1530,36 +1494,26 @@ a {
 .popupClose:hover{
 	transform: rotate(180deg);
 }
-// .popupClose:hover{
-//    transform:rotate(90deg);                //w3c标准
-//    transition-duration: 0.3s;
-// }
 .summaryPie {
-  // height: 100%;
+  background: url(../../assets/item-ctrl/images/line.png);
   float: left;
   width: 100%;
-  // width: 200px;
-  height: 400px;
+  height: 7rem;
   margin-bottom: 10px;
 }
 .summaryPie2 {
-  height: 100%;
-  float: left;
-  // width: 33%;
-  width: 150px;
-  height: 150px;
-  margin-left:8px;
-  margin-bottom: 10px;
+  width: 2.875rem;
+  height: 2.875rem;
+  margin-left:.1rem;
+  margin-bottom: .125rem;
+  .chart{
+    width: 2.875rem;
+    height: 2.875rem;
+  }
 }
-
-.summaryPie2 .chart{
-   float: left;
-    width: 150px;
-    height: 150px;
-    background: url(../../assets/item-ctrl/fill-border.gif) no-repeat center bottom;
-    background-size: 60% 60%;
-    margin: 0 auto 0;
-    background-position-y: 30px;
+.popView{
+  display:flex;
+  justify-content:center;
 }
 
 /* 加载旋转动画 */
@@ -1597,34 +1551,28 @@ a {
     -moz-transition: all 1.3s ease-in;  
     transition: all 1.3s ease-in;  
   }
-  .pieTitle{
-    color: rgb(85, 153, 255) !important;
-    font-weight: bold;
-    text-align: center;
-    font-size: 17px;
-    right: 12px !important;
-  }
 </style>
 <style lang="scss">
   .itemAnalysisTableHeader{
-    color: white;
-    background-color: #082173;
+    color: #1fd8ee;
+    background-color: #0A263B;
     .vxe-resizable{
       display: none;
     }
   }
   .itemAnalysisTableRow1{
     color: white;
-    background-color: #0E2C8B !important;
+    background-color: #0B1725 !important;
   }
   .itemAnalysisTableRow2{
     color: white;
-    background-color: #08257E !important;
+    background-color: #0A263B !important;
   }
   .itemAnalyTable{
     width:90%;
     margin: auto;
     margin-top:0.5rem;
+    border: 2px solid #000;
     .vxe-table--footer-wrapper{
       border:0px solid;
     }
@@ -1633,5 +1581,9 @@ a {
     .el-carousel__arrow{
       background-color: rgba(23,116,222,.8);
     }
+  }
+  .map_msg{
+    background:url(../../assets/item-ctrl/images/message.png) no-repeat;
+    background-size:100% 100%;
   }
 </style>

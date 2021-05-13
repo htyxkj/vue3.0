@@ -1,50 +1,54 @@
 <template>
 	<div class="card">
 		<template v-if="item">
-		<div class="head"><span style="color:#5599FF;">{{item.name}}</span></div>
+		<div class="head"><span style="color:#259ce7;">{{item.name}}</span></div>
 		<div class="info">
-			<table>
+			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
-					<td>
-						<div  class="staff-cust-time"><span class="label-name" style="color:#FFFF00;font-weight: bold;">计划营收(亿)</span><br><span
-								class="label-value">{{item.yjrmb}}</span></div>
+					<td class="border_right_bottom1">
+						<div  class="staff-cust-time">
+							<span class="label-name">计划营收(亿)</span><br>
+							<span class="label-value">{{item.yjrmb}}</span>
+						</div>
+					</td>
+					<td  class="border_right_bottom2 ">
+						<div class="staff-cust-time">
+							<span class="label-name">实际营收(亿)</span><br>
+							<span class="label-value"> {{item.sjrmb}}</span>
+						</div>
 					</td>
 					<td>
-						<div class="staff-cust-time"><span class="label-name" style="color:#F00;font-weight: bold;">实际营收(亿)</span><br><span
-								class="label-value"> {{item.sjrmb}}</span></div>
+						<div class="staff-cust-time border_bottom">
+							<span class="label-name">完成比%</span><br>
+							<span class="label-value">{{percent1}}</span>
+						</div>
 					</td>
-					<td style="width: 20%;">
-						<div class="staff-cust-time"><span class="label-name" style="color:#5555FF;font-weight: bold;" >完成比%</span><br><span
-								class="label-value">{{percent1}}</span></div>
-					</td>
-					<!-- <td style="width: 12%;">
-						<div class="staff-cust-time"><span class="label-name">排名</span><br><span
-								style="color:#00A8FE;font-size:18px;font-weight:600;">1</span></div>
-					</td> -->
 				</tr>
 			</table>
 			<el-avatar size="small" :style="pm1<=3?'background-color: goldenrod':'background-color: blue'">{{pm1}}</el-avatar>
 		</div>
 		
 		<div class="info">
-			<table>
+			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
-					<td>
-						<div class="staff-cust-time"><span class="label-name" style="color:#FFFF00;font-weight: bold;">计划利润(亿)</span><br><span
-								class="label-value">{{item.yjfcy}}</span></div>
+					<td class="border_right_top">
+						<div class="staff-cust-time">
+							<span class="label-name">计划利润(亿)</span><br>
+							<span class="label-value">{{item.yjfcy}}</span>
+						</div>
+					</td>
+					<td class="border_right_top">
+						<div class="staff-cust-time">
+							<span class="label-name">实际利润(亿)</span><br>
+							<span class="label-value">{{item.sjfcy}}</span>
+						</div>
 					</td>
 					<td>
-						<div class="staff-cust-time"><span class="label-name" style="color:#F00;font-weight: bold;">实际利润(亿)</span><br><span
-								class="label-value">{{item.sjfcy}}</span></div>
+						<div class="staff-cust-time">
+							<span class="label-name">完成比%</span><br>
+							<span class="label-value">{{percent2}}</span>
+						</div>
 					</td>
-					<td style="width: 20%;">
-						<div class="staff-cust-time"><span class="label-name" style="color:#5555FF;font-weight: bold;">完成比%</span><br><span
-								class="label-value">{{percent2}}</span></div>
-					</td>
-					<!-- <td style="width: 12%;">
-						<div class="staff-cust-time"><span class="label-name">排名</span><br><span
-								style="color:#00A8FE;font-size:18px;font-weight:600;">1</span></div>
-					</td> -->
 				</tr>
 			</table>
 			<el-avatar size="small" :style="pm2<=3?'background-color: goldenrod':'background-color: red'">{{pm2}}</el-avatar>
@@ -103,51 +107,74 @@ export default class CardInfo extends Vue{
 
 	.head {
 		display: block;
-		font-size: 1.17em;
-		margin-block-start: 0.8em;
-		margin-block-end: 0.2em;
+		font-size: .25rem;
+		height: .5rem;
+		line-height: .5rem;
 		font-weight: bold;
 		text-align: center;
+		color: #259ce7;
 	}
 
 	.card .info{
-		margin:10px 0;
-		border-radius: 5px;
+		font-size: .2rem;
 		height: 1rem;
+		padding: 0 .25rem;
 	}
 
 	.info .el-avatar--small{
 		background-color: goldenrod;
 		position: absolute;
-		margin-top: -1.1rem;
+		margin-top: -1rem;
+		margin-left: .1rem;
+		width: .3rem;
+		height: .3rem;
+    	line-height: .3rem;
+	}
+	.info td{
+		margin: 0px !important;
+		padding: 0px !important;
 	}
 
 	.staff-cust-time {
 		height: 1rem;
 		line-height: 0.5rem;
-		/* vertical-align: middle; */
 		text-align: center;
 		color: #fff;
-		/* background: #22284A; */
-		background: rgb(230 236 255 / 10%);
-		border-radius: 6px;
-		/* padding: 2px 2px; */
 	}
 	.staff-cust-time .label-name{
-		font-weight: 300;
-		font-size:0.5em;
+		font-size:.2rem;
+		font-weight: bold;
+		color: #259ce7;
 	}
 	.staff-cust-time .label-value{
-		font-weight: 300;
-		font-size: 1em;
-		color:#00A8FE;
-		/* font-weight:600; */
+		font-size: .2rem;
+		color:#fff;
 	}
 	.card table {
 		width: 100%;
 	}
-
 	.card td {
 		width: 33.333%;
+	}
+	.border_right_bottom1{
+		background:
+			linear-gradient(to left, #259de7a1, #259de7a1) right bottom no-repeat,
+			linear-gradient(to left, #259de7a1, #259de7a1) right bottom no-repeat;
+		background-size: 1.5rem  1px, 1px .75rem ;
+	}
+	.border_right_bottom2{
+		background:
+			linear-gradient(to left, #259de7a1, #259de7a1) right bottom no-repeat,
+			linear-gradient(to left, #259de7a1, #259de7a1) right bottom no-repeat;
+		background-size: 1500px  1px, 1px .75rem;
+	}
+	.border_bottom{
+		background:
+			linear-gradient(to left, #259de7a1, #259de7a1) right bottom no-repeat;
+		background-size: 1500px  1px;
+	}
+	.border_right_top{
+		background: linear-gradient(to left, #259de7a1, #259de7a1) right top no-repeat;
+  		background-size: 1px .75rem;
 	}
 </style>
