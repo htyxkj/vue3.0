@@ -6,7 +6,7 @@
                     <el-col :span="8">
                         <vxe-toolbar>
                             <template v-slot:buttons>
-                                <vxe-input v-model="user_tj" type="search" placeholder="试试全表搜索"></vxe-input>
+                                <vxe-input v-model="user_tj" type="search" placeholder="用户检索"></vxe-input>
                             </template>
                         </vxe-toolbar>
                         <vxe-table
@@ -47,7 +47,7 @@
                     <el-col :span="8">
                         <vxe-toolbar>
                             <template v-slot:buttons>
-                                <vxe-input v-model="gw_tj" type="search" placeholder="试试全表搜索"></vxe-input>
+                                <vxe-input v-model="gw_tj" type="search" placeholder="岗位检索"></vxe-input>
                             </template>
                         </vxe-toolbar>
                         <vxe-table
@@ -208,5 +208,9 @@ export default class menuAuth extends Vue {
             height: 370px;
         }
     }
+}
+.keyword-lighten {
+    color: #000;
+    background-color: #FFFF00;
 }
 </style>
