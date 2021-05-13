@@ -4,12 +4,15 @@ import moment from 'moment';
 import { GlobalVariable } from '@/utils/ICL';
 import { BIPUtils } from "@/utils/BaseUtil";
 import CRecord from './CRecord';
+import CDataSet from './CDataSet';
 let baseTool = BIPUtils.baseUtil;
 import { BIPUtil } from '@/utils/Request';
 export default class BipScriptProc {
-  data: CRecord;
-  cells: Cells;
-  constructor(data: CRecord, cells: Cells) {
+  data: CRecord;//当前行
+  cells: Cells;//当前行对象
+  cds:CDataSet;
+  constructor(data: CRecord, cells: Cells,cds:CDataSet = new CDataSet("")) {
+    this.cds = cds;
     this.data = data;
     this.cells = cells;
   }
@@ -429,10 +432,20 @@ export default class BipScriptProc {
     var b0 = c0 == "^" || c0 == "<";
     if (b0) {
       // 取父节点数据或者上一行数据
+      if(this.cds && this.cds.ds_par){
+        s0 = s0.substring(1,s0.length);
+        ov = this.cds.ds_par.currRecord.data[s0];
+        var cell = this.cds.ds_par.ccells.cels.find((cell:any) => cell.id === s0);
+        if (cell) {
+          if (cell.type < 12 && cell.type > 1) {
+            ov = new Number(ov).valueOf();
+          }
+        }
+      }
     } else if (c0 >= "a" && c0 <= "z") {
       // 当前数据
       ov = this.data.data[s0];
-      var cell = this.getColumn(s0);
+      var cell:any = this.getColumn(s0);
       if (cell) {
         if (cell.type < 12 && cell.type > 1) {
           ov = new Number(ov).valueOf();

@@ -633,27 +633,50 @@ export namespace BIPUtils {
      * @param {date1,date2,type} fps
      */
     dateSub(fps: Array<any>) {
-      const size = fps.length;
+      if(typeof fps[0] != "number"){
+        if(fps[0].indexOf("-") == -1){
+          fps[0] = "1970-01-01 "+fps[0];
+        }
+      }
+      if(typeof fps[1] != "number"){
+        if(fps[1].indexOf("-") == -1){
+          fps[1] = "1970-01-01 "+fps[1];
+        }
+      }
       let d1 = typeof fps[0] === "number" ? Date.now() : Date.parse(fps[0]);
       let d2 = typeof fps[1] === "number" ? Date.now() : Date.parse(fps[1]);
       let ymd = fps[2];
-      if (ymd === 2) {
+      let num = 0;
+      if(ymd === 5){//相差秒数
+        d1 = d1 - d2;
+        num = parseInt(d1 / 1000 + "");
+      }else if(ymd === 4){//相差分数
+        d1 = d1 - d2;
+        num = parseInt(d1 / 60000 + "");
+      }else if(ymd === 3){//相差小时数
+        d1 = d1 - d2;
+        num = parseInt(d1 / 3600000 + "");
+      }else if (ymd === 2) {
         //天数
         d1 = d1 - d2;
-        return parseInt(d1 / 86400000 + "");
+        num = parseInt(d1 / 86400000 + "");
       } else if (ymd === 1) {
         //月
         let y1 = moment(d1).year();
         let m1 = moment(d1).month();
         let y2 = moment(d2).year();
         let m2 = moment(d2).month();
-        return (y1 - y2) * 12 + (m1 - m2);
+        num = (y1 - y2) * 12 + (m1 - m2);
       } else {
         //年
         let y1 = moment(d1).year();
         let y2 = moment(d2).year();
-        return y1 - y2;
+        num = y1 - y2;
       }
+      if(isNaN(num)){
+        num = 0;
+      }
+      return num;
     }
 
     /**

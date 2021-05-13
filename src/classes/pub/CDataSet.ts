@@ -53,7 +53,7 @@ export default class CDataSet {
     this.cdata = new CData("");
     this.page = new PageInfo(1, 10);
     this.index = -1;
-    this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
+    this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
     this.x_pk = this.indexPKID(this.ccells, true, true);
     if (_cells) {
       let pcell = this.ccells.obj_id;
@@ -263,7 +263,6 @@ export default class CDataSet {
   async checkGS(cell?: Cell) {
     if(cell){
         let id = cell.id
-        console.log(112);
         for(var i=0;i<this.ccells.cels.length;i++){
             let col = this.ccells.cels[i];
             let scstr = col.script;
@@ -271,49 +270,49 @@ export default class CDataSet {
                 let _i = col.refCellIds.findIndex(item=>{
                     return item == id
                 });
-                
                 let vl;
                 if(_i>-1){
                     if(scstr && scstr.indexOf("=:") === 0) {
-                        scstr = scstr.replace("=:", "");
+                        vl = await this.gsCalcc(col);
+                        // scstr = scstr.replace("=:", "");
                         //获取父级字段内容
-                        if(col.pRefIds.length >0){
-                          if(this.ds_par){
-                            vl= this.ds_par.currRecord.data[col.pRefIds[0]]
-                          }
-                        } else{
-                          if(this.scriptProc.data.id != this.currRecord.id){
-                            this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
-                          }
-                          if(scstr.startsWith("sql")){
-                            let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
-                            if(res.data.id == 0){
-                              vl =  res.data.data.data
-                            }else{
-                              vl =  "";
-                            }
-                          }else{
-                            vl = await this.scriptProc.execute(scstr, "", col);
-                          }
-                          if(vl && (vl.isNaN || vl == 'NaN'))
-                            vl = 0;
+                        // if(col.pRefIds.length >0){
+                        //   if(this.ds_par){
+                        //     vl= this.ds_par.currRecord.data[col.pRefIds[0]]
+                        //   }
+                        // } else{
+                          // if(this.scriptProc.data.id != this.currRecord.id){
+                          //   this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
+                          // }
+                          // if(scstr.startsWith("sql")){
+                          //   let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
+                          //   if(res.data.id == 0){
+                          //     vl =  res.data.data.data
+                          //   }else{
+                          //     vl =  "";
+                          //   }
+                          // }else{
+                          //   vl = await this.scriptProc.execute(scstr, "", col);
+                          // }
+                          // if(vl && (vl.isNaN || vl == 'NaN'))
+                          //   vl = 0;
                         }
                         if (vl instanceof Array) {
                             console.log('公式计算返回数组',vl)
                         } else {
-                          if (vl == "Invalid date") {
-                            let dd = DateUtils.DateTool.now();
-                            if (col.type == 91) {
-                              this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
-                                dd,
-                                GlobalVariable.DATE_FMT_YMD
-                              );
-                            } else {
-                              this.currRecord.data[col.id] = dd;
-                            }
-                          } else {
+                          // if (vl == "Invalid date") {
+                          //   let dd = DateUtils.DateTool.now();
+                          //   if (col.type == 91) {
+                          //     this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
+                          //       dd,
+                          //       GlobalVariable.DATE_FMT_YMD
+                          //     );
+                          //   } else {
+                          //     this.currRecord.data[col.id] = dd;
+                          //   }
+                          // } else {
                             this.currRecord.data[col.id] = vl;
-                          }
+                          // }
                         }
                     }
                     if ((col.initValue && (col.attr & 0x80) > 0) &&  (this.currRecord.c_state & 1)>0) {
@@ -321,14 +320,15 @@ export default class CDataSet {
                     }
                     if((col.attr & 0x2000) >0)
                       this.cellChange(col.id,vl);
-                    this.checkGS(col)
+                    // this.checkGS(col)
                     
                 }
-            }
+            // }
         }
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
-          cd.checkGSByRefId(id);
+          cd.checkGSByParID(id)
+          // cd.checkGSByRefId(id);
         }
     }else{
         this.checkAllGS()
@@ -346,46 +346,48 @@ export default class CDataSet {
       let col = this.ccells.cels[i];
       let scstr = col.script;
       if (scstr && scstr.indexOf("=:") === 0) {
-          scstr = scstr.replace("=:", "");
           // 公式计算 
           let vl;
+          vl = await this.gsCalcc(col);
+          console.log(vl)
+          // scstr = scstr.replace("=:", "");
           //获取父级字段内容
-          if(col.pRefIds.length >0){
-            if(this.ds_par){
-              vl= this.ds_par.currRecord.data[col.pRefIds[0]]
-            }
-          } else{
-            if(this.scriptProc.data.id != this.currRecord.id){
-              this.scriptProc = new BipScriptProc(this.currRecord, this.ccells);
-            }
-            if(scstr.startsWith("sql")){
-              let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
-              if(res.data.id == 0){
-                vl =  res.data.data.data
-              }else{
-                vl =  "";
-              }
-            }else{
-              vl = await this.scriptProc.execute(scstr, "", col);
-            }
-            if(vl && (vl.isNaN || vl == 'NaN'))
-              vl = 0;
-          }
+          // if(col.pRefIds.length >0){
+          //   if(this.ds_par){
+          //     vl= this.ds_par.currRecord.data[col.pRefIds[0]]
+          //   }
+          // } else{
+            // if(this.scriptProc.data.id != this.currRecord.id){
+            //   this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
+            // }
+            // if(scstr.startsWith("sql")){
+            //   let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
+            //   if(res.data.id == 0){
+            //     vl =  res.data.data.data
+            //   }else{
+            //     vl =  "";
+            //   }
+            // }else{
+            //   vl = await this.scriptProc.execute(scstr, "", col);
+            // }
+            // if(vl && (vl.isNaN || vl == 'NaN'))
+            //   vl = 0;
+          // }
           if (vl instanceof Array) {
           } else {
-              if (vl == "Invalid date") {
-                  let dd = DateUtils.DateTool.now();
-                  if (col.type == 91) {
-                      this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
-                      dd,
-                      GlobalVariable.DATE_FMT_YMD
-                      );
-                  } else {
-                      this.currRecord.data[col.id] = dd;
-                  }
-              } else {
+              // if (vl == "Invalid date") {
+              //     let dd = DateUtils.DateTool.now();
+              //     if (col.type == 91) {
+              //         this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
+              //         dd,
+              //         GlobalVariable.DATE_FMT_YMD
+              //         );
+              //     } else {
+              //         this.currRecord.data[col.id] = dd;
+              //     }
+              // } else {
                   this.currRecord.data[col.id] = vl;
-              }
+              // }
           }
       }
       if (scstr) {
@@ -406,39 +408,58 @@ export default class CDataSet {
       }
     };
   }
-
-  checkGSByRefId(id:string){
+  /**
+   * 更具父级字段重新计算子表
+   * @param id 父级变换字段
+   */
+  async checkGSByParID(id:any){
     if(this.cdata && this.cdata.data && this.cdata.data.length>0){
-      this.ccells.cels.forEach(col => {
-        let scstr = col.script;
-        if (scstr && scstr.indexOf("=:") === 0) {
-          scstr = scstr.replace("=:", "");
-          // 公式计算 
-          let vl;
-          //获取父级字段内容
-          if(col.pRefIds.length >0){
-            if(this.ds_par){
-              if(col.pRefIds[0] == id){
-                vl= this.ds_par.currRecord.data[col.pRefIds[0]]
-                let currRecord = this.currRecord;
-                for(var j=0;j<this.cdata.data.length;j++){
-                  this.currRecord = this.cdata.data[j];
-                  this.currRecord.data[col.id] = vl;
-                  this.checkGS(col);
-                  if(this.currRecord.id == currRecord.id){
-                    currRecord = this.currRecord;
-                  }
-                  this.currRecord.c_state |=2;
-                }
-                this.currRecord = currRecord;
-              }
+      for(var i=0;i<this.ccells.cels.length;i++){
+        let col = this.ccells.cels[i];
+        if(col.pRefIds.length >0){
+          if(col.pRefIds.indexOf(id) !=-1){
+            for(var z=0;z<this.cdata.data.length;z++){
+              let dat = this.cdata.data[z];
+              let vl = await this.gsCalcc(col);
+              dat.data[col.id] = vl;
             }
           }
-        }  
-      });
+        }
+      }
     }
   }
-
+  //就行公式解析
+  async gsCalcc(col:any){
+    let scstr = col.script
+    let vl:any = null;
+    if(scstr && scstr.indexOf("=:") === 0) {
+      scstr = scstr.replace("=:", "");
+      if(this.scriptProc.data.id != this.currRecord.id){
+        this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
+      }
+      if(scstr.startsWith("sql")){
+        let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
+        if(res.data.id == 0){
+          vl =  res.data.data.data
+        }else{
+          vl =  "";
+        }
+      }else{
+        vl = await this.scriptProc.execute(scstr, "", col);
+      }
+      if(vl && (vl.isNaN || vl == 'NaN'))
+        vl = 0;
+    }
+    if (vl == "Invalid date") {
+      let dd = DateUtils.DateTool.now();
+      if (col.type == 91) {
+        vl = DateUtils.DateTool.getDate(dd,GlobalVariable.DATE_FMT_YMD);
+      } else {
+        vl = dd;
+      }
+    }
+    return vl;
+  }
   getCell(id: string) {
     return this.ccells.cels.find(item => {
       return id === item.id;
@@ -561,12 +582,12 @@ export default class CDataSet {
         }
         modal.data[item.id] = iniVl ? iniVl : "";
       }
-      //获取父级字段内容
-      if(item.pRefIds.length >0){
-        if(this.ds_par){
-          modal.data[item.id] = this.ds_par.currRecord.data[item.pRefIds[0]]
-        }
-      }
+      // //获取父级字段内容
+      // if(item.pRefIds.length >0){
+      //   if(this.ds_par){
+      //     modal.data[item.id] = this.ds_par.currRecord.data[item.pRefIds[0]]
+      //   }
+      // }
     });
     return modal;
   }
@@ -580,7 +601,10 @@ export default class CDataSet {
           if (xinc >= 0) {
             let cel = cell.cels[xinc];
             let s0 = cel.psAutoInc;
-            if (s0 == null || s0 == undefined || s0.length < 1) {
+            let s1 = 'null';
+            if(s0)
+              s1 = s0.replace(/(^\s*)|(\s*$)/g, ""); 
+            if (s0 == null || s0 == undefined || s0.length < 1 || s1 =='null') {
               if( cel.type !== 12){
                 let cc = this.cdata.data[this.cdata.data.length - 1];
                 // if((cel.attr & (0x80)) >0){
@@ -874,7 +898,7 @@ export default class CDataSet {
           });
           if (_i > -1) {
             cds.currRecord.data[fld] = vvs[index];
-            cds.checkGS(cel);
+            // cds.checkGS(cel);
           }
         });
       }
