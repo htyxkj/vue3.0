@@ -59,7 +59,6 @@ import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import Login from "@/views/login/Login.vue";
 import Portal from "@/views/login/Portal.vue";
 import Analysis from "@/custom/bip-erp/analysis.vue";
-import airSuperBI from "@/custom/air-super/airSuperBI.vue";
 import BipAside from "@/views/app/BipAside.vue";
 import LayOut from "@/views/app/LayOut.vue";
 import LayHeader from "@/views/app/LayHeader.vue";
@@ -81,7 +80,6 @@ import { BIPUtil } from "@/utils/Request";
     LayOut,
     LayHeader,
     Analysis,
-    airSuperBI
   }
 })
 export default class App extends Vue {

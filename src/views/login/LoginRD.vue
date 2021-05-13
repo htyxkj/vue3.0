@@ -1,54 +1,35 @@
 <template>
-  <div class="rd-login">
-    <div class="login-left"></div>
-    <div class="login-right" :style="styleR">
-      <div class="login-card">
-        <div class="login-title">{{ loginTitle }}</div>
-        <div class="login-cont" @keyup.enter="login">
-          <el-input placeholder="账户" v-model="user.userCode" :style="'margin-bottom:20px'">
-            <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
-              <!-- <template slot="prepend">账户</template> -->
-            </el-input>
-          <el-input placeholder="密码" id="pwd"
-                v-model="user.password"
-                :show-password="true"
-                type="password">
-              <el-button slot="prepend" icon="el-icon-lock"></el-button>
-            </el-input>
-          <el-row type="flex" justify="start">
-            <el-col :span="12">
+  <div class="rd_bg">
+    <div class="rd_login_wrap">
+      <el-row>
+        <el-col :span="12" class="rd_login_img">
+        </el-col>
+        <el-col :span="12"  class="rd_login">
+          <div class="login_card">
+            <div @keyup.enter="login">
+              <p class="rd_title">{{loginTitle}}</p>
+              <input class="rd_input" placeholder="账户" v-model="user.userCode" style="margin-bottom: .4125rem;"></input>
+              <input class="rd_input" placeholder="密码" id="pwd" v-model="user.password" :show-password="true" type="password"></input>
               <el-row type="flex" justify="start">
                 <el-col :span="12">
-                <el-button @click="registered" type="text" :style="'font-size:10px'"> 没有账号,立即注册</el-button>
+                  <el-checkbox v-model="checked" class="rd_save_user">记住账户</el-checkbox>
+                </el-col>
+                <el-col :span="12" class="no_pwd">
+                  <el-button @click="registered" type="text" class="no_pwd">忘记密码</el-button>
                 </el-col>
               </el-row>
-            </el-col>
-            <el-col :span="12">
-              <el-row type="flex" justify="end">
-                <el-col :span="12">
-                  <el-checkbox v-model="checked" class="bip-rem" style="color: #a0a0a0"
-                    >记住账户</el-checkbox>
+              <el-row>
+                <el-col :span="24">
+                  <el-button type="primary" class="rd_login_btn" :disabled="canClick" @click="login" >登录</el-button>
+                </el-col>
+                <el-col :span="24">
+                  <el-button type="text" class="rd_reg_btn" @click="login">没有账号，立即注册</el-button>
                 </el-col>
               </el-row>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24" style="margin-top: 10px">
-              <el-button
-                id="login"
-                style="width: 100%"
-                type="primary"
-                :disabled="canClick"
-                @click="login"
-                >登录</el-button
-              >
-            </el-col>
-          </el-row>
-        </div>
-        <div class="login-footer">
-          <address>&copy;{{ COPYRIGHT }}</address>
-        </div>
-      </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -63,7 +44,10 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 const namespace: string = "login";
-@Component
+@Component({
+  components:{
+  }
+})
 export default class LoginRD extends Vue {
   @Provide() fullscreenLoading: boolean = false;
   @Getter("user", { namespace }) user?: User;
@@ -195,95 +179,93 @@ export default class LoginRD extends Vue {
   }
 }
 </script>
-
-
 <style lang="scss" scoped>
-.rd-login {
+.rd_title{
+  text-align: center;
+  line-height:.546875rem;
+  margin-bottom:.625rem;
+  font-size:.3rem;
+  font-weight: 600;
+}
+.rd_bg{
+  background: url(../../assets/login/RDCost/rd_bk.jpg) no-repeat;
+  background-size: 100%;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+.rd_login_wrap {
+  width: 15.439rem;
+  min-height: 8.25rem;
+  border-radius: .09375rem;
+  overflow: hidden;
   position: absolute;
-  background-color: #f0fcfa;
-  // width: 1096px;
-  // height: 768px;
-}
-.login-left {
-  width: 50%;
-  position: fixed;
-  height: 100%;
-  background-image: url("../../assets/login/bk.png");
-  background-size: 100% 100%;
-}
-.login-right {
   left: 50%;
-  position: fixed;
+  top: 50%;
+  transform: translate(-50%,-50%);
 }
-
-.login-img {
-  top: 0%;
-  left: 0%;
-  position: fixed;
-  width: 50%;
-  height: 100%;
-  background-image: url("../../assets/login/bk.png");
-  background-size: 100% 100%;
-}
-.login-card {
-  height: 3rem;
-  width: 8rem;
-  position: fixed;
-  left: 60%;
-  top: 20%;
-}
-.login-cont {
-  background-color: #fffccc;
-  padding: 40px 70px;
-}
-.login-title {
-  height: 60px;
-  line-height: 60px;
-  text-align: left;
-  font-size: 20px;
-  color: #000;
-  font-family: "华文楷体";
-}
-
-
-.el-row {
-  margin-bottom: 20px !important;
-  height: 20px;
-  line-height: 20px;
+.rd_input{
+  width: 4.6875rem;
+  height: .46875rem;
   font-size: 16px;
-  &:last-child {
-    margin-bottom: 20px;
-  }
+  background: none;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #eee;
+  color: #000;
+  padding: 0px;
 }
-.bip-form-item {
-  margin-bottom: 22px !important;
+input::-webkit-input-placeholder {
+  /* 修改字体颜色 */
+  color: #ccc;
 }
-.login-footer {
+.login_card{
+  width: 4.6875rem;  
+  position: relative;
+  left: 50%;
+  transform: translate(-50%,30%);
+}
+.rd_login_img{
+  background: url(../../assets/login/RDCost/rd_left_bk.png) no-repeat;
+  min-height: 8.25rem;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.rd_login{
+  background-color: #fff;
+  min-height: 8.25rem;
+}
+.rd_login-footer {
   text-align: center;
   font-family: Arial;
-  font-size: 10px;
+  font-size: .125rem;
   height: 30px;
   line-height: 30px;
 }
-address {
-  color: #000;
+.rd_text_center{
+  text-align: center;
 }
-.rt {
-  text-align: right;
-  width: 120px;
+.rd_login_btn{
+  margin-top: 20px;
+  width: 100%;
+  background-color: #008eff;
+}
+.rd_reg_btn{
+  width: 100%;
   float: right;
+  font-size:10px
 }
-.reg {
-  width: 50px;
-  float: left;
-  padding-left: 60px;
-  font-weight: 500;
-  font-size: 14px;
-  color: #a0a0a0;
+.no_pwd{
+  font-size:10px;
+  text-align: end;
+  padding-top: 2px;
 }
-.bip-rem {
-  .el-checkbox__input.is-checked .el-checkbox__label{
-    font-size: 10px !important;
+</style>
+<style lang="scss">
+.rd_save_user{
+  .el-checkbox__label{
+    font-size: .125rem;
   }
 }
 </style>
