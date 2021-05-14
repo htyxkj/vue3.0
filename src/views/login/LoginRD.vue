@@ -5,17 +5,17 @@
         <el-col :span="12" class="rd_login_img">
         </el-col>
         <el-col :span="12"  class="rd_login">
-          <div class="login_card">
+          <div class="login_card" v-if="pageType=='loginPage'">
             <div @keyup.enter="login">
               <p class="rd_title">{{loginTitle}}</p>
-              <input class="rd_input" placeholder="账户" v-model="user.userCode" style="margin-bottom: .4125rem;"></input>
-              <input class="rd_input" placeholder="密码" id="pwd" v-model="user.password" :show-password="true" type="password"></input>
+              <input class="rd_input rd_input_margin" placeholder="账户" v-model="user.userCode"/>
+              <input class="rd_input" placeholder="密码" id="pwd" v-model="user.password" :show-password="true" type="password"/>
               <el-row type="flex" justify="start">
                 <el-col :span="12">
                   <el-checkbox v-model="checked" class="rd_save_user">记住账户</el-checkbox>
                 </el-col>
                 <el-col :span="12" class="no_pwd">
-                  <el-button @click="registered" type="text" class="no_pwd">忘记密码</el-button>
+                  <el-button type="text" class="no_pwd">忘记密码</el-button>
                 </el-col>
               </el-row>
               <el-row>
@@ -23,7 +23,28 @@
                   <el-button type="primary" class="rd_login_btn" :disabled="canClick" @click="login" >登录</el-button>
                 </el-col>
                 <el-col :span="24">
-                  <el-button type="text" class="rd_reg_btn" @click="login">没有账号，立即注册</el-button>
+                  <el-button type="text" class="rd_reg_btn" @click="pageType='regPage'">没有账号，立即注册</el-button>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+          <div class="login_card" v-else-if="pageType='regPage'">
+            <div @keyup.enter="registered">
+              <p class="rd_title">{{loginTitle}}</p>
+              <input class="rd_input rd_input_margin" placeholder="姓名" v-model="regData.name"/>
+              <p style="margin:0px">
+                <input class="rd_input rd_input_margin rd_input_phone" placeholder="手机号" v-model="regData.tel" :show-password="true"/>
+                <el-button size="mini" style="float: right;color: #409EFF;" @click="getVCode" :disabled="getVCodeTime!=0">{{getVCodeStr}}</el-button>
+              </p>
+              <input class="rd_input rd_input_margin" placeholder="验证码" v-model="regData.vCode" :show-password="true"/>
+              <input class="rd_input rd_input_margin" placeholder="公司名称" v-model="regData.scmName" :show-password="true"/>
+              <input class="rd_input" placeholder="信用代码" v-model="regData.creditCode" :show-password="true"/>
+              <el-row>
+                <el-col :span="24">
+                  <el-button type="primary" class="rd_login_btn" :disabled="canClick" @click="registered" >注册</el-button>
+                </el-col>
+                <el-col :span="24">
+                  <el-button type="text" class="rd_reg_btn" @click="pageType='loginPage'">已有账号，立即登陆</el-button>
                 </el-col>
               </el-row>
             </div>
@@ -37,19 +58,17 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
-import qs from "qs";
 import { BIPUtil } from "@/utils/Request";
 import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from "vuex-class";
-import { BIPUtils } from "@/utils/BaseUtil";
-let baseTool = BIPUtils.baseUtil;
 const namespace: string = "login";
+import qs from "qs";
 @Component({
   components:{
   }
 })
 export default class LoginRD extends Vue {
-  @Provide() fullscreenLoading: boolean = false;
+  fullscreenLoading: boolean = false;
   @Getter("user", { namespace }) user?: User;
   @Getter("menulist", { namespace }) menus?: Menu[];
   @Mutation("isLogin", { namespace }) setIsLogin: any;
@@ -57,11 +76,14 @@ export default class LoginRD extends Vue {
   @Mutation("user", { namespace }) setUserInfo: any;
   @Mutation("menulist", { namespace }) setMenusInfo: any;
   @Mutation("isOtherePage", { namespace: "login" }) setIsOtherePage: any;
+  regData:any={name:"",tel:"",scmName:"",creditCode:"",vCode:""}
   checked: boolean = false;
   loginTitle = "";
   COPYRIGHT = "";
   SCM = "";
   styleR = "";
+  pageType:any="loginPage"
+  getVCodeTime:any=0;
   mounted() {
     if (!this.user) {
       this.user = new User("", "", "");
@@ -82,10 +104,7 @@ export default class LoginRD extends Vue {
       screenHeight +
       "px";
   }
-  //注册
-  registered() {
-    this.$router.push({ path: "/registered", name: "registered" });
-  }
+
   login() {
     if (this.fullscreenLoading) return;
     this.fullscreenLoading = true;
@@ -98,8 +117,7 @@ export default class LoginRD extends Vue {
     if (!this.user) {
       return;
     }
-    BIPUtil.ServApi.login(this.user)
-      .then((res: any) => {
+    BIPUtil.ServApi.login(this.user).then((res: any) => {
         let data = res.data;
         let _u: any = Object.assign({}, this.user);
         if (data.id === 0) {
@@ -140,6 +158,73 @@ export default class LoginRD extends Vue {
         loading.close();
         this.fullscreenLoading = false;
       });
+  }
+  //注册
+  async registered() {
+    if(!this.regData.name){
+      this.$notify.error("姓名不能为空");
+      return;
+    }
+    if(!this.regData.tel){
+      this.$notify.error("手机号不能为空");
+      return;
+    }
+    if(!this.regData.vCode){
+      this.$notify.error("验证码不能为空");
+      return;
+    }
+    //检验验证码是否输入正确
+    let jdata = {verificationCode:this.regData.vCode,creditCode:this.regData.creditCode,userName:this.regData.name,name:this.regData.scmName,tel:this.regData.tel}
+    let data = {scKey:310,jdata:JSON.stringify(jdata)};
+    let param = qs.stringify(data);
+    let vv = await Vue.$axios.post("rdreg", param);
+    if(vv.data.code !=0){
+      this.$notify.error(vv.data.msg);
+      return;
+    }
+    //进行注册
+    data = {scKey:200,jdata:JSON.stringify(jdata)};
+    param = qs.stringify(data);
+    vv = await Vue.$axios.post("rdreg", param);
+    if(vv.data.code !=0){
+      this.$notify.error(vv.data.msg);
+    }else{
+      this.$notify.success(vv.data.msg);
+    }
+  }
+  //获取验证码
+  async getVCode(){
+    var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
+    if (myreg.test(this.regData.tel)) {
+      this.getVCodeTime = 60;
+      let data = {scKey:300,jdata:this.regData.tel};
+      let param = qs.stringify(data);
+      let vv = await Vue.$axios.post("rdreg", param);
+      if(vv.data.code == 0){
+        this.$notify.success(vv.data.msg);
+      }else{
+        this.$notify.error(vv.data.msg);
+      }
+      let _this = this;
+      let timer = setInterval(function(){
+        // 定时器到底了 兄弟们回家啦
+        if(_this.getVCodeTime == 1){
+          clearInterval(timer);
+          _this.getVCodeTime = 0;
+        }else{
+          _this.getVCodeTime--;
+        }
+      }, 1000)
+    }else{
+      this.$notify.error("请输入正确的手机号！");
+    }
+  }
+  get getVCodeStr(){
+    if(this.getVCodeTime ==0){
+      return "获取验证码"
+    }else{
+      return this.getVCodeTime+"S后重新获取"
+    }
   }
 
   get canClick() {
@@ -215,15 +300,25 @@ export default class LoginRD extends Vue {
   color: #000;
   padding: 0px;
 }
+.rd_input_margin{
+  margin-bottom: .4125rem;
+}
+.rd_input_phone{
+  width: 2.8rem;
+}
 input::-webkit-input-placeholder {
   /* 修改字体颜色 */
   color: #ccc;
 }
 .login_card{
-  width: 4.6875rem;  
-  position: relative;
+  width: 4.6875rem;
   left: 50%;
-  transform: translate(-50%,30%);
+  border-radius: .09375rem;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 .rd_login_img{
   background: url(../../assets/login/RDCost/rd_left_bk.png) no-repeat;
@@ -233,6 +328,7 @@ input::-webkit-input-placeholder {
   background-size: cover;
 }
 .rd_login{
+  position: relative;
   background-color: #fff;
   min-height: 8.25rem;
 }
