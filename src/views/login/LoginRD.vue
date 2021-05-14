@@ -31,14 +31,14 @@
           <div class="login_card" v-else-if="pageType='regPage'">
             <div @keyup.enter="registered">
               <p class="rd_title">{{loginTitle}}</p>
+              <input class="rd_input rd_input_margin" placeholder="公司名称" v-model="regData.scmName" :show-password="true"/>
+              <input class="rd_input rd_input_margin" placeholder="信用代码" v-model="regData.creditCode" :show-password="true"/>
               <input class="rd_input rd_input_margin" placeholder="姓名" v-model="regData.name"/>
               <p style="margin:0px">
                 <input class="rd_input rd_input_margin rd_input_phone" placeholder="手机号" v-model="regData.tel" :show-password="true"/>
                 <el-button size="mini" style="float: right;color: #409EFF;" @click="getVCode" :disabled="getVCodeTime!=0">{{getVCodeStr}}</el-button>
               </p>
-              <input class="rd_input rd_input_margin" placeholder="验证码" v-model="regData.vCode" :show-password="true"/>
-              <input class="rd_input rd_input_margin" placeholder="公司名称" v-model="regData.scmName" :show-password="true"/>
-              <input class="rd_input" placeholder="信用代码" v-model="regData.creditCode" :show-password="true"/>
+              <input class="rd_input" placeholder="验证码" v-model="regData.vCode" :show-password="true"/>
               <el-row>
                 <el-col :span="24">
                   <el-button type="primary" class="rd_login_btn" :disabled="canClick" @click="registered" >注册</el-button>
@@ -161,6 +161,14 @@ export default class LoginRD extends Vue {
   }
   //注册
   async registered() {
+    if(!this.regData.vCode){
+      this.$notify.error("公司名称不能为空");
+      return;
+    }
+    if(!this.regData.creditCode){
+      this.$notify.error("信用代码不能为空");
+      return;
+    }
     if(!this.regData.name){
       this.$notify.error("姓名不能为空");
       return;
@@ -173,23 +181,36 @@ export default class LoginRD extends Vue {
       this.$notify.error("验证码不能为空");
       return;
     }
-    //检验验证码是否输入正确
-    let jdata = {verificationCode:this.regData.vCode,creditCode:this.regData.creditCode,userName:this.regData.name,name:this.regData.scmName,tel:this.regData.tel}
-    let data = {scKey:310,jdata:JSON.stringify(jdata)};
-    let param = qs.stringify(data);
-    let vv = await Vue.$axios.post("rdreg", param);
-    if(vv.data.code !=0){
-      this.$notify.error(vv.data.msg);
-      return;
-    }
-    //进行注册
-    data = {scKey:200,jdata:JSON.stringify(jdata)};
-    param = qs.stringify(data);
-    vv = await Vue.$axios.post("rdreg", param);
-    if(vv.data.code !=0){
-      this.$notify.error(vv.data.msg);
-    }else{
-      this.$notify.success(vv.data.msg);
+    const loading = this.$loading({
+      lock: true,
+      text: "注册中",
+      spinner: "el-icon-loading",
+      background: "background:'rgba(0, 0, 0, 0.7)'",
+    });
+    try{
+      //检验验证码是否输入正确
+      let jdata = {verificationCode:this.regData.vCode,creditCode:this.regData.creditCode,userName:this.regData.name,name:this.regData.scmName,tel:this.regData.tel}
+      let data = {scKey:310,jdata:JSON.stringify(jdata)};
+      let param = qs.stringify(data);
+      let vv = await Vue.$axios.post("rdreg", param);
+      if(vv.data.code !=0){
+        this.$notify.error(vv.data.msg);
+        loading.close();
+        return;
+      }
+      //进行注册
+      data = {scKey:200,jdata:JSON.stringify(jdata)};
+      param = qs.stringify(data);
+      vv = await Vue.$axios.post("rdreg", param);
+      if(vv.data.code !=0){
+        this.$notify.error(vv.data.msg);
+        this.pageType = 'login'
+      }else{
+        this.$notify.success(vv.data.msg);
+      }
+      loading.close();
+    }catch{
+      loading.close();
     }
   }
   //获取验证码
@@ -197,14 +218,6 @@ export default class LoginRD extends Vue {
     var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
     if (myreg.test(this.regData.tel)) {
       this.getVCodeTime = 60;
-      let data = {scKey:300,jdata:this.regData.tel};
-      let param = qs.stringify(data);
-      let vv = await Vue.$axios.post("rdreg", param);
-      if(vv.data.code == 0){
-        this.$notify.success(vv.data.msg);
-      }else{
-        this.$notify.error(vv.data.msg);
-      }
       let _this = this;
       let timer = setInterval(function(){
         // 定时器到底了 兄弟们回家啦
@@ -215,6 +228,14 @@ export default class LoginRD extends Vue {
           _this.getVCodeTime--;
         }
       }, 1000)
+      let data = {scKey:300,jdata:this.regData.tel};
+      let param = qs.stringify(data);
+      let vv = await Vue.$axios.post("rdreg", param);
+      if(vv.data.code == 0){
+        this.$notify.success(vv.data.msg);
+      }else{
+        this.$notify.error(vv.data.msg);
+      }
     }else{
       this.$notify.error("请输入正确的手机号！");
     }
