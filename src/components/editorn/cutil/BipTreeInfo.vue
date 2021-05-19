@@ -5,10 +5,11 @@
         <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px; height:200px;">
                 <el-tree class="filter-tree" node-key="id"
-                    lazy :load="loadNode" 
+                    lazy :load="loadNode"  default-expand-all
+                    :show-checkbox="show_checkbox"
                     :props="defaultProps" accordion :currentNodeKey="currkey" @node-click="nodeClick" :highlight-current="true"
                     :filter-node-method="filterNode" style="height:80%"
-                    ref="tree">
+                    ref="BipTreeInfoTree">
                     </el-tree>
         </el-scrollbar>
     <!-- </div> -->
@@ -16,17 +17,16 @@
          <span slot="footer" class="dialog-footer">
             <el-button size="small" type="danger" @click="close">取     消</el-button>  
              <!-- <el-button size="small" @click="find">刷      新</el-button>   -->
-            <el-button size="small" type="primary" @click="selectOK">选     中</el-button>    
+            <el-button size="small" type="primary" @click="selectOK">确     定</el-button>
         </span>
     </el-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
 import BipInsAidNew from '@/classes/BipInsAidNew';
-import { Cells } from '@/classes/pub/coob/Cells';
 import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
-import { State, Action, Getter, Mutation } from "vuex-class";
+import { State, Mutation } from "vuex-class";
 import { BIPUtil } from "@/utils/Request";
 import QueryEntity from '../../../classes/search/QueryEntity';
 let tools = BIPUtil.ServApi;
@@ -40,15 +40,16 @@ export default class BipTreeInfo extends Vue{
     @Prop() bipInsAid!:BipInsAidNew
     @Prop() row!:number
 
-    @Provide() visible:boolean = false
-    @Provide() initOK:boolean = false
+    visible:boolean = false
+    initOK:boolean = false
 
-    @Provide() defaultProps:any= {}
-    @Provide() data:any= []
-    @Provide() filterText:any = ''
-    @Provide() currkey:string = ''
-    @Provide() count:number = 0
-    @Provide() treeKey:string=''
+    defaultProps:any= {}
+    data:any= []
+    filterText:any = ''
+    currkey:string = ''
+    count:number = 0
+    treeKey:string=''
+    show_checkbox:boolean =false;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -61,6 +62,7 @@ export default class BipTreeInfo extends Vue{
         }
         this.treeKey = ICL.AID_TREE+this.bipInsAid.id;
         let br = this.inProcess.get(this.treeKey);
+        this.show_checkbox = (this.cell.attr & 0x200000) >0
         if(!br){
             this.setKeyMap(this.treeKey)
             let dd = JSON.parse(window.sessionStorage.getItem(this.treeKey)+'')
@@ -77,10 +79,7 @@ export default class BipTreeInfo extends Vue{
 
 
     nodeClick(val:any){
-        this.currkey = ''
-        if(!val.haveChildren){
-            this.currkey = val.id
-        }
+        this.currkey = val.id
     }
 
 
@@ -121,14 +120,20 @@ export default class BipTreeInfo extends Vue{
     }
 
     selectOK(){
-        if(this.currkey){
-            // let r = this.row>-1?this.row:0
-            // let crd = this.cds.getRecordAtIndex(r);
-            // crd.data[this.cell.id] = this.currkey
-            // crd.c_state |= 2;
-            // this.cds.currRecord = Object.assign({},crd)
+        let keys = this.currkey
+        if(this.show_checkbox){
+            let ref:any = this.$refs.BipTreeInfoTree;
+            if(ref){
+                let checkedKeys = ref.getCheckedKeys();
+                console.log(checkedKeys)
+                keys = checkedKeys.join(";");
+            }else{
+                keys = "";
+            }
+        }
+        if(keys){
             this.$bus.$emit('datachange')
-            this.$bus.$emit('TreeDataChange',this.currkey)
+            this.$bus.$emit('TreeDataChange',keys)
             // this.$emit('select',this.currkey);
             this.visible = false;
             return 
