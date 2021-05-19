@@ -214,6 +214,13 @@ export default class HomeCUnivSelect extends Vue {
     find(){
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
+        let tj_row = this.dsm_cont.currRecord;
+        for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
+            let cel = this.dsm_cont.ccells.cels[i];
+            if((cel.attr & (0x4)) >0){
+                tj_row.data[cel.id] = null;
+            }
+        }
         if(this.biType == "SEL")
             this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
         else if(this.biType == "RPT" || this.biType == "SQL"){

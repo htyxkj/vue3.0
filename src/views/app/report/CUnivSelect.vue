@@ -51,7 +51,7 @@
     </el-row>
 </template>
 <script lang="ts">
-import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
 import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
@@ -127,7 +127,6 @@ export default class CUnivSelect extends Vue {
             if (rtn.id == 0) {
                 let kn: Array<Cells> = rtn.data.layCels;
                 this.cells = kn;
-                let cds: CDataSet;
                 this.dsm_cont = new CDataSet(this.cells[0]);
                 this.dsm = new CDataSet(this.cells[1]);
                 for (let i = 1; i < this.cells.length; i++) {
@@ -177,7 +176,8 @@ export default class CUnivSelect extends Vue {
                     this.dsm.setOpera(ope)
                 }
             } else {
-                this.$notify.error("没有获取到对象定义");
+                console.log(rtn)
+                this.$notify.error("没有获取到对象定义。");
             }
         }
     }
@@ -400,10 +400,17 @@ export default class CUnivSelect extends Vue {
         this.dsm.clear()
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
+        let tj_row = this.dsm_cont.currRecord;
+        for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
+            let cel = this.dsm_cont.ccells.cels[i];
+            if((cel.attr & (0x4)) >0){
+                tj_row.data[cel.id] = null;
+            }
+        }
         if(this.biType == "SEL")
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+            this.qe.cont = JSON.stringify(tj_row.data);
         else if(this.biType == "RPT" || this.biType == "SQL"){
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+            this.qe.cont = JSON.stringify(tj_row);
         }
         this.qe.oprid = 13
         this.qe.type = 1
@@ -601,7 +608,10 @@ export default class CUnivSelect extends Vue {
             if(this.params.method =='BL'){
                 console.log("BL")
                 if(JSON.stringify(this.params.jsontj).length >2){
-                    this.dsm_cont.currRecord.data = this.params.jsontj;
+                    let tjKeys = Object.keys(this.params.jsontj);
+                    for (let i = 0; i < tjKeys.length; i++) {
+                        this.dsm_cont.currRecord.data[tjKeys[i]] = this.params.jsontj[tjKeys[i]];
+                    }
                     this.find();
                     let cc:any = this.$refs['childChart'];
                     if(cc){
