@@ -11,11 +11,11 @@
 <script lang="ts">
 import { BaseVariable } from "@/utils/BaseICL";
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
-import LoginBIP from '@/views/login/LoginBIP'
+import LoginBip from '@/views/login/LoginBIP'
 import LoginRD from '@/views/login/LoginRD'
 @Component({
     components:{
-      LoginBIP,
+      LoginBip,
       LoginRD
     }
 })
