@@ -2,6 +2,16 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" :required="cell.isReq">
+                <span slot="label" v-if="cell.labelString">
+                    <template v-if="cell.labelString.length>6">
+                        <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
+                            <span>{{cell.labelString.substring(0,5)}}…</span>
+                        </el-tooltip>
+                    </template>
+                    <template v-else>
+                        {{cell.labelString}}
+                    </template>
+                </span> 
                 <el-checkbox-group v-model="model1" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                     <el-checkbox  v-for="item in options" 
                     :key="item[cels[0].id]" 

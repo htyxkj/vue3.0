@@ -2,6 +2,16 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                <span slot="label" v-if="cell.labelString">
+                    <template v-if="cell.labelString.length>6">
+                        <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
+                            <span>{{cell.labelString.substring(0,5)}}…</span>
+                        </el-tooltip>
+                    </template>
+                    <template v-else>
+                       {{cell.labelString}}
+                    </template>
+                </span>
                 <el-switch v-model="model1" style="padding-top:8px;" :disabled="(cell.attr&0x40)>0" @focus="focus" @change="dataChange"></el-switch>
             </el-form-item>
         </template>

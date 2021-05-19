@@ -1,6 +1,16 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span" :style="'height:'+cell.ccVerCell*20+'px'">
         <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+            <span slot="label" v-if="cell.labelString">
+                <template v-if="cell.labelString.length>6">
+                    <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
+                        <span>{{cell.labelString.substring(0,5)}}…</span>
+                    </el-tooltip>
+                </template>
+                <template v-else>
+                    {{cell.labelString}}
+                </template>
+            </span>            
             <div>
                 <img style="width: 100px; height: 110px" :src="url" @click="imgClick"/>
             </div>

@@ -3,6 +3,16 @@
         <template v-if="dateTime">
             <template v-if="!bgrid">
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                    <span slot="label" v-if="cell.labelString">
+                        <template v-if="cell.labelString.length>6">
+                            <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
+                                <span>{{cell.labelString.substring(0,5)}}…</span>
+                            </el-tooltip>
+                        </template>
+                        <template v-else>
+                            {{cell.labelString}}
+                        </template>
+                    </span>                     
                     <template v-if="condition"><!-- 报表条件 -->
                         <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
@@ -52,6 +62,16 @@
         <template v-else>
             <template v-if="!bgrid">
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                    <span slot="label" v-if="cell.labelString">
+                        <template v-if="cell.labelString.length>6">
+                            <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
+                                <span>{{cell.labelString.substring(0,5)}}…</span>
+                            </el-tooltip>
+                        </template>
+                        <template v-else>
+                            {{cell.labelString}}
+                        </template>
+                    </span>                     
                     <template v-if="condition"><!-- 报表条件 -->
                         <el-time-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"

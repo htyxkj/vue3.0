@@ -21,6 +21,16 @@
             </template>
             <template v-else>
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                    <span slot="label" v-if="cell.labelString">
+                        <template v-if="cell.labelString.length>6">
+                            <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
+                                <span>{{cell.labelString.substring(0,5)}}…</span>
+                            </el-tooltip>
+                        </template>
+                        <template v-else>
+                            {{cell.labelString}}
+                        </template>
+                    </span>
                     <el-input :type="cell.ccVerCell>1?'textarea':'text'" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
                     <template v-if="cell.desc">
                         <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
