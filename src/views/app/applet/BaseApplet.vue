@@ -70,26 +70,26 @@ export default class BaseApplet extends Vue{
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
     @Prop() height!:number;
-    @Provide() cells: Array<Cells> = new Array<Cells>();
-    @Provide() mbs: BipMenuBar = new BipMenuBar(0);
-    @Provide() dsm: CDataSet = new CDataSet(null);
-    @Provide() dsm_cont: CDataSet = new CDataSet(null);
-    @Provide() ds_ext: Array<CDataSet> = Array<CDataSet>();
-    @Provide() lay: BipLayout = new BipLayout("");
-    @Provide() env: CCliEnv = new CCliEnv();
-    @Provide() fullscreenLoading: boolean = false;
-    @Provide() searchdia: boolean = false;
-    @Provide() qe: QueryEntity = new QueryEntity("","");
-    // @Provide() dataCache: Array<DataCache> = [];
-    @Provide() listIndex: number = -1;
-    @Provide() cea:CeaPars = new CeaPars({});
-    @Provide() pmenuid:string ='';
-    @Provide() oprid:number = 13
-    @Provide() style:string='';
-    @Provide() switchBusID:number=0;
-    @Provide() rowClickBusID:number =0;
-    @Provide() switchHide:any={};
-    @Provide() switchShow:any={};
+    cells: Array<Cells> = new Array<Cells>();
+    mbs: BipMenuBar = new BipMenuBar(0);
+    dsm: CDataSet = new CDataSet(null);
+    dsm_cont: CDataSet = new CDataSet(null);
+    ds_ext: Array<CDataSet> = Array<CDataSet>();
+    lay: BipLayout = new BipLayout("");
+    env: CCliEnv = new CCliEnv();
+    fullscreenLoading: boolean = false;
+    searchdia: boolean = false;
+    qe: QueryEntity = new QueryEntity("","");
+    // dataCache: Array<DataCache> = [];
+    listIndex: number = -1;
+    cea:CeaPars = new CeaPars({});
+    pmenuid:string ='';
+    oprid:number = 13
+    style:string='';
+    switchBusID:number=0;
+    rowClickBusID:number =0;
+    switchHide:any={};
+    switchShow:any={};
     fromStyle:string='';
     rules:any={};//form 表单验证
     nodeId:string = '';
@@ -1099,6 +1099,7 @@ export default class BaseApplet extends Vue{
         }
         this.rowClickBusID = this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
+        this.pmenuid = this.$route.query.pmenuid+'';
         if(!this.params || !this.params.method){
             if(this.uriParams && this.uriParams.pbds){
                 let st = this.uriParams.pbds.BGSTYLE;
@@ -1122,8 +1123,6 @@ export default class BaseApplet extends Vue{
                 this.dsm.currRecord.c_state = 1
             }
         }else{
-
-            this.pmenuid = this.$route.query.pmenuid+'';
             this.initGetVal();
         } 
         this.initDlgBtn();
