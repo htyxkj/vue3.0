@@ -147,7 +147,14 @@ export default class BipStatisticsDialog extends Vue {
         let qe: QueryEntity = new QueryEntity("","");
         qe.pcell = this.env.dsm.ccells.obj_id
         qe.tcell = this.env.ds_cont.ccells.obj_id
-        qe.cont = JSON.stringify(this.env.ds_cont.currRecord.data,this.testReplacer);
+        let tj_row = this.env.ds_cont.currRecord
+        for(var i=0;i<this.env.ds_cont.ccells.cels.length;i++){
+            let cel = this.env.ds_cont.ccells.cels[i];
+            if((cel.attr & (0x4)) >0){
+                tj_row.data[cel.id] = null;
+            }
+        }
+        qe.cont = JSON.stringify(tj_row.data,this.testReplacer);
         param = tool.getBipStatisticsParams(JSON.stringify(qe),groupfilds,groupdatafilds,this.stat.chartTypeValue);
         let chartData = await tools.getFromServer(param); 
 
