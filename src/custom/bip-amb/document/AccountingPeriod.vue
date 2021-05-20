@@ -92,7 +92,7 @@
             </el-dialog>
             <el-dialog title="编辑日历信息" :close-on-click-modal="false" :visible.sync="showUpPeUpriodDialog" width="50%" class="bip-query">
                 <el-row class="bip-lay">
-                    <el-form @submit.native.prevent label-position="right" label-width="100px">
+                    <el-form @submit.native.prevent label-position="right" label-width="120px">
                         <div v-for="(cel,index) in periodUpCell.ccells.cels" :key="'A'+index">
                             <bip-comm-editor v-if="(cel.attr&0x400) <= 0 " :cell="cel" :bgrid="false" :cds="periodUpCell" :row="0"/>
                         </div>
@@ -181,15 +181,16 @@ export default class AccountingPeriod extends Vue {
     }
     //修改
     async update(data:any){
-        this.periodCell.p_cell = "100601";
         this.periodUpCell.clear();
         this.periodUpCell.currRecord = await this.periodUpCell.createRecord();
-        this.periodUpCell.currRecord.data = data;
-        this.showUpPeUpriodDialog = true;
+        this.periodUpCell.currRecord.c_state = 2;
+        setTimeout(() => {
+            this.periodUpCell.currRecord.data = Object.assign({},data);    
+        }, 100);
+        this.showUpPeUpriodDialog = true; 
     }
     //保存修改
     async saveUpPeriod(){
-        this.periodUpCell.currRecord.c_state = 2;
         let res = await this.periodUpCell.saveData();
         if(res.data.id ==0){
             this.showUpPeUpriodDialog = false;
