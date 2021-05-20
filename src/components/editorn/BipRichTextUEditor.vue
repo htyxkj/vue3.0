@@ -1,6 +1,6 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span" style="padding-bottom:8px">
-        <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+        <el-form-item :label="cell.labelString" class="bip-input-item" :class="cell.labelString.indexOf('.,') == 0 ?'bip-input-item-notitle':''" :required="cell.isReq">
             <span slot="label" v-if="cell.labelString">
                 <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                     <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">

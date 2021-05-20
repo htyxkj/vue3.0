@@ -2,7 +2,7 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
             <template v-if="cell.ccVerCell>1 && span == cell.ccHorCell">
-                <el-row class="el-form-item__label title">
+                <el-row class="el-form-item__label title" v-if="cell.labelString.indexOf('.,') == -1">
                     <span :class="cell.isReq?'is-required':''">
                         <template v-if="cell.isReq">
                             *
@@ -20,7 +20,7 @@
                 </template>
             </template>
             <template v-else>
-                <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+                <el-form-item :label="cell.labelString" class="bip-input-item" :class="cell.labelString.indexOf('.,') == 0 ?'bip-input-item-notitle':''" :required="cell.isReq">
                     <span slot="label" v-if="cell.labelString">
                         <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                             <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
