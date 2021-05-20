@@ -24,7 +24,7 @@
                             <el-row class="user_code user_padding">{{user.userCode}}</el-row>
                             <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
                             <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
-                            <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row>
+                            <!-- <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row> -->
                             <el-row class="user_padding user_hr" v-if="user.mulscm && user.mulscm.length>0">
                                 <el-popover  width="160" placement="left-start" >
                                     <el-row style="margin: 0px;">

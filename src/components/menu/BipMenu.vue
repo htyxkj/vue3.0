@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar-container menu-list">
-        <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-scrollbar wrap-class="scrollbar-wrapper" style="background-color: #fff;">
             <el-menu mode="vertical"  :unique-opened="false" router><!--background-color="#545c64" text-color="#fff" active-text-color="#ffd04b"-->
                 <bip-menu-item v-for="menu in menuList" :key="menu.path" :item="menu"/>
             </el-menu>
@@ -24,6 +24,13 @@ export default class BipMenu extends Vue {
     .menu-list{
         @include menu_list_style();
     }
+</style>
+<style lang="scss">
+.menu-list{
+    .scrollbar-wrapper{
+        background-color: #fff;
+    }
+}
 </style>
 
 
