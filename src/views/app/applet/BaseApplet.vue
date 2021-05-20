@@ -7,7 +7,7 @@
             <bip-search-dialog ref="se" :cds_cont="dsm" @makeOK="searchfindData"></bip-search-dialog>
         </template>
         <!--:style="'height:'+(height-40)+'px !important;'"-->
-        <div class="bip-main-container" v-if="lay.binit" >
+        <div class="bip-main-container" v-if="lay.binit">
             <el-scrollbar :style="style" >
                 <!-- <el-form :model="dsm.currRecord.data" :rules="rules" @submit.native.prevent label-position="right" label-width="120px"> -->
                 <el-form @submit.native.prevent label-position="right" label-width="120px" :style="fromStyle">
@@ -1086,17 +1086,7 @@ export default class BaseApplet extends Vue{
         this.switchBusID = this.$bus.$on('switchChange',this.switchChange)
     }
     async mounted(){
-        // console.log(this.uriParams,'bbb')
-        if(this.height>0){
-            this.style = "margin-bottom:0px;  margin-right: 0px;"
-            if(this.mbs){
-                if(this.mbs.menuList.length>4){
-                    this.style+="height:"+(this.height-30)+"px;"
-                }
-            }
-        }else{
-             this.style = "margin-bottom:0px;  margin-right: 0px; ";
-        }
+        this.initHeight();
         this.rowClickBusID = this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
         this.pmenuid = this.$route.query.pmenuid+'';
@@ -1276,12 +1266,19 @@ export default class BaseApplet extends Vue{
 
     @Watch('height')
     heightChanges(){
+        this.initHeight();
+    }
+    initHeight(){
         if(this.height>0){
-            this.style = "margin-bottom:0px;  margin-right: 0px; ";
+            this.style = "margin-bottom:0px;  margin-right: 0px;";
             if(this.mbs){
                 if(this.mbs.menuList.length>4){
                     this.style+="height:"+(this.height-30)+"px;"
+                }else{
+                    this.style+="height:"+(this.height)+"px;"
                 }
+            }else{
+                this.style+="height:"+(this.height)+"px;"
             }
         }else{
              this.style = "margin-bottom:0px;  margin-right: 0px; ";

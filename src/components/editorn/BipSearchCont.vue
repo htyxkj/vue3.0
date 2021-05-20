@@ -23,13 +23,19 @@ export default class BipSearchCont extends Vue{
     @Prop() env!:CCliEnv
     @Prop() cdsCount!:CDataSet 
     mounted(){
-            this.cds = this.env.ds_cont
-            if(this.cds.currRecord.c_state ==0)
-                this.cds.createRecord();
+        this.envChamge();
+    }
+    @Watch("env.ds_cont")
+    envChamge(){
+        this.cds = this.env.ds_cont
+        if(this.cds.currRecord.c_state ==0)
+            this.cds.createRecord();
+        if(this.cds.ccells){
             this.cells = this.cds.ccells.cels;
             if(this.cells.length<2){
                 this.cds.ccells.widthCell = 2
             }
+        }
     }
 }
 </script>

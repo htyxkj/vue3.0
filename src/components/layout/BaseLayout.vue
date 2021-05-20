@@ -6,6 +6,9 @@
     <template v-else-if="layout&&layout.layType === 'T'">
         <tabs-layout :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></tabs-layout>
     </template>
+    <template v-else-if="layout&&layout.layType === 'T1'">
+        <bip-tabs1-layout :laycfg="comps" ></bip-tabs1-layout>
+    </template>
     <template v-else-if="layout&&layout.layType === 'H'">
         <bip-horizontal-lay :laycfg="comps" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></bip-horizontal-lay>
     </template>
@@ -30,10 +33,11 @@ import TabsLayout from '@/components/layout/TabsLayout.vue'
 import BipHorizontalLay from '@/components/layout/BipHorizontalLay.vue'
 import BipVerticalLay from '@/components/layout/BipVerticalLay.vue'
 import BipCustomizeLayout from '@/components/layout/BipCustomizeLayout.vue'
+import BipTabs1Layout from '@/components/layout/customize/BipTabs1Layout.vue'
 import BipLayConf from '@/classes/ui/BipLayConf';
 import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
-    components:{BorderLayout,TabsLayout,BipHorizontalLay,BipVerticalLay,BipCustomizeLayout}
+    components:{BorderLayout,TabsLayout,BipHorizontalLay,BipVerticalLay,BipCustomizeLayout,BipTabs1Layout}
 })
 export default class BaseLayout extends Vue{
     @Prop() layout?:BipLayout

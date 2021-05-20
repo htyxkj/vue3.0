@@ -2,20 +2,20 @@
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
         <div class="bip-main-container">
-            <el-scrollbar wrap-class="scrollbar-wrapper">
+            <el-scrollbar wrap-class="scrollbar-wrapper" :style="style">
                 <template v-if="!isShowMap">
                     <template v-if="!initShowChar">
                         <template v-if="!TJ">
-                            <div class="bip-main-container" v-if="lay.binit">
-                                <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
+                            <!-- <div class="bip-main-container" v-if="lay.binit">
+                                <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;"> -->
                                     <div ref="se" @keyup.enter="find">
                                         <bip-search-cont :env="env" v-show="CondiyionShow"></bip-search-cont>
                                     </div>
                                     <el-form @submit.native.prevent label-position="right" label-width="120px">
                                         <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                                     </el-form>
-                                </el-scrollbar>
-                            </div>
+                                <!-- </el-scrollbar>
+                            </div> -->
                         </template>
                         <template v-else>
                             <!-- 统计结果展示 -->
@@ -86,6 +86,7 @@ let _ = require('lodash');
 export default class CUnivSelect extends Vue {
     @Prop() uriParams?: URIParams;
     @Prop() params:any;
+    @Prop() height?:any;
     fullscreenLoading: boolean = false;
     cells: Array<Cells> = new Array<Cells>();
     mbs: BipMenuBar = new BipMenuBar(0);
@@ -109,6 +110,7 @@ export default class CUnivSelect extends Vue {
     CondiyionShow:boolean = true;
     isMap:boolean = false;      //是否是地图页面
     isShowMap:boolean = false;  //是否是显示地图
+    style:any=""
 
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -198,12 +200,7 @@ export default class CUnivSelect extends Vue {
         this.initDlgBtn();
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
-        // let he = document.documentElement.clientHeight;
-        // console.log('height:'+he)
-        // let ses:any = this.$refs.se
-        // console.log(ses)
-        // let height= ses.offsetHeight;
-        // console.log('ses height:'+height,he-height)
+        this.initHeight()
         if(!this.params || !this.params.method){ 
             if(this.uriParams && this.uriParams.pbds){
                 if(this.uriParams.pbds.polnk){
@@ -764,6 +761,27 @@ export default class CUnivSelect extends Vue {
     sortChange(orderby:string){
         this.qe.orderBy=orderby;
         this.find();
+    }
+
+    @Watch('height')
+    heightChanges(){
+        this.initHeight();
+    }
+    initHeight(){
+        if(this.height>0){
+            this.style = "margin-bottom:0px;  margin-right: 0px;";
+            if(this.mbs){
+                if(this.mbs.menuList.length>4){
+                    this.style+="height:"+(this.height-30)+"px;"
+                }else{
+                    this.style+="height:"+(this.height)+"px;"
+                }
+            }else{
+                this.style+="height:"+(this.height)+"px;"
+            }
+        }else{
+             this.style = "margin-bottom:0px;  margin-right: 0px; ";
+        }
     }
 }
 </script>

@@ -271,7 +271,11 @@ export default class BipMenuBtnDlg extends Vue {
                     ds_ext:this.env.ds_ext
                 }
                 _env.ds_cont.scriptProc = null;
-                _env.ds_ext.scriptProc = null;
+                if(_env.ds_ext){
+                    _env.ds_ext.forEach((element:any) => {
+                        element.scriptProc = null;
+                    });
+                }
                 let v = JSON.stringify(_env);
                 let bok = this.checkNotNull(this.env.dsm);
                 if(!bok){
