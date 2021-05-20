@@ -2,9 +2,9 @@
     <el-col :span="span" :xs="24" :sm="24" :md="span" style="padding-bottom:8px">
         <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
             <span slot="label" v-if="cell.labelString">
-                <template v-if="cell.labelString.length>6">
+                <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                     <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                        <span>{{cell.labelString.substring(0,5)}}…</span>
+                        <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
                     </el-tooltip>
                 </template>
                 <template v-else>

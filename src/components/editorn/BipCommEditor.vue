@@ -1,7 +1,7 @@
 <template>
     <div>
-        <template v-if="assit&&bipInsAid!=null"> 
-            <template  v-if="(bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor') || editName=='Y'">
+        <template v-if="(assit&&bipInsAid!=null) || isOtherDate"> 
+            <template  v-if="isOtherDate || (bipInsAid.bType === 'CDateEditor') || (bipInsAid.bType === 'CHSMEditor') || (bipInsAid.bType === 'CYMEditor')">
                 <bip-date-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-date-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CFlowEditor'">
@@ -356,6 +356,14 @@ export default class BipCommEditor extends Vue{
     focus(res:any){
         res["rowId"] = this.row;
         this.$emit("focus",res)
+    }
+
+    /**
+     * 是否是其他格式日期
+     */
+    get isOtherDate(){
+        console.log(this.editName)
+        return (this.editName === 'Y' || this.editName === 'M' || this.editName === 'DATE_WEEK')
     }
 }
 </script>
