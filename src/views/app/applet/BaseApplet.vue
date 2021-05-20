@@ -47,14 +47,12 @@ import AppletListDlg from '@/components/appletList/AppletListDlg.vue'
 import { URIParams } from "@/classes/URIParams";
 import { BipMenuBtn } from "@/classes/BipMenuBtn";
 import { Cells } from "@/classes/pub/coob/Cells";
-import BipLayCells from "@/classes/ui/BipLayCells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipMenuBar from "@/classes/pub/BipMenuBar";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import CeaPars from "@/classes/cenv/CeaPars";
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from "@/classes/search/QueryEntity";
-import DataCache from "@/classes/DataCache";
 import PageInfo from "@/classes/search/PageInfo";
 import BipWork from '@/components/cwork/BipWork.vue';
 import BipWorkProcess from '@/components/cwork/BipWorkProcess.vue';
@@ -1271,15 +1269,7 @@ export default class BaseApplet extends Vue{
     initHeight(){
         if(this.height>0){
             this.style = "margin-bottom:0px;  margin-right: 0px;";
-            if(this.mbs){
-                if(this.mbs.menuList.length>4){
-                    this.style+="height:"+(this.height-30)+"px;"
-                }else{
-                    this.style+="height:"+(this.height)+"px;"
-                }
-            }else{
-                this.style+="height:"+(this.height)+"px;"
-            }
+            this.style+="height:"+(this.height-50)+"px;"
         }else{
              this.style = "margin-bottom:0px;  margin-right: 0px; ";
         }
@@ -1289,9 +1279,6 @@ export default class BaseApplet extends Vue{
 </script>
 
 <style lang="scss" scoped>
-.bip-main-container{
-    background-color: #f9f9f9;
-}
 .bip-btn-small{
     // text-align:center;
     // padding-top:180px;

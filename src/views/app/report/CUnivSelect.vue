@@ -770,15 +770,7 @@ export default class CUnivSelect extends Vue {
     initHeight(){
         if(this.height>0){
             this.style = "margin-bottom:0px;  margin-right: 0px;";
-            if(this.mbs){
-                if(this.mbs.menuList.length>4){
-                    this.style+="height:"+(this.height-30)+"px;"
-                }else{
-                    this.style+="height:"+(this.height)+"px;"
-                }
-            }else{
-                this.style+="height:"+(this.height)+"px;"
-            }
+            this.style+="height:"+(this.height-50)+"px;"
         }else{
              this.style = "margin-bottom:0px;  margin-right: 0px; ";
         }

@@ -556,6 +556,14 @@ $--bip-comm-color:#ffffff;//f4f6fb
 .el-form-item__content .el-input-group__append {
     border-radius: 0 2px 2px 0;
 }
+.bip-input-item-notitle{
+    .el-form-item__label{
+        width: 0px !important;
+    }
+    .el-form-item__content{
+        margin-left: 0px !important;
+    }
+}
 .el-form-item {
     margin-bottom: 5px !important;
 }
