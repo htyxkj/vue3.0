@@ -103,20 +103,20 @@ export default class BipMenuBar{
             // this.menuList.push(btn)
         }
         if(!this.search){
-            btn = new BipMenuBtn(CommICL.B_CMD_FIRST,"第一个")
+            btn = new BipMenuBtn(CommICL.B_CMD_FIRST,"首页")
             btn.setIconFontIcon('first-page');
             this.menuList.push(btn)
-            btn = new BipMenuBtn(CommICL.B_CMD_PRIOR,"上一条")
+            btn = new BipMenuBtn(CommICL.B_CMD_PRIOR,"上页")
             btn.setIconFontIcon('up');
             this.menuList.push(btn)
             btn = new BipMenuBtn(CommICL.B_CMD_LIST,"1/1")
             btn.setHasIcon(false);
             this.menuList.push(btn)
-            btn = new BipMenuBtn(CommICL.B_CMD_NEXT,"下一条")
+            btn = new BipMenuBtn(CommICL.B_CMD_NEXT,"下页")
             btn.setIconFontIcon('next');
             btn.setRight();
             this.menuList.push(btn)
-            btn = new BipMenuBtn(CommICL.B_CMD_LAST,"最后一个")
+            btn = new BipMenuBtn(CommICL.B_CMD_LAST,"末页")
             btn.setIconFontIcon('last');
             btn.setRight();
             this.menuList.push(btn)

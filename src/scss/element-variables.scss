@@ -573,11 +573,11 @@ $--bip-comm-color:#ffffff;//f4f6fb
 }
 
 .bip-main-container {
-    position: fixed; 
-    height: calc(100% - 170px) !important;
-    width: calc(100% - 28px) !important;
+    // position: fixed; 
+    // height: calc(100% - 170px) !important;
+    // width: calc(100% - 28px) !important;
     z-index: 1;
-    overflow: hidden;
+    // overflow: hidden;
     // margin-right: 20px;
     .el-scrollbar {
         height: 100%;
@@ -586,7 +586,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
         padding-bottom: 20px;
         .el-scrollbar__wrap {
             overflow-x: hidden !important;
-            padding-right: 5px;
+            padding-right: 0px;
             height: 100%;
             width: 100%;
         }
