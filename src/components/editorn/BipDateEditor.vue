@@ -4,9 +4,9 @@
             <template v-if="!bgrid">
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
                     <span slot="label" v-if="cell.labelString">
-                        <template v-if="cell.labelString.length>6">
+                        <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                             <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                                <span>{{cell.labelString.substring(0,5)}}…</span>
+                                <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
                             </el-tooltip>
                         </template>
                         <template v-else>
@@ -14,18 +14,38 @@
                         </template>
                     </span>                     
                     <template v-if="condition"><!-- 报表条件 -->
-                        <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
-                            v-model="model1"
-                            @focus='focus'
-                            :picker-options="pickerOptions"
-                            :type="dateType"
-                            range-separator="~"
-                            :format="dateFormat"
-                            :value-format="dateFormat"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                        <template v-if="dateType != 'week'">
+                            <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                                v-model="model1"
+                                @focus='focus'
+                                :picker-options="pickerOptions"
+                                :type="dateType"
+                                range-separator="~"
+                                :format="dateFormat"
+                                :value-format="dateFormat"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                             </el-date-picker>
+                        </template>
+                        <template v-else>
+                            <el-row>
+                                <el-date-picker size="medium" ref="dateWeek" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                                    v-model="weekModel"
+                                    @focus='focus'
+                                    @blur='weekInput2Blur'
+                                    :type="dateType"
+                                    :format="dateFormat"
+                                    :value-format="dateFormat"
+                                    :picker-options="optionaIint"
+                                    placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                                </el-date-picker>
+                                <el-input v-if="weekInput1Show" size="medium" :style="cell.desc?'width: calc(100% - 29px);position: absolute;left: 0px;':'width:100%;position: absolute;left: 0px;'"
+                                    placeholder="选择日期" @focus="weekInput1Focus" v-model="weekInputModel"
+                                    prefix-icon="el-icon-date">
+                                </el-input>
+                            </el-row>
+                        </template>
                     </template>
                     <template v-else>
                         <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
@@ -63,9 +83,9 @@
             <template v-if="!bgrid">
                 <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
                     <span slot="label" v-if="cell.labelString">
-                        <template v-if="cell.labelString.length>6">
+                        <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                             <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                                <span>{{cell.labelString.substring(0,5)}}…</span>
+                                <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
                             </el-tooltip>
                         </template>
                         <template v-else>
@@ -126,6 +146,7 @@ let baseTool = BIPUtils.baseUtil;
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import BipInsAidNew from '../../classes/BipInsAidNew';
+import moment from 'moment' //引入js日期处理类库
 @Component({})
 export default class BipDateEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -144,6 +165,10 @@ export default class BipDateEditor extends Vue{
     pickerOptions:any = null;
     optionaIint:any = null;
     dateTime:boolean = true;
+    
+    weekModel:any = null;//周选择器绑定值
+    weekInput1Show:boolean = true;//周选择器上层input是否显示
+    weekInputModel:any=null;//周选择器上层input显示内容
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
         if((this.cell.attr&0x400000)>0){
@@ -156,10 +181,23 @@ export default class BipDateEditor extends Vue{
             this.span = 24
         }
         // if(this.cds&&this.cell){
-            if(this.cell.type<=12 && this.bipInsAid.id=='Y'){
+            if(this.cell.editName == 'DATE_WEEK'){
+                this.dateType = "week"
+                // 时间选择器 - 输入格式转换
+                // Vue.directive('dateFormat', {
+                //     inserted: function (el, binding, vnode) {
+                //         const { value: _obj } = binding
+                //         const { context: _this, data }:any = vnode
+                //         const { expression: key } = data.model
+                //         console.log(el)
+                //         console.log(binding)
+                //         console.log(vnode)
+                //     }
+                // })
+            }else if(this.cell.type<=12 && this.cell.editName =='Y'){
                 this.dateType = 'year'
                 this.dateFormat = 'yyyy';
-            }else if(this.cell.type<=12 && this.bipInsAid.id=='M'){
+            }else if(this.cell.type<=12 && this.cell.editName =='M'){
                 this.dateType = 'month'
                 this.dateFormat = 'MM';
             }else if(this.cell.type===93){
@@ -199,36 +237,38 @@ export default class BipDateEditor extends Vue{
             this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         // }
         this.pickerOptions = {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker:any) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker:any) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker:any) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
+            shortcuts: [{
+                text: '最近一周',
+                onClick(picker:any) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit('pick', [start, end]);
+                }
+            }, {
+                text: '最近一个月',
+                onClick(picker:any) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                picker.$emit('pick', [start, end]);
+                }
+            }, {
+                text: '最近三个月',
+                onClick(picker:any) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                picker.$emit('pick', [start, end]);
+                }
+            }],
+            firstDayOfWeek:1
         }
         this.optionaIint={
             disabledDate: (time:any) => {
                 return this.optionalInterval(time)
-            }
+            },
+            firstDayOfWeek:1
         }
 
     }
@@ -382,6 +422,44 @@ export default class BipDateEditor extends Vue{
 
     focus(){
         this.$emit("focus",{})
+    }
+    //周选择中的上层input获取焦点事件
+    weekInput1Focus(){
+        this.weekInput1Show = false;
+        let ref:any = this.$refs.dateWeek;
+        ref.focus();
+    }
+    //周选择中的下层input失去焦点事件
+    weekInput2Blur(){
+        let showVl = this.weekModel
+        let refV = this.cell.refValue;
+        let date = moment(showVl);
+        let startDate:any = date.week(date.week()).startOf('week').format('YYYY-MM-DD');   //这样是年月日的格式
+        startDate = moment(startDate).add(1, 'd').format('YYYY-MM-DD');
+        let endDate:any = date.week(date.week()).endOf('week').format('YYYY-MM-DD'); //这样是时间戳的格式 
+        endDate = moment(endDate).add(1, 'd').format('YYYY-MM-DD');
+        date = moment(startDate);
+        date = date.add(1, 'd');
+        this.model1 = startDate+"~"+endDate
+        if(refV){
+            if(refV.indexOf('M_W') == 0){
+                var date1 = new Date(showVl), 
+                w = date1.getDay(),
+                d = date1.getDate();
+                let weekMonth = Math.ceil((d + 6 - w) / 7);
+                let month = date.month()+1;
+                showVl = month+"月第"+weekMonth+"周";
+            }else if(refV.indexOf('Y_W') == 0){
+                let year = date.year()
+                let weekYear =  date.week();
+                showVl = year+"年第"+weekYear+"周";
+            }
+        }else{
+            showVl = this.model1;
+        }
+        this.weekInputModel = showVl;
+        this.weekInput1Show = true;
+        this.dataChange([startDate,endDate])
     }
 
     @Watch("model")
