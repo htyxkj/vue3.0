@@ -954,6 +954,17 @@ export default class CDataSet {
         }
     }
   }
+  /**
+   * 保存后清空主健旧值
+   */
+  clearOldpk(){
+    this.currRecord.oldpk = [];
+    if(this.ds_sub.length>0){
+      this.ds_sub.forEach((item:any) => {
+        item.clearOldpk()
+      });
+    }
+  }
   //检查主表非空
   checkNotNull():any{
     let cds:CDataSet = this;

@@ -249,11 +249,8 @@
                     :total="cds.page.total"
                 >
                 <el-col :span="18" :xs="18" :sm="18" :md="18" >
-                    <el-button-group size="small" v-if="cds.ds_par">  
-                        <el-button icon="el-icon-edit" @click="addRecord"></el-button>
-                        <el-button icon="el-icon-delete" @click="delRecord"></el-button>
-                        <!-- <el-button icon="el-icon-delete" @click="openDrawer"></el-button> -->
-                    </el-button-group>
+                    <el-button size="small" class="bip_btn_primary" @click="addRecord">添加</el-button>
+                    <el-button size="small" class="bip_btn_danger" plain @click="delRecord">删除</el-button>
                 </el-col>
                 </el-pagination>
             </el-row>
@@ -529,6 +526,9 @@ export default class LayCelVexTable extends Vue {
                 if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
                     for(var i=0;i<this.cds.cdata.data.length;i++){
                         let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                        if(this.cds.cdata.data[i].oldpk == null){
+                            this.cds.cdata.data[i].oldpk = [];
+                        }
                         this.cds.cdata.data[i].oldpk.push(oldKey);
                         this.cds.cdata.data[i].data[cel.id] = i + 1
                         this.cds.cdata.data[i].c_state |= 16;

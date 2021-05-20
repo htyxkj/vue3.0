@@ -727,6 +727,8 @@ export default class BaseApplet extends Vue{
                                 this.submint();
                             }
                         }
+                        //清空主健旧值
+                        this.dsm.clearOldpk();
                     }else{
                         this.$message.warning(data.message);
                     }
