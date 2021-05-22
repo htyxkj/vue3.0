@@ -264,7 +264,7 @@
                     :current-page.sync="cds.page.currPage"
                     :page-size="cds.page.pageSize"
                     :page-sizes="[10, 20, 30,40,50]"
-                    layout="total,prev, pager, next,sizes"
+                    layout="total,prev, pager, next,sizes,jumper"
                     :total="cds.page.total"
                 ></el-pagination>
                 </el-row>
@@ -591,7 +591,7 @@ export default class LayCelVexTable extends Vue {
         if(this.multiple){
             this.changePageCoreRecordData();
         }
-        if((this.cds.currRecord.c_state&1)>0){
+        if(this.cds.currRecord &&　(this.cds.currRecord.c_state&1)>0){
             return ;
         }
         this.cds.cdata.clearValues();
@@ -602,7 +602,7 @@ export default class LayCelVexTable extends Vue {
         if(this.multiple){
             this.changePageCoreRecordData();
         }
-         if((this.cds.currRecord.c_state&1)>0){
+         if(this.cds.currRecord && (this.cds.currRecord.c_state&1)>0){
             return ;
         }
         this.cds.cdata.clearValues();

@@ -15,7 +15,8 @@
                   <el-checkbox v-model="checked" class="rd_save_user">记住账户</el-checkbox>
                 </el-col>
                 <el-col :span="12" class="no_pwd">
-                  <el-button type="text" class="no_pwd">忘记密码</el-button>
+                  <!-- 忘记密码 -->
+                  <el-button type="text" class="no_pwd"></el-button>
                 </el-col>
               </el-row>
               <el-row>
@@ -41,7 +42,7 @@
               <input class="rd_input" placeholder="验证码" v-model="regData.vCode" :show-password="true"/>
               <el-row>
                 <el-col :span="24">
-                  <el-button type="primary" class="rd_login_btn" :disabled="canClick" @click="registered" >注册</el-button>
+                  <el-button type="primary" class="rd_login_btn" @click="registered" >注册</el-button>
                 </el-col>
                 <el-col :span="24">
                   <el-button type="text" class="rd_reg_btn" @click="pageType='loginPage'">已有账号，立即登陆</el-button>
@@ -204,9 +205,11 @@ export default class LoginRD extends Vue {
       vv = await Vue.$axios.post("rdreg", param);
       if(vv.data.code !=0){
         this.$notify.error(vv.data.msg);
-        this.pageType = 'login'
       }else{
         this.$notify.success(vv.data.msg);
+        let msg = "用户名为注册手机号，初始登陆密码：123456";
+        this.$notify.success(msg);
+        this.pageType = 'loginPage'
       }
       loading.close();
     }catch{
