@@ -40,11 +40,11 @@
             <!-- 报表表格-->
             <vxe-table v-if="tableData && tjcell && showTable"
                 ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
-                show-header-all-overflow class="vxe-table-element" :data.sync="tableData" style="padding-bottom: 15px;"
+                show-header-overflow class="vxe-table-element" :data.sync="tableData" style="padding-bottom: 15px;"
                 :optimized="true" height="350px">
-                <vxe-table-column type="index" width="60"></vxe-table-column>
+                <vxe-table-column type="seq" width="60"></vxe-table-column>
                 <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
-                    :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
+                    :key="index" :field="cel.id" :title="cel.labelString" show-header-overflow show-overflow > 
                 </vxe-table-column>
             </vxe-table>
         </div>
@@ -180,6 +180,10 @@ export default class BipStatisticsDialog extends Vue {
     //       bar-0   bra-1  bar-2      bar-3
     //饼状图：饼状图、环形图、玫瑰图
     //       pie-0   pie-1  pie-2
+    //分页：折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
+    //       split-line-0 split-line-1 split-line-2 split-line-3 split-line-4 split-line-5
+    //       柱状图、条形图、堆叠柱状图、堆叠条形图
+    //       split-bar-0 split-bra-1 split-bar-2 split-bar-3
     //散点图：散点图
     //
     //雷达图：雷达图
@@ -196,7 +200,7 @@ export default class BipStatisticsDialog extends Vue {
         if(cc){
             this.dlConfig = cc;
         }
-        if(type[0] == 'line'){//折线类
+        if(type[0] == 'line'){//折线类            
             await this.meakeLine(chartData,type[1]);
         }else if(type[0] == 'bar'){//柱状类
             await this.makeBar(chartData,type[1]);
@@ -206,6 +210,8 @@ export default class BipStatisticsDialog extends Vue {
             await this.makeFunnel(chartData,type[1]);
         }else if(type[0] == 'gantt'){//甘特图
             await this.makeGantt(chartData);
+        }else if(type[0] == 'split'){
+            await this.meakeSplit(chartData,type);
         }
     }
 
@@ -257,7 +263,7 @@ export default class BipStatisticsDialog extends Vue {
             xAxis: {
                 type: 'category',
                 boundaryGap: true,//是否留有边界X轴 距 0.0 是否有距离
-                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                data: []
             },
             yAxis: {
                 type: 'value'
@@ -512,7 +518,6 @@ export default class BipStatisticsDialog extends Vue {
         if(type ==4 || type ==5){
             Stacking = true;
         }
-        console.log(type)
         let option:any = {
             color:this.color,
             tooltip: {
@@ -1368,6 +1373,189 @@ export default class BipStatisticsDialog extends Vue {
                 }
             }
         }
+    }
+
+    //折线柱状 分页
+    async meakeSplit(chartData:any,types:any){
+        let type1 = types[1];//柱状或折线
+        let type = types[2];
+        let splitNum = types[3]
+        if(!splitNum){
+            splitNum = 10
+        }
+        splitNum = parseInt(splitNum);
+        let chartD = chartData.data.data.tjpages.celData;
+        //条形图是  xAxis属性 与 yAxis 属性互换
+        let option:any = {
+            baseOption: {
+                timeline: {   
+                    playInterval:4000,
+                    color:this.color,
+                    axisType: 'category',
+                    show: true,
+                    autoPlay: true,
+                    data: []
+                },
+                xAxis: [{
+                    type: 'category',
+                }, ],
+                yAxis: { type: 'value' }, 
+                tooltip: {}
+            },
+            options:[]
+        }
+        if((type1 == 'line' && type<4) || (type1=='bar' && type<2)){//单条的
+            let oneOpSer:any = null;
+            for(let i=0;i<chartD.length;i++){
+                var item = chartD[i];
+                var name:any = await this.getGroupFldName(item,i);
+                if(i ==0 || i%splitNum ==0){
+                    if(oneOpSer!=null){
+                        option.options.push(oneOpSer)
+                    }
+                    option.baseOption.timeline.data.push("");
+                    oneOpSer={
+                        xAxis: [{ data: [] }],
+                        color:this.color,
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                        },
+                        legend:{
+                            data:[],
+                            top: 8,
+                            left:80,
+                            right:250
+                        },
+                        grid: {
+                            left: '2%',
+                            right: '2%',
+                            bottom: '1%',
+                            top:'8%',
+                            containLabel: true
+                        },
+                        series: []
+                    }
+                    oneOpSer.xAxis[0].data.push(name)
+                }else{
+                    oneOpSer.xAxis[0].data.push(name)
+                }
+                this.selValue.forEach((fld, key1) => {
+                    let colname = this.getFldName(fld);
+                    var _idx = oneOpSer.series.findIndex(function(im:any) {
+                        return im.name == colname;
+                    });
+                    if (_idx >= 0) {
+                        var bb = oneOpSer.series[_idx];
+                        bb.data.push(item[fld]);
+                        oneOpSer.series[_idx] = bb;
+                    } else {
+                        var bb:any ={}
+                        bb = { name: colname, data: [] ,type:type1,itemStyle: {},smooth:false,areaStyle:null};
+                        //折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
+                        if(type == 1 || type == 3){
+                            option.xAxis.boundaryGap=false
+                            bb.areaStyle={};
+                        }
+                        if(type ==3 || type ==2)
+                            bb.smooth=true;
+                        bb.data.push(item[fld]);
+                        oneOpSer.series.push(bb);
+                    }
+                });
+            }
+            if(oneOpSer != null){
+                option.options.push(oneOpSer)
+            }
+        }else{//堆叠的
+            let legendD = [];
+            let xAxisD = [];
+            let xD = this.selGroup[0];
+            let lD = this.selGroup[1]
+            for(var i=0;i<chartD.length;i++){
+                let data = chartD[i]
+                await this.getGroupFldName(data,i);
+                legendD.push(data[lD]);
+                xAxisD.push(data[xD]);
+            }
+            legendD = Array.from(new Set(legendD));
+            xAxisD = Array.from(new Set(xAxisD));
+            let oneOpSer:any = null;
+            for(var j=0;j<xAxisD.length;j++){
+                let name = xAxisD[j];
+                if(j ==0 || j%splitNum ==0){
+                    if(oneOpSer!=null){
+                        option.options.push(oneOpSer)
+                    }
+                    option.baseOption.timeline.data.push("");
+                    oneOpSer={
+                        xAxis: [{ data: [] }],
+                        legend:{
+                            top: 8,
+                            left:80,
+                            right:250,
+                            data:legendD
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                        },                        
+                        color:this.color,
+                        grid: {
+                            left: '2%',
+                            right: '2%',
+                            bottom: '12%',
+                            top:'10%',
+                            containLabel: true
+                        },
+                        series: []
+                    }
+                    oneOpSer.xAxis[0].data.push(name)
+                }else{
+                    oneOpSer.xAxis[0].data.push(name)
+                }
+                for(var k=0;k<legendD.length;k++){
+                    let value = 0;
+                    let name1 = legendD[k];
+                    for(var i=0;i<this.tableData.length;i++){
+                        let data = this.tableData[i]
+                        if(data[lD] == legendD[k]&&xAxisD[j] == data[xD]){
+                            value = data[this.selValue[0]]
+                            break
+                        }
+                    }
+                    let colname = legendD[k];
+                    var _idx = oneOpSer.series.findIndex(function(im:any) {
+                        return im.name == colname;
+                    });
+                    if (_idx >= 0) {
+                        var bb = oneOpSer.series[_idx];
+                        bb.data.push(value);
+                        oneOpSer.series[_idx] = bb;
+                    } else {
+                        var bb:any = { name: colname, data: [] ,type:type1,itemStyle: {},smooth:false,areaStyle:null};
+                        //折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图
+                        if(type == 1 || type == 3){
+                            option.xAxis.boundaryGap=false
+                            bb.areaStyle={};
+                        }
+                        if(type ==3 || type ==2)
+                            bb.smooth=true;
+                        bb.data.push(value);
+                        bb.name = name1;
+                        oneOpSer.series.push(bb);
+                    } 
+                }
+            }          
+            if(oneOpSer!=null){
+                option.options.push(oneOpSer)
+            }
+        }
+        this.option = option;
     }
 
     /**
