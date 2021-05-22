@@ -52,7 +52,7 @@ export default class BipLog extends Vue {
     @Prop() nodeType!:string
     logDrawer:boolean = false;
     logCell:CDataSet = new CDataSet("");
-    logCellId:any = "100104"
+    logCellId:any = "WEBEXCELIMPLOG"
     logTablePage:any ={//分页信息
         total: 0,
         currPage:1,
@@ -60,7 +60,7 @@ export default class BipLog extends Vue {
     };
     logTableData:any =[];
     logDelCell:CDataSet = new CDataSet("");
-    logDelCellId:any = "100104WEBDEL";
+    logDelCellId:any = "WEBEXCELIMPLOGDEL";
 
     async mounted(){
         this.logCell = await this.getCell(this.logCellId);
