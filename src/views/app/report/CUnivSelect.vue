@@ -4,29 +4,25 @@
         <div class="bip-main-container">
             <el-scrollbar wrap-class="scrollbar-wrapper" :style="style">
                 <template v-if="!isShowMap">
+                    <div ref="se" @keyup.enter="find">
+                        <bip-search-cont :env="env" v-show="CondiyionShow"></bip-search-cont>
+                    </div>
                     <template v-if="!initShowChar">
                         <template v-if="!TJ">
-                            <!-- <div class="bip-main-container" v-if="lay.binit">
-                                <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;"> -->
-                                    <div ref="se" @keyup.enter="find">
-                                        <bip-search-cont :env="env" v-show="CondiyionShow"></bip-search-cont>
-                                    </div>
-                                    <el-form @submit.native.prevent label-position="right" label-width="120px">
-                                        <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
-                                    </el-form>
-                                <!-- </el-scrollbar>
-                            </div> -->
+                            <el-form @submit.native.prevent label-position="right" label-width="120px">
+                                <base-layout v-if="lay.binit" :layout="lay" :env="env" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                            </el-form>
                         </template>
                         <template v-else>
                             <!-- 统计结果展示 -->
-                            <bip-statistics-chart :stat="Statistics" :env="env" :showBack="true" :showTable="true" @goTable="goTable"></bip-statistics-chart>
+                            <bip-statistics-chart :ref="dsm.ccells.obj_id" :stat="Statistics" :env="env" :showBack="true" :showTable="true" @goTable="goTable"></bip-statistics-chart>
                         </template>
                     </template>
                     <template v-else>
                         <template v-if="env && env.dsm && env.dsm.ccells">
                             <el-row :gutter="10">
                                 <el-col v-for="(item ,index) in uriParams.bgroupList" :key="index" :span="parseInt(item.width)" >
-                                    <bip-statistics-chart ref="childChart" :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
+                                    <bip-statistics-chart :ref="dsm.ccells.obj_id" :stat="item" :env="env" @goTable="goTable" :showBack="true" :showTable="true"></bip-statistics-chart>
                                 </el-col>
                             </el-row>
                         </template>
@@ -395,6 +391,20 @@ export default class CUnivSelect extends Vue {
         if(!bok)
             return ; 
         this.dsm.clear()
+        //判断当前页面是否是统计图页面
+        if(this.initShowChar || this.TJ){
+            let cc:any = this.$refs[this.dsm.ccells.obj_id];
+            if(cc){
+                if(cc instanceof  Array){
+                    cc.forEach((item:any) => {
+                        item.searchData();
+                    });
+                }else{
+                    cc.searchData();
+                }
+            }
+            return;
+        }
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         let tj_row = this.dsm_cont.currRecord;
@@ -610,7 +620,7 @@ export default class CUnivSelect extends Vue {
                         this.dsm_cont.currRecord.data[tjKeys[i]] = this.params.jsontj[tjKeys[i]];
                     }
                     this.find();
-                    let cc:any = this.$refs['childChart'];
+                    let cc:any = this.$refs[this.dsm.ccells.obj_id];
                     if(cc){
                         if(cc instanceof  Array)
                         {
