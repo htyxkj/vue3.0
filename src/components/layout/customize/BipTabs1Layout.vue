@@ -1,6 +1,6 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <el-tabs v-model="editableTabsValue" type="border-card" :closable="false" class="bip-tabs">
+        <el-tabs v-model="editableTabsValue" :closable="false" class="bip-t1-layout">
             <el-tab-pane v-for="(item) in tabs" :key="item.name" :label="item.name" :name="item.name" :style="style" :lazy="true">
                 <template v-if="item.uriParams.beBill">
                     <base-applet :uriParams="item.uriParams" :params="null" :height="height"></base-applet>
@@ -90,5 +90,11 @@ export default class BipTabs1Layout extends Vue {
     }
 }
 </script>
-<style scoped>
+<style lang="scss">
+.bip-t1-layout{
+    .el-tabs__header {
+        margin-left: 14px;
+        margin-bottom : 0px;
+    }
+}
 </style>

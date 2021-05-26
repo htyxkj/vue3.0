@@ -450,6 +450,8 @@ export default class ItemAnalysis extends Vue {
       if (_this.leftTopTabsC) _this.leftTopTabsC.resize();
       if (_this.rightTopTabsC) _this.rightTopTabsC.resize();
       if (_this.map) _this.map.resize();
+      if (_this.leftB1C1) _this.leftB1C1.resize();
+      if (_this.rightB1C1) _this.rightB1C1.resize();
     });
   }
   /**

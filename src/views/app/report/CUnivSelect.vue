@@ -197,6 +197,7 @@ export default class CUnivSelect extends Vue {
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         this.initHeight()
+        this.pmenuid = this.$route.query.pmenuid+'';
         if(!this.params || !this.params.method){ 
             if(this.uriParams && this.uriParams.pbds){
                 if(this.uriParams.pbds.polnk){
@@ -207,7 +208,6 @@ export default class CUnivSelect extends Vue {
             if(bok)
                 this.initData(); 
         }else{
-            this.pmenuid = this.$route.query.pmenuid+'';
             this.initVal(); 
         } 
         this.$bus.$on("row_click",this.getCRecordByPk2) 
@@ -336,6 +336,37 @@ export default class CUnivSelect extends Vue {
                 let dia: any = this.$refs.bi_tj;
                 dia.openDesktopList();
             }, 200);
+        }else if(cmd == ICL.B_CMD_DEL){//删除
+            let isMultiple =false;
+            if((this.dsm.ccells.attr & 0x40 ) >0){
+                isMultiple = true;
+            }
+            let delData:any = [];
+            if(isMultiple){//多选
+                delData = this.dsm.currRecordArr;
+            }else{
+                delData.push(this.dsm.currRecord);
+            }
+            if(delData.length<=0){
+                this.$notify.warning( "请勾选删除数据行!");
+                return;
+            }
+            let delNum = 0;
+            for(var i=0;i<delData.length;i++){//循环进行删除
+                let curr = delData[i];
+                curr.c_state=4;
+                this.dsm.currRecord = curr;
+                let res = await this.dsm.saveData();
+                if(res.data.id ==0){
+                    delNum++;
+                }
+            }
+            if(delNum == delData.length){
+                this.$notify.success( "删除成功!");
+            }else{
+                this.$notify.error( "删除失败!");
+            }
+            this.find();
         }
         if(cmd != 'SHOWMAP'){
             this.isShowMap = false;
@@ -407,7 +438,7 @@ export default class CUnivSelect extends Vue {
         }
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
-        let tj_row = this.dsm_cont.currRecord;
+        let tj_row = JSON.parse(JSON.stringify(this.dsm_cont.currRecord));
         for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
             let cel = this.dsm_cont.ccells.cels[i];
             if((cel.attr & (0x4)) >0){
@@ -641,21 +672,24 @@ export default class CUnivSelect extends Vue {
 
     @Watch('env.dsmcurr')
     envCurrChange(){
-        this.dsm = this.env.dsmcurr;
-        let data = this.env.ds_cont.currRecord.data;
-        if(data){
-            let b = false;
-            _.forEach(data,(v:any,k:any) => {
-                if(v && v.length>0){
-                    b =true;
-                }
-            });
-            if(this.dsm.cdata.data.length==0 && b){
-                this.qe.page.currPage =1;
-                let bok = this.checkNotNull(this.dsm_cont,false); 
-                if(bok)
-                    this.find();
-            }
+        let data = this.env.dsmcurr .currRecord.data;
+        if(data &&　Object.keys(data).length>0){
+            this.dsm = this.env.dsmcurr;
+            let data = this.env.ds_cont.currRecord.data;
+            if(data){
+                let b = false;
+                _.forEach(data,(v:any,k:any) => {
+                    if(v && v.length>0){
+                        b =true;
+                    }
+                });
+                if(this.dsm.cdata.data.length==0 && b){
+                    this.qe.page.currPage =1;
+                    let bok = this.checkNotNull(this.dsm_cont,false); 
+                    if(bok)
+                        this.find();
+                }
+            }
         }
     }
 
@@ -777,12 +811,18 @@ export default class CUnivSelect extends Vue {
     heightChanges(){
         this.initHeight();
     }
+    @Watch("mbs.menuList")
+    mbsMenuChange(){
+        this.initHeight();
+    }
     initHeight(){
+        this.style = "";
         if(this.height>0){
-            this.style = "margin-bottom:0px;  margin-right: 0px;";
-            this.style+="height:"+(this.height-50)+"px;"
-        }else{
-             this.style = "margin-bottom:0px;  margin-right: 0px; ";
+            if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
+                this.style+="height:"+(this.height-50)+"px;"
+            }else{
+                this.style+="height:"+(this.height-0)+"px;"
+            }
         }
     }
 }

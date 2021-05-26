@@ -14,7 +14,7 @@
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
             </el-scrollbar>
-            <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4">
+            <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4 && mbs.menuList.length>0">
                 <div class="bip-btn-small">
                     <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
                 </div>
@@ -1268,12 +1268,18 @@ export default class BaseApplet extends Vue{
     heightChanges(){
         this.initHeight();
     }
+    @Watch("mbs.menuList")
+    mbsMenuChange(){
+        this.initHeight();
+    }
     initHeight(){
+        this.style = "";
         if(this.height>0){
-            this.style = "margin-bottom:0px;  margin-right: 0px;";
-            this.style+="height:"+(this.height-50)+"px;"
-        }else{
-             this.style = "margin-bottom:0px;  margin-right: 0px; ";
+            if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
+                this.style+="height:"+(this.height-50)+"px;"
+            }else{
+                this.style+="height:"+(this.height-0)+"px;"
+            }
         }
     }
 //#endregion

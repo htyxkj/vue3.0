@@ -419,7 +419,7 @@ export namespace ChartConfig {
                 tooltip: {
                     show: true, //鼠标移入是否触发数据
                     trigger: "item", //出发方式
-                    position: { left: '8%', bottom: "-6%" },
+                    // position: { left: '8%', bottom: "-6%" },
                     backgroundColor: 'rgba(255,255,255,0)',
                     // formatter: "{b}-公司数量：{c}",
                     formatter: function (params: any) {

@@ -214,7 +214,7 @@ export default class HomeCUnivSelect extends Vue {
     find(){
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
-        let tj_row = this.dsm_cont.currRecord;
+        let tj_row = JSON.parse(JSON.stringify(this.dsm_cont.currRecord));
         for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
             let cel = this.dsm_cont.ccells.cels[i];
             if((cel.attr & (0x4)) >0){
@@ -399,11 +399,14 @@ export default class HomeCUnivSelect extends Vue {
     }
     @Watch('env.dsmcurr')
     envCurrChange(){
-        this.dsm = this.env.dsmcurr;
-        if(this.dsm.cdata.data.length==0){
-            this.qe.page.currPage =1;
-            this.Recheck();
-        }
+        let data = this.env.dsmcurr.currRecord.data;
+        if(data &&　Object.keys(data).length>0){
+            this.dsm = this.env.dsmcurr
+            if(this.dsm.cdata.data.length==0){
+                this.qe.page.currPage =1;
+                this.Recheck();
+            }
+        }
     }
     getCRecordByPk2(value:any){
         if(this.dsm){

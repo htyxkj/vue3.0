@@ -6,6 +6,7 @@
                 <el-row>
                     <el-col>
                         <el-switch v-model="smooth" active-text="平滑显示" inactive-text=""></el-switch>
+                        <el-switch v-model="page" active-text="分页显示" inactive-text=""></el-switch>
                     </el-col>
                 </el-row>
                 <!-- 折线图、折线面积图、平滑折线图、平滑面积折线图、堆叠折线图、堆叠面积折线图 -->
@@ -227,9 +228,10 @@
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 @Component({})
 export default class BipFigureTypeDialog extends Vue {
-    @Provide() showFType:boolean = false;
-    @Provide() smooth:boolean = false;
-    @Provide() chartCheck:String='line-0';
+    showFType:boolean = false;
+    smooth:boolean = false;
+    page:boolean = false;
+    chartCheck:String='line-0';
     mounted() {
 
     }

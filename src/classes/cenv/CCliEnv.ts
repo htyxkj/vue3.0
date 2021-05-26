@@ -19,7 +19,7 @@ export default class CCliEnv{
         this.mbs = _mbs
         this.dsm = _dsm
         this.ds_ext = _ds_ext
-         this.dsmcurr = this.dsm;
+        this.dsmcurr = new CDataSet("");
     }
     getDataSet(obid:string):any{
         if(obid==='' || this.dsm.ccells.obj_id === obid){
