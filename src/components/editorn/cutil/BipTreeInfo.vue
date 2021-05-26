@@ -5,7 +5,7 @@
         <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px; height:200px;">
                 <el-tree class="filter-tree" node-key="id"
-                    lazy :load="loadNode"  default-expand-all
+                    lazy :load="loadNode"  
                     :show-checkbox="show_checkbox"
                     :props="defaultProps" accordion :currentNodeKey="currkey" @node-click="nodeClick" :highlight-current="true"
                     :filter-node-method="filterNode" style="height:80%"

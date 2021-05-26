@@ -11,7 +11,7 @@
         </el-card>
     </template>
     <template v-if="bcenter">
-        <el-row class="bip-row" :gutter="4">
+        <el-row class="bip-row">
             <template v-if="bleft">
                 <el-col :span="wleft">
                     <el-card v-if="!laycfg[3].bcells">
@@ -43,7 +43,7 @@
         </el-row>
     </template>
     <template v-if="bbuttom">
-        <el-row class="bip-row" :gutter="4">
+        <el-row class="bip-row">
             <el-card v-if="!laycfg[2].bcells">
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env" :config="config" @invokecmd="invokecmd"></bip-comm-lay >
             </el-card>

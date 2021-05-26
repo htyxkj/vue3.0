@@ -6,7 +6,7 @@
                     <span slot="label" v-if="cell.labelString">
                         <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                             <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                                <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
+                                <span>{{cell.labelString.substring(0,(cell.isReq?4:5))}}…</span>
                             </el-tooltip>
                         </template>
                         <template v-else>
@@ -85,7 +85,7 @@
                     <span slot="label" v-if="cell.labelString">
                         <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                             <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                                <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
+                                <span>{{cell.labelString.substring(0,(cell.isReq?4:5))}}…</span>
                             </el-tooltip>
                         </template>
                         <template v-else>
@@ -183,17 +183,10 @@ export default class BipDateEditor extends Vue{
         // if(this.cds&&this.cell){
             if(this.cell.editName == 'DATE_WEEK'){
                 this.dateType = "week"
-                // 时间选择器 - 输入格式转换
-                // Vue.directive('dateFormat', {
-                //     inserted: function (el, binding, vnode) {
-                //         const { value: _obj } = binding
-                //         const { context: _this, data }:any = vnode
-                //         const { expression: key } = data.model
-                //         console.log(el)
-                //         console.log(binding)
-                //         console.log(vnode)
-                //     }
-                // })
+                if(this.cell.initValue){
+                    this.weekModel = moment().format('YYYY-MM-DD');  
+                    this.weekInput2Blur();
+                }
             }else if(this.cell.type<=12 && this.cell.editName =='Y'){
                 this.dateType = 'year'
                 this.dateFormat = 'yyyy';

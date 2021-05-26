@@ -5,7 +5,7 @@
                 <span slot="label" v-if="cell.labelString">
                     <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                         <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                            <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
+                            <span>{{cell.labelString.substring(0,(cell.isReq?4:5))}}…</span>
                         </el-tooltip>
                     </template>
                     <template v-else>
@@ -74,7 +74,7 @@ export default class BipCheckEditor extends Vue{
         }
         this.model1 = []
         if(this.model)
-            this.model1 = this.model.split(',')||this.model.split(';')
+            this.model1 = this.model.split(';') || this.model.split(',')
         this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         this.initOPtions()
     }

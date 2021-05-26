@@ -4,7 +4,7 @@
             <span slot="label" v-if="cell.labelString">
                 <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                     <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                        <span>{{cell.labelString.substring(0,(cell.isReq?4:6))}}…</span>
+                        <span>{{cell.labelString.substring(0,(cell.isReq?4:5))}}…</span>
                     </el-tooltip>
                 </template>
                 <template v-else>
