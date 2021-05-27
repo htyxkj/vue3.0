@@ -281,7 +281,26 @@ export default new Router({
           path:'/workBench',
           name: 'workBench',
           component :()=> import('./custom/bip-crm/workBench.vue')
-      }
+      },
+      //510 项目
+      {
+          //年统计
+          path:'/YearStatistics',
+          name:'YearStatistics',
+          component :()=> import('./custom/trainPro/YearStatistics.vue')
+      },
+      {
+          //月统计
+          path:'/MonthStatistics',
+          name:'MonthStatistics',
+          component :()=> import('./custom/trainPro/MonthStatistics.vue')
+      },
+      {
+          //周统计
+          path:'/WeekStatistics',
+          name:'WeekStatistics',
+          component :()=> import('./custom/trainPro/WeekStatistics.vue')
+      },
   ]
 })
 

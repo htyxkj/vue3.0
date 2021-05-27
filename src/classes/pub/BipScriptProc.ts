@@ -204,6 +204,15 @@ export default class BipScriptProc {
     console.log("invokemem", ov);
     return ov;
   }
+  f_addym(s0:any){
+    let date = s0[0];
+    let month = s0[1];
+    let rtn = "";
+    if((date+"").length>2){
+      rtn = moment(date).add(month, 'M').format("YYYYMM");
+    }
+    return rtn;
+  }
   f_ifelse(s0:any){
     if(s0[0]){
       return s0[1]
