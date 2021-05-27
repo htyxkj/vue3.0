@@ -25,6 +25,7 @@ export class BipMenuBtn{
         this.name = value;
     }
     public setIconFontIcon(icon_:string):void{
+        if(icon_)
         icon_ = icon_.toLocaleLowerCase();
         this.icon = this.icon+icon_;
     }

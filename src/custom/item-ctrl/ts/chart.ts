@@ -419,7 +419,7 @@ export namespace ChartConfig {
                 tooltip: {
                     show: true, //鼠标移入是否触发数据
                     trigger: "item", //出发方式
-                    // position: { left: '8%', bottom: "-6%" },
+                    position: { left: '8%', bottom: "-6%" },
                     backgroundColor: 'rgba(255,255,255,0)',
                     // formatter: "{b}-公司数量：{c}",
                     formatter: function (params: any) {
@@ -534,6 +534,11 @@ export namespace ChartConfig {
                         period: 1.2,               //动画的时间。
                         scale: 3.5,              //动画中波纹的最大缩放比例。
                         brushType: 'fill',
+                    },
+                    label: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: true
                     },
                     data: []
                 }]

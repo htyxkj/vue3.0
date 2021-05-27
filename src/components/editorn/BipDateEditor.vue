@@ -48,7 +48,7 @@
                         </template>
                     </template>
                     <template v-else>
-                        <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                        <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" class="el-input-group"
                             v-model="model1"
                             @focus='focus'
                             :type="dateType"
