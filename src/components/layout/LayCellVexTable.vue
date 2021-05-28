@@ -10,42 +10,25 @@
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table
-                auto-resize
-                :ref="this.cds.ccells.obj_id"
-                v-if="beBill"
-                border
-                size="small"
-                :data.sync="cds.cdata.data"
-                row-id="id"
-                resizable
-                height="340"
-                highlight-hover-row
-                show-all-overflow="tooltip"
-                show-header-overflow
-                highlight-current-row
-                class="vxe-table-element"
-                :optimized="true"
+                auto-resize :ref="this.cds.ccells.obj_id" v-if="beBill" border
+                size="small" :data.sync="cds.cdata.data" row-id="id" resizable
+                :height="height" highlight-hover-row show-all-overflow="tooltip" show-header-overflow
+                highlight-current-row class="vxe-table-element" :optimized="true"
                 :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
-                :selectRow="cds.currRecord"
-                @cell-dblclick="openrefs"
-                @cell-click="table_cell_click"
-                :header-cell-style="headerCellStyle"                
-                @edit-actived="rowActive"
-                @edit-closed="editClose"
-                @checkbox-change="selectChangeEvent"
-                @checkbox-all="selectChangeEvent"
-                @custom="toolbarCustomEvent"
-                >
+                :selectRow="cds.currRecord" @cell-dblclick="openrefs" @cell-click="table_cell_click"
+                :header-cell-style="headerCellStyle" @edit-actived="rowActive"
+                @edit-closed="editClose" @checkbox-change="selectChangeEvent"
+                @checkbox-all="selectChangeEvent"  @custom="toolbarCustomEvent">
                 <vxe-table-column v-if="cds.ds_par" type="checkbox" width="40"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
                     <template v-if="item.type == ''">
                         <vxe-table-column :key="index" header-align="center" align="center"
                             :field="item.cel.id" :width="widths[item.cel.widthIndex]" :title="item.cel.labelString"
                             show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.cel.attr&0x40)>0">
-                            <template v-slot:edit="{row,rowIndex}">
+                            <template v-slot:edit="{rowIndex}">
                                 <bip-comm-editor  :cell="item.cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                             </template>
-                            <template v-slot="{row,rowIndex}">
+                            <template v-slot="{rowIndex}">
                                 <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
                         </vxe-table-column>
@@ -57,10 +40,10 @@
                                 header-align="center" align="center" 
                                 :field="cel.id" :width="widths[cel.widthIndex]" :title="cel.labelString"
                                 show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(cel.attr&0x40)>0">
-                                <template v-slot:edit="{row,rowIndex}">
+                                <template v-slot:edit="{rowIndex}">
                                     <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                 </template>
-                                <template v-slot="{row,rowIndex}">
+                                <template v-slot="{rowIndex}">
                                     <bip-grid-info :cds="cds" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                 </template>
                             </vxe-table-column> 
@@ -70,33 +53,6 @@
                 <template v-slot:empty>
                     <el-button type="danger" icon="el-icon-plus" circle style="font-size: 28px;"  @click="addRecord"></el-button>
                 </template>
-                <!-- 
-                    <vxe-table-column
-                        header-align="center"
-                        align="center"
-                        v-for="(cel,index) in laycell.uiCels"
-                        :key="index"
-                        :field="cel.id"
-                        :width="widths[index]"
-                        :title="cel.labelString"
-                        show-header-overflow
-                        :edit-render="{name: 'default'}"
-                        show-overflow
-                        :disabled="(cel.attr&0x40)>0"
-                    >
-                        <template v-slot:edit="{row,rowIndex}">
-                            <bip-comm-editor  :cell="cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
-                        </template>
-                        <template v-slot="{row,rowIndex}">
-                            <bip-grid-info
-                                :cds="cds"
-                                :cell="cel"
-                                :row="rowIndex"
-                                :bgrid="true"
-                            ></bip-grid-info>
-                        </template>
-                    </vxe-table-column>
-                -->
             </vxe-table>
             <el-drawer append-to-body :visible.sync="addDrawer" direction="btt" size="50%" :withHeader="false" :wrapperClosable="false">
                 <div class="myDrawer">
@@ -115,40 +71,20 @@
         <!-- 报表展示表格-->
         <template v-else>
             <vxe-table
-                :ref="this.cds.ccells.obj_id"
-                v-if="isTable"
-                border
-                resizable
-                size="small"
-                highlight-hover-row
-                show-all-overflow="tooltip"
-                show-header-overflow
-                highlight-current-row
+                :ref="this.cds.ccells.obj_id" v-if="isTable" border resizable size="small"
+                highlight-hover-row show-all-overflow="tooltip"
+                show-header-overflow highlight-current-row
                 class="vxe-table-element checkbox-table"
-                :data.sync="cds.cdata.data"
-                :optimized="true"
-                :height="height"
-                @cell-dblclick="openrefs"
-                @cell-click="table_cell_click"
-                @sort-change="sortChange"
-                :sort-config="{trigger: 'cell',remote:true}"
-                :span-method="rowspanMethod"
-                show-footer
-                row-id="id"
-                :cell-style="cellStyle"
+                :data.sync="cds.cdata.data" :optimized="true" :height="height"
+                @cell-dblclick="openrefs" @cell-click="table_cell_click"
+                @sort-change="sortChange" :sort-config="{trigger: 'cell',remote:true}"
+                :span-method="rowspanMethod" show-footer row-id="id" :cell-style="cellStyle"
                 header-cell-class-name="tableHead"
                 :row-class-name="getRowStyleNew"
                 @checkbox-change="checkChange"
                 @checkbox-all="checkChange"
                 :checkbox-config="{checkField: 'checked',reserve:'true'}"
-                @custom="toolbarCustomEvent"
-                > 
-                <!-- :pager-config="tablePage"
-                @page-change="handlePageChange" 分页信息 -->
-                <!-- @cell-dblclick="openrefs" 双击 -->
-                <!-- cds.page.pageSize<cds.page.total -->
-                <!-- :select-config="{checkField: 'checked', trigger: 'row'}" -->
-                <!-- <vxe-table-column type="selection" width="60"></vxe-table-column> -->
+                @custom="toolbarCustomEvent">
                 <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
                 <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
                 <template v-for="(item,index) in groupCells">
@@ -156,7 +92,7 @@
                         <vxe-table-column :key="index" header-align="center" align="center" :field="item.cel.id"
                             :min-width="widths[item.cel.widthIndex]" :title="item.cel.labelString" show-header-overflow 
                             show-overflow :sortable ="(item.cel.attr&0x400000)>0" :fixed="isFixed(item.cel.widthIndex)" >
-                            <template v-slot="{row,rowIndex}"> 
+                            <template v-slot="{rowIndex}"> 
                                 <bip-grid-info :cds="cds" :cell="item.cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
                         </vxe-table-column> 
@@ -168,7 +104,7 @@
                                 header-align="center" align="center" :field="cel.id"
                                 :width="widths[cel.widthIndex]" :title="cel.labelString" show-header-overflow
                                 show-overflow :sortable ="(cel.attr&0x400000)>0" :fixed="isFixed(index)" >
-                                <template v-slot="{row,rowIndex}"> 
+                                <template v-slot="{rowIndex}"> 
                                     <bip-grid-info :cds="cds" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                 </template>
                             </vxe-table-column>
@@ -239,6 +175,7 @@
         <template v-if="beBill">
             <el-row >
                 <el-pagination  
+                    style="text-align: end"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page.sync="cds.page.currPage"
@@ -246,11 +183,10 @@
                     :page-sizes="[10, 20, 30,40,50]"
                     layout="slot,total,prev, pager, next,sizes"
                     background
-                    :total="cds.page.total"
-                >
-                <el-col :span="18" :xs="18" :sm="18" :md="18" >
-                    <el-button size="small" class="bip_btn_primary" @click="addRecord">添加</el-button>
-                    <el-button size="small" class="bip_btn_danger" plain @click="delRecord">删除</el-button>
+                    :total="cds.page.total">
+                <el-col slot :span="8" :xs="10" :sm="10" :md="8" style="text-align: start;float: left;" >
+                    <el-button v-if="canAdd" size="small" class="bip_btn_primary" @click="addRecord">添加</el-button>
+                    <el-button v-if="canDelete" size="small" class="bip_btn_danger" plain @click="delRecord">删除</el-button>
                 </el-col>
                 </el-pagination>
             </el-row>
@@ -309,7 +245,7 @@ export default class LayCelVexTable extends Vue {
     @Prop() config?:any
 
     activeNames:any = ['1'];
-    height:string = "300px";
+    height:string = "450px";
     info: string = "infos";
     clearable: boolean = true;
     widths: Array<string> = new Array<string>();
@@ -341,9 +277,22 @@ export default class LayCelVexTable extends Vue {
     multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
 
     @Inject('isNoHomeTable') isNoHomeTable!:boolean;//显示分页
+
+    canAdd:boolean = true;//是否可以增加
+    canDelete:boolean = true;//是否可以删除
     created() {
-        if((this.laycell.cells.attr & 0x40)>0){
+        if((this.laycell.cells.attr & 0x40)>0){//多选
             this.multiple = true;
+        }
+        if((this.laycell.cells.attr & 0x1)>0){//禁删除
+            this.canDelete = false;
+        }
+        if((this.laycell.cells.attr & 0x4)>0){//禁增加
+            this.canAdd = false;
+        }
+        if((this.laycell.cells.attr & 0x8)>0){//只读
+            this.canDelete = false;
+            this.canAdd = false;
         }
         //组成多表头
         this.initGroup();
@@ -374,30 +323,10 @@ export default class LayCelVexTable extends Vue {
             let cel:any = this.laycell.uiCels[i];
             if(cel && cel.id == celid){
                 if((cel.attr & 0x2) >0){
-                    console.log("必填项")
                     return { color: 'red' }
                 }
             }
         }
-        // if(column.column.children && column.column.children.length>0){
-        //     return;
-        // }
-        // let columnIndex = column.columnIndex;
-        // let _columnIndex = column._columnIndex
-        // if(!_columnIndex){
-        //     _columnIndex  = columnIndex
-        // }
-        // if(this.cds.ds_par){
-        //     columnIndex--;
-        // }
-        // // let cel =this.groupCells[columnIndex];
-        // let cel:any = this.laycell.uiCels[columnIndex];
-        // if(cel){
-        //     if((cel.attr & 0x2) >0){
-        //         console.log("必填项")
-        //         return { color: 'red' }
-        //     }
-        // }
     }
     /**
      * 报表内容单元格样式

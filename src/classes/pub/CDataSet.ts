@@ -182,7 +182,7 @@ export default class CDataSet {
         return true;
       }
     }
-    if((this.ccells.attr & 0x8 )>0){
+    if((this.ccells.attr & 0x8 )>0 || (this.ccells.attr & 0x20 )>0){
       return false;
     }
     if (this.ds_par != null) {

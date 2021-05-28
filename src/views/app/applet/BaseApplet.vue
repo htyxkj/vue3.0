@@ -1276,9 +1276,9 @@ export default class BaseApplet extends Vue{
         this.style = "";
         if(this.height>0){
             if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
-                this.style+="height:"+(this.height-50)+"px;"
-            }else{
                 this.style+="height:"+(this.height-0)+"px;"
+            }else{
+                this.style+="height:"+(this.height-50)+"px;"
             }
         }
     }

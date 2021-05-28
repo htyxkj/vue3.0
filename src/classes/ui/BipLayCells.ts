@@ -198,5 +198,15 @@ export default class BipLayCells {
             this.bl = v
         }
     }
+    if(_i ==-1){
+      _i = this.layId.indexOf('*')
+      if(_i>-1){
+          let nn = this.layId.substring(_i+1)
+          let v = parseFloat(nn)
+          if(v<1){
+              this.bl = v
+          }
+      }
+    }
   }
 }
