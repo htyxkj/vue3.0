@@ -21,7 +21,7 @@
                                 :picker-options="pickerOptions"
                                 :type="dateType"
                                 range-separator="~"
-                                :format="dateFormat"
+                                :format="showFormat"
                                 :value-format="dateFormat"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
@@ -35,7 +35,7 @@
                                     @focus='focus'
                                     @blur='weekInput2Blur'
                                     :type="dateType"
-                                    :format="dateFormat"
+                                    :format="showFormat"
                                     :value-format="dateFormat"
                                     :picker-options="optionaIint"
                                     placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
@@ -52,7 +52,7 @@
                             v-model="model1"
                             @focus='focus'
                             :type="dateType"
-                            :format="dateFormat"
+                            :format="showFormat"
                             :value-format="dateFormat"
                             :picker-options="optionaIint"
                             placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
@@ -72,7 +72,7 @@
                     v-model="model1"
                     @focus='focus'
                     :type="dateType"
-                    :format="dateFormat"
+                    :format="showFormat"
                     :value-format="dateFormat"
                     :picker-options="optionaIint"
                     placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
@@ -98,7 +98,7 @@
                             @focus='focus'
                             :picker-options="pickerOptions"
                             range-separator="~"
-                            :format="dateFormat"
+                            :format="showFormat"
                             :value-format="dateFormat"
                             start-placeholder="开始时间"
                             end-placeholder="结束时间"
@@ -109,7 +109,7 @@
                         <el-time-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
                             v-model="model1"
                             @focus='focus'
-                            :format="dateFormat"
+                            :format="showFormat"
                             :value-format="dateFormat"
                             :picker-options="optionaIint"
                             placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
@@ -128,7 +128,7 @@
                 <el-time-picker size="medium" style="width:100%"
                     v-model="model1"
                     @focus='focus'
-                    :format="dateFormat"
+                    :format="showFormat"
                     :value-format="dateFormat"
                     :picker-options="optionaIint"
                     placeholder="选择时间" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
@@ -159,6 +159,7 @@ export default class BipDateEditor extends Vue{
     clearable:boolean = true
     dateType="date"
     dateFormat="yyyy-MM-dd"
+    showFormat:any= null
     methodName:string = ''
     condition:boolean = false;
     span:number = 6
@@ -212,6 +213,7 @@ export default class BipDateEditor extends Vue{
                 this.dateTime = false;
                 if(this.bipInsAid.id == 'HS'){
                     this.dateFormat = 'HHmm';
+                    this.showFormat = 'HH:mm'
                 }else if(this.bipInsAid.id == 'H_S'){
                     this.dateFormat = 'HH:mm';
                 }else if(this.bipInsAid.id == 'H_SM'){
@@ -226,6 +228,9 @@ export default class BipDateEditor extends Vue{
                 }else if(this.bipInsAid.id == 'YM'){
                     this.dateFormat = 'yyyyMM';
                 }
+            }
+            if(!this.showFormat){
+                this.showFormat = this.dateFormat;
             }
             this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         // }
