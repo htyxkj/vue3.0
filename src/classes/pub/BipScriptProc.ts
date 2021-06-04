@@ -208,6 +208,16 @@ export default class BipScriptProc {
     let date = s0[0];
     let month = s0[1];
     let rtn = "";
+    if(!isNaN(date)){
+      if(date>999 && date<=9999){
+        date = date+"-01-01"
+      }else if(date>99999 && date<=999999){
+        date += ""
+        let y = date.substring(0,4)
+        let m = date.substring(4)
+        date = y+"-"+m+"-01"
+      }
+    }
     if((date+"").length>2){
       rtn = moment(date).add(month, 'M').format("YYYYMM");
     }

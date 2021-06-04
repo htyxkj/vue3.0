@@ -123,10 +123,6 @@ export default class BaseApplet extends Vue{
         } else if (cmd === "SAVE") {
             await this.saveData();
         } else if (cmd === "FIND") {
-            this.searchdia = true;
-            this.qe.oprid = this.oprid;
-            this.qe.page.currPage = 1;
-            this.qe.page.index = 0;
             setTimeout(() => {
                 let dia: any = this.$refs.se;
                 dia.open();
@@ -157,6 +153,12 @@ export default class BaseApplet extends Vue{
                 if(candel){
                     let crd = this.dsm.currRecord
                     let _idx = this.dsm.ccells.x_pk;
+                    if(_idx == -1){
+                        let pkindex = this.dsm.ccells.pkindex;
+                        if(pkindex){
+                            _idx = pkindex[0];
+                        }
+                    }
                     let id = this.dsm.ccells.cels[_idx].id
                     let sid = crd.data[id]
                     this.$confirm(`确定删除当前${sid}记录吗？`,
@@ -167,21 +169,27 @@ export default class BaseApplet extends Vue{
                         this.fullscreenLoading = true
                         this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
                             if(res.data.id ==0){
+                                // this.findData(this.dsm.cont)
                                 this.dsm.cdata.data.splice(this.dsm.page.index,1); 
-                                if( this.dsm.cdata.data.length ==0){
-                                    this.dsm.createRecord();
-                                    if(this.dsm.ds_sub){
-                                        for(var i=0;i<this.dsm.ds_sub.length ;i++){
-                                            this.dsm.ds_sub[i].clear();
-                                        }
-                                    }
-                                } else {
-                                    if(this.dsm.page.index >= this.dsm.cdata.data.length){
-                                        this.findData(this.dsm.cont)
-                                    }else{
-                                        this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
-                                    }
-                                }
+                                // if(this.dsm.page.index >= this.dsm.cdata.data.length){
+                                //     this.dsm.page.index--;
+                                // }
+                                this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                // this.dsm.page.total--;
+                                // if( this.dsm.cdata.data.length ==0){
+                                //     this.dsm.createRecord();
+                                //     if(this.dsm.ds_sub){
+                                //         for(var i=0;i<this.dsm.ds_sub.length ;i++){
+                                //             this.dsm.ds_sub[i].clear();
+                                //         }
+                                //     }
+                                // } else {
+                                //     if(this.dsm.page.index >= this.dsm.cdata.data.length){
+                                //         this.findData(this.dsm.cont)
+                                //     }else{
+                                //         this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                //     }
+                                // }
                                 this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
                                 this.dsm.page.total--;
                                 this.setListMenuName();
@@ -393,8 +401,8 @@ export default class BaseApplet extends Vue{
         }
         this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
     }
-//#endregion
-//#region 计算页码和获取缓存记录，记录有可能不存在
+    //#endregion
+    //#region 计算页码和获取缓存记录，记录有可能不存在
     /**
      * @param _idx 数据下标
      * @description 根据下标计算页码信息，并且从缓存中获取行记录，行记录可能不存在
@@ -413,31 +421,9 @@ export default class BaseApplet extends Vue{
         }else{
             this.dsm.page.index = page.index;
             this.dsm.page.currPage = page.currPage
-            // let _idex = this.dataCache.findIndex(item => {
-            //     return item.page == page.currPage;
-            // });
-            // if(_idex>-1){
-            //     let cdata:CData = this.dataCache[_idex].values
-            //     console.log(cdata,'fdfds');
-            //     this.dsm.setCData(cdata);
-            //     return cdata.getDataAtIndex(page.index);
-            // }else{
-            //     this.qe.oprid = this.oprid;
-            //     if(this.oprid == 13)
-            //         this.qe.cont = JSON.stringify(this.dsm.cont);
-            //     else
-            //         this.qe.cont = this.dsm.cont;
-            // }
             this.qe.oprid = this.oprid;
-                // if(this.oprid == 13){
-                //     let cont = this.qe.cont==null?"":JSON.stringify(this.dsm.cont);
-                //     this.qe.cont = cont;
-                // } else{
-                //     this.qe.cont = this.dsm.cont;
-                // }
             return null;
         }
-        return null;
     }
     /**
      * 获取当前主表对应的子表信息
@@ -467,6 +453,10 @@ export default class BaseApplet extends Vue{
     }
     
     async searchfindData(cont: any) {
+        this.searchdia = true;
+        this.qe.oprid = this.oprid;
+        this.qe.page.currPage = 1;
+        this.qe.page.index = 0;
         this.oprid = 13;
         if(JSON.stringify(cont) == '{}'){
             if(this.uriParams && this.uriParams.pdata){

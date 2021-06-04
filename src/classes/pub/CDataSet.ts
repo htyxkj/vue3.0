@@ -233,7 +233,7 @@ export default class CDataSet {
     this.addRow(modal);
     this.currRecord = modal;
     this.canEdit = true;
-    this.page.currPage = 1;
+    // this.page.currPage = 1;
     this.page.index = this.index;
     this.page.total = this.page.total+1
     this.checkGS();
@@ -296,7 +296,6 @@ export default class CDataSet {
                           // }
                           // if(vl && (vl.isNaN || vl == 'NaN'))
                           //   vl = 0;
-                        }
                         if (vl instanceof Array) {
                             console.log('公式计算返回数组',vl)
                         } else {
@@ -314,6 +313,7 @@ export default class CDataSet {
                             this.currRecord.data[col.id] = vl;
                           // }
                         }
+                      }
                     }
                     if ((col.initValue && (col.attr & 0x80) > 0) &&  (this.currRecord.c_state & 1)>0) {
                         this.incCalc(this.ccells,this.currRecord);

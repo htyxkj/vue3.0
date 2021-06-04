@@ -26,33 +26,27 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/app/CommonLayOut.vue')
+      component: () => import('./views/app/CommonLayOut.vue')
     },
     {
       path: '/portal',
       name: 'portal',
-      component: () => import(/* webpackChunkName: "about" */ './views/login/Portal.vue'),//未登录状态门户页
+      component: () => import('./views/login/Portal.vue'),//未登录状态门户页
     },
     {
       path: '/wlogin',
       name: 'wlogin',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/login/Login.vue')
+      component: () => import('./views/login/Login.vue')
     },
     {
       path: '/registered',
       name: 'registered',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/registered/Registered.vue')
+      component: () => import('./views/registered/Registered.vue')
     },
     {
       path:'/menuAuth',
       name:'/menuAuth',
-      component: () => import(/* webpackChunkName: "about" */ './custom/bip/menuAuth.vue')
+      component: () => import( './custom/bip/menuAuth.vue')
     },
     {
         path: '/myTask',
@@ -60,161 +54,130 @@ export default new Router({
         // meta: {
         //   keepAlive: false // 需要被缓存
         // },
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './views/app/taskMsg/bipTask.vue')
+        component: () => import('./views/app/taskMsg/bipTask.vue')
       },
       {
         path: '/myMsg',
         name: 'myMsg',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './views/app/taskMsg/bipMsg.vue')
+        component: () => import('./views/app/taskMsg/bipMsg.vue')
+      },
+      {
+        path: '/wOauthToken',
+        name: 'wOauthToken',
+        component: () => import('./oauthToken/OauthToken.vue')
       },
       {
         path: '/hrMonthly',
         name: 'hrMonthly',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-hr/AttendanceMonthly.vue')
+        component: () => import('./custom/bip-hr/AttendanceMonthly.vue')
       },
       {
         //飞防架区操作          
         path: '/OperatingArea',
         name: 'OperatingArea',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/OperatingArea.vue')
+        component: () => import('./custom/air-super/OperatingArea.vue')
       },
       {
         //飞防路线规划
         path: '/TaskRoutePlanning',
         name: 'TaskRoutePlanning',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/TaskRoutePlanning.vue')
+        component: () => import('./custom/air-super/TaskRoutePlanning.vue')
       },
       {
         //飞防轨迹回放
         path: '/PlayBack',
         name: 'PlayBack',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/PlayBack.vue')
+        component: () => import('./custom/air-super/PlayBack.vue')
       },
       {
         //飞防航带查询
         path: '/TrackShow',
         name: 'TrackShow',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/TrackShow.vue')
+        component: () => import('./custom/air-super/TrackShow.vue')
       },
       {
         //飞防 实时页面
         path: '/RealTimeTrack',
         name: 'RealTimeTrack',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/RealTimeTrack.vue')
+        component: () => import( './custom/air-super/RealTimeTrack.vue')
       },
       {
         //架次查询
         path: '/SortiesQuery',
         name: 'SortiesQuery',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/SortiesQuery.vue')
+        component: () => import('./custom/air-super/SortiesQuery.vue')
       },
       {
         //飞防架次统计
         path: '/SortiesInvoke',
         name: 'SortiesInvoke',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/SortiesInvoke.vue')
+        component: () => import('./custom/air-super/SortiesInvoke.vue')
       },
       {
         //飞防 机组GPS导入
         path: '/GPSRepair',
         name: 'GPSRepair',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/GPSRepair.vue')
+        component: () => import('./custom/air-super/GPSRepair.vue')
       },
       {
         //飞防 机组GPS导入
         path: '/airSuperBI',
         name: 'airSuperBI',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ './custom/air-super/airSuperBI.vue')
+        component: () => import('./custom/air-super/airSuperBI.vue')
       },
       {
         //阿米巴 数据建模
         path: '/DataModeling',
         name: 'DataModeling',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/DataModeling.vue')
+        component: () => import('./custom/bip-amb/report/DataModeling.vue')
       },
       {
         //阿米巴 职能式损益表
         path: '/ProfitLossFunction',
         name: 'ProfitLossFunction',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ProfitLossFunction.vue')
+        component: () => import('./custom/bip-amb/report/ProfitLossFunction.vue')
       },
       {
         //阿米巴 损益趋势分析
         path: '/ProfitLossTrend',
         name: 'ProfitLossTrend',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ProfitLossTrend.vue')
+        component: () => import('./custom/bip-amb/report/ProfitLossTrend.vue')
       },
       {
         //阿米巴 损益横比
         path: '/ProfitLossAspect',
         name: 'ProfitLossAspect',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ProfitLossAspect.vue')
+        component: () => import('./custom/bip-amb/report/ProfitLossAspect.vue')
       },
       {
         //阿米巴 经营趋势分析
         path: '/ManageLossTrend',
         name: 'ManageLossTrend',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ManageLossTrend.vue')
+        component: () => import('./custom/bip-amb/report/ManageLossTrend.vue')
       },
       {
         //阿米巴 阿米巴比较分析
         path: '/AMBCompareTrend',
         name: 'AMBCompareTrend',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/AMBCompareTrend.vue')
+        component: () => import('./custom/bip-amb/report/AMBCompareTrend.vue')
       },
       {
         //阿米巴 经营成功排名
         path: '/ManageResultsRank',
         name: 'ManageResultsRank',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/ManageResultsRank.vue')
+        component: () => import('./custom/bip-amb/report/ManageResultsRank.vue')
       },
       {
         //阿米巴 目标达成趋势
         path: '/GoalAchievementTrend',
         name: 'GoalAchievementTrend',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/GoalAchievementTrend.vue')
+        component: () => import('./custom/bip-amb/report/GoalAchievementTrend.vue')
       },
       {
         //阿米巴 目标达成分析
         path: '/GoalAchievementAnalysis',
         name: 'GoalAchievementAnalysis',
-        component: () => import(/* webpackChunkName: "about" */ './custom/bip-amb/report/GoalAchievementAnalysis.vue')
+        component: () => import('./custom/bip-amb/report/GoalAchievementAnalysis.vue')
       },
       {
           //阿米巴会计期间

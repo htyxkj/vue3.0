@@ -110,6 +110,7 @@ export default class App extends Vue {
     style:string="height:"+(this.height?this.height:'400')+"px";
     @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
     otherPage:any=["airSuperBI","Report","ItemAnalysis"];//单独展示页面,不在UI框架内的页面
+    noLoginPage:any=["wOauthToken"];//不需要登陆展示的页面
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
@@ -127,6 +128,7 @@ export default class App extends Vue {
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
             BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
+            BaseVariable.AouthTokenUrl = res.data.AouthTokenUrl;
             
         }).catch((err:any) => {
             console.log(err)
@@ -151,6 +153,7 @@ export default class App extends Vue {
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
             BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
+            BaseVariable.AouthTokenUrl = res.data.AouthTokenUrl;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -165,6 +168,13 @@ export default class App extends Vue {
             }
         }else{
             this.isLoginPage = -1;
+            if(this.$route.name == null && this.$route.path !='/'){
+                this.$router.push({
+                    path:'/wlogin',
+                    name:'wlogin',
+                })
+                return;
+            }
             if (this.$route.query) {
                 this.query = this.$route.query;
                 if(this.query.isLoginPage){
@@ -176,18 +186,6 @@ export default class App extends Vue {
                 if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
                     this.isLoginPage = 2;
                 }
-                if(this.isLoginPage == -1){
-                    this.$router.push({
-                        path:'/wlogin',
-                        name:'wlogin',
-                    })
-                    return;
-                }
-            } else{
-                this.$router.push({
-                    path:'/wlogin',
-                    name:'wlogin',
-                })
             }
         }
     }
@@ -265,6 +263,16 @@ export default class App extends Vue {
     }
     @Watch("$route")
     routerChange(to: Route, from: Route) {
+        if(this.noLoginPage.indexOf(to.name) !=-1){//登陆前显示的页面
+            return;
+        }
+        if(!this.isLogin && to.name != "wlogin"){
+            this.$router.push({
+                path:'/wlogin',
+                name:'wlogin',
+            })
+            return;
+        }
         this.initOk = true;
         if(this.$route.name == "registered"){
             this.isLoginPage = 1;
@@ -328,19 +336,12 @@ export default class App extends Vue {
                 this.editableTabsValue2 = 'myMsg';
             }
         }else{
-            if(this.otherPage.indexOf(to.name) !=-1){
+            if(this.otherPage.indexOf(to.name) !=-1){//其他页面不在UI框架内的页面
                 this.editableTabs2 = [];
                 this.setIsOtherePage(true)
                 return;
             }
             if(to.fullPath != '/'){
-                // if(this.isLogin)
-                // {
-                //     if(this.editableTabs2.length==0){
-                //         this.addIndex();
-                //         return ;
-                //     }
-                // }
                 if (this.menusList.length > 0) { 
                     let me:any = baseTool.findMenu(to.query.pmenuid+''); 
                     console.log(me)

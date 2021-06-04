@@ -11,7 +11,6 @@ import './assets/bip-erp/css/font.css'
 import "./scss/element-variables.scss";
 import './utils/Request'
 import store from './store'
-import 'vxe-table/lib/index.css'
 import EventBus from 'vue-bus-ts';
 import BaseLayout from '@/components/layout/BaseLayout.vue';
 import BipMenuItem from '@/components/menu/BipMenuItem.vue';
@@ -27,7 +26,12 @@ Vue.use(EventBus);
 
 var bus = new EventBus.Bus();
 
-
+import 'viewerjs/dist/viewer.css'
+import Viewer from 'v-viewer' // 预览图片组件
+Vue.use(Viewer);
+Viewer.setDefaults({
+    Options: { "inline": true, "button": true, "navbar": true, "title": true, "toolbar": true, "tooltip": true, "movable": true, "zoomable": true, "rotatable": true, "scalable": true, "transition": true, "fullscreen": true, "keyboard": true, "url": "data-source" }
+});
 Vue.config.productionTip = false;
 new Vue({
    bus,
