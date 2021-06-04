@@ -260,7 +260,11 @@ export default class BipCommEditor extends Vue{
             vv  = window.sessionStorage.getItem(str)
             if(!vv){
                 let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
-                await this.fetchInsAid(vars);
+                let res = await this.fetchInsAid(vars);
+                if(res.data.id==0){
+                    this.bipInsAid = null;
+                    this.bipInsAid = res.data.data.data
+                }
             }else{
                 this.bipInsAid = JSON.parse(vv)
                 let vals = {key:str,value:this.bipInsAid}
@@ -314,7 +318,7 @@ export default class BipCommEditor extends Vue{
             if(str.indexOf('$')>0){
                 str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
                 this.editName = str
-                this.getInsAidInfoBy(str,true)
+                await this.getInsAidInfoBy(str,true)
             }else if(str.indexOf('&')>0){
                 str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
                 this.editName = str
@@ -369,6 +373,7 @@ export default class BipCommEditor extends Vue{
 </script>
 <style>
  .BJstyle{
-   padding: 0 5px 0 0;
+    padding: 0 5px 0 0;
+    height: auto !important;
  }
 </style>

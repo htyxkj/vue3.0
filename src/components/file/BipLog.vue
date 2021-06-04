@@ -60,7 +60,7 @@ export default class BipLog extends Vue {
     };
     logTableData:any =[];
     logDelCell:CDataSet = new CDataSet("");
-    logDelCellId:any = "WEBEXCELIMPLOGDEL";
+    logDelCellId:any = "WEBEXCELILOGDEL";
 
     async mounted(){
         this.logCell = await this.getCell(this.logCellId);

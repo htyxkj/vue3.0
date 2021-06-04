@@ -42,10 +42,17 @@ export default class BipChart extends Vue {
         this.sizeChange();
     }
     sizeChange(){
+        if(this.myChart)
         this.myChart.resize();
     }
     beforeDestroy(){
         this.$bus.$off('componentsizechange',this.componentsizechangeBusID)
+    }
+    @Watch("$route")
+    changeRoute(){
+        if(this.$route && this.$route.name =="Home"){
+            this.sizeChange();
+        }
     }
 }
 </script>

@@ -33,10 +33,10 @@ export default class TabsLayout extends Vue{
     handleClick(tab:any, event:EventListener){
         let index = parseInt(tab.index);
         let r:any = this.laycfg[index];
-        console.log(r.comp.obj_id);
         if(this.env){
             let cds = this.env.getDataSet(r.comp.obj_id);
             this.env.dsmcurr = cds;
+            this.$bus.$emit("datachange",cds.ccells.obj_id)
         }
     }
 

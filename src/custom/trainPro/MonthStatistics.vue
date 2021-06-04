@@ -165,7 +165,7 @@ export default class YearStatistics extends Vue{
         let option:any = {
             color:this.color,
             title: {
-                text: '每天实际训练时长统计'
+                text: '每周实际训练时长统计'
             },
             legend: {
                 data: []

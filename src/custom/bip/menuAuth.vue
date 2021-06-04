@@ -165,9 +165,9 @@ export default class menuAuth extends Vue {
             const searchProps = ['usrcode', 'usrname']
             const rest = this.ulimit.filter((item:any) => searchProps.some(key => XEUtils.toString(item[key]).toLowerCase().indexOf(filterName) > -1))
             return rest.map((row:any) => {
-                const item = Object.assign({}, row)
+                const item:any = Object.assign({}, row)
                 searchProps.forEach(key => {
-                item[key] = XEUtils.toString(item[key]).replace(filterRE, match => `<span class="keyword-lighten">${match}</span>`)
+                item[key] = XEUtils.toString(item[key]).replace(filterRE, (match:any) => `<span class="keyword-lighten">${match}</span>`)
                 })
                 return item
             })
@@ -181,9 +181,9 @@ export default class menuAuth extends Vue {
             const searchProps = ['gwcode', 'gwname']
             const rest = this.glimit.filter((item:any) => searchProps.some(key => XEUtils.toString(item[key]).toLowerCase().indexOf(filterName) > -1))
             return rest.map((row:any) => {
-                const item = Object.assign({}, row)
+                const item:any = Object.assign({}, row)
                 searchProps.forEach(key => {
-                item[key] = XEUtils.toString(item[key]).replace(filterRE, match => `<span class="keyword-lighten">${match}</span>`)
+                item[key] = XEUtils.toString(item[key]).replace(filterRE, (match:any) => `<span class="keyword-lighten">${match}</span>`)
                 })
                 return item
             })
