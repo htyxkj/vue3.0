@@ -1,11 +1,9 @@
 <template>
-    <div class="bip-home-container">
+    <div class="bip-home-container" ref="HomeCalendar" style="width: 100%">
         <el-scrollbar>
-            <el-row style="width:100%">
-                <Calendar @next="changeMonth" @prev="changeMonth"
-                    lunar @select="clickDay" ref="calendar" completion monFirst
-                    @selectMonth="selectMonth" :almanacs="almanacs"
-                    :tileContent="tileContent" responsive /> 
+            <el-row v-if="calSty">
+                <calendar :style="calSty" @next="changeMonth" @prev="changeMonth" lunar @select="clickDay" ref="calendar" completion monFirst
+                    @selectMonth="selectMonth" :almanacs="almanacs" :tileContent="tileContent" responsive /> 
                 <el-row v-if="canAddHoliday" type="flex" justify="end" style="width:100%;text-align:end;padding-right:25px;">
                     <el-col>
                         <span @click="showAddHDialog()" style="cursor:pointer;">
@@ -114,7 +112,7 @@ export default class HomeCalendar extends Vue {
     holidayCell:CDataSet = new CDataSet('');//节日对象
     tileContent:any = [];//自定义日期样式
     almanacs:any={};
-
+    calSty:any="";
     async created(){
         let menu = baseTool.findMenu("KQ0303");
         if(menu !=  null){
@@ -133,8 +131,11 @@ export default class HomeCalendar extends Vue {
         await this.init();
     }
     
-    async mounted() {   
-        
+    async mounted() {
+        this.$nextTick(function () {
+            let cal:any = this.$refs["HomeCalendar"]
+            this.calSty = "width:"+cal.offsetWidth+"px"
+        })
     }
     async init(){
         let res = await tools.getServerTime();
@@ -579,5 +580,5 @@ export default class HomeCalendar extends Vue {
 }
 </style>
 <!--
-GitHub 地址：https://github.com/Hzy0913/mpvue-calendar
+GitHub 地址：https://github.com/Hzy0913/mpvue-calendar 2.3.1
  -->

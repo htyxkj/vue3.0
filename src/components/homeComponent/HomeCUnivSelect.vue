@@ -222,9 +222,9 @@ export default class HomeCUnivSelect extends Vue {
             }
         }
         if(this.biType == "SEL")
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
+            this.qe.cont = JSON.stringify(tj_row.data);
         else if(this.biType == "RPT" || this.biType == "SQL"){
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
+            this.qe.cont = JSON.stringify(tj_row);
         }
         this.qe.oprid = 13
         this.qe.type = 1

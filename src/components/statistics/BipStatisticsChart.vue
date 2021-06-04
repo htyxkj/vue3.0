@@ -643,7 +643,7 @@ export default class BipStatisticsDialog extends Vue {
         let pie:any = {
             tooltip : {
                 trigger: 'item',
-                formatter: "{a} <br/>{b} : {c} ({d}%)"
+                formatter: "{b} <br/>{a} : {c} ({d}%)"
             },
             toolbox: {
                 feature: {
