@@ -12,24 +12,28 @@
                         {{cell.labelString}}
                     </template>
                 </span>
-                <el-radio v-model="model1" v-for="item in options" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange"
-                    :key="item[cels[0].id]" 
-                    :label="item[cels[0].id]" 
-                    :value="item[cels[0].id]">{{item[cels[1].id]}}</el-radio> 
-                <template v-if="cell.desc">
-                    <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
-                        <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
-                            <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
-                        </el-tooltip>
-                    </span>
-                </template>
+                <div class="raido_div">
+                    <el-radio v-model="model1" v-for="item in options" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange"
+                        :key="item[cels[0].id]" 
+                        :label="item[cels[0].id]" 
+                        :value="item[cels[0].id]">{{item[cels[1].id]}}</el-radio> 
+                    <template v-if="cell.desc">
+                        <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                            <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                                <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                            </el-tooltip>
+                        </span>
+                    </template>
+                </div>
             </el-form-item>
         </template>
         <template v-else>
-            <el-radio v-model="model1" v-for="item in options" 
-                    :key="item[cels[0].id]" 
-                    :label="item[cels[0].id]" 
-                    :value="item[cels[0].id]">{{item[cels[1].id]}}</el-radio> 
+            <div class="raido_div">
+                <el-radio v-model="model1" v-for="item in options" 
+                        :key="item[cels[0].id]" 
+                        :label="item[cels[0].id]" 
+                        :value="item[cels[0].id]">{{item[cels[1].id]}}</el-radio> 
+            </div>
         </template>
     </el-col>
 </template>
@@ -76,16 +80,17 @@ export default class BipRadioEditor extends Vue{
     }
 
     initOPtions(){
+        console.log("initOPtions")
         this.options = [];
         if(this.bipInsAid){
             this.cels = this.bipInsAid.cells.cels
-            if(!this.cell.isReq){
-                let nullVal:any = {}
-                this.cels.forEach(item=>{
-                    nullVal[item.id] = ''
-                })
-                this.options.push(nullVal)
-            }
+            // if(!this.cell.isReq){
+            //     let nullVal:any = {}
+            //     this.cels.forEach(item=>{
+            //         nullVal[item.id] = ''
+            //     })
+            //     this.options.push(nullVal)
+            // }
             this.bipInsAid.values.forEach((item:any) => {
                 let items:any = {}
                 items[this.bipInsAid.cells.cels[0].id] =  item[this.bipInsAid.cells.cels[0].id]+''
@@ -133,5 +138,9 @@ export default class BipRadioEditor extends Vue{
     }
 }
 </script>
-
-
+<style scoped>
+.raido_div{
+    height: 36px;
+    line-height: 36px
+}
+</style>
