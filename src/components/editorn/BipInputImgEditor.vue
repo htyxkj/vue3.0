@@ -1,6 +1,6 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span" :style="'height:'+cell.ccVerCell*20+'px'">
-        <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
+        <el-form-item :label="cell.labelString" class="bip-input-item" :class="cell.labelString.indexOf('.,') == 0 ?'bip-input-item-notitle':''" :required="cell.isReq">
             <span slot="label" v-if="cell.labelString">
                 <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                     <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
@@ -12,7 +12,8 @@
                 </template>
             </span>            
             <div>
-                <img style="width: 100px; height: 110px" :src="url" @click="imgClick"/>
+                <img v-if="!url" :style="imgStyle" src="../../assets/bip/upimg.png" @click="imgClick"/> 
+                <img v-else :style="imgStyle" :src="url" @click="imgClick"/>
             </div>
         </el-form-item>
         <el-dialog title="图片选择" width="40%" class="bip-file" :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false" >
@@ -20,11 +21,12 @@
                 <el-col :span="24">
                     <el-card shadow="never" class="myCard">
                         <el-row>
-                            <img style="width: 100px; height: 110px" :src="url"/>
+                            <img v-if="!url" style="width: 100px; height: 110px" src="../../assets/bip/upimg.png"/> 
+                            <img v-else style="width: 100px; height: 110px" :src="url"/>
                         </el-row>
                         <el-row>
                             <a href="javascript:;" id="pic" class="el-upload__text a-upload">
-                                <input type="file" accept="image/*"  @change="upImg($event)" name="file" > 点击这里上传文件 
+                                <input type="file" accept="image/*"  @change="upImg($event)" name="file" > 点击这里上传图片 
                             </a>
                         </el-row>
                         <el-row style="text-align: start;color: #518dff;cursor:pointer">
@@ -56,6 +58,7 @@ export default class BipInputImgEditor extends Vue{
     span:number = 6
     url:any = "";
     outerVisible:boolean = false;
+    imgStyle:any = "width: 100px; height: 110px";
     
     mounted(){
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
@@ -66,9 +69,17 @@ export default class BipInputImgEditor extends Vue{
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }
         this.makeUrl();
+        let ccVerCell = this.cell.ccVerCell;
+        if(ccVerCell){
+            let height = 40 * ccVerCell -4;
+            this.imgStyle = "width: 100%; height: "+height+"px";
+        }
     }
     makeUrl(){
         this.url = BaseVariable.BaseUri+"/db_"+BaseVariable.COMM_FLD_VALUE_DBID+"/"+this.model1
+        if(!this.model1){
+            this.url = null;
+        }
     }
     imgClick(){
         this.$emit("focus",{})

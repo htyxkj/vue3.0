@@ -37,19 +37,19 @@ export default class BipGridInfo extends Vue{
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
     @Prop() row!:number
-    @Provide() editorType:number = 0
-    @Provide() I_EDITOR_LIST = ICL.I_EDITOR_LIST
-    @Provide() I_EDITOR_NUM = ICL.I_EDITOR_NUM
-    @Provide() bipInsAid:BipInsAidNew|null = null
+    editorType:number = 0
+    I_EDITOR_LIST = ICL.I_EDITOR_LIST
+    I_EDITOR_NUM = ICL.I_EDITOR_NUM
+    bipInsAid:BipInsAidNew|null = null
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-    @Provide() model:any = ''
-    @Provide() linkName:string = ""
-    @Provide() aidMarkKey:string = "";
-    @Provide() eventId:number = 0
-    @Provide() eventId1:number = 1
+    model:any = ''
+    linkName:string = ""
+    aidMarkKey:string = "";
+    eventId:number = 0
+    eventId1:number = 1
     mounted(){
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.cellEdit()
