@@ -176,6 +176,11 @@ export default class BipDateEditor extends Vue{
             this.condition = false;
         }
         this.model1 = this.model
+        if(this.condition){//报表条件
+            if(this.model && this.model.indexOf("~") == -1){
+                this.dataChange([this.model,this.model])
+            }
+        }
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{
@@ -466,6 +471,15 @@ export default class BipDateEditor extends Vue{
             if(this.cds&&this.cell){
                 if( this.model1 != this.model){
                     this.model1 = this.model
+                    if(this.showFormat =='HH:mm' && this.dateFormat=='HHmm'){
+                        if(this.model1.length ==1){
+                            this.model1 = "000"+this.model1
+                        }else if(this.model1.length ==2){
+                            this.model1 = "00"+this.model1
+                        }else if(this.model1.length ==3){
+                            this.model1 = "0"+this.model1
+                        }
+                    }
                 }
             }
         }

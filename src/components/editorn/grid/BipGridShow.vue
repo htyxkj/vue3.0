@@ -41,6 +41,13 @@ export default class BipGridShow extends Vue{
             this.model1 = currutil.currency(this.model1,'',point);
         }
         if(this.model1 &&　this.cell&& this.cell.editName =='HS'){
+            if(this.model1.length ==1){
+                this.model1 = "000"+this.model1
+            }else if(this.model1.length ==2){
+                this.model1 = "00"+this.model1
+            }else if(this.model1.length ==3){
+                this.model1 = "0"+this.model1
+            }
             if(this.model1.indexOf(":") == -1　&& this.model1.length>=4){
                 let h = this.model1.substring(0,2);
                 let m = this.model1.substring(2);
