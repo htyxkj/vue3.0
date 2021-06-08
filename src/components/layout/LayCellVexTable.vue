@@ -36,37 +36,50 @@
                             </template>
                         </vxe-table-column>
                     </template>
-                    <template v-else>
-                        <vxe-table-column :title="item.title" header-align="center" :key="index">
-                            <template v-if="item.child.length == 0">
-                                <vxe-table-column v-for="(child_cel,idx) in item.cels" :key="idx" header-align="center" align="center"
-                                    :field="child_cel.id" :width="widths[child_cel.widthIndex]" :title="child_cel.labelString"
-                                    show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_cel.attr&0x40)>0">
-                                    <template v-slot:edit="{rowIndex}">
-                                        <bip-comm-editor  :cell="child_cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
-                                    </template>
-                                    <template v-slot="{rowIndex}">
-                                        <bip-grid-info :cds="cds" :cell="child_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                    </template>
-                                </vxe-table-column>
-                            </template>
-                            <template v-else>
-                                <vxe-table-column v-for="(child_item,idx) in item.child" header-align="center" align="center"  :key="idx" :title="child_item.title"> 
-                                    <vxe-table-column v-for="(child_cel,idx) in child_item.cels" :key="idx" header-align="center" align="center"
-                                        :field="child_cel.id" :width="widths[child_cel.widthIndex]" :title="child_cel.labelString"
-                                        show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_cel.attr&0x40)>0">
+                    <vxe-table-column  v-else :title="item.title" header-align="center" :key="index">
+                        <template v-if="item.child.length>0">
+                            <template v-for="(child_item,idx) in item.child">
+                                <template v-if="child_item.cels">
+                                    <vxe-table-column header-align="center" align="center" :key="idx" :title="child_item.title">
+                                        <vxe-table-column v-for="(child_cel,idx) in child_item.cels" :key="idx" header-align="center" align="center"
+                                            :field="child_cel.id" :width="widths[child_cel.widthIndex]" :title="child_cel.labelString"
+                                            show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_cel.attr&0x40)>0">
+                                            <template v-slot:edit="{rowIndex}">
+                                                <bip-comm-editor  :cell="child_cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                                            </template>
+                                            <template v-slot="{rowIndex}">
+                                                <bip-grid-info :cds="cds" :cell="child_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                            </template>
+                                        </vxe-table-column>
+                                    </vxe-table-column>
+                                </template>
+                                <template v-else>
+                                    <vxe-table-column :key="idx" header-align="center" align="center"
+                                        :field="child_item.id" :width="widths[child_item.widthIndex]" :title="child_item.labelString"
+                                        show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_item.attr&0x40)>0">
                                         <template v-slot:edit="{rowIndex}">
-                                            <bip-comm-editor  :cell="child_cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                                            <bip-comm-editor  :cell="child_item" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                         </template>
                                         <template v-slot="{rowIndex}">
-                                            <bip-grid-info :cds="cds" :cell="child_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                            <bip-grid-info :cds="cds" :cell="child_item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                         </template>
                                     </vxe-table-column>
-                                </vxe-table-column> 
+                                </template>
                             </template>
-                        </vxe-table-column>
-                    </template>
-
+                        </template>
+                        <template v-else>
+                            <vxe-table-column :key="idx" header-align="center" align="center"
+                                :field="item.id" :width="widths[item.widthIndex]" :title="item.labelString"
+                                show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.attr&0x40)>0">
+                                <template v-slot:edit="{rowIndex}">
+                                    <bip-comm-editor  :cell="item" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                                </template>
+                                <template v-slot="{rowIndex}">
+                                    <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                </template>
+                            </vxe-table-column>
+                        </template>
+                    </vxe-table-column>
                 </template>
                 <template v-slot:empty>
                     <el-button type="danger" icon="el-icon-plus" circle style="font-size: 28px;"  @click="addRecord"></el-button>
@@ -121,27 +134,40 @@
                     </template>
                     <template v-else>
                         <vxe-table-column :title="item.title" header-align="center" :key="index">
-                            <template v-if="item.child.length == 0">
-                                <vxe-table-column v-for="(child_cel,idx) in item.cels"
-                                    header-align="center" align="center" :field="child_cel.id" :key="idx"
-                                                :min-width="widths[child_cel.widthIndex]" :title="child_cel.labelString" show-header-overflow 
-                                                show-overflow :sortable ="(child_cel.attr&0x400000)>0" :fixed="isFixed(child_cel.widthIndex)" >
+                            <template v-if="item.child.length>0">
+                                <template v-for="(child_item,idx) in item.child">
+                                    <template v-if="child_item.cels">
+                                        <vxe-table-column header-align="center" align="center" :key="idx" :title="child_item.title">
+                                            <vxe-table-column v-for="(s_cel,idx2) in child_item.cels"
+                                            header-align="center" align="center" :field="s_cel.id" :key="idx2"
+                                                :min-width="widths[s_cel.widthIndex]" :title="s_cel.labelString" show-header-overflow 
+                                                show-overflow :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
                                                 <template v-slot="{rowIndex}"> 
-                                                    <bip-grid-info :cds="cds" :cell="child_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                    <bip-grid-info :cds="cds" :cell="s_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                 </template>
-                                </vxe-table-column> 
+                                            </vxe-table-column>
+                                        </vxe-table-column>
+                                    </template>
+                                    <template v-else>
+                                        <vxe-table-column header-align="center" align="center" :field="child_item.id" :key="idx"
+                                            :min-width="widths[child_item.widthIndex]" :title="child_item.labelString" show-header-overflow 
+                                            show-overflow :sortable ="(child_item.attr&0x400000)>0" :fixed="isFixed(child_item.widthIndex)" >
+                                            <template v-slot="{rowIndex}"> 
+                                                <bip-grid-info :cds="cds" :cell="child_item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                            </template>
+                                        </vxe-table-column>
+                                    </template>
+                                </template>
                             </template>
                             <template v-else>
-                                <vxe-table-column v-for="(child_item,idx) in item.child" header-align="center" align="center"  :key="idx" :title="child_item.title"> 
-                                    <vxe-table-column v-for="(child_cel,idx) in child_item.cels"
-                                        header-align="center" align="center" :field="child_cel.id" :key="idx"
-                                            :min-width="widths[child_cel.widthIndex]" :title="child_cel.labelString" show-header-overflow 
-                                            show-overflow :sortable ="(child_cel.attr&0x400000)>0" :fixed="isFixed(child_cel.widthIndex)" >
-                                            <template v-slot="{rowIndex}"> 
-                                                <bip-grid-info :cds="cds" :cell="child_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                            </template>
-                                    </vxe-table-column> 
-                                </vxe-table-column> 
+                                <vxe-table-column v-for="(s_cel,idx2) in item.cels"
+                                    header-align="center" align="center" :field="s_cel.id" :key="idx2"
+                                    :min-width="widths[s_cel.widthIndex]" :title="s_cel.labelString" show-header-overflow 
+                                    show-overflow :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
+                                    <template v-slot="{rowIndex}"> 
+                                        <bip-grid-info :cds="cds" :cell="s_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                    </template>
+                                </vxe-table-column>
                             </template>
                         </vxe-table-column>
                     </template>
@@ -223,7 +249,16 @@
                     :total="cds.page.total">
                 <el-col slot :span="8" :xs="10" :sm="10" :md="8" style="text-align: start;float: left;" >
                     <el-button v-if="canAdd" size="small" class="bip_btn_primary" @click="addRecord">添加</el-button>
-                    <el-button v-if="canDelete" size="small" class="bip_btn_danger" plain @click="delRecord">删除</el-button>
+                    <el-popover v-if="canDelete" placement="top" width="180" v-model="tableDelPop">
+                        <div style="padding:10px">
+                            <div>请确认是否删除勾选数据</div>
+                            <div style="text-align: right; margin: 0;padding-top:30px">
+                                <el-button size="mini" type="text" @click="tableDelPop = false">取消</el-button>
+                                <el-button type="primary" size="mini" @click="delRecord">删除</el-button>
+                            </div>
+                        </div>
+                        <el-button size="small" slot="reference" class="bip_btn_danger" plain >删除</el-button>
+                    </el-popover>
                 </el-col>
                 </el-pagination>
             </el-row>
@@ -314,6 +349,8 @@ export default class LayCelVexTable extends Vue {
 
     canAdd:boolean = true;//是否可以增加
     canDelete:boolean = true;//是否可以删除
+    tableDelPop:boolean = false;//表格删除确认
+
     created() {
         if((this.laycell.cells.attr & 0x40)>0){//多选
             this.multiple = true;
@@ -471,7 +508,7 @@ export default class LayCelVexTable extends Vue {
         return bool;
     }
     delRecord(){
-        console.log("delRecord")
+        this.tableDelPop = false;
         if(this.cds.currCanEdit() && this.removeData.length>0){
             this.cds.cdata.rmdata = this.removeData;
             // console.log(this.cds)
@@ -1032,13 +1069,31 @@ export default class LayCelVexTable extends Vue {
                     labes.push(cc.id)
                 }
                 let row:any ={cels:cels,id:labes,child:[],title:oneG[4]}
-                if(titles.length ==0){
+                if(titles.length ==0 || oneG[1] == '0'){
                     titles.push(row);
                 }else{
                     let last = titles[titles.length-1];
                     let _id = labes[0];
                     if(last.id.indexOf(_id) !=-1){
                         titles[titles.length-1].child.push(row);
+                    }
+                }
+            }
+        }
+        //检查主子结构数量是否一致
+        for(let i=0;i<titles.length;i++){
+            let cel = titles[i];
+            if(cel.child && cel.child.length>0){
+                let cNum =0
+                cel.child.forEach((element:any) => {
+                    cNum += element.id.length;
+                });
+                if(cNum < cel.id.length){
+                    let cels = cel.cels;
+                    var z=cel.id.length-cNum
+                    z = cels.length-z;
+                    for(;z<cels.length;z++){
+                        titles[i].child.push(cels[z])
                     }
                 }
             }
