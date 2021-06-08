@@ -167,11 +167,13 @@ export default class CUnivSelect extends Vue {
                 this.env.ds_cont = this.dsm_cont
                 this.dsm_cont.createRecord()
                 let buid = this.uriParams.pflow
-                let res1 = await tools.getBULinks(buid);
-                let rtn1 = res1.data;
-                if(rtn1.id==0){
-                    let ope = rtn1.data.opt
-                    this.dsm.setOpera(ope)
+                if(buid){
+                    let res1 = await tools.getBULinks(buid);
+                    let rtn1 = res1.data;
+                    if(rtn1.id==0){
+                        let ope = rtn1.data.opt
+                        this.dsm.setOpera(ope)
+                    }
                 }
             } else {
                 console.log(rtn)

@@ -123,6 +123,7 @@ export default class BaseApplet extends Vue{
         } else if (cmd === "SAVE") {
             await this.saveData();
         } else if (cmd === "FIND") {
+            this.searchdia = true;
             setTimeout(() => {
                 let dia: any = this.$refs.se;
                 dia.open();
@@ -1007,11 +1008,13 @@ export default class BaseApplet extends Vue{
                     this.ds_ext
                 );
                 let buid = this.uriParams.pflow
-                let res1 = await tools.getBULinks(buid);
-                let rtn1 = res1.data;
-                if(rtn1.id==0){
-                    let ope = rtn1.data.opt
-                    this.dsm.setOpera(ope)
+                if(buid){
+                    let res1 = await tools.getBULinks(buid);
+                    let rtn1 = res1.data;
+                    if(rtn1.id==0){
+                        let ope = rtn1.data.opt
+                        this.dsm.setOpera(ope)
+                    }
                 }
                 // this.initRules()
             } else {
