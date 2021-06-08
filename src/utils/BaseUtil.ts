@@ -284,7 +284,7 @@ export namespace BIPUtils {
         dsm:dsm,
         field:field,
       });
-  }
+    }
     /**
      * @description 获取辅助/常量元素对象
      * @param aId 辅助后者常量ID
@@ -301,6 +301,25 @@ export namespace BIPUtils {
           qe:qe
         });
     }
+    /**
+     * @description 获取长文本API数据
+     * @param aId 长文本di
+     * @param 
+     */
+      getBipLongTextParams(lId: string,qe?:any) {
+        let jsonData:any = {};
+        if(qe){
+          jsonData = qe.cont;
+        }
+        jsonData["_apikey"] = lId;
+        jsonData = JSON.stringify(jsonData)
+        return Object.assign({
+          apiId: GlobalVariable.APIID_LONGTEXT,
+          dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+          usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+          jsonData:jsonData
+        });
+      }
     /**
      * @description dlg执行SQL
      * @param value 当前选中行

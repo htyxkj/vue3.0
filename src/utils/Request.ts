@@ -214,6 +214,15 @@ export namespace BIPUtil {
         return this.getFromServer(param);
     }
 
+        /**
+     * @description 获取长文本接口数据
+     * @param lid 长文本编码
+     */
+    getBipLongTextData(lid:string,qe?:QueryEntity){
+        let param = tool.getBipLongTextParams(lid,qe);
+        return this.getFromServer(param);
+    }
+
     /**
      * 执行客户端公式sql
      * @param pcell     对象

@@ -17,23 +17,25 @@
             <el-row :gutter="10">
                 <template v-if="menuList.length>0" >
                     <el-col v-for="(item,index) in menuList" :key="index" style="width:120px;padding:10px 0">
-                        <el-row >
-                            <el-col :span="24" class="imgcol">
-                                <img class="img pointer" :src="uri+item.menuIcon" @click="menuClick(item.menuId,item.command)"/>
-                            </el-col>
-                            <el-col :span="24" class="imgcol pointer">
-                                <template v-if="item.menuName.length>7">
-                                    <el-tooltip effect="dark" :content="item.menuName" placement="top">
-                                        <span class="menuname"  @click="menuClick(item.menuId,item.command)" >{{item.menuName.substring(0,6)}}…</span>
-                                    </el-tooltip>
-                                </template>
-                                <template v-else>
-                                    <span class="menuname"  @click="menuClick(item.menuId,item.command)" >
-                                        {{item.menuName}}
-                                    </span>
-                                </template>
-                            </el-col>
-                        </el-row>
+                        <el-badge :value="item.bgnum" class="bg_item" :max="99">
+                            <el-row >
+                                <el-col :span="24" class="imgcol">
+                                    <img class="img pointer" :src="uri+item.menuIcon" @click="menuClick(item.menuId,item.command)"/>
+                                </el-col>
+                                <el-col :span="24" class="imgcol pointer">
+                                    <template v-if="item.menuName.length>7">
+                                        <el-tooltip effect="dark" :content="item.menuName" placement="top">
+                                            <span class="menuname"  @click="menuClick(item.menuId,item.command)" >{{item.menuName.substring(0,6)}}…</span>
+                                        </el-tooltip>
+                                    </template>
+                                    <template v-else>
+                                        <span class="menuname"  @click="menuClick(item.menuId,item.command)" >
+                                            {{item.menuName}}
+                                        </span>
+                                    </template>
+                                </el-col>
+                            </el-row>
+                        </el-badge>
                     </el-col>
                 </template>
             </el-row>
@@ -59,7 +61,7 @@ import { Menu } from "@/classes/Menu";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import {BaseVariable} from "@/utils/BaseICL"
-
+import { BIPUtil } from "@/utils/Request";
 @Component({
   components: {}
 })
@@ -86,15 +88,23 @@ export default class HomeMenu extends Vue {
         if(this.cont){
             let cc = JSON.parse(this.cont);
             this.sname = cc.sname
-            let menu:any = cc.menuid.split(";");
+            let menus:Array<any> = cc.menuid.split(";");
             for(var i=0;i<this.menusList.length;i++){
-                menu.forEach( (item:any) => {
+                for(var z=0;z<menus.length;z++){
+                    let item = menus[z];
                     let menu = baseTool.findMenuById(item,this.menusList[i]);
                     if(menu){
+                        let lid = "BG."+menu.menuId
+                        let res = await BIPUtil.ServApi.getBipLongTextData(lid,undefined);
+                        let bgnum = undefined;
+                        if(res.data.code ==200){
+                            bgnum = res.data.data.bgnum;
+                        }
+                        menu.bgnum = bgnum;
                         this.menuList.push(menu);
                         this.selection.push(menu.menuId)
                     }
-                });
+                };
             }
         }
         this.optionalMenu = [];
@@ -186,6 +196,13 @@ export default class HomeMenu extends Vue {
     }
 }
 </script>
+<style lang="scss">
+    .bg_item{
+        .el-badge__content.is-fixed{
+            right: 30px;
+        }
+    }
+</style>
 <style lang="scss" scoped>
     .img{
         width: 50px;

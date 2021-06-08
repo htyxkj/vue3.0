@@ -219,7 +219,7 @@ export default class LoginRD extends Vue {
   //获取验证码
   async getVCode(){
     var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
-    if (myreg.test(this.regData.tel)) {
+    if (myreg.test(this.regData.tel.trim())) {
       this.getVCodeTime = 60;
       let _this = this;
       let timer = setInterval(function(){
