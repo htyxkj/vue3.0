@@ -23,6 +23,10 @@
                             <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
                             <el-row class="user_code user_padding">{{user.userCode}}</el-row>
                             <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
+                            <el-row class="user_padding">
+                                {{user.deptInfo.deptName}}
+                                <template v-if="gwName">-{{gwName}}</template>
+                            </el-row>
                             <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
                             <!-- <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row> -->
                             <el-row class="user_padding user_hr" v-if="user.mulscm && user.mulscm.length>0">
@@ -85,9 +89,10 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import  Stomp  from 'stompjs';
 import { BIPUtil } from "@/utils/Request";
 import { LoginState } from '../../store/modules/login/types'; 
-
+import QueryCont from "@/classes/search/QueryCont";
 let tools = BIPUtil.ServApi
 import { BaseVariable } from "@/utils/BaseICL";
+import QueryEntity from "@/classes/search/QueryEntity";
 const BIPTASK : string = "BIP_TASK",BIPMSG : string = "BIP_MSG"; 
 @Component({
 })
@@ -112,6 +117,9 @@ export default class LayHeader extends Vue {
     qp:boolean = false;
     icon:String = "el-icon-full-screen pointer"
     skin:any=[];
+
+    gwName:any="";
+
     async mounted() {
         this.skin = [
             {name:'默认',id:'theme'},{name:'默认1',id:'theme1'}
@@ -130,6 +138,7 @@ export default class LayHeader extends Vue {
         if(this.isLogin){ 
             await this.connectQ(); 
             this.getTaskMsgNum();
+            this.initGWName();
         } 
     }
     validatePass = (rule:any, value:any, callback:any) => {
@@ -372,6 +381,31 @@ export default class LayHeader extends Vue {
                 this.uppwddia = false;
             }else{
                 this.$notify.error(cc.data.message)
+            }
+        }
+    }
+
+    async initGWName(){
+        if(this.user){
+            let _u:any = this.user;
+            let qe: QueryEntity = new QueryEntity("", "");
+            let gwCode = _u.gwCode;
+            if(gwCode && gwCode.length>0){
+                let qCont = new QueryCont('gwcode',gwCode,12);
+                qCont.setContrast(5)
+                let oneCont = [qCont]; 
+                qe.cont = "~[" + JSON.stringify(oneCont)+"]";
+            }
+            let cc = await tools.getBipInsAidInfo("GW", 210, qe);
+            this.gwName = "";
+            if(cc.data.id ==0){
+                let value = cc.data.data.data.values;
+                for(var i=0;i<value.length;i++){
+                    this.gwName += value[i].gwname+";"
+                }
+                if(this.gwName.length>1){
+                    this.gwName = this.gwName.substring(0,this.gwName.length-1)
+                }
             }
         }
     }
