@@ -18,7 +18,7 @@
         </el-dialog> 
         <el-dialog :title="dlgDCell.ccells.desc" :close-on-click-modal="false" :visible.sync="showDCell" width="50%" append-to-body>
             <el-row class="bip-lay">
-                <el-form @submit.native.prevent label-position="right" label-width="100px">
+                <el-form @submit.native.prevent label-position="right" label-width="120px">
                     <div v-for="(cel,index) in dlgDCell.ccells.cels" :key="'A'+index">
                         <bip-comm-editor
                             v-if="(cel.attr&0x400) <= 0 "
@@ -405,10 +405,24 @@ export default class BipMenuBtnDlg extends Vue {
     async dlgDOk(){
         this.showDCell = false;
         let b = JSON.stringify(this.btn);
-        let env:any = this.env;
-        env["externalCell"] = this.dlgDCell
-        let v = JSON.stringify(env);
-        let bok = this.checkNotNull(env.dsm);
+        let _env:any = {
+            uriParams:this.env.uriParams,
+            cells:this.env.cells,
+            dsm:this.env.dsm.currRecord,
+            dsmArr:this.env.dsm.currRecordArr,
+            ds_cont:this.env.ds_cont,
+            ds_ext:this.env.ds_ext,
+            externalCell:this.dlgDCell
+        }
+        _env.externalCell.scriptProc = null;
+        _env.ds_cont.scriptProc = null;
+        if(_env.ds_ext){
+            _env.ds_ext.forEach((element:any) => {
+                element.scriptProc = null;
+            });
+        }
+        let v = JSON.stringify(_env);
+        let bok = this.checkNotNull(this.env.dsm);
         if(!bok){
             return ; 
         }
