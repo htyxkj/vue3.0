@@ -62,6 +62,7 @@ import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import {BaseVariable} from "@/utils/BaseICL"
 import { BIPUtil } from "@/utils/Request";
+import { ElStep } from "element-ui/types/step";
 @Component({
   components: {}
 })
@@ -117,12 +118,28 @@ export default class HomeMenu extends Vue {
      */
     findLastMenu(menu:any):any{ 
         if(menu.haveChild){
+            //判断子菜单是否全部都是 子菜单属性
+            let childNum = 0;
             for(let i = 0;i<menu.childMenu.length;i++){
-                let m1 = this.findLastMenu(menu.childMenu[i])
-                if(m1!=null){
-                    let m ={menuId:m1.menuId,menuName:m1.menuName};
-                    if(m1.menuattr != 4)
-                    this.optionalMenu.push(m);
+                let m1 = menu.childMenu[i];
+                if(m1.menuattr != 4){
+                    break;
+                }else{
+                    childNum++;
+                }
+            }
+            if(childNum == menu.childMenu.length){
+                let m ={menuId:menu.menuId,menuName:menu.menuName};
+                if(menu.menuattr != 4)
+                this.optionalMenu.push(m);
+            }else{
+                for(let i = 0;i<menu.childMenu.length;i++){
+                    let m1 = this.findLastMenu(menu.childMenu[i])
+                    if(m1!=null){
+                        let m ={menuId:m1.menuId,menuName:m1.menuName};
+                        if(m1.menuattr != 4)
+                        this.optionalMenu.push(m);
+                    }
                 }
             }
         }else{
