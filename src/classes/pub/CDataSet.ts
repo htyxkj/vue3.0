@@ -260,79 +260,83 @@ export default class CDataSet {
     //     this.checkGS();
     // }
   }
-  async checkGS(cell?: Cell) {
+  async checkGS(cell?: Cell,khgs:boolean=true) {
     if(cell){
         let id = cell.id
         for(var i=0;i<this.ccells.cels.length;i++){
-            let col = this.ccells.cels[i];
-            let scstr = col.script;
-            if(scstr){
-                let _i = col.refCellIds.findIndex(item=>{
-                    return item == id
-                });
-                let vl;
-                if(_i>-1){
-                    if(scstr && scstr.indexOf("=:") === 0) {
-                        vl = await this.gsCalcc(col);
-                        // scstr = scstr.replace("=:", "");
-                        //获取父级字段内容
-                        // if(col.pRefIds.length >0){
-                        //   if(this.ds_par){
-                        //     vl= this.ds_par.currRecord.data[col.pRefIds[0]]
-                        //   }
-                        // } else{
-                          // if(this.scriptProc.data.id != this.currRecord.id){
-                          //   this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
-                          // }
-                          // if(scstr.startsWith("sql")){
-                          //   let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
-                          //   if(res.data.id == 0){
-                          //     vl =  res.data.data.data
-                          //   }else{
-                          //     vl =  "";
-                          //   }
-                          // }else{
-                          //   vl = await this.scriptProc.execute(scstr, "", col);
-                          // }
-                          // if(vl && (vl.isNaN || vl == 'NaN'))
-                          //   vl = 0;
-                        if (vl instanceof Array) {
-                            console.log('公式计算返回数组',vl)
-                        } else {
-                          // if (vl == "Invalid date") {
-                          //   let dd = DateUtils.DateTool.now();
-                          //   if (col.type == 91) {
-                          //     this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
-                          //       dd,
-                          //       GlobalVariable.DATE_FMT_YMD
-                          //     );
-                          //   } else {
-                          //     this.currRecord.data[col.id] = dd;
-                          //   }
-                          // } else {
-                            this.currRecord.data[col.id] = vl;
-                          // }
-                        }
-                      }
-                    }
-                    if ((col.initValue && (col.attr & 0x80) > 0) &&  (this.currRecord.c_state & 1)>0) {
-                        this.incCalc(this.ccells,this.currRecord);
-                    }
-                    if((col.attr & 0x2000) >0)
-                      this.cellChange(col.id,vl);
-                    // this.checkGS(col)
-                    
+          let col = this.ccells.cels[i];
+          let scstr = col.script;
+          if(scstr){
+            let _i = col.refCellIds.findIndex(item=>{//影响当前字段的字段
+              return item == id
+            });
+            let vl;
+            if(_i>-1){
+              if(scstr && scstr.indexOf("=:") === 0) {
+                vl = await this.gsCalcc(col);
+                if (vl instanceof Array) {
+                  console.log('公式计算返回数组',vl)
+                } else {
+                  this.currRecord.data[col.id] = vl;
                 }
-            // }
+              }
+              if ((col.initValue && (col.attr & 0x80) > 0) &&  (this.currRecord.c_state & 1)>0) {
+                  this.incCalc(this.ccells,this.currRecord);
+              }
+              if((col.attr & 0x2000) >0)
+                this.cellChange(col.id,vl);
+              this.checkGS(col)
+            }
+          }
         }
+        if(khgs)
+          this.checkInterbankGs(cell,this.index);
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
           cd.checkGSByParID(id)
-          // cd.checkGSByRefId(id);
         }
     }else{
         this.checkAllGS()
     }
+  }
+  /**
+   * 跨行公式计算
+   * @param cell  字段
+   * @param index 行号
+   */
+  async checkInterbankGs(cell:Cell,index:any){
+    await cell.rowRefCellId.forEach((item:any) => {//跨行公式 
+      if(item.indexOf(index+"_") >-1){
+        let gsKey = item.split("_")[1];
+        let key = gsKey.split("#")[0]; //字段
+        let row:any = parseInt(gsKey.split("#")[1]); //行数
+        let gs = this.ccells.rowRefGS[gsKey];
+        let value:any = 0;
+        let jsgs = ""
+        for(var i=0;i<gs.length;i++){
+          let gg = gs[i];
+          let rd = this.cdata.data[parseInt(gg[1])];
+          let vl1 = parseInt(rd.data[gg[0]]);
+          if(isNaN(vl1)){
+            vl1 = 0;
+          }
+          let cal = gg[2];
+          jsgs += vl1
+          if(cal != null){
+            jsgs += cal 
+          }
+        }
+        value = eval(jsgs);
+        this.cdata.data[row].data[key] = value;
+        this.ccells.cels.forEach(item=>{ 
+          if(item.id == key){
+            this.checkInterbankGs(item,row)
+            this.currRecord = this.cdata.data[row];
+            this.checkGS(item,false)
+          }
+        })
+      }
+    });
   }
 
   async checkAllGS() {

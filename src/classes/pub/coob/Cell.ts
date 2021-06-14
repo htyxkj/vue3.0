@@ -28,5 +28,6 @@ export class Cell {
   pRefIds:Array<string> = []
   refCellIds:Array<string> = []
   widthIndex!:number
+  rowRefCellId:Array<string> = []//跨行公式中受当前字段影响的字段
   constructor(){}
 }

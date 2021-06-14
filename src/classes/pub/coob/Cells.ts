@@ -25,5 +25,6 @@ export class Cells {
   clientUI?:string
   sfix!:string
   sctrl!:string
+  rowRefGS!:any//跨行公式中 的公式集合  字段，字段公式
   constructor() {}
 }
