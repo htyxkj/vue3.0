@@ -277,9 +277,9 @@ export default class BipDateEditor extends Vue{
     }
     //判断时间是否在可选范围内
     optionalInterval(time:Date){
-        if(this.cell.chkRule){
+        if(this.cell.chkRule && this.cell.chkRule.indexOf("~") >-1){
             let startTime;
-            let endTime;
+            let endTime; 
             let dArr = this.cell.chkRule.split("~");
             startTime = dArr[0]
             endTime = dArr[1];

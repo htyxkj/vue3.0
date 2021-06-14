@@ -162,7 +162,7 @@ export default class LoginRD extends Vue {
   }
   //注册
   async registered() {
-    if(!this.regData.vCode){
+    if(!this.regData.scmName){
       this.$notify.error("公司名称不能为空");
       return;
     }

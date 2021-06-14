@@ -100,6 +100,15 @@ $--bip-comm-color:#ffffff;//f4f6fb
 /**
 自己的scss
 */
+.bip-text-align-left{
+    text-align: left !important;
+}
+.bip-text-align-right{
+    text-align: right !important;
+}
+.bip-text-align-center{
+    text-align: center !important;
+}
 
 //菜单栏位按钮样式
 .menubar{

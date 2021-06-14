@@ -266,9 +266,13 @@ export default class CUnivSelect extends Vue {
         let cmd = btn.cmd
         console.log(cmd);
         if(cmd == 'CLEAR'){
-        　　for(var key in this.dsm_cont.currRecord.data){ 
-                this.dsm_cont.currRecord.data[key] = "";
-        　　} 
+            if(this.dsm_cont.ccells && this.dsm_cont.ccells.cels.length){
+                for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
+                    let cel = this.dsm_cont.ccells.cels[i];
+                    if((cel.attr & 0x400 )<=0)
+                        this.dsm_cont.currRecord.data[cel.id] = null;
+                }
+            }
         }else if(cmd == 'FIND' ) {
             this.qe.page.currPage=1;
             this.find()

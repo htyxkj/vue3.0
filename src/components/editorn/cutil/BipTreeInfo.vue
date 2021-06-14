@@ -4,11 +4,11 @@
     <!-- <div style="height:200px;"> -->
         <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
         <el-scrollbar style="margin-bottom:0px;  margin-right: 0px; height:200px;">
-                <el-tree class="filter-tree" node-key="id"
+                <el-tree class="filter-tree" :node-key="treeKey"
                     lazy :load="loadNode"  
                     :show-checkbox="show_checkbox"
                     :props="defaultProps" accordion :currentNodeKey="currkey" @node-click="nodeClick" :highlight-current="true"
-                    :filter-node-method="filterNode" style="height:80%"
+                    :filter-node-method="filterNode" style="height:80%" :default-expanded-keys="expandedKeys"
                     ref="BipTreeInfoTree">
                     </el-tree>
         </el-scrollbar>
@@ -49,7 +49,9 @@ export default class BipTreeInfo extends Vue{
     currkey:string = ''
     count:number = 0
     treeKey:string=''
-    show_checkbox:boolean =false;
+    show_checkbox:boolean =false;    
+    expandedKeys:any = [];//默认展开key
+    expandedLevel = 3;//默认展开级次
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -162,6 +164,12 @@ export default class BipTreeInfo extends Vue{
                 resolve(data);
             }else{
                 resolve([data]); 
+            } 
+            if(this.expandedLevel>0 && (node.level+1)<=this.expandedLevel){
+                for(var i=0;i<data.length;i++){
+                    let cc:any = data[i]
+                    this.expandedKeys.push(cc[this.treeKey]);
+                }
             }
         }else{
             resolve([]); 

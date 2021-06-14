@@ -3,7 +3,7 @@
         <div v-if="editType == 6">
             <img :src="imgUrl" class="gridImg" v-viewer/>
         </div>
-        <div v-else :class="uiclass">{{model1}}</div>
+        <div v-else :class="uiclass" :style="valStyle">{{model1}}</div>
     </div>
 </template>
 <script lang="ts">
@@ -22,12 +22,30 @@ export default class BipGridShow extends Vue{
     uiclass:string='bip-show-common'
     editType:any = null;
     imgUrl:any = null;
+    valStyle:any = "";
     mounted(){
         this.initModel();
         this.editType = this.cell.editType;
         if(this.editType ==6){
             this.makeImgUrl();
         }
+        this.initStyle();
+    }
+    initStyle(){
+        let chkRule = this.cell.chkRule
+        let align = "text-align:left";
+        if(chkRule){
+            if(chkRule.indexOf("&") >0){
+                let type:any = chkRule.split("&")[0];
+                type = parseInt(type);
+                if(type == 1){
+                    align ="text-align:center"
+                }else if(type == 2){
+                    align ="text-align:right"
+                }
+            }
+        } 
+        this.valStyle += align;
     }
 
     initModel(){

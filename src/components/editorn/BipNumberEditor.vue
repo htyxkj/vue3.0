@@ -105,6 +105,19 @@ export default class BipNumberEditor extends Vue {
 
   dataChange(value: string | number) {
     if (this.cds.currCanEdit()) {
+      if(this.model1 == ""){
+        this.cds.currRecord.data[this.cell.id] = this.model1;
+        this.cds.cellChange(this.cell.id, this.model1);
+        if (this.cds.baseI) {
+          this.cds.baseI.cellDataChange(this.cds, this.cell.id, 0);
+        }
+        this.cds.checkGS(this.cell);
+        this.cds.currRecord.c_state |= 2;
+        if (this.cds.ds_par) {
+          this.cds.ds_par.currRecord.c_state |= 2;
+        }
+        return;
+      }
       if (this.model1 !== this.model) {
         let chkr = true;
         if (this.model1) {
