@@ -49,6 +49,11 @@ export default new Router({
       component: () => import( './custom/bip/menuAuth.vue')
     },
     {
+      path:'/voucherApp',
+      name:'/voucherApp',
+      component: () => import( './custom/bip/voucherApp.vue')
+    },
+    {
         path: '/myTask',
         name: 'myTask',
         // meta: {
