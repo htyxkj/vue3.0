@@ -22,7 +22,23 @@ import LoginRD from '@/views/login/LoginRD'
 export default class Login extends Vue {
   baseVar:any = null;
   created(){
-    this.baseVar = BaseVariable;
+    if(BaseVariable.ITEMTYPE == 'bip-zzz'){
+      let url = BaseVariable.UniteLoginUrl;
+      url = url+="?callback="; 
+      let route:any = this.$route;
+      let href ="";
+      if(route && route.name=='wlogin'){
+        href = location.href;
+        href = href.substring(0,href.lastIndexOf("/"))
+        href += "/wOauthToken"
+      }else{
+        href += "/wOauthToken"
+      }
+      href = encodeURIComponent(href);
+      location.href = (url+href);
+    }else{
+      this.baseVar = BaseVariable;
+    }
   }
 }
 </script>
