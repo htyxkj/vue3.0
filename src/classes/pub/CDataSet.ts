@@ -260,7 +260,11 @@ export default class CDataSet {
     //     this.checkGS();
     // }
   }
-  async checkGS(cell?: Cell,khgs:boolean=true) {
+  async checkGSByRow(cell?: Cell,row:any=this.index){
+    let curr = this.cdata.data[row];
+    this.checkGS(cell,curr,row)
+  }
+  async checkGS(cell?: Cell,curr:any=this.currRecord,index:any = this.index) {
     if(cell){
         let id = cell.id
         for(var i=0;i<this.ccells.cels.length;i++){
@@ -273,15 +277,15 @@ export default class CDataSet {
             let vl;
             if(_i>-1){
               if(scstr && scstr.indexOf("=:") === 0) {
-                vl = await this.gsCalcc(col);
+                vl = await this.gsCalcc(col,curr);
                 if (vl instanceof Array) {
                   console.log('公式计算返回数组',vl)
                 } else {
-                  this.currRecord.data[col.id] = vl;
+                  curr.data[col.id] = vl;
                 }
               }
-              if ((col.initValue && (col.attr & 0x80) > 0) &&  (this.currRecord.c_state & 1)>0) {
-                  this.incCalc(this.ccells,this.currRecord);
+              if ((col.initValue && (col.attr & 0x80) > 0) &&  (curr.c_state & 1)>0) {
+                  this.incCalc(this.ccells,curr);
               }
               if((col.attr & 0x2000) >0)
                 this.cellChange(col.id,vl);
@@ -289,8 +293,7 @@ export default class CDataSet {
             }
           }
         }
-        if(khgs)
-          this.checkInterbankGs(cell,this.index);
+        this.checkInterbankGs(cell,index);
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
           cd.checkGSByParID(id)
@@ -306,7 +309,7 @@ export default class CDataSet {
    */
   async checkInterbankGs(cell:Cell,index:any){
     await cell.rowRefCellId.forEach((item:any) => {//跨行公式 
-      if(item.indexOf(index+"_") >-1){
+      if(item.startsWith(index+"_")){
         let gsKey = item.split("_")[1];
         let key = gsKey.split("#")[0]; //字段
         let row:any = parseInt(gsKey.split("#")[1]); //行数
@@ -327,12 +330,13 @@ export default class CDataSet {
           }
         }
         value = eval(jsgs);
+        if(!isNaN(value)){
+          value = parseFloat(value).toFixed(item.ccPoint);
+        }
         this.cdata.data[row].data[key] = value;
-        this.ccells.cels.forEach(item=>{ 
-          if(item.id == key){
-            this.checkInterbankGs(item,row)
-            this.currRecord = this.cdata.data[row];
-            this.checkGS(item,false)
+        this.ccells.cels.forEach(cel=>{ 
+          if(cel.id == key){
+            this.checkGSByRow(cel,row)
           }
         })
       }
@@ -353,45 +357,9 @@ export default class CDataSet {
           // 公式计算 
           let vl;
           vl = await this.gsCalcc(col);
-          console.log(vl)
-          // scstr = scstr.replace("=:", "");
-          //获取父级字段内容
-          // if(col.pRefIds.length >0){
-          //   if(this.ds_par){
-          //     vl= this.ds_par.currRecord.data[col.pRefIds[0]]
-          //   }
-          // } else{
-            // if(this.scriptProc.data.id != this.currRecord.id){
-            //   this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
-            // }
-            // if(scstr.startsWith("sql")){
-            //   let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
-            //   if(res.data.id == 0){
-            //     vl =  res.data.data.data
-            //   }else{
-            //     vl =  "";
-            //   }
-            // }else{
-            //   vl = await this.scriptProc.execute(scstr, "", col);
-            // }
-            // if(vl && (vl.isNaN || vl == 'NaN'))
-            //   vl = 0;
-          // }
           if (vl instanceof Array) {
           } else {
-              // if (vl == "Invalid date") {
-              //     let dd = DateUtils.DateTool.now();
-              //     if (col.type == 91) {
-              //         this.currRecord.data[col.id] = DateUtils.DateTool.getDate(
-              //         dd,
-              //         GlobalVariable.DATE_FMT_YMD
-              //         );
-              //     } else {
-              //         this.currRecord.data[col.id] = dd;
-              //     }
-              // } else {
-                  this.currRecord.data[col.id] = vl;
-              // }
+            this.currRecord.data[col.id] = vl;
           }
       }
       if (scstr) {
@@ -433,16 +401,16 @@ export default class CDataSet {
     }
   }
   //就行公式解析
-  async gsCalcc(col:any){
+  async gsCalcc(col:any,curr:any=this.currRecord){
     let scstr = col.script
     let vl:any = null;
     if(scstr && scstr.indexOf("=:") === 0) {
       scstr = scstr.replace("=:", "");
-      if(this.scriptProc.data.id != this.currRecord.id){
-        this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
+      if(this.scriptProc.data.id != curr.id){
+        this.scriptProc = new BipScriptProc(curr, this.ccells,this);
       }
       if(scstr.startsWith("sql")){
-        let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,this.currRecord,col.id)
+        let res:any = await BIPUtil.ServApi.execClientGsSQL(this.ccells.obj_id,curr,col.id)
         if(res.data.id == 0){
           vl =  res.data.data.data
         }else{
@@ -902,7 +870,6 @@ export default class CDataSet {
           });
           if (_i > -1) {
             cds.currRecord.data[fld] = vvs[index];
-            // cds.checkGS(cel);
           }
         });
       }

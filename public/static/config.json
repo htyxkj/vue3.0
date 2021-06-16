@@ -1,6 +1,6 @@
 {
-    "dbid": "161",
-    "ApiUrl": "http://127.0.0.1:9999/jd/",
+    "dbid": "01",
+    "ApiUrl": "https://greatdou.com/RDCost/",
     "MQTT_SERVICE": "ws://115.28.191.203:85/ws",
     "MQTT_USERNAME": "bipmq",
     "MQTT_PASSWORD": "bipmq",
@@ -9,5 +9,6 @@
     "COPYRIGHT":"2020：一风立创科技 版权所有",
     "SMSURL":"http://www.bip-soft.com:8080/ssms/",
     "ITEMTYPE":"bip-zzz",
-    "AouthTokenUrl":"http://127.0.0.1:9999/xxxx/oauth/check_token"
+    "AouthTokenUrl":"http://192.168.17.76:8101",
+    "UniteLoginUrl":"http://192.168.17.76:8101/login#/"
 }

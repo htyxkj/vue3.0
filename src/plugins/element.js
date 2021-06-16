@@ -56,6 +56,8 @@ import {
   DropdownItem,
   Carousel,
   CarouselItem,
+  Collapse,
+  CollapseItem,
   Avatar
 
 } from "element-ui";
@@ -113,6 +115,8 @@ Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
+Vue.use(Collapse);
+Vue.use(CollapseItem);
 Vue.use(Avatar)
 
 Vue.prototype.$loading = Loading.service;

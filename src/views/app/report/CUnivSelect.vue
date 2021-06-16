@@ -373,9 +373,51 @@ export default class CUnivSelect extends Vue {
                 this.$notify.error( "删除失败!");
             }
             this.find();
+        }else if(cmd == 'SAVE'){
+            await this.saveData();
         }
         if(cmd != 'SHOWMAP'){
             this.isShowMap = false;
+        }
+    }
+    //#region 保存数据
+    async saveData() {
+        let bok = this.checkNotNull(this.dsm); 
+        if(!bok)
+            return ;
+        //保存数据
+        if ((this.dsm.currRecord.c_state & ICL.R_EDITED) > 0) {
+            this.fullscreenLoading = true;
+            this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
+                this.fullscreenLoading = false;
+                if (res.status == 200) {
+                    let data = res.data;
+                    if (data.id == 0) {
+                        this.dsm.currRecord.oldpk=[];
+                        let ord: any = data.data; 
+                        this.dsm.currRecord.data = Object.assign(
+                            this.dsm.currRecord.data,
+                            ord
+                        );
+                        this.dsm.setState(ICL.R_POSTED);
+                        if(data.message == '操作成功！'){
+                            this.$message.success(data.message);
+                        }else{
+                            this.$message.warning(data.message);
+                        }
+                        //清空主健旧值
+                        this.dsm.clearOldpk();
+                    }else{
+                        this.$message.warning(data.message);
+                    }
+                } else {
+                }   
+            }).catch(err=>{
+                this.fullscreenLoading = false;
+                this.$message.error(err);
+            });
+        } else {
+            return;
         }
     }
     /**导出Excel */
@@ -729,8 +771,7 @@ export default class CUnivSelect extends Vue {
      * @param crd 查询条件
      */
     async getCRecordByPk(crd: CRecord) {
-        console.log(crd)
-        if (crd && (crd.c_state == undefined || crd.c_state == 0)) {
+        if (crd) {
             this.qe.pcell = this.dsm.p_cell
             this.qe.tcell = this.dsm.ccells.obj_id
             this.qe.oprid = 15;
@@ -740,11 +781,6 @@ export default class CUnivSelect extends Vue {
             console.log(vv)
             if (vv != null) {
                 this.dsm.currRecord = vv.data[0]
-                // this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
-                // this.qe.values = vv.data;
-                // this.qe.page = vv.page;
-                // this.dataLoaded(this.qe,vv);
-                // console.log('getdataBack')
                 this.setSubData()
             }
         } else {

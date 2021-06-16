@@ -13,6 +13,11 @@
                 <el-form @submit.native.prevent label-position="right" label-width="120px" :style="fromStyle">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
+                <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4 && mbs.menuList.length>0">
+                    <el-row>&nbsp;</el-row>
+                    <el-row>&nbsp;</el-row>
+                    <el-row>&nbsp;</el-row>
+                </template>
             </el-scrollbar>
             <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4 && mbs.menuList.length>0">
                 <div class="bip-btn-small">
@@ -317,7 +322,6 @@ export default class BaseApplet extends Vue{
             this.qe.cont = JSON.stringify(crd.data);
             this.qe.values = [];
             let vv = await this.findDataFromServe(this.qe);
-            console.log(vv)
             if (vv != null) {
                 this.dsm.currRecord = vv.data[0]
                 this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
@@ -1177,7 +1181,6 @@ export default class BaseApplet extends Vue{
     }
 
     async handleCurrentChange(value:number){
-        console.log('handleCurrentChange',value)
         this.qe.oprid = this.oprid
         this.qe.type = 0
         this.qe.page.currPage = value
