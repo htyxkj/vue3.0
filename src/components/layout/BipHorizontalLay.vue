@@ -3,7 +3,7 @@
         <el-col :span="lspan" v-if="laycfg.length>1" >
             <el-scrollbar :style="style">
                 <template v-if="!cfgL.bcells">
-                    <base-layout :layout="cfgL.comp" :env="env" :config="config"  @invokecmd="invokecmd"></base-layout>
+                    <base-layout :layout="cfgL.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config"  @invokecmd="invokecmd"></base-layout>
                 </template>
                 <template v-else>
                     <el-row class="bip-row">
@@ -15,7 +15,7 @@
         <el-col :span="rspan" v-if="laycfg.length>1">
             <el-scrollbar :style="style" >
                 <template v-if="!cfgR.bcells">
-                    <base-layout :layout="cfgR.comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout>
+                    <base-layout :layout="cfgR.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></base-layout>
                 </template>
                 <template v-else>
                     <el-row class="bip-row">

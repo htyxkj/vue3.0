@@ -5,38 +5,24 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
-// import { State, Action, Getter, Mutation } from "vuex-class";
-// import CDataSet from '../../../classes/pub/CDataSet';
 import { Cell } from '../../../classes/pub/coob/Cell';
-// import {CommICL} from '@/utils/CommICL'
-// import { BIPUtils } from '@/utils/BaseUtil'
 import BipInsAidNew from '../../../classes/BipInsAidNew';
-// let baseTool = BIPUtils.baseUtil
-// let ICL = CommICL
 @Component({})
 export default class BipListRef extends Vue{
-    // @Prop() cds!:CDataSet
     @Prop() cell!:Cell
-    // @Prop() row!:number
     @Prop() bipInsAid!:BipInsAidNew
 
     @Prop() model!:string
 
-    @Provide() disabled:boolean = false
-    @Provide() multiple:boolean = false
-    @Provide() bfmt:boolean = false
-    @Provide() bcode:boolean = false
-    // @Provide() linkName:string = ""
-    // @Provide() eventId:number = 0
+    disabled:boolean = false
+    multiple:boolean = false
+    bfmt:boolean = false
+    bcode:boolean = false
     mounted(){
         this.disabled = (this.cell.attr & 0x40) > 0;
         this.multiple = (this.cell.attr & 0x200000) > 0;
         this.bfmt = (this.cell.attr & 0x10000) > 0;
         this.bcode = (this.cell.attr & 0x40000) > 0;
-        // if(this.model&&this.model.length>0){
-        // }
-        // this.cellEdit()
-        // this.eventId = this.$bus.$on('cell_edit',this.cellEdit)
     }
 
     @Watch('model')
@@ -54,11 +40,22 @@ export default class BipListRef extends Vue{
                 let id = this.bipInsAid.cells.cels[0].id
                 let name = this.bipInsAid.cells.cels[1].id
                 this.bipInsAid.values.forEach(item=>{
-                    if(item[id]+'' == m){
-                        if(this.bfmt)
-                            str = m+":"+item[name]
-                        else{
-                            str = item[name]
+                    let values = []
+                    if(this.multiple){
+                        values = m.split(";");
+                    }else{
+                        values = [m]
+                    }
+                    for(var i=0;i<values.length;i++){
+                        if(item[id]+'' == values[i]){
+                            if(this.bfmt)
+                                str += values[i]+":"+item[name]
+                            else{
+                                str += item[name]
+                            }
+                            if(i<values.length-1){
+                                str += ";"
+                            }
                         }
                     }
                 })

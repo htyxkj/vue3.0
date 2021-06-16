@@ -29,7 +29,7 @@
         </template>
         <template v-else>
             <div class="raido_div">
-                <el-radio v-model="model1" v-for="item in options" 
+                <el-radio v-model="model1" v-for="item in options" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange"
                         :key="item[cels[0].id]" 
                         :label="item[cels[0].id]" 
                         :value="item[cels[0].id]">{{item[cels[1].id]}}</el-radio> 

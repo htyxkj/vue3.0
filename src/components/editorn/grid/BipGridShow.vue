@@ -34,17 +34,21 @@ export default class BipGridShow extends Vue{
     initStyle(){
         let chkRule = this.cell.chkRule
         let align = "text-align:left";
-        if(chkRule){
-            if(chkRule.indexOf("&") >0){
-                let type:any = chkRule.split("&")[0];
-                type = parseInt(type);
-                if(type == 1){
-                    align ="text-align:center"
-                }else if(type == 2){
-                    align ="text-align:right"
-                }
+        if(chkRule && chkRule.indexOf("&") >0){
+            let type:any = chkRule.split("&")[0];
+            type = parseInt(type);
+            if(type == 1){
+                align ="text-align:center"
+            }else if(type == 2){
+                align ="text-align:right"
             }
-        } 
+        }else{
+            if(this.cell.type ==2 || this.cell.type ==3){
+                align ="text-align:right"
+            }else if(this.cell.type >=4 || this.cell.type <=6){
+                align ="text-align:center"
+            }
+        }
         this.valStyle += align;
     }
 

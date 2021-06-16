@@ -81,7 +81,6 @@ export default class BipTreeEditor extends Vue{
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
 
     async mounted(){
-        console.log("BipTreeEditor")
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.TreeDataChangeID = this.$bus.$on('TreeDataChange',this.dataChange)
 
@@ -131,7 +130,7 @@ export default class BipTreeEditor extends Vue{
                 }, 100);
             }
         }else{
-            this.$notify.warning('没有QueryEditor：'+this.cell.editName)
+            this.$notify.warning('没有TreeEditor：'+this.cell.editName)
         }
     }
 
@@ -146,12 +145,12 @@ export default class BipTreeEditor extends Vue{
     dataChange(vv:string){ 
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
-                let r = this.row>-1?this.row:0
-                let crd = this.cds.getRecordAtIndex(r);
-                crd.data[this.cell.id] = vv
-                crd.c_state |= 2;
-                this.cds.currRecord = Object.assign({},crd) 
-                this.cds.checkGS(this.cell); 
+                this.cds.currRecord.data[this.cell.id] = vv;
+                this.cds.cdata.data[this.cds.index].data[this.cell.id] = vv
+                this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
+                this.cds.setStateOrAnd(ICL.R_EDITED)
+                this.cds.checkGS(this.cell);
+                this.cds.currRecord.c_state |= 2;
                 if(this.cds.ds_par){
                     this.cds.ds_par.currRecord.c_state |= 2;
                 }
