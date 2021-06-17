@@ -293,7 +293,14 @@ export default class BipMenuBtnDlg extends Vue {
                                 }
                             }
                             if(cc[2] && cc[2] =='1'){
-                                this.$emit("selData")
+                                let tj =null;
+                                if(res.data.data){
+                                    let key = res.data.data.t_key;
+                                    let value = res.data.data.t_value;
+                                    if(key && value)
+                                        tj = [key,value];
+                                }
+                                this.$emit("selData",tj)
                             }
                             this.$notify.success(res.data.message)
                         }else if(res.data.id == -2){
