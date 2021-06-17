@@ -22,7 +22,7 @@
                     <el-collapse-item :title="laycell.name" name="1" >
                         <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
                             <el-row>
-                                <el-col :span="23">
+                                <el-col class="row_data">
                                     <template v-if="uiCels.length == 0">
                                         <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
                                     </template>
@@ -37,7 +37,7 @@
                                         </el-card>
                                     </template>
                                 </el-col>
-                                <el-col :span="1" class="row_btn">
+                                <el-col class="row_btn">
                                     <!-- <el-button size="mini" @click="insertRow(rowId)">插入</el-button>
                                     <el-button size="mini" :disabled="rowId == 0" @click="moveUp(rowId)">上移</el-button>
                                     <el-button size="mini" :disabled="rowId == cds.cdata.data.length-1" @click="moveDown(rowId)">下移</el-button> -->
@@ -278,10 +278,14 @@ export default class LayCell extends Vue{
         padding: 5px;
     }
 }
+.row_data{
+    width: calc(100% - .625rem) !important;
+}
 .row_btn{
     text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;
+    width: .625rem !important;
     // button{
     //     width: 120px;
     // }
