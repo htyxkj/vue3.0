@@ -264,6 +264,12 @@ export default class CDataSet {
     let curr = this.cdata.data[row];
     this.checkGS(cell,curr,row)
   }
+  /**
+   * 公式计算 计算受当前字段影响的字段公式 cell 为当前字段
+   * @param cell  当前字段
+   * @param curr  数据
+   * @param index 行数
+   */
   async checkGS(cell?: Cell,curr:any=this.currRecord,index:any = this.index) {
     if(cell){
         let id = cell.id
@@ -271,7 +277,7 @@ export default class CDataSet {
           let col = this.ccells.cels[i];
           let scstr = col.script;
           if(scstr){
-            let _i = col.refCellIds.findIndex(item=>{//影响当前字段的字段
+            let _i = col.refCellIds.findIndex(item=>{//影响当前字段（col）的字段
               return item == id
             });
             let vl;
@@ -300,6 +306,26 @@ export default class CDataSet {
         }
     }else{
         this.checkAllGS()
+    }
+  }
+    /**
+   * 公式计算 计算当前cell 字段的公式
+   * @param cell  当前字段
+   * @param curr  数据
+   * @param index 行数
+   */
+  async checkCurrCellGs(cell?: Cell,curr:any=this.currRecord,index:any = this.index){
+    if(cell){
+      let scstr = cell.script;
+      let vl;
+      if(scstr && scstr.indexOf("=:") === 0) {
+        vl = await this.gsCalcc(cell,curr);
+        if (vl instanceof Array) {
+          console.log('公式计算返回数组',vl)
+        } else {
+          curr.data[cell.id] = vl;
+        }
+      }
     }
   }
   /**
