@@ -3,7 +3,7 @@
         <div v-if="editType == 6">
             <img :src="imgUrl" class="gridImg" v-viewer/>
         </div>
-        <div v-else :class="uiclass" :style="valStyle">{{model1}}</div>
+        <div v-else :class="uiclass" :style="valStyle2">{{model1}}</div>
     </div>
 </template>
 <script lang="ts">
@@ -23,6 +23,7 @@ export default class BipGridShow extends Vue{
     editType:any = null;
     imgUrl:any = null;
     valStyle:any = "";
+    valStyle2:any = "";
     mounted(){
         this.initModel();
         this.editType = this.cell.editType;
@@ -34,6 +35,9 @@ export default class BipGridShow extends Vue{
     initStyle(){
         let chkRule = this.cell.chkRule
         let align = "text-align:left";
+        if(this.cell.type==3){
+            align = "text-align:right";
+        }
         if(chkRule){
             if(chkRule.indexOf("&") >0){
                 let type:any = chkRule.split("&")[0];
@@ -46,6 +50,7 @@ export default class BipGridShow extends Vue{
             }
         } 
         this.valStyle += align;
+        this.valStyle2 = this.valStyle;
     }
 
     initModel(){
@@ -57,6 +62,11 @@ export default class BipGridShow extends Vue{
             const point  = this.cell.ccPoint<0?2:this.cell.ccPoint
             // this.model1 = XEUtils.toFixedString(this.model1,point)
             this.model1 = currutil.currency(this.model1,'',point);
+            if(parseFloat(this.model1)<0){
+                this.valStyle2=this.valStyle+";color:red";
+            }else{
+                this.valStyle2=this.valStyle;
+            }
         }
         if(this.model1 &&　this.cell&& this.cell.editName =='HS'){
             if(this.model1.length ==1){

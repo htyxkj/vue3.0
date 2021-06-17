@@ -19,6 +19,7 @@
                     <el-row>
                         <el-col :span="18">
                             <vxe-table 
+                            ref="pztb"
                             :height="height-300"
                             size="small"
                             resizable
@@ -36,18 +37,16 @@
                             :data="tableData">
                                 <vxe-table-column type="seq" width="60"></vxe-table-column>
                                 <template v-if="tableCell.length>0">
-                                    <vxe-table-column  v-for="(cel,index) in tableCell" :key="index" :field="cel.id" :title="cel.labelString" :width="cel.numChar*8" :formatter="cel.type==3?formatFixedNumber:''" :align="cel.type==3?'right':'center'" ></vxe-table-column>
+                                    <vxe-table-column  v-for="(cel,index) in tableCell" :key="index" :field="cel.id" :title="cel.labelString" :width="cel.numChar*8" :formatter="cel.type==3?formatFixedNumber:''" :align="cel.type==3?'right':'center'" >
+                                        <template v-slot="{rowIndex}"> 
+                                            <bip-grid-info :cds="dsm.ds_sub[0]" :cell="cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                        </template>
+                                    </vxe-table-column>
                                 </template>
-                                <!-- <vxe-table-column field="name" title="摘要" ></vxe-table-column>
-                                <vxe-table-column field="sex" title="科目"></vxe-table-column>
-                                <vxe-table-column field="rmbd" title="借方金额" align="right"></vxe-table-column>
-                                <vxe-table-column field="fcyc" title="贷方金额" align="right"></vxe-table-column>
-
-                                <vxe-table-column field="address" title="Address" show-overflow></vxe-table-column> -->
                                 <vxe-table-column title="操作" width="100" show-overflow align="center">
                                     <template #default="{ row }">
                                     <vxe-button type="text" icon="el-icon-edit-outline" @click="editEvent(row)" status="primary"></vxe-button>
-                                    <vxe-button type="text" icon="el-icon-delete" status="danger"></vxe-button>
+                                    <vxe-button type="text" icon="el-icon-delete" @click="deleteEvent(row)" status="danger"></vxe-button>
                                     </template>
                                 </vxe-table-column>
                             </vxe-table>
@@ -64,12 +63,55 @@
                    
                    
                 </el-card>
-                <!-- <el-card>
-                    <el-row class="bip-row" :gutter="4" v-if="bottomLay" :style="'margin-top:10px;'">
-                        <lay-cell :laycell="bottomLay.comp" :env="env" ></lay-cell>
-                    </el-row>
-                </el-card> -->
              </el-form>
+             <el-dialog class="bip-search" width="50%" :visible.sync="editDrawer"
+                :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+                <span slot="title">
+                    <div class="el-dialog__title" style="padding-bottom: 5px;"> <i class="el-icon-edit" ></i>
+                    <span>添加/修改凭证行</span></div>
+                </span>
+                <el-form ref="form" :model="formData.data" label-width="120px" label-position="right" style="margin :5px 10px;" >
+                    <el-row>
+                        <el-form-item class="bip-s-dia" label="摘要"  required>
+                            <el-input type="textarea" v-model="formData.data.remark"></el-input>
+                        </el-form-item>
+                    </el-row>
+                     <el-row>
+                        <el-form-item class="bip-s-dia" label="会计科目" required>
+                            <el-input  v-model="formData.data.adic" >
+                                <template slot="append"> <i slot="suffix" class="el-input__icon el-icon-share"></i></template>
+                            </el-input>
+                        </el-form-item>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item class="bip-s-dia" label="借方金额"  >
+                                    <el-input-number class="m-number"  v-model="formData.data.rmbd" :precision="2" style="min-width:220px;" @change="rmbChange('rmbd')"></el-input-number>
+                                </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item class="bip-s-dia" label="贷方金额"  >
+                                <el-input-number class="m-number" v-model="formData.data.rmbc" :precision="2" style="min-width:220px;" @change="rmbChange('rmbc')"></el-input-number>
+                            </el-form-item>
+                        </el-col>
+                        
+                    </el-row>
+                    
+                     <el-row>
+                        <el-card>
+                                <div slot="header" class="clearfix">
+                                    <span>辅助项</span>
+                                </div>
+                                    <el-row></el-row>
+                             </el-card>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="editDrawer = false" size="mini">取 消</el-button>
+                    &nbsp;
+                    <el-button type="primary" @click="editOK" size="mini">确 定</el-button>
+                </span>
+             </el-dialog>
         </div>
     </el-row>
 </template>
@@ -93,16 +135,19 @@ import QueryEntity from "@/classes/search/QueryEntity";
 import PageInfo from "@/classes/search/PageInfo";
 import BipWork from '@/components/cwork/BipWork.vue';
 import BipWorkProcess from '@/components/cwork/BipWorkProcess.vue';
-import CRecord from '../../../classes/pub/CRecord';
-import CData from '../../../classes/pub/CData';
+import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
+import CRecord from '@/classes/pub/CRecord';
+import CData from '@/classes/pub/CData';
 import BipLayConf from "@/classes/ui/BipLayConf";
 import LayCell from '@/components/layout/LayCell.vue';
 import {CurrUtils} from '@/utils/CurrUtils'
+import { values } from 'xe-utils/methods';
 let currutil = CurrUtils.curr
 let icl = CommICL;
 let tools = BIPUtil.ServApi
+let _ = require('lodash')
 @Component({
-    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg,LayCell}
+    components: { BipMenuBarUi,  BipWork ,BipWorkProcess ,BipMenuBtnDlg,AppletListDlg,LayCell,BipGridInfo}
 })
 export default class VoucherApp extends Vue{
     uriParams: URIParams = new URIParams();
@@ -126,6 +171,8 @@ export default class VoucherApp extends Vue{
     billstyle:string = '';
     tableData:Array<any>=[];
     tableCell:Array<any>=[];
+    editDrawer:boolean = false
+    formData:any = {data:{}}
     created(){
         this.height = document.documentElement.clientHeight
         if(this.height>70){
@@ -147,16 +194,6 @@ export default class VoucherApp extends Vue{
             this.fullscreenLoading = false;
         }
         await this.uriParamsChange();
-        this.tableData= [
-                { adic: 10001, name: 'Test1', role: 'Develop', sex: 'Man', rmbd: 28, remark: 'vxe-table 从入门到放弃vxe-table 从入门到放弃vxe-table 从入门到放弃vxe-table 从入门到放弃' },
-                { adic: 10002, name: 'Test2', role: 'Test', sex: 'Women', rmbd: 22, remark: 'Guangzhou' },
-                { adic: 10003, name: 'Test3', role: 'PM', sex: 'Man', rmbc: -32, remark: 'Shanghai' },
-                { adic: 10004, name: 'Test4', role: 'Designer', sex: 'Women', rmbd: 23, remark: 'vxe-table 从入门到放弃' },
-                { adic: 10005, name: 'Test5', role: 'Develop', sex: 'Women', rmbd: 30, remark: 'Shanghai' },
-                { adic: 10006, name: 'Test6', role: 'Designer', sex: 'Women', rmbd: 21, remark: 'vxe-table 从入门到放弃' },
-                { adic: 10007, name: 'Test7', role: 'Test', sex: 'Man', rmbd: 29, remark: 'vxe-table 从入门到放弃' },
-                { adic: 10008, name: 'Test8', role: 'Develop', sex: 'Man', rmbd: 35, remark: 'vxe-table 从入门到放弃' }
-              ]
     }
 
     async invokecmd(btn:any) {
@@ -164,10 +201,67 @@ export default class VoucherApp extends Vue{
     }
 
     editEvent(row:any){
-        console.log(row)
+        let dssub = this.dsm.ds_sub[0];
+        let _r= _.findIndex(dssub.cdata.data,(item:any)=>{
+            return item.id==row.id
+        });
+        let cr = dssub.getRecordAtIndex(_r);
+        this.formData = cr;
+        this.editDrawer = true;
+       
     }
 
-    insertPZRow(){}
+    deleteEvent(row:any){
+        console.log(row)
+        let dssub = this.dsm.ds_sub[0];
+        let _r= _.findIndex(dssub.cdata.data,(item:any)=>{
+            return item.id==row.id
+        })
+        this.dsm.ds_sub[0].removeIndex(_r)
+        this.tableData = this.dsm.ds_sub[0].cdata.data;
+    }
+
+    insertPZRow(){
+        this.editDrawer = true
+        let cr:any = this.dsm.ds_sub[0].createRecord();
+        let cr0:any = this.dsm.currRecord;
+        cr.data['remark'] = cr0.data['remark'];
+        if(this.dsm.ds_sub[0].cdata.data){
+            cr0 = this.dsm.ds_sub[0].getRecordAtIndex(this.dsm.ds_sub[0].cdata.data.length-2);
+            console.log(cr0)
+            cr.data['remark'] = cr0.data['remark'];
+        }
+        this.formData = cr;
+         let rtb:any = this.$refs.pztb;
+         let fdata = rtb.footerData[0];
+         console.log(fdata,fdata[4],fdata[5]);
+         let rmbd = new Number(fdata[4].replace(/,/g, "")).valueOf();
+         let rmbc =new Number(fdata[5].replace(/,/g, "")).valueOf();
+         let r1 = rmbd-rmbc;
+         if(r1<0){
+             this.formData.data.rmbd = -r1;
+             this.formData.data.fcyd = -r1;
+         }else{
+            this.formData.data.rmbc = r1;
+            this.formData.data.fcyc = r1;
+         }
+        this.tableData = this.dsm.ds_sub[0].cdata.data;
+    }
+    editOK(){
+        this.editDrawer = false
+         let dssub = this.dsm.ds_sub[0];
+        let _r= _.findIndex(dssub.cdata.data,(item:any)=>{
+            return item.id==this.formData.id
+        });
+        let cr = dssub.getRecordAtIndex(_r);
+        cr = this.formData;
+        this.tableData = this.dsm.ds_sub[0].cdata.data;
+         console.log(this.formData,cr,this.tableData);
+         let rtb:any = this.$refs.pztb;
+         console.log(rtb);
+         rtb.reloadData(this.tableData);
+         this.$bus.$emit('datachange','')
+    }
 
 
 
@@ -226,7 +320,9 @@ export default class VoucherApp extends Vue{
                 this.headerLay = this.lay.compconfs[0];
                 let btm:any = this.lay.compconfs[2];
                 this.bottomLay = btm.comp.compconfs[1];
-                
+                this.dsm.createRecord();
+                 let tb1:any = this.lay.compconfs[1];
+                this.tableCell = tb1.comp.uiCels;
                 if(buid){
                     let res1 = await tools.getBULinks(buid);
                     let rtn1 = res1.data;
@@ -235,9 +331,7 @@ export default class VoucherApp extends Vue{
                         this.dsm.setOpera(ope)
                     }
                 }
-                this.dsm.createRecord();
-                 let tb1:any = this.lay.compconfs[1];
-                this.tableCell = tb1.comp.uiCels;
+
                 // console.log(this.tableCell);
 
             } else {
@@ -268,7 +362,7 @@ export default class VoucherApp extends Vue{
                 if (rr.isReq) {
                     return {
                         // backgroundColor: '#f60',
-                        color: 'red'
+                        color: '#d62121'
                     }
                 }
                 if (rr.type === 3) {
@@ -298,12 +392,31 @@ export default class VoucherApp extends Vue{
     sumNum (list:any, field:any) {
         let count = 0
         list.forEach((item:any) => {
-            let nd =  Number(item[field]);
+            let nd =  Number(item.data[field]);
             if(isNaN(nd))
                 nd = 0.0;
             count += nd;
         });
         return currutil.currency(count,'',2);
+    }
+
+    rmbChange(fld:string){
+        if(fld == 'rmbd'){
+            if(this.formData.data.rmbd!=0){
+                this.formData.data.rmbc = ''
+                this.formData.data.fcyc = ''
+                this.formData.data.fcyd = this.formData.data.rmbd
+            }
+        }
+
+        if(fld == 'rmbc'){
+            if(this.formData.data.rmbc!=0){
+                this.formData.data.rmbd = ''
+                this.formData.data.fcyd = ''
+                 this.formData.data.fcyc = this.formData.data.rmbc
+            }
+        }
+        
     }
 
 
@@ -315,4 +428,5 @@ export default class VoucherApp extends Vue{
     background-color: #56b9bc;
     color: #fff;
 }
+
 </style>

@@ -50,6 +50,7 @@ export default class CData{
         let ss = this.data.filter((item,index)=>{
             return index != _i;
         })
+        this.data = ss;
     }
     setStateSub(state: number){
         this.data.forEach((crd:CRecord) => {
