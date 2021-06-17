@@ -162,7 +162,7 @@
                     <template v-if="!item.child">
                         <vxe-table-column header-align="center" :align="item.align" :field="item.id" :key="index"
                             :min-width="widths[item.widthIndex]" :title="item.labelString" show-header-overflow 
-                            show-overflow :sortable ="(item.attr&0x400000)>0" :fixed="isFixed(item.widthIndex)" >
+                            :show-overflow="item.editType!=6" :sortable ="(item.attr&0x400000)>0" :fixed="isFixed(item.widthIndex)" >
                             <template v-slot="{rowIndex}"> 
                                 <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
@@ -238,29 +238,29 @@
             </vxe-table>
             <template v-else>
                 <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex" class="accdiv">
-                    <Accordion class="Accordion" :Accordionindex="1" :isSlotSecond="0">
-                        <template slot="title">
-                            <el-row style="width:100%">
-                                <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
-                                    <div v-if="(item.attr & 0x200) >0" class="piece">
-                                        <el-row >
-                                            <el-col :span="8">
-                                                {{item.labelString}}
-                                            </el-col>
-                                            <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
-                                                <div @dblclick="cardClick(rowIndex,index,dataIt)">
-                                                    <el-popover placement="top" width="160" trigger="hover" >
-                                                        <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                                        <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
-                                                    </el-popover>
-                                                </div>
-                                            </el-col>
-                                        </el-row>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </template>
-                        <div slot="First">
+                    <el-collapse v-model="activeName">
+                        <el-collapse-item :title="laycell.name" name="1" >
+                            <template slot="title">
+                                <el-row style="width:100%">
+                                    <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
+                                        <div v-if="(item.attr & 0x200) >0" class="piece">
+                                            <el-row >
+                                                <el-col :span="8">
+                                                    {{item.labelString}}
+                                                </el-col>
+                                                <el-col :span="16" style="overflow: hidden;white-space: nowrap;">
+                                                    <div @dblclick="cardClick(rowIndex,index,dataIt)">
+                                                        <el-popover placement="top" width="160" trigger="hover" >
+                                                            <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                            <bip-grid-info slot="reference" :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                                                        </el-popover>
+                                                    </div>
+                                                </el-col>
+                                            </el-row>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </template>
                             <el-row style="width:100%">
                                 <el-col v-for="(item,index) in laycell.uiCels" :key="index" :xs="24" :sm="24" :md="Math.round(24/cds.ccells.widthCell*item.ccHorCell)" :span="Math.round(24/cds.ccells.widthCell*item.ccHorCell)">
                                     <div v-if="(item.attr & 0x200) <=0" class="piece">
@@ -291,8 +291,8 @@
                                     </el-col>
                                 </el-row>
                             </div>
-                        </div>
-                    </Accordion>
+                        </el-collapse-item>
+                    </el-collapse>
                 </div>
             </template>
         </template>
@@ -370,7 +370,6 @@ import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
-import Accordion from '@/components/accordion/Accordion.vue'
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request"; 
@@ -380,9 +379,9 @@ import CRecord from '../../classes/pub/CRecord';
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import XEUtils from 'xe-utils'
-import GroupTableHeader from '@/components/layout/LayTableHeader/GroupTableHeader.vue'
+// import GroupTableHeader from '@/components/layout/LayTableHeader/GroupTableHeader.vue'
 @Component({
-    components: {  BipGridInfo,Accordion,GroupTableHeader}
+    components: {  BipGridInfo}
 })
 export default class LayCelVexTable extends Vue {
     @Prop() laycell!: BipLayCells;

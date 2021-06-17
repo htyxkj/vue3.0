@@ -94,9 +94,14 @@ export default class BipLayCells {
    * @memberof BipLayCells
    */
   getName(str: string): string {
+    console.log(str)
     let i = str.lastIndexOf("/");
     if (i > 0) {
       let name = str.substring(i + 1);
+      i = name.indexOf("*");
+      if(i>0){
+        name = name.substring(0,i);
+      }
       return name;
     }
     return "";

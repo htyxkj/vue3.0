@@ -9,5 +9,6 @@ export const BaseVariable = Object.assign({
     COPYRIGHT:"",
     SMSURL : "",
     ITEMTYPE:"",
-    AouthTokenUrl:""
+    AouthTokenUrl:"",
+    UniteLoginUrl:""
   });

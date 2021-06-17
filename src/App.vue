@@ -129,7 +129,7 @@ export default class App extends Vue {
             BaseVariable.SMSURL = res.data.SMSURL;
             BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
             BaseVariable.AouthTokenUrl = res.data.AouthTokenUrl;
-            
+            BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -154,6 +154,7 @@ export default class App extends Vue {
             BaseVariable.SMSURL = res.data.SMSURL;
             BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
             BaseVariable.AouthTokenUrl = res.data.AouthTokenUrl;
+            BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()

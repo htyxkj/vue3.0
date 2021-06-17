@@ -10,7 +10,6 @@ export class BipLayout{
     compconfs:Array<BipLayConf>
     ccells:Cells[] = []
     constructor(_laystr:string,_cells?:Cells[]){
-        console.log(_laystr)
         this.laystr = _laystr
         this.compconfs = new Array<BipLayConf>();
         if(this.laystr){

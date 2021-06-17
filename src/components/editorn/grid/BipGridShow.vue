@@ -48,7 +48,13 @@ export default class BipGridShow extends Vue{
                     align ="text-align:right"
                 }
             }
-        } 
+        }else{
+            if(this.cell.type ==2 || this.cell.type ==3){
+                align ="text-align:right"
+            }else if(this.cell.type >=4 || this.cell.type <=6){
+                align ="text-align:center"
+            }
+        }
         this.valStyle += align;
         this.valStyle2 = this.valStyle;
     }

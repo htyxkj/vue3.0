@@ -3,6 +3,7 @@
         <template v-if="laycell&&!laycell.btable">
             <template v-if="!isChild">
                 <template v-if="uiCels.length == 0">
+                    <el-row class="title" v-if="laycell.name">{{laycell.name}}</el-row>
                     <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
                 </template>
                 <template v-else>
@@ -16,29 +17,37 @@
                     </el-card>
                 </template>
             </template>
-            <template v-else>
-                <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
-                    <el-col class="childBtn">
-                        <!-- <el-button size="mini" @click="insertRow(rowId)">插入</el-button>
-                        <el-button size="mini" :disabled="rowId == 0" @click="moveUp(rowId)">上移</el-button>
-                        <el-button size="mini" :disabled="rowId == cds.cdata.data.length-1" @click="moveDown(rowId)">下移</el-button> -->
-                        <el-button size="mini" type="danger" @click="delRecord(rowId)">删除</el-button>
-                    </el-col>
-                    <template v-if="uiCels.length == 0">
-                        <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
-                    </template>
-                    <template v-else>
-                        <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
-                            <div slot="header" class="clearfix">
-                                <span>{{item.title}}</span>
-                            </div>
-                            <div>
-                                <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
-                            </div>
-                        </el-card>
-                    </template>
-                </div>
-                <el-button style="width:100%;color:#1890FF" size="mini" @click="addRecord">添加</el-button>
+            <template v-else>    
+                <el-collapse v-model="activeName">
+                    <el-collapse-item :title="laycell.name" name="1" >
+                        <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
+                            <el-row>
+                                <el-col class="row_data">
+                                    <template v-if="uiCels.length == 0">
+                                        <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                                    </template>
+                                    <template v-else>
+                                        <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
+                                            <div slot="header" class="clearfix">
+                                                <span>{{item.title}}</span>
+                                            </div>
+                                            <div>
+                                                <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="rowId" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                                            </div>
+                                        </el-card>
+                                    </template>
+                                </el-col>
+                                <el-col class="row_btn">
+                                    <!-- <el-button size="mini" @click="insertRow(rowId)">插入</el-button>
+                                    <el-button size="mini" :disabled="rowId == 0" @click="moveUp(rowId)">上移</el-button>
+                                    <el-button size="mini" :disabled="rowId == cds.cdata.data.length-1" @click="moveDown(rowId)">下移</el-button> -->
+                                    <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="delRecord(rowId)"></el-button>
+                                </el-col>
+                            </el-row>
+                        </div>
+                        <el-button style="width:100%;color:#1890FF" size="mini" @click="addRecord">添加</el-button>
+                    </el-collapse-item>
+                </el-collapse>
             </template>
         </template>
         <template v-else>
@@ -74,11 +83,16 @@ export default class LayCell extends Vue{
 
     isChild:boolean = false;
 
+    activeName:any = ['1']
     created(){
-        this.initWidth();
         this.initSfix();
         this.cds = this.env.getDataSet(this.laycell.obj_id);
         this.beBill = this.env.uriParams.beBill
+        if(this.beBill == false){//报表页面
+            if((this.env.uriParams.pattr & 0x40)>0){
+                this.beBill = true;
+            }
+        }
         this.pbuid = this.env.uriParams.pbuid;
         if(this.cds.ds_par && !this.laycell.btable){
             this.isChild =true;
@@ -88,23 +102,6 @@ export default class LayCell extends Vue{
 
     addRecord(){
         this.cds.createRecord()
-    }
-
-    initWidth(){
-        if(this.laycell){         
-            this.laycell.uiCels.forEach(cel => {
-                if(cel.isShow){
-                    let w1 = cel.ccCharleng;
-                    if(!cel.id.startsWith('cid')){
-                        w1 = w1<10?8:w1
-                    }
-                    let w = w1*9+20;
-                    if(w>200)
-                        w = 200
-                    this.widths.push(w+'')
-                }
-            });          
-        }
     }
 
     initSfix(){
@@ -254,6 +251,13 @@ export default class LayCell extends Vue{
 }
 </script>
 
+<style lang="scss" scoped>
+.title{
+    height: 34px;
+    line-height: 34px;
+    padding-left: 2px;
+}
+</style>
 <style lang="scss">
 .bip-lay{
     // width: 100%;
@@ -274,13 +278,17 @@ export default class LayCell extends Vue{
         padding: 5px;
     }
 }
-.childBtn{
-    text-align: end;
+.row_data{
+    width: calc(100% - .625rem) !important;
+}
+.row_btn{
+    text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;
-    button{
-        width: 120px;
-    }
+    width: .625rem !important;
+    // button{
+    //     width: 120px;
+    // }
 }
 </style>
 

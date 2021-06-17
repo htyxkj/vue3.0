@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>
-                <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" @focus="focus"
+                <el-select filterable v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" @focus="focus"
                 :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                     <el-option
                         v-for="item in options"
@@ -31,7 +31,7 @@
             </el-form-item>
         </template>
         <template v-else>
-            <el-select v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @focus="focus"  @change="dataChange">
+            <el-select filterable v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @focus="focus"  @change="dataChange">
                 <el-option
                     v-for="item in options"
                     :key="item[cels[0].id]"

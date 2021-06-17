@@ -20,11 +20,7 @@ export default class OauthToken extends Vue{
     @Mutation("menulist", { namespace:'login' }) setMenusInfo: any;
     loading:any = null;
     oauthTokenUrl:any = null;
-    itemUrl:any = null;
     async created(){
-        this.itemUrl = this.$axios.defaults.baseURL;
-        this.oauthTokenUrl = BaseVariable.AouthTokenUrl
-        this.$axios.defaults.baseURL = this.oauthTokenUrl;
         this.check_token();
     }
 
@@ -43,12 +39,11 @@ export default class OauthToken extends Vue{
         try{
             let query = this.$route.query;
             let token = query.token;
-            let data = {"token":token}
-            let res:any = await Vue.$axios.get("/5664", {params: data});
-            this.$axios.defaults.baseURL = this.itemUrl;
+            let data = {"token":token,apiId:"checkYZTToken"}
+            let res:any = await Vue.$axios.get("/commapi", {params: data});
             res = res.data;
-            if(res.active == true){
-                let user_name = res.user_name;
+            if(res.code == 200){
+                let user_name = res.data.user_name;
                 res = await tools.loginWithOutPwd(user_name);
                 this.loginAfter(res);
             }else{
@@ -82,12 +77,6 @@ export default class OauthToken extends Vue{
             this.setUserInfo(userI);
             this.setMenusInfo(ms);
             setTimeout(() => {
-                this.$notify.success({
-                    title:"",
-                    type: 'success',
-                    message: '登录成功',
-                    offset: 40
-                })
                 this.gotoPage();
                 this.loading.close();
             }, 500);

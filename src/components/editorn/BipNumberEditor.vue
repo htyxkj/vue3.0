@@ -227,7 +227,7 @@ export default class BipNumberEditor extends Vue {
   @Watch("model")
   cdataSetRecordChange() {
     if (this.model !== this.model1) {
-      this.model1 = parseFloat(this.model);
+      this.model1 = parseFloat(this.model).toFixed(this.cell.ccPoint);
       if (isNaN(this.model1)) this.model1 = "";
     }
   }

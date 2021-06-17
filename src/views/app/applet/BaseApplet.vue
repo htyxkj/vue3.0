@@ -13,6 +13,11 @@
                 <el-form @submit.native.prevent label-position="right" label-width="120px" :style="fromStyle">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
+                <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4 && mbs.menuList.length>0">
+                    <el-row>&nbsp;</el-row>
+                    <el-row>&nbsp;</el-row>
+                    <el-row>&nbsp;</el-row>
+                </template>
             </el-scrollbar>
             <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4 && mbs.menuList.length>0">
                 <div class="bip-btn-small">
@@ -99,7 +104,7 @@ export default class BaseApplet extends Vue{
         let cmd = btn.cmd
         console.log(cmd);
         if (cmd === "ADD") {
-            if ((this.dsm.currRecord.c_state & 2) > 0) {
+            if (this.dsm.currRecord && (this.dsm.currRecord.c_state & 2) > 0) {
                 this.$alert(
                     `当前数据没有保存，请先保存当前行数据`,
                     `系统提醒`,
@@ -109,7 +114,7 @@ export default class BaseApplet extends Vue{
                 });
                 return;
             }
-            if(this.dsm.currRecord.c_state&icl.R_INSERT){
+            if(this.dsm.currRecord && this.dsm.currRecord.c_state&icl.R_INSERT){
                 return 
             }
             this.dsm.createRecord();
@@ -317,7 +322,6 @@ export default class BaseApplet extends Vue{
             this.qe.cont = JSON.stringify(crd.data);
             this.qe.values = [];
             let vv = await this.findDataFromServe(this.qe);
-            console.log(vv)
             if (vv != null) {
                 this.dsm.currRecord = vv.data[0]
                 this.dsm.setRecordAtIndex(vv.data[0],this.dsm.index)
@@ -437,14 +441,16 @@ export default class BaseApplet extends Vue{
                 if(res.data.id == 0){
                     let data = res.data;
                     let vv:CData = data.data.data;
-                    let child = vv.data[0].subs;
-                    for(var z=0;z<child.length;z++){
-                        let cd :CData = this.initCData(child[z])
-                        cd.page.currPage =1;
-                        cd.page.total = cd.data.length
-                        for(var j=0;j<this.dsm.ds_sub.length;j++){
-                            if(this.dsm.ds_sub[j].cdata.obj_id == cd.obj_id){
-                                this.dsm.currRecord.subs[j] = cd;
+                    if(vv.data.length>0){
+                        let child = vv.data[0].subs;
+                        for(var z=0;z<child.length;z++){
+                            let cd :CData = this.initCData(child[z])
+                            cd.page.currPage =1;
+                            cd.page.total = cd.data.length
+                            for(var j=0;j<this.dsm.ds_sub.length;j++){
+                                if(this.dsm.ds_sub[j].cdata.obj_id == cd.obj_id){
+                                    this.dsm.currRecord.subs[j] = cd;
+                                }
                             }
                         }
                     }
@@ -478,13 +484,15 @@ export default class BaseApplet extends Vue{
         this.searchfindData(cont); 
     }
     /**
+     * @param TJ [key,value]
      * 点击按钮执行后端程序后刷新当前单据
-     */
-    async refreshCurrent(){
-        console.log("按钮执行后刷新页面");
+     */    
+    async refreshCurrent(TJ:any){
         let pkindex = this.dsm.ccells.pkindex
         let cont:any ={};
-        if(pkindex){
+        if(TJ){
+            cont[TJ[0]] = TJ[1];
+        }else if(pkindex){
             for(var i=0;i<pkindex.length;i++){
                 let index = pkindex[i];
                 let cel = this.dsm.ccells.cels[index];
@@ -528,6 +536,8 @@ export default class BaseApplet extends Vue{
         let vv:CData = await this.findDataFromServe(this.qe);
         if (vv != null) { 
             this.qe.page = vv.page;
+            this.dsm.page = vv.page;
+            this.dsm.cdata.page = vv.page;
             console.log('服务器获取数据',vv)
             await this.dataLoaded(this.qe,vv);
             this.setListMenuName();
@@ -700,6 +710,7 @@ export default class BaseApplet extends Vue{
                         this.dsm.setState(icl.R_POSTED);
                         if(data.message == '操作成功！'){
                             this.$message.success(data.message);
+                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
                         }else{
                             this.$message.warning(data.message);
                         }
@@ -1177,7 +1188,6 @@ export default class BaseApplet extends Vue{
     }
 
     async handleCurrentChange(value:number){
-        console.log('handleCurrentChange',value)
         this.qe.oprid = this.oprid
         this.qe.type = 0
         this.qe.page.currPage = value
@@ -1248,6 +1258,22 @@ export default class BaseApplet extends Vue{
                 await this.findData(this.params.jsontj);
             }
         }
+    }
+    /**
+     * 计算当前行自定义字段的公式
+     */
+    initCurrZdyGS(dsm:CDataSet){
+        let cels = dsm.ccells.cels
+        cels.forEach((cel:any) => {
+            if((cel.attr&0x4000)>0 && (cel.attr &0x1000) >0){//自定义字段 + 公式
+                dsm.checkCurrCellGs(cel);
+            }
+        });
+    }
+
+    @Watch("dsm.currRecord")
+    curRecoChange(){
+        this.initCurrZdyGS(this.dsm);
     }
 
     @Watch('params')

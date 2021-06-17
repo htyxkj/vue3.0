@@ -31,11 +31,12 @@
         </template>
         <template v-else>
             <div class="checkbox_div">
-                <el-checkbox-group v-model="model1">
+                <el-checkbox-group v-model="model1" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                     <el-checkbox  v-for="item in options" 
-                        :key="item[cels[0].id]" 
-                        :label="item[cels[0].id]" 
-                        :value="item[cels[0].id]">{{item[cels[1].id]}}</el-checkbox>
+                        :key="item[cels[0].id]"  :label="item[cels[0].id]" 
+                        :value="item[cels[0].id]" >
+                        {{item[cels[1].id]}}
+                    </el-checkbox>
                 </el-checkbox-group>
             </div>
         </template>
