@@ -126,6 +126,17 @@ export namespace BIPUtils {
         datatype: 1
       });
     }
+    /**
+     * @description 获取报表删除数据的参数
+     * @returns 返回的是一个Object{xxx:xxx}
+     */
+    getCUSDelParams(){
+      return Object.assign({
+        dbid: BaseVariable.COMM_FLD_VALUE_DBID,
+        usercode: JSON.parse(window.sessionStorage.getItem("user") + "").userCode,
+        apiId: GlobalVariable.APIID_CUSDELDATA,
+      });
+    }
 
     /**
      * @description 获取查询参数信息

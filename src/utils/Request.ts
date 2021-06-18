@@ -147,6 +147,16 @@ export namespace BIPUtil {
         return this.getFromServer(param);
     }
     /**
+     * 报表删除数据
+     * @param data   数据集
+     * @param cellId 对象id
+     */
+     cusDelData(data:any,cellId:string){
+        let param = tool.getCUSDelParams()
+        param = Object.assign(param, { data: data,cellId:cellId })
+        return this.getFromServer(param);
+    }
+    /**
      * @description 执行查询普通
      * @param qe QueryEntity对象
      */

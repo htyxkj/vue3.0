@@ -362,20 +362,11 @@ export default class CUnivSelect extends Vue {
                 this.$notify.warning( "请勾选删除数据行!");
                 return;
             }
-            let delNum = 0;
-            for(var i=0;i<delData.length;i++){//循环进行删除
-                let curr = delData[i];
-                curr.c_state=4;
-                this.dsm.currRecord = curr;
-                let res = await this.dsm.saveData();
-                if(res.data.id ==0){
-                    delNum++;
-                }
-            }
-            if(delNum == delData.length){
-                this.$notify.success( "删除成功!");
+            let res = await tools.cusDelData(delData,this.dsm.ccells.obj_id);
+            if(res.data.id == 0){
+                this.$notify.success(res.data.message);
             }else{
-                this.$notify.error( "删除失败!");
+                this.$notify.error(res.data.message);
             }
             this.find();
         }else if(cmd == 'SAVE'){
