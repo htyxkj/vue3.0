@@ -173,12 +173,14 @@ export default class VoucherApp extends Vue{
     tableCell:Array<any>=[];
     editDrawer:boolean = false
     formData:any = {data:{}}
-    created(){
+    async created(){
         this.height = document.documentElement.clientHeight
         if(this.height>70){
             this.height=this.height-104;
         }
         this.billstyle = 'margin-top:10px;height:'+this.height+"px !important;";
+        let res = await tools.getBipInsAidInfo('A_CDIC',210);
+        console.log(res);
     }
     async mounted(){
         this.fullscreenLoading = true;
@@ -223,14 +225,15 @@ export default class VoucherApp extends Vue{
 
     insertPZRow(){
         this.editDrawer = true
-        let cr:any = this.dsm.ds_sub[0].createRecord();
         let cr0:any = this.dsm.currRecord;
-        cr.data['remark'] = cr0.data['remark'];
+        let remakstr = cr0.data['remark'];;
         if(this.dsm.ds_sub[0].cdata.data){
-            cr0 = this.dsm.ds_sub[0].getRecordAtIndex(this.dsm.ds_sub[0].cdata.data.length-2);
-            console.log(cr0)
-            cr.data['remark'] = cr0.data['remark'];
+            cr0 = this.dsm.ds_sub[0].getRecordAtIndex(this.dsm.ds_sub[0].cdata.data.length-1);
+            // console.log(cr0)
+            remakstr = cr0.data['remark'];
         }
+        let cr:any = this.dsm.ds_sub[0].createRecord();
+        cr.data['remark'] = remakstr;
         this.formData = cr;
          let rtb:any = this.$refs.pztb;
          let fdata = rtb.footerData[0];
