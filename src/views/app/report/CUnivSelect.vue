@@ -1,12 +1,12 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui>
-        <div class="bip-main-container">
+        <!-- <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> -->
+        <div ref="se" @keyup.enter="find">
+            <bip-search-cont2 :env="env" v-show="CondiyionShow"  @invokecmd="invokecmd"></bip-search-cont2>
+        </div>
+        <div>
             <el-scrollbar wrap-class="scrollbar-wrapper" :style="style">
                 <template v-if="!isShowMap">
-                    <div ref="se" @keyup.enter="find">
-                        <bip-search-cont :env="env" v-show="CondiyionShow"></bip-search-cont>
-                    </div>
                     <template v-if="!initShowChar">
                         <template v-if="!TJ">
                             <el-form @submit.native.prevent label-position="right" label-width="120px">
@@ -230,6 +230,10 @@ export default class CUnivSelect extends Vue {
                 this.$bus.$emit('ReportTableShape',[this.env.uriParams.pbuid,this.mbs,true])
             }
         }
+
+        let res:any = this.$refs.se;
+        let rr = res.getBoundingClientRect();
+        console.log(rr);
 
     }
     initData(){
@@ -860,13 +864,29 @@ export default class CUnivSelect extends Vue {
     }
     initHeight(){
         this.style = "";
+        //条件区域高度
+        let res:any = this.$refs.se;
+        let rr:any = res.getBoundingClientRect();
+        
         if(this.height>0){
-            if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
-                this.style+="height:"+(this.height-0)+"px;"
+            if(rr&&rr.height){
+                this.style+="height:"+(this.height-rr.height)+"px;"
             }else{
-                this.style+="height:"+(this.height-50)+"px;"
+                this.style+="height:"+(this.height)+"px;"
             }
+            // if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
+            //     this.style+="height:"+(this.height-0)+"px;"
+            // }else{
+                
+            //     this.style+="height:"+(this.height-50-)+"px;"
+            // }
         }
     }
 }
 </script>
+
+<style lang="scss">
+.bip-c-search .el-card__body{
+    padding:8px 20px !important;
+}
+</style>

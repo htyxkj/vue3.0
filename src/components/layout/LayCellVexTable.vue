@@ -1,12 +1,34 @@
 <template>
     <div v-if="laycell" class="bip-lay" style="position: relative;">
-        <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0 && this.cds.page.total>0" style="padding:5px 0px;">
+        <!-- <el-row  v-if="this.cds.cdata.sumData && this.cds.cdata.sumData.length>0 && this.cds.page.total>0" style="padding:5px 0px;">
             <template v-for="(item,index) in this.cds.cdata.sumData">
                 <span class="sum" :key="index">{{item.labelString}}: {{item.initval}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
             </template>
-        </el-row>
+        </el-row> -->
 
-        <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar>
+        <!-- <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar> -->
+        <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" >
+             <template #buttons>
+                <!-- <el-button-group v-if="breport&&commBtns"> -->
+                    <template  v-for="(btn,index) in commBtns">
+                        <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                            <template v-if="btn.hasIcon">
+                                <template v-if="btn.icon&&btn.bIconleft">
+                                    <i :class="btn.icon"></i>{{btn.name}}
+                                </template>    
+                                <template v-else>
+                                    {{btn.name}} <i :class="btn.icon"></i> 
+                                </template>
+                            </template>
+                            <template v-else>
+                                {{btn.name}}
+                            </template>
+                        </el-button>
+                    </template>
+                <!-- </el-button-group> -->
+             </template>
+        </vxe-toolbar>
+
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table :keep-source="false"
@@ -16,7 +38,7 @@
                 :height="height" highlight-hover-row show-all-overflow="tooltip" show-header-overflow
                 highlight-current-row class="vxe-table-element" :optimized="true"
                 :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
-                :selectRow="cds.currRecord" @cell-dblclick="openrefs" @cell-click="table_cell_click"
+                :selectRow="cds.currRecord"  @cell-click="table_cell_click"
                 :header-cell-style="headerCellStyle" @edit-actived="rowActive"
                 @edit-closed="editClose" @checkbox-change="selectChangeEvent"
                 @checkbox-all="selectChangeEvent"  @custom="toolbarCustomEvent"
@@ -119,6 +141,29 @@
                 <template v-slot:empty>
                     <el-button type="danger" icon="el-icon-plus" circle style="font-size: 28px;"  @click="addRecord"></el-button>
                 </template>
+                <template v-if="breport">
+                    <vxe-table-column field="" title="操作" fixed="right"  align="center" :width="commBtns2.length>1?250:100">
+                        <template #default="{ rowIndex }">
+                            <el-button-group v-if="breport&&commBtns2">
+                                <template  v-for="(btn,index) in commBtns2">
+                                    <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)">     
+                                        <template v-if="btn.hasIcon">
+                                            <template v-if="btn.icon&&btn.bIconleft">
+                                                <i :class="btn.icon"></i>{{btn.name}}
+                                            </template>    
+                                            <template v-else>
+                                                {{btn.name}} <i :class="btn.icon"></i> 
+                                            </template>
+                                        </template>
+                                        <template v-else>
+                                            {{btn.name}}
+                                        </template>
+                                    </el-button>
+                                </template>
+                            </el-button-group>
+                        </template>
+                    </vxe-table-column>
+                </template>
             </vxe-table>
             <el-drawer append-to-body :visible.sync="addDrawer" direction="btt" size="50%" :withHeader="false" :wrapperClosable="false">
                 <div class="myDrawer">
@@ -154,7 +199,7 @@
 
 
                 <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
-                <vxe-table-column type="seq" width="40" fixed="left"></vxe-table-column>
+                <vxe-table-column type="seq" width="40"></vxe-table-column>
 
                 <!-- 表格三级表头 目前写死三级 -->
 
@@ -234,11 +279,30 @@
                     </template>
                 </template>
             
+                <vxe-table-column field="" title="操作" align="center" fixed="right" :width="commBtns2.length>1?250:100">
+                    <template #default="{rowIndex }">
+                        <template  v-for="(btn,index) in commBtns2">
+                            <el-button :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     
+                                <template v-if="btn.hasIcon">
+                                    <template v-if="btn.icon&&btn.bIconleft">
+                                        <i :class="btn.icon"></i>{{btn.name}}
+                                    </template>    
+                                    <template v-else>
+                                        {{btn.name}} <i :class="btn.icon"></i> 
+                                    </template>
+                                </template>
+                                <template v-else>
+                                    {{btn.name}}
+                                </template>
+                            </el-button>
+                        </template>
+                    </template>
+                </vxe-table-column>
             
             </vxe-table>
             <template v-else>
                 <div v-for="(dataIt,rowIndex) in cds.cdata.data" :key="rowIndex" class="accdiv">
-                    <el-collapse v-model="activeName">
+                    <el-collapse v-model="activeNames">
                         <el-collapse-item :title="laycell.name" name="1" >
                             <template slot="title">
                                 <el-row style="width:100%">
@@ -373,12 +437,14 @@ let ICL = CommICL
 import { BipLayout } from "@/classes/ui/BipLayout";
 import QueryEntity from '@/classes/search/QueryEntity';
 import { BIPUtil } from "@/utils/Request"; 
+import { BipMenuBtn } from '@/classes/BipMenuBtn';
 let tools = BIPUtil.ServApi
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import CRecord from '../../classes/pub/CRecord';
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import XEUtils from 'xe-utils'
+let _ = require('lodash')
 // import GroupTableHeader from '@/components/layout/LayTableHeader/GroupTableHeader.vue'
 @Component({
     components: {  BipGridInfo}
@@ -408,7 +474,7 @@ export default class LayCelVexTable extends Vue {
     addDrawer:boolean = false;//子表抽屉样式添加
     lay: BipLayout = new BipLayout("");
     drawerCurrRecord:CRecord = new CRecord();//子表抽屉样式时  当前选中行  用来处理 抽屉中 取消 操作
-
+    breport:boolean = false
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -433,9 +499,26 @@ export default class LayCelVexTable extends Vue {
     footerCellKey:any=[];//合计字段
     footerCell:any=[];//合计字段对象
 
-    created() {
+    commBtns:Array<any> = []
+    commBtns2:Array<any> = []//表身按钮
+
+    //初始化表格按钮
+    makeCommBtns(){
+        let mbs = this.env.mbs.menuList
+        _.forEach(mbs,(item:any) => {
+            if(item.cmd != 'SAVE' && item.cmd != 'DLG'){
+                this.commBtns.push(item)
+            }else{
+                this.commBtns2.push(item)
+            }
+        });
+    }
+
+    async created() {
         this.footerCell = {};
         this.footerCellKey = [];
+        this.commBtns =[];
+        this.commBtns2 = []
         if((this.laycell.cells.attr & 0x40)>0){//多选
             this.multiple = true;
         }
@@ -465,14 +548,52 @@ export default class LayCelVexTable extends Vue {
         this.initSfix();
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
-        // this.beBill = this.env.uriParams.beBill;
+        this.breport = !this.env.uriParams.beBill;
         if(this.cds.x_pk>-1)
             this.id = this.laycell.cells.cels[this.cds.x_pk].id;
         if (!this.id) {
             this.id = this.laycell.cells.cels[0].id;
         }
+        this.$nextTick(()=>{
+            this.makeCommBtns();
+            this.getCellLinks();
+        })
+
     }
 
+    /**
+     * 获取表格关联属性
+     */
+    async getCellLinks(){
+        let cells = this.cds.ccells.cels;
+        for(let i=0;i<cells.length;i++){
+            let item:any = cells[i];
+            let index = i;
+            if((item.attr&0x80000)>0&&item.isShow){
+                if(item.id=='sid' || item.id.startsWith('slkid')){
+                    let slkbuidCell :any=cells[index+1];
+                    let btn = new BipMenuBtn(item.id,slkbuidCell.labelString)
+                    btn.setType("primary");
+                    btn.setIconFontIcon('EDIT');
+                    btn.setDlgType('SL');
+                    this.commBtns2.push(btn);
+                }else{
+                    let name = "BL_"+this.cds.ccells.obj_id+"_"+item.id;
+                    console.log(name)
+                    let data:any = await this.initCL(name);
+                    console.log(data)
+                    if(data){
+                        let btn = new BipMenuBtn(item.sid,'关联')
+                        btn.setType("primary");
+                        btn.setIconFontIcon('EDIT');
+                        btn.setDlgType('BL');
+                        this.commBtns2.push(btn);
+                    }
+                }
+            }
+      
+        }
+    }
     /**
      * 表头最加样式
      */
@@ -765,7 +886,6 @@ export default class LayCelVexTable extends Vue {
         console.log("openrefs")
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         let row = data.row.data
-        let rowIndex = data.rowIndex
         let columnIndex = data.columnIndex
         if(columnIndex > 0){
             let cell = this.laycell.uiCels[columnIndex]
@@ -895,12 +1015,26 @@ export default class LayCelVexTable extends Vue {
         }, 250);
     }
     invokecmd(btn:any,rowIndex:any){
-        this.cds.index = rowIndex;
-        this.cds.currRecord = this.cds.getRecordAtIndex(rowIndex);
-        let value = {row:this.cds.currRecord ,rowIndex:rowIndex,dsm:this.cds};
-        this.$bus.$emit("row_click",value);    
-        this.$emit("invokecmd",btn)
+        console.log(btn);
+        if(btn.dlgType == 'SL'||btn.dlgType == 'BL'){
+            let cr = this.cds.getRecordAtIndex(rowIndex);
+            let _col:number = this.cds.ccells.cels.findIndex((cel:any)=>{
+                return cel.id = btn.cmd;
+            })
+            this.cds.currRecord = cr;
+            let data1 = {rowIndex:rowIndex,columnIndex:_col+1,row:{data:cr.data}};
+            console.log(data1);
+            this.openrefs(data1,null)
+        }else{
+            this.cds.index = rowIndex;
+            this.cds.currRecord = this.cds.getRecordAtIndex(rowIndex);
+            let value = {row:this.cds.currRecord ,rowIndex:rowIndex,dsm:this.cds};
+            this.$bus.$emit("row_click",value);    
+            this.$emit("invokecmd",btn)
+        }
+
     }
+
     checkChange(data:any){
         this.checkSelected =  data.selection;
         let cc:any = this.$refs[this.cds.ccells.obj_id];
@@ -933,13 +1067,6 @@ export default class LayCelVexTable extends Vue {
         // let dlg = await pubMethod.getConstant(str);
         str = ICL.AID_KEYCL+str;
         let eq = new QueryEntity('','');
-        if(this.cds.ds_par){
-            eq.pcell = this.cds.ds_par.ccells.obj_id;
-            eq.cont = this.cds.ds_par.currRecord.data;
-        }else{
-            eq.pcell = this.cds.ccells.obj_id;
-            eq.cont = this.cds.currRecord.data;
-        }
         let vars = {id:300,aid:name,eq:eq}
         await this.fetchInsAid(vars);
         let vv  = window.sessionStorage.getItem(str)
@@ -971,6 +1098,7 @@ export default class LayCelVexTable extends Vue {
         this.cds.currRecordArr=[];
         this.datachange(obj_id);
     }
+
     datachange(obj_id:string =''){
         if(this.cds.ccells)
         if(obj_id == this.cds.ccells.obj_id){
@@ -1460,6 +1588,8 @@ export default class LayCelVexTable extends Vue {
             return bok;
         }
     }
+
+
 </script>
 <style>
 .tableHead{
@@ -1513,5 +1643,8 @@ export default class LayCelVexTable extends Vue {
 }
 .vxe-table--body-wrapper .body--wrapper::-webkit-scrollbar-thumb {
     background-color: #d9d9d9;
+}
+.btn_report{
+    padding: 6px 5px !important;
 }
 </style>
