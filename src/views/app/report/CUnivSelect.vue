@@ -362,6 +362,7 @@ export default class CUnivSelect extends Vue {
                 this.$notify.warning( "请勾选删除数据行!");
                 return;
             }
+            delData = JSON.stringify(delData)
             let res = await tools.cusDelData(delData,this.dsm.ccells.obj_id);
             if(res.data.id == 0){
                 this.$notify.success(res.data.message);
