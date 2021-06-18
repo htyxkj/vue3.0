@@ -1,7 +1,8 @@
 <template>
     <div>
         <div v-if="editType == 6">
-            <img :src="imgUrl" class="gridImg" v-viewer/>
+            <img v-if="imgUrl" :src="imgUrl" class="gridImg" v-viewer/>
+            <img v-else class="gridImg" src="../../../assets/bip/upimg.png"/> 
         </div>
         <div v-else :class="uiclass" :style="valStyle2">{{model1}}</div>
     </div>
@@ -97,7 +98,9 @@ export default class BipGridShow extends Vue{
     }
     //组成图片路径
     makeImgUrl(){
-        this.imgUrl = BaseVariable.BaseUri+"/db_"+BaseVariable.COMM_FLD_VALUE_DBID+"/"+this.model1
+        if(this.model1){
+            this.imgUrl = BaseVariable.BaseUri+"/db_"+BaseVariable.COMM_FLD_VALUE_DBID+"/"+this.model1
+        }
     }
 }
 </script>
