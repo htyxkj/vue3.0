@@ -202,6 +202,7 @@
                 @checkbox-change="checkChange"
                 @checkbox-all="checkChange"
                 :checkbox-config="{checkField: 'checked',reserve:'true'}"
+                :footer-method="footerMethod2"
                 @custom="toolbarCustomEvent">
 
 
@@ -452,6 +453,8 @@ import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import XEUtils from 'xe-utils'
 let _ = require('lodash')
+import {CurrUtils} from '@/utils/CurrUtils'
+let currutil = CurrUtils.curr
 // import GroupTableHeader from '@/components/layout/LayTableHeader/GroupTableHeader.vue'
 @Component({
     components: {  BipGridInfo}
@@ -551,6 +554,8 @@ export default class LayCelVexTable extends Vue {
             }else if(this.config.type ==3){
                 this.height = "250px"
             }
+        }else{
+            this.config = {type :2};
         }
         this.initSfix();
         this.initWidth();
@@ -578,7 +583,6 @@ export default class LayCelVexTable extends Vue {
         let cells = this.cds.ccells.cels;
         for(let i=0;i<cells.length;i++){
             let item:any = cells[i];
-            
             let index = i;
             if((item.attr&0x80000)>0&&item.isShow){
                 let item1:any = cells[i+1];
@@ -595,7 +599,7 @@ export default class LayCelVexTable extends Vue {
                     let data:any = await this.initCL(name);
                     console.log(data)
                     if(data){
-                        let btn = new BipMenuBtn(item.sid,'关联')
+                        let btn = new BipMenuBtn(item.id,data.sremark)
                         btn.setType("primary");
                         btn.setIconFontIcon('EDIT');
                         btn.setDlgType('BL');
@@ -644,6 +648,37 @@ export default class LayCelVexTable extends Vue {
         })
         // 返回一个二维数组的表尾合计
         return [sums]
+    }
+
+    //报表表尾合计
+    footerMethod2({ columns, data }:any){
+         if(this.cds.hjList.length>0){
+            return [
+                columns.map((column :any, columnIndex :any) => {
+                    if (columnIndex === 0) {
+                        return '小计'
+                    }
+                    if (this.cds.hjList.includes(column.property)) {
+                        return this.sumNum(data, column.property)
+                    }
+                    return null
+                })
+                ]
+         }else{
+             return []
+         }
+         
+    }
+
+      sumNum (list:any, field:any) {
+        let count = 0
+        list.forEach((item:any) => {
+            let nd =  Number(item.data[field]);
+            if(isNaN(nd))
+                nd = 0.0;
+            count += nd;
+        });
+        return currutil.currency(count,'',2);
     }
     /**
      * 表尾单元格class
@@ -927,8 +962,10 @@ export default class LayCelVexTable extends Vue {
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
                     let data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
-                    let name = "BL_"+this.pbuid+"_"+cell.id;
+                    let name = "BL_"+this.cds.ccells.obj_id+"_"+cell.id;
+                    console.log(name)
                     data = await this.initCL(name);
+                    console.log(data);
                     if(data == null){
                         await this.openRefsDo(slkid , slkbuid);
                     }else{
@@ -1030,11 +1067,21 @@ export default class LayCelVexTable extends Vue {
         console.log(btn);
         if(btn.dlgType == 'SL'||btn.dlgType == 'BL'){
             let cr = this.cds.getRecordAtIndex(rowIndex);
-            let _col:number = this.cds.ccells.cels.findIndex((cel:any)=>{
-                return cel.id = btn.cmd;
-            })
+            let _col:number = this.laycell.uiCels.findIndex((cel:any)=>{
+                return cel.id == btn.cmd;
+            });
+            if(_col<0){
+                return;
+            }
+            let _col2 = _col;
+            if(!this.beBill){
+                _col2 = _col+1;
+                if((this.laycell.cells.attr & 0x40)>0){
+                    _col2 = _col+2;
+                }
+            }
             this.cds.currRecord = cr;
-            let data1 = {rowIndex:rowIndex,columnIndex:_col+1,row:{data:cr.data}};
+            let data1 = {rowIndex:rowIndex,columnIndex:_col2,row:{data:cr.data}};
             console.log(data1);
             this.openrefs(data1,null)
         }else{
