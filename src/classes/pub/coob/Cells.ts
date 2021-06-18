@@ -26,5 +26,6 @@ export class Cells {
   sfix!:string
   sctrl!:string
   rowRefGS!:any//跨行公式中 的公式集合  字段，字段公式
+  CELUIZT!:any//单元状态编辑器。* 分成动态不可空和动态非编辑
   constructor() {}
 }

@@ -16,6 +16,8 @@ let tools = BIPUtil.ServApi;
 import { CommICL } from "@/utils/CommICL";
 import CeaPars from '../cenv/CeaPars';
 let ICL = CommICL;
+import { BIPUtils } from "@/utils/BaseUtil";
+let baseTool = BIPUtils.baseUtil;
 export default class CDataSet {
   ccells: Cells;
   cdata: CData;
@@ -303,6 +305,47 @@ export default class CDataSet {
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
           cd.checkGSByParID(id)
+        }
+        //检查当前字段的 CELUIZT 单元状态编辑器。* 分成动态不可空和动态非编辑（当前字段影响其他字段）
+        let celzt:Array<any> = this.ccells.CELUIZT[cell.id];
+        if(celzt){
+          celzt.forEach((zt:any) => {
+            let f1 = zt[0];
+            let f2 = zt[1];
+            let gs = this.scriptProc.bdstovec(f1);
+            var x1 = gs[2] != null ? gs[2].length - 1 : -1;
+            if (gs[2].charAt(x1) === '"') {
+              gs[2] = gs[2].substring(1, x1);
+            }
+            let field = f1.substring(f1.indexOf("[")+1,f1.indexOf("]"))
+            let cc = baseTool.calcTwoItem(curr.data[field], gs[2], gs[1].charCodeAt(0));
+            if(f2.charAt(0) == '!'){//设置为非空
+              f2 = f2.substring(1)
+              this.ccells.cels.forEach((cel:any) =>{
+                if(cel.id == f2){
+                  if(cc){
+                    cel.attr = cel.attr | 0x2;
+                    cel.unNull = true;
+                    cel.isReq = true;
+                  }else{
+                    cel.attr = cel.attr ^ 0x2;
+                    cel.unNull = false;
+                    cel.isReq = false;
+                  }
+                }
+              })
+            }else{//设置为非编辑
+              this.ccells.cels.forEach((cel:any) =>{
+                if(cel.id == f2){
+                  if(cc){
+                    cel.attr = cel.attr | 0x40;
+                  }else{
+                    cel.attr = cel.attr ^ 0x40;
+                  }
+                }
+              })
+            }
+          });
         }
     }else{
         this.checkAllGS()
