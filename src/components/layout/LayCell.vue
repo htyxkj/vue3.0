@@ -3,7 +3,7 @@
         <template v-if="laycell&&!laycell.btable">
             <template v-if="!isChild">
                 <template v-if="uiCels.length == 0">
-                    <el-row class="title" v-if="laycell.name">{{laycell.name}}</el-row>
+                    <el-row class="title" v-if="laycell.name && !isTabs">{{laycell.name}}</el-row>
                     <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
                 </template>
                 <template v-else>
@@ -71,6 +71,7 @@ export default class LayCell extends Vue{
     @Prop() laycell!:BipLayCells
     @Prop() env!:CCliEnv
     @Prop() config?:any
+    @Prop() isTabs!:boolean;//是否是页签
     @Inject('isNoHomeTable') isNoHomeTable!:boolean;//是否是首页调用
     info:string = 'infos'
     clearable:boolean = true
@@ -256,6 +257,7 @@ export default class LayCell extends Vue{
     height: 34px;
     line-height: 34px;
     padding-left: 2px;
+    font-size: 14px;
 }
 </style>
 <style lang="scss">

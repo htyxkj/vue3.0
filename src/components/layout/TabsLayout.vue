@@ -9,7 +9,7 @@
             <template v-else>
                 <!-- {{222}} -->
                 <el-row>
-                    <lay-cell :laycell="cfg.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                    <lay-cell :laycell="cfg.comp" :env="env" :isTabs="true" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config" @invokecmd="invokecmd"></lay-cell>
                 </el-row>
             </template>
         </el-tab-pane>

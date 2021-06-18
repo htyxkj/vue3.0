@@ -18,7 +18,7 @@
                         <base-layout :layout="laycfg[3].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
                     </el-card>
                     <el-card v-else>
-                        <lay-cell :laycell="laycfg[3].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                        <lay-cell :laycell="laycfg[3].comp" :isTabs="false" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
                     </el-card>
                 </el-col>
             </template>
@@ -36,7 +36,7 @@
                         <base-layout :layout="laycfg[4].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
                     </el-card>
                     <el-card v-else >
-                        <lay-cell :laycell="laycfg[4].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                        <lay-cell :laycell="laycfg[4].comp" :isTabs="false" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
                     </el-card>
                 </el-col>
             </template>
@@ -48,7 +48,7 @@
                 <bip-comm-lay :layout="laycfg[2].comp" :env="env" :config="config" @invokecmd="invokecmd"></bip-comm-lay >
             </el-card>
             <el-card v-else style="height:100% ; margin-bottom:10px;">
-                <lay-cell :laycell="laycfg[2].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                <lay-cell :laycell="laycfg[2].comp" :isTabs="false" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
             </el-card>
             
         </el-row>

@@ -6,7 +6,7 @@
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgUp.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"  @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                <lay-cell :laycell="cfgUp.comp" :isTabs="false" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"  @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
             </el-row>
         </template>
     </template>
@@ -16,7 +16,7 @@
         </template>
         <template v-else>
             <el-row class="bip-row">
-                <lay-cell :laycell="cfgDown.comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                <lay-cell :laycell="cfgDown.comp" :isTabs="false" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
             </el-row>
         </template>
     </template>
