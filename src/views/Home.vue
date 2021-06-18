@@ -87,25 +87,25 @@ let tools = BIPUtil.ServApi
   }
 })
 export default class Home extends Vue { 
-    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @Getter('user', { namespace: 'login' }) user?: User;
-    @Provide() layout:Array<any> = [];
-    @Provide() delLayout:Array<any> = [];
-    @Provide() curBox:any;
-    @Provide() historyLayout:Array<any> = [];
-    @Provide() showCoList:boolean = false;
-    @Provide() CoList:Array<any> = new Array<any>();
-    @Provide() mapList:any = {};
-    @Provide() page:any ={pageSize:2000,currPage:1,total:0};
-    @Provide() conditionValue:any = null;
-    @Provide() conditionItem:any = "-1";
-    @Provide() selection:Array<any> = [];
-    @Provide() myDesktop:CDataSet = new CDataSet('');
-    @Provide() isDraggable:boolean = false;//是否可拖动位置
-    @Provide() isResizable:boolean = false;//是否可改变大小
-    @Provide() menuIsShow:boolean=false //右下角菜单是否显示
-    @Provide() height:number=400;
-    @Provide() cc:Array<any> = new Array<any>();
+    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
+    layout:Array<any> = [];
+    delLayout:Array<any> = [];
+    curBox:any;
+    historyLayout:Array<any> = [];
+    showCoList:boolean = false;
+    CoList:Array<any> = new Array<any>();
+    mapList:any = {};
+    page:any ={pageSize:2000,currPage:1,total:0};
+    conditionValue:any = null;
+    conditionItem:any = "-1";
+    selection:Array<any> = [];
+    myDesktop:CDataSet = new CDataSet('');
+    isDraggable:boolean = false;//是否可拖动位置
+    isResizable:boolean = false;//是否可改变大小
+    menuIsShow:boolean=false //右下角菜单是否显示
+    height:number=400;
+    cc:Array<any> = new Array<any>();
     layoutStyle:any = "width:100%";
     mounted() {
       this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
@@ -487,19 +487,9 @@ export default class Home extends Vue {
     initHeight(){
       this.height = document.documentElement.clientHeight
       if(this.height>70){
-          this.height=this.height-94;
+          this.height=this.height-90;
       }
       this.setBipHeight(this.height)
-      window.onresize = () => {
-          return (() => {
-              this.height = document.documentElement.clientHeight
-              // console.log(this.height)
-              if(this.height>70){
-                  this.height=this.height-94;
-              }
-              this.setBipHeight(this.height)
-          })()
-      }
     }
     @Watch("$route")
     changeRoute(){

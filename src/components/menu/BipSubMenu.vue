@@ -1,28 +1,31 @@
 <template>
-    <div>
-        <template v-if="item.haveChild && canShowChile">
-            <template v-if="item.childMenu.length === 0">
-                <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command" -->
-                    <i class="el-icon-menu"></i>
-                    {{item.menuName}}
-                </el-menu-item>
+    <el-submenu :index="item.menuId" popper-class='bip-nav-menu' :popper-append-to-body="appendBody">
+        <div slot="title"  class="my-menu-item">
+            <template v-if="item.menuIcon">
+                <img class="imgpointer" :src="uri+item.menuIcon"/>
             </template>
-            <template v-else :index="item.menuId">
-                <bip-sub-menu :item="item" :appendBody="false"/>
+            <template v-else>
+                <i class="el-icon-menu"></i>
             </template>
-        </template>
-        <template v-else>
-            <el-menu-item class="my-menu-item" :key="item.menuId" :index="item.menuId" v-if="item.menuattr != 4" @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command"  -->
-                <template v-if="item.menuIcon">
-                    <img class="imgpointer" :src="uri+item.menuIcon"/>
+            <span slot="title">{{item.menuName}}</span>
+        </div>
+        <template v-for="child in item.childMenu">
+            <bip-menu-item class="my-menu-item" v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
+            <template v-else>
+                <el-menu-item class="my-menu-item" v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  @click="closeMenu(child.command)"> 
+                    <template slot="title" >
+                        <template v-if="child.menuIcon">
+                            <img class="imgpointer" :src="uri+child.menuIcon"/>
+                        </template>
+                        <template v-else>
+                            <i class="el-icon-location"></i>
+                        </template>
+                        <span slot="title">{{child.menuName}}</span>
                     </template>
-                <template v-else>
-                    <i class="el-icon-menu"></i>
-                </template>
-                {{item.menuName}}
-            </el-menu-item>
+                </el-menu-item> 
+            </template>
         </template>
-    </div>
+    </el-submenu>
 </template>
 <script lang="ts">
 /**
@@ -34,10 +37,12 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import {BaseVariable} from "@/utils/BaseICL"
 
 @Component({
+    components:{}
 })
-export default class BipMenuItem extends Vue{
-    name:string="BipMenuItem"
+export default class BipSubMenu extends Vue{
+    name:string="BipSubMenu"
     @Prop() private item!:Menu;
+    @Prop() appendBody!:boolean
     @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     uri:string='';

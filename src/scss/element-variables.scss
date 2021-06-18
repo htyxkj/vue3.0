@@ -356,49 +356,23 @@ $--bip-comm-color:#ffffff;//f4f6fb
 
 
 /** 菜单样式*/
-.sidebar-container {
-    transition: width 0.28s;
-    width: 280px;
-    height: 92%;
-    position: fixed;
-    font-size: 0px;
-    top: 60px;
-    bottom: 0;
-    left: 0;
-    z-index: 10;
-    overflow: hidden;
-    .horizontal-collapse-transition {
-      transition: 0s width ease-in-out, 0s padding-left ease-in-out,
-        0s padding-right ease-in-out;
+.bip-nav-menu{
+    position: fixed !important;
+    max-height: 10rem;
+    overflow: auto;
+    // border: .015625rem solid rebeccapurple;
+    box-shadow: 4px 4px 17px #888888;
+    .el-menu--popup-right-start{
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+        position: revert !important;
     }
-    .el-scrollbar {
-      height: 100%;
-    }
-    .scrollbar-wrapper {
-      overflow-x: hidden !important;
-      .el-scrollbar__view {
-        height: 100%;
-      }
-    }
-    .el-scrollbar__bar.is-vertical {
-      right: 0px;
-    }
-    .is-horizontal {
-      display: none;
-    }
-    a {
-      display: inline-block;
-      width: 100%;
-      overflow: hidden;
-    }
-    .el-menu {
-      border: none;
-      height: 100%;
-      width: 100% !important;
-    }
-    .is-active > .el-submenu__title {
-      color: #111111 !important;
-    }
+}
+.bip-nav-menu::-webkit-scrollbar {
+    width: 4px;
+}
+.bip-nav-menu::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
 }
 
 /** 统计图表样式*/

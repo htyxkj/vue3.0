@@ -57,7 +57,7 @@ export default class CommonLayOut extends Vue {
 
         this.height = document.documentElement.clientHeight
         if(this.height>70){
-            this.height=this.height-50;
+            this.height=this.height-90;
         }
         this.setBipHeight(this.height)
     }

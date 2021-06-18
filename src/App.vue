@@ -18,12 +18,12 @@
                 <router-view />
             </template>
             <template v-else>
-                <el-container> 
-                    <bip-aside v-show="isOpenMenu" ref="menu" :class="isOpenMenu?menu1:menu2"></bip-aside> 
-                    <el-container>
-                        <el-header class="my-el-header"> 
-                            <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
-                        </el-header>
+                <el-container>
+                    <el-header class="my-el-header"> 
+                        <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
+                    </el-header>
+                    <el-container> 
+                        <bip-menu></bip-menu>
                         <el-main class="bip-main">
                             <el-tabs
                             v-model="editableTabsValue2"
@@ -72,6 +72,7 @@ let baseTool = BIPUtils.baseUtil;
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { LoginState } from './store/modules/login/types';
 import { BIPUtil } from "@/utils/Request";
+import BipMenu from "@/components/menu/BipMenu.vue";
 @Component({
   components: {
     Login,
@@ -80,6 +81,7 @@ import { BIPUtil } from "@/utils/Request";
     LayOut,
     LayHeader,
     Analysis,
+    BipMenu,
   }
 })
 export default class App extends Vue {
