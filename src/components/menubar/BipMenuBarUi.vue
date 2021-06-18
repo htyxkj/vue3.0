@@ -2,19 +2,21 @@
     <el-row class="menubar">
         <el-button-group v-if="mbs && initOk">
             <template  v-for="(btn,index) in mbs.menuList">
-                <el-button v-show="btnShow[index]" class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
-                    <template v-if="btn.hasIcon">
-                        <template v-if="btn.icon&&btn.bIconleft">
-                            <i :class="btn.icon"></i>{{btn.name}}
-                        </template>    
-                        <template v-else>
-                            {{btn.name}} <i :class="btn.icon"></i> 
+                <template  v-if="btnShow[index]">
+                    <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                        <template v-if="btn.hasIcon">
+                            <template v-if="btn.icon&&btn.bIconleft">
+                                <i :class="btn.icon"></i>{{btn.name}}
+                            </template>    
+                            <template v-else>
+                                {{btn.name}} <i :class="btn.icon"></i> 
+                            </template>
                         </template>
-                    </template>
-                    <template v-else>
-                        {{btn.name}}
-                    </template>
-                </el-button>
+                        <template v-else>
+                            {{btn.name}}
+                        </template>
+                    </el-button>
+                </template>
             </template>
         </el-button-group>
         <hr class="menubar-hr"/>
