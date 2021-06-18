@@ -6,28 +6,33 @@
             </template>
         </el-row> -->
 
-        <!-- <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar> -->
-        <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" >
-             <template #buttons>
-                <!-- <el-button-group v-if="breport&&commBtns"> -->
-                    <template  v-for="(btn,index) in commBtns">
-                        <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
-                            <template v-if="btn.hasIcon">
-                                <template v-if="btn.icon&&btn.bIconleft">
-                                    <i :class="btn.icon"></i>{{btn.name}}
-                                </template>    
-                                <template v-else>
-                                    {{btn.name}} <i :class="btn.icon"></i> 
+        <!--  -->
+        <template v-if="!breport">
+            <!-- <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar> -->
+        </template>
+        <template v-else>
+            <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" >
+                <template #buttons>
+                    <el-button-group v-if="breport&&commBtns">
+                        <template  v-for="(btn,index) in commBtns">
+                            <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                                <template v-if="btn.hasIcon">
+                                    <template v-if="btn.icon&&btn.bIconleft">
+                                        <i :class="btn.icon"></i>{{btn.name}}
+                                    </template>    
+                                    <template v-else>
+                                        {{btn.name}} <i :class="btn.icon"></i> 
+                                    </template>
                                 </template>
-                            </template>
-                            <template v-else>
-                                {{btn.name}}
-                            </template>
-                        </el-button>
-                    </template>
-                <!-- </el-button-group> -->
-             </template>
-        </vxe-toolbar>
+                                <template v-else>
+                                    {{btn.name}}
+                                </template>
+                            </el-button>
+                        </template>
+                    </el-button-group>
+                </template>
+            </vxe-toolbar>
+        </template>
 
         <template v-if="beBill">
             <!-- 单据录入表格-->
@@ -1011,7 +1016,7 @@ export default class LayCelVexTable extends Vue {
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
             this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
             this.$bus.$emit("row_click",value);
-            this.openrefs(data,event);
+            // this.openrefs(data,event);
         }, 250);
     }
     invokecmd(btn:any,rowIndex:any){

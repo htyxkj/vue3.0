@@ -54,7 +54,7 @@ export default class BipMenuBarUI extends Vue{
         console.log("getBtnShow")
         for(var i=0;i< this.mbs.menuList.length;i++){
             let btn = this.mbs.menuList[i];
-            if(btn.cmd=='COPY' || btn.cmd =='DEL'){
+            if(btn.cmd=='COPY' || btn.cmd =='DEL' ||  btn.cmd =='ADD'){
                 if(this.cds.currRecord){
                     if ((this.cds.currRecord.c_state & 1) > 0) {
                         this.btnShow[i] = false;
