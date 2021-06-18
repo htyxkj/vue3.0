@@ -70,28 +70,28 @@
                     <div class="el-dialog__title" style="padding-bottom: 5px;"> <i class="el-icon-edit" ></i>
                     <span>添加/修改凭证行</span></div>
                 </span>
-                <el-form ref="form" :model="formData.data" label-width="120px" label-position="right" style="margin :5px 10px;" >
+                <el-form ref="form" :model="formData.data" label-width="120px" label-position="right" class="vouDlgForm" >
                     <el-row>
-                        <el-form-item class="bip-s-dia" label="摘要"  required>
+                        <el-form-item label="摘要"  required >
                             <el-input type="textarea" v-model="formData.data.remark"></el-input>
                         </el-form-item>
                     </el-row>
                      <el-row>
-                        <el-form-item class="bip-s-dia" label="会计科目" required>
-                            <el-input  v-model="formData.data.adic" >
-                                <template slot="append"> <i slot="suffix" class="el-input__icon el-icon-share"></i></template>
+                        <el-form-item  label="会计科目" required >
+                            <el-input  v-model="formData.data.adic" size="medium" >
+                                <el-button slot="append" icon="iconfont icon-bip-shuzhuangtu" @click="showAdicTree"></el-button>
                             </el-input>
                         </el-form-item>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item class="bip-s-dia" label="借方金额"  >
-                                    <el-input-number class="m-number"  v-model="formData.data.rmbd" :precision="2" style="min-width:220px;" @change="rmbChange('rmbd')"></el-input-number>
+                            <el-form-item label="借方金额"  >
+                                    <el-input-number size="medium" v-model="formData.data.rmbd" :precision="2" style="min-width:220px;" @change="rmbChange('rmbd')"></el-input-number>
                                 </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item class="bip-s-dia" label="贷方金额"  >
-                                <el-input-number class="m-number" v-model="formData.data.rmbc" :precision="2" style="min-width:220px;" @change="rmbChange('rmbc')"></el-input-number>
+                            <el-form-item label="贷方金额"  >
+                                <el-input-number size="medium" v-model="formData.data.rmbc" :precision="2" style="min-width:220px;" @change="rmbChange('rmbc')"></el-input-number>
                             </el-form-item>
                         </el-col>
                         
@@ -112,6 +112,21 @@
                     <el-button type="primary" @click="editOK" size="mini">确 定</el-button>
                 </span>
              </el-dialog>
+
+            <el-dialog title="会计科目选择" class="bip-query" :visible.sync="treeVisible" :append-to-body="true" 
+                :close-on-press-escape="true" :close-on-click-modal="false" width="30%" >
+                    <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
+                    <el-scrollbar style="margin-top:5px;margin-bottom:0px;  margin-right: 0px; height:240px;" >
+                            <el-tree :data="adicTree" accordion highlight-current ref="tree" :filter-node-method="filterNode"></el-tree>
+                    </el-scrollbar>
+                <!-- </div> -->
+                
+                    <span slot="footer" class="dialog-footer">
+                        <el-button size="small" type="danger" @click="treeVisible = false">取     消</el-button>  
+                        <!-- <el-button size="small" @click="find">刷      新</el-button>   -->
+                        <el-button size="small" type="primary" @click="selectAdicOK">确     定</el-button>
+                    </span>
+            </el-dialog>
         </div>
     </el-row>
 </template>
@@ -171,16 +186,23 @@ export default class VoucherApp extends Vue{
     billstyle:string = '';
     tableData:Array<any>=[];
     tableCell:Array<any>=[];
-    editDrawer:boolean = false
+    editDrawer:boolean = false;
+    treeVisible:boolean = false;
+    adicTree:Array<any> = []
     formData:any = {data:{}}
+    filterText:any = ''
     async created(){
         this.height = document.documentElement.clientHeight
         if(this.height>70){
             this.height=this.height-104;
         }
         this.billstyle = 'margin-top:10px;height:'+this.height+"px !important;";
-        let res = await tools.getBipInsAidInfo('A_CDIC',210);
+        let res = await tools.getBipInsAidInfo('A_CDIC',210,new QueryEntity("",""));
         console.log(res);
+        if(res.data.id==0){
+            this.adicTree = res.data.data.data;
+            console.log(this.adicTree);
+        }
     }
     async mounted(){
         this.fullscreenLoading = true;
@@ -200,6 +222,27 @@ export default class VoucherApp extends Vue{
 
     async invokecmd(btn:any) {
         console.log(btn);
+    }
+
+    showAdicTree(){
+        this.treeVisible = true
+    }
+
+    treeClose(){
+        this.treeVisible = false
+    }
+    selectAdicOK(node:any){
+        console.log(node);
+    }
+    @Watch('filterText')
+    filterTextChange(val:any) {
+        let tree:any = this.$refs.tree;
+        tree.filter(val);
+    }
+
+    filterNode(value:any, data:any) {
+        if (!value) return true;
+        return data.label.indexOf(value) !== -1;
     }
 
     editEvent(row:any){
@@ -426,10 +469,15 @@ export default class VoucherApp extends Vue{
 }
 </script>
 
-<style>
+<style lang="scss">
 .col-hj{
     background-color: #56b9bc;
     color: #fff;
 }
-
+.vouDlgForm{
+    margin :5px 10px;
+    .el-form-item__content{
+        line-height: 0px !important;
+    }
+}
 </style>
