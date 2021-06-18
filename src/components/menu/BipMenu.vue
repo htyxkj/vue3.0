@@ -36,7 +36,7 @@ export default class BipMenu extends Vue {
         }
         let height = document.documentElement.clientHeight
         if(height>70){
-            height=height-75;
+            height=height-85;
         }
         this.style = "height:"+(height)+"px"
     }
@@ -47,8 +47,8 @@ export default class BipMenu extends Vue {
         @include menu_list_style();
     }
     .menuSW{
-        height: .625rem;
-        line-height: .625rem;
+        height: .78125rem;
+        line-height: .78125rem;
         padding-left: .3125rem;
         background-color: #fff;
         border-bottom: .015625rem solid rgba(99, 99, 99, 0.322);

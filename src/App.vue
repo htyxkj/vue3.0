@@ -25,26 +25,17 @@
                     <el-container> 
                         <bip-menu></bip-menu>
                         <el-main class="bip-main">
-                            <el-tabs
-                            v-model="editableTabsValue2"
-                            type="border-card"
-                            :closable="false"
-                            @tab-remove="removeTab"
-                            class="bip-tabs"
-                            >
-                            <el-tab-pane
-                                v-for="(item) in editableTabs2"
-                                :key="item.name"
-                                :label="item.title"
-                                :name="item.name"
-                                :closable="item.closable"
-                                :lazy="true"
-                                :style="style"
-                            >    
-                                <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
-                                </lay-out>
-                            </el-tab-pane>
-                            </el-tabs>
+                            <div style='position: relative;'>
+                                <el-tabs v-model="editableTabsValue2" type="border-card" :editable="editableTabs2.length>1" :closable="false" @tab-remove="removeTab" class="bip-tabs">
+                                    <el-tab-pane v-for="(item) in editableTabs2"
+                                        :key="item.name" :label="item.title" :name="item.name"
+                                        :closable="item.closable" :lazy="true" :style="style">    
+                                        <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
+                                        </lay-out>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            <el-button size='mini' v-if="editableTabs2.length>1" icon="el-icon-delete" circle class="clearBtn" @click="delAllTabs"></el-button>
+                            </div>
                         </el-main>
                     </el-container>
                 </el-container>
@@ -213,6 +204,10 @@ export default class App extends Vue {
         }
         this.editableTabsValue2 = activeName;
         this.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
+    }
+    delAllTabs(){
+        this.editableTabs2 = [];
+        this.addIndex();
     }
     async loginOut(){
         if(this.user!=null)
