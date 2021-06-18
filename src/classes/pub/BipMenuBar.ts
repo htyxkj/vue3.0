@@ -68,15 +68,17 @@ export default class BipMenuBar{
     }
 
     setNavButton(menuAttr:number){
+        let btn=null;
         if(this.search){
-            let btn = new BipMenuBtn(CommICL.B_CMD_CLEAR,"清空")
-            btn.setIconFontIcon('zk');
+            // let btn = new BipMenuBtn(CommICL.B_CMD_CLEAR,"清空")
+            // btn.setIconFontIcon('zk');
+            // this.menuList.push(btn)
+        }
+        if(!this.search){
+            let btn = new BipMenuBtn(CommICL.B_CMD_FIND,"查找")
+            btn.setIconFontIcon('search');
             this.menuList.push(btn)
         }
-        let btn = new BipMenuBtn(CommICL.B_CMD_FIND,"查找")
-        btn.setIconFontIcon('search');
-        this.menuList.push(btn)
-
         if(((menuAttr&CommICL.B_ISTAT)<=0)&&this.search){
             let btn = new BipMenuBtn(CommICL.B_CMD_ISTAT,"统计")
             btn.setIconFontIcon('tongji');
@@ -92,11 +94,11 @@ export default class BipMenuBar{
             // btn.setIconFontIcon('tongji');
             // this.menuList.push(btn)
         }
-        if(this.search){
-            btn = new BipMenuBtn(CommICL.B_CMD_CONDITIONSHOW,"显示/隐藏(条件)")
-            btn.setIconFontIcon('show');
-            this.menuList.push(btn)
-        }
+        // if(this.search){
+        //     btn = new BipMenuBtn(CommICL.B_CMD_CONDITIONSHOW,"显示/隐藏(条件)")
+        //     btn.setIconFontIcon('show');
+        //     this.menuList.push(btn)
+        // }
         if(this.search){
             let btn = new BipMenuBtn(CommICL.B_CMD_DESKTOPLIST,"存为桌面组件")
             btn.setIconFontIcon('zhexian1');

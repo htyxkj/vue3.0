@@ -18,12 +18,14 @@ import BipSubMenu from '@/components/menu/BipSubMenu.vue';
 import BipCommEditor from '@/components/editorn/BipCommEditor.vue'
 import BipSearchDialog from '@/components/searchdialog/BipSearchDialog.vue'
 import BipSearchCont from '@/components/editorn/BipSearchCont.vue'
+import BipSearchCont2 from '@/components/editorn/BipSearchCont2.vue'
 Vue.component('BaseLayout',BaseLayout);
 Vue.component('BipMenuItem',BipMenuItem);
 Vue.component('BipSubMenu',BipSubMenu);
 Vue.component('BipCommEditor',BipCommEditor);
 Vue.component('BipSearchDialog',BipSearchDialog);
 Vue.component('BipSearchCont',BipSearchCont);
+Vue.component('BipSearchCont2',BipSearchCont2);
 Vue.use(EventBus);
 
 var bus = new EventBus.Bus();
