@@ -31,7 +31,6 @@ let tool = BIPUtils.baseUtil
 export default class BipTabs1Layout extends Vue {
     @Prop() laycfg?:any
     fullscreenLoading: boolean = false;
-    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     tabs:Array<any>=[];
     height:number = 400;
     editableTabsValue:any = null;

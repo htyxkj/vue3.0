@@ -198,7 +198,6 @@ import { Route, RawLocation } from "vue-router";
     }
 })
 export default class BIRealTimeTrack extends Vue {
-    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Prop() sbKeys!:any;
     tMap: any = null;

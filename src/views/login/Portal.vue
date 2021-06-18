@@ -45,7 +45,6 @@ let tools = BIPUtil.ServApi
   }
 })
 export default class Portal extends Vue { 
-    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @Getter('user', { namespace: 'login' }) user?: User;
     @Mutation("snkey", { namespace: 'login' }) setSnkey: any;
     @Mutation("user", { namespace: 'login' }) setUserInfo: any;
@@ -220,17 +219,6 @@ export default class Portal extends Vue {
       this.height = document.documentElement.clientHeight
       if(this.height>70){
           this.height=this.height-94;
-      }
-      this.setBipHeight(this.height)
-      window.onresize = () => {
-          return (() => {
-              this.height = document.documentElement.clientHeight
-              // console.log(this.height)
-              if(this.height>70){
-                  this.height=this.height-94;
-              }
-              this.setBipHeight(this.height)
-          })()
       }
     }
 }

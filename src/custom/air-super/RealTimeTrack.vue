@@ -300,7 +300,6 @@ import { Route, RawLocation } from "vue-router";
     }
 })
 export default class RealTimeTrack extends Vue {
-    @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
     @State("bipComHeight", { namespace: "login" }) height!: number;
     @Getter('user', { namespace: 'login' }) user?: User;
 
@@ -1381,16 +1380,6 @@ export default class RealTimeTrack extends Vue {
         let height = document.documentElement.clientHeight
         if(height>70){
             height=height-94;
-        }
-        this.setBipHeight(height)
-        window.onresize = () => {
-            return (() => {
-                let height = document.documentElement.clientHeight
-                if(height>70){
-                    height=height-94;
-                }
-                this.setBipHeight(height)
-            })()
         }
     }
 
