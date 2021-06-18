@@ -123,5 +123,10 @@
 }
 //按钮栏样式（危险按钮）
 @mixin bip_menu_bar_danger(){
-
+  background-color: $bip-menu-bar-danger-background-color-theme !important;
+  color: $bip-menu-bar-danger-color-theme !important;
+  [data-theme="theme1"] & {
+    background-color:$bip-menu-bar-danger-background-color-theme1 !important;
+    color:$bip-menu-bar-danger-color-theme1 !important;
+  }
 }

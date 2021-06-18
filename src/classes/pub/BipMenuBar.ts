@@ -45,6 +45,7 @@ export default class BipMenuBar{
             if((menuAttr&CommICL.B_IDEL)>0){
                 let btn = new BipMenuBtn(CommICL.B_CMD_DEL,"删除")
                 btn.setIconFontIcon('delete');
+                btn.setType("danger");
                 this.menuList.push(btn)
             }
             if((menuAttr&CommICL.B_IWORKEA)>0){

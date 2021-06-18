@@ -13,7 +13,8 @@
         <template v-else>
             <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" >
                 <template #buttons>
-                    <el-button-group v-if="breport&&commBtns">
+                    <template v-if="breport&&commBtns">
+                    <!-- <el-button-group v-if="breport&&commBtns"> -->
                         <template  v-for="(btn,index) in commBtns">
                             <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                                 <template v-if="btn.hasIcon">
@@ -29,7 +30,8 @@
                                 </template>
                             </el-button>
                         </template>
-                    </el-button-group>
+                    <!-- </el-button-group> -->
+                    </template>
                 </template>
             </vxe-toolbar>
         </template>
@@ -511,7 +513,7 @@ export default class LayCelVexTable extends Vue {
     makeCommBtns(){
         let mbs = this.env.mbs.menuList
         _.forEach(mbs,(item:any) => {
-            if(item.cmd != 'SAVE' && item.cmd != 'DLG'){
+            if(item.cmd != 'SAVE' && item.cmd != 'DLG'&& item.cmd != 'DEL'){
                 this.commBtns.push(item)
             }else{
                 this.commBtns2.push(item)
@@ -573,9 +575,11 @@ export default class LayCelVexTable extends Vue {
         let cells = this.cds.ccells.cels;
         for(let i=0;i<cells.length;i++){
             let item:any = cells[i];
+            
             let index = i;
             if((item.attr&0x80000)>0&&item.isShow){
-                if(item.id=='sid' || item.id.startsWith('slkid')){
+                let item1:any = cells[i+1];
+                if(item1&&(item1.id=='sbuid' || item1.id.startsWith('slkbuid'))){
                     let slkbuidCell :any=cells[index+1];
                     let btn = new BipMenuBtn(item.id,slkbuidCell.labelString)
                     btn.setType("primary");
