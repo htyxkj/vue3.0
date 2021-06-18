@@ -135,7 +135,7 @@ export default class BipTreeInfo extends Vue{
         }
         if(keys){
             this.$bus.$emit('datachange')
-            this.$bus.$emit('TreeDataChange',keys)
+            this.$emit('TreeDataChange',keys)
             // this.$emit('select',this.currkey);
             this.visible = false;
             return 

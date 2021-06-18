@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" @focus="focus">
+                <el-input :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
                     <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
                 </el-input>
                 <template v-if="cell.desc">
@@ -25,7 +25,7 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled"  @focus="focus">
+             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
                  <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
              </el-input>
         </template>
@@ -108,6 +108,16 @@ export default class BipQueryEditor extends Vue{
             return dis;
         }
         return !this.cds.currCanEdit(this.row>-1?this.row:0)
+    }
+    /**
+     * 是否只读 非输入滤0
+     */
+    get readonly(){
+        let dis = (this.cell.attr&this.attr.NOENIT)>0
+        if(dis){
+            return dis;
+        }
+        return false;
     }
     focus(){
         this.$emit("focus",{})

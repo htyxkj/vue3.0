@@ -38,7 +38,7 @@
             </span>
         </template>
         <template v-if="showQueryInfo">
-            <bip-tree-info ref="treeinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select" :row="row"></bip-tree-info>
+            <bip-tree-info ref="treeinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select" :row="row" @TreeDataChange="dataChange"></bip-tree-info>
         </template>
     </el-col>
 </template>
@@ -73,7 +73,6 @@ export default class BipTreeEditor extends Vue{
     linkName:string = ""    
     aidMarkKey:string = "";
     bcode: boolean = false;//文本编码
-    TreeDataChangeID:any =null;
 
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
@@ -85,7 +84,6 @@ export default class BipTreeEditor extends Vue{
 
     async mounted(){
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
-        this.TreeDataChangeID = this.$bus.$on('TreeDataChange',this.dataChange)
 
 
         this.bcode = (this.cell.attr & 0x40000) > 0 ;
@@ -165,9 +163,6 @@ export default class BipTreeEditor extends Vue{
                 this.model1 = this.model
             }
         }  
-    }
-   beforeDestroy(){
-        this.$bus.$off('TreeDataChange',this.TreeDataChangeID)
     }
     /**
      *能否编辑
@@ -296,6 +291,7 @@ export default class BipTreeEditor extends Vue{
     }
     @Watch('aidValues')
     aidValuesChange(){
+        console.log("aidValuesChange TREE")
         if(this.refLink&&this.refLink.id.length>0&&this.model1){
             if(this.model&&this.model.length>0){
                 let vlarr = this.model.split(";")
