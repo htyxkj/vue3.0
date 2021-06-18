@@ -440,6 +440,14 @@ $--bip-comm-color:#ffffff;//f4f6fb
     // padding-left: 10px;
     padding: 0px !important;
     margin-top: 10px !important;
+    .el-tabs__new-tab{
+        margin: 5px 13px 2px 5px;
+    }
+    .clearBtn{
+        position: absolute;
+        right:10px;
+        top:1px;
+    }
   }
 
 .bip-tabs{
