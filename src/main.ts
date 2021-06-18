@@ -14,11 +14,13 @@ import store from './store'
 import EventBus from 'vue-bus-ts';
 import BaseLayout from '@/components/layout/BaseLayout.vue';
 import BipMenuItem from '@/components/menu/BipMenuItem.vue';
+import BipSubMenu from '@/components/menu/BipSubMenu.vue';
 import BipCommEditor from '@/components/editorn/BipCommEditor.vue'
 import BipSearchDialog from '@/components/searchdialog/BipSearchDialog.vue'
 import BipSearchCont from '@/components/editorn/BipSearchCont.vue'
 Vue.component('BaseLayout',BaseLayout);
 Vue.component('BipMenuItem',BipMenuItem);
+Vue.component('BipSubMenu',BipSubMenu);
 Vue.component('BipCommEditor',BipCommEditor);
 Vue.component('BipSearchDialog',BipSearchDialog);
 Vue.component('BipSearchCont',BipSearchCont);
