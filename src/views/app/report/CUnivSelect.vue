@@ -47,7 +47,7 @@
     </el-row>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch,Provide } from "vue-property-decorator";
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
 import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
@@ -107,7 +107,7 @@ export default class CUnivSelect extends Vue {
     isMap:boolean = false;      //是否是地图页面
     isShowMap:boolean = false;  //是否是显示地图
     style:any=""
-
+    @Provide('heightInfo') heightInfo: any = {};
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -230,10 +230,10 @@ export default class CUnivSelect extends Vue {
                 this.$bus.$emit('ReportTableShape',[this.env.uriParams.pbuid,this.mbs,true])
             }
         }
-
-        let res:any = this.$refs.se;
-        let rr = res.getBoundingClientRect();
-        console.log(rr);
+        this.initHeight();
+        // let res:any = this.$refs.se;
+        // let rr = res.getBoundingClientRect();
+        // console.log(rr);
 
     }
     initData(){
@@ -869,10 +869,12 @@ export default class CUnivSelect extends Vue {
         let rr:any = res.getBoundingClientRect();
         
         if(this.height>0){
+            this.heightInfo.height = this.height;
             if(rr&&rr.height){
-                this.style+="height:"+(this.height-rr.height)+"px;"
+                this.heightInfo.height = this.height-rr.height;
+                this.style+="height:"+(this.heightInfo.height)+"px;"
             }else{
-                this.style+="height:"+(this.height)+"px;"
+                this.style+="height:"+(this.heightInfo.height)+"px;"
             }
             // if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
             //     this.style+="height:"+(this.height-0)+"px;"

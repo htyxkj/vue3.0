@@ -497,7 +497,7 @@ export default class LayCelVexTable extends Vue {
     multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
 
     @Inject('isNoHomeTable') isNoHomeTable!:boolean;//显示分页
-
+    @Inject('heightInfo') heightInfo!:any;
     canAdd:boolean = true;//是否可以增加
     canDelete:boolean = true;//是否可以删除
     tableDelPop:boolean = false;//表格删除确认
@@ -564,6 +564,8 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
             this.makeCommBtns();
             this.getCellLinks();
+            console.log(this.heightInfo)
+            this.height = (this.heightInfo.height-114)+"px";
         })
 
     }
@@ -1086,6 +1088,7 @@ export default class LayCelVexTable extends Vue {
         return this.aidValues.get(str);
     }
     mounted(){ 
+        console.log(this.heightInfo)
         let pbds = this.env.uriParams.pbds;
         if(pbds.layout && pbds.layout == 'card'){
             this.isTable = false;
