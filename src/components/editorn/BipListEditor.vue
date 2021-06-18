@@ -188,5 +188,19 @@ export default class BipListEditor extends Vue{
     }
 }
 </script>
-
+<style lang="scss">
+.el-select__tags{
+    .el-tag:nth-child(1){
+        max-width: 59%;
+        overflow: hidden;
+    }
+    .el-tag:nth-child(2){
+        max-width: 30%;
+        overflow: hidden;
+    }
+    input{
+        margin: 0px;
+    }
+}
+</style>
 
