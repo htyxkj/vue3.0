@@ -5,12 +5,10 @@
                 <template v-for="(cel,index) in cells" >
                     <bip-comm-editor v-show="(cel.attr&0x400) == 0" :key="index" :cell="cel" :cds="cds" :cdsCount="cdsCount" :row="0" :bgrid="false" :env="env"/>
                 </template>
-                    <el-button type="primary" size="small" class="bip-menu-bar" :class="'bip_btn_default'"  @click.native="invokecmd(btnFind)">
-                        <i data-v-4ec4dbea="" class="iconfont icon-bip-search"></i> 查找
-                    </el-button>
+                    <el-button size="small" class="bip-menu-bar bip_btn_primary" :class="'bip_btn_default'"  @click.native="invokecmd(btnFind)">
+                        <i data-v-4ec4dbea="" class="iconfont icon-bip-search">查找</i></el-button>
                     <el-button size="small" class="bip-menu-bar" :class="'bip_btn_default'"  @click.native="invokecmd(btnClear)">
-                        <i data-v-4ec4dbea="" class="iconfont icon-bip-zk"></i> 重置
-                    </el-button> 
+                        <i data-v-4ec4dbea="" class="iconfont icon-bip-zk">重置</i></el-button> 
             </el-form>
         </el-row>
     </el-card>
