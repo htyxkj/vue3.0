@@ -11,7 +11,7 @@
             <!-- <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" style="height: 35px;padding: 4px 0px 0px;position: absolute;right: 30px;z-index: 100;"></vxe-toolbar> -->
         </template>
         <template v-else>
-            <vxe-toolbar v-if="isNoHomeTable" :custom="{immediate:false}" >
+            <vxe-toolbar v-if="isNoHomeTable&&config.type ==2" :custom="{immediate:false}" >
                 <template #buttons>
                     <template v-if="breport&&commBtns">
                     <!-- <el-button-group v-if="breport&&commBtns"> -->
@@ -286,7 +286,7 @@
                     </template>
                 </template>
             
-                <vxe-table-column field="" title="操作" align="center" fixed="right" :width="commBtns2.length>1?250:100">
+                <vxe-table-column v-if="config.type ==2" field="" title="操作" align="center" fixed="right" :width="commBtns2.length>1?250:100">
                     <template #default="{rowIndex }">
                         <template  v-for="(btn,index) in commBtns2">
                             <el-button :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     
@@ -412,7 +412,7 @@
             </el-row>
         </template>
         <template v-else>
-            <el-row style="margin-bottom:7px;" v-if="isNoHomeTable">
+            <el-row type="flex" style="margin-bottom:7px;" v-if="isNoHomeTable" justify="end">
                 <el-pagination  
                     background
                     @size-change="handleSizeChange"
@@ -547,7 +547,7 @@ export default class LayCelVexTable extends Vue {
         this.initTableTitleGroup();
         if(this.config){
             if(this.config.type ==2){
-                this.height = "450px"
+                this.height = (this.heightInfo.height-114)+"px";
             }else if(this.config.type ==3){
                 this.height = "250px"
             }
@@ -564,8 +564,9 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
             this.makeCommBtns();
             this.getCellLinks();
-            console.log(this.heightInfo)
-            this.height = (this.heightInfo.height-114)+"px";
+             if(this.config.type ==2){
+                this.height = (this.heightInfo.height-114)+"px";
+            }
         })
 
     }

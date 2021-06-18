@@ -23,10 +23,10 @@
                 </el-col>
             </template>
             <template v-if="bcenter">
-                <el-card v-if="!laycfg[wcenterIndex].bcells"  style="height:100% ; ">
+                <el-card v-if="!laycfg[wcenterIndex].bcells"  :style="'height:100% ;'">
                     <base-layout :layout="laycfg[wcenterIndex].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
                 </el-card>
-                <el-card v-else style="height:100% ;">
+                <el-card v-else :style="env.uriParams.beBill&&laycfg.length==1?'height:100% ;margin-top:10px;':'height:100% ;'">
                     <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell></el-col>
                 </el-card>
             </template>
