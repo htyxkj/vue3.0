@@ -26,7 +26,7 @@
                         <bip-menu></bip-menu>
                         <el-main class="bip-main">
                             <div style='position: relative;'>
-                                <el-tabs v-model="editableTabsValue2" type="border-card" editable :closable="false" @tab-remove="removeTab" class="bip-tabs">
+                                <el-tabs v-model="editableTabsValue2" type="border-card" :editable="editableTabs2.length>1" :closable="false" @tab-remove="removeTab" class="bip-tabs">
                                     <el-tab-pane v-for="(item) in editableTabs2"
                                         :key="item.name" :label="item.title" :name="item.name"
                                         :closable="item.closable" :lazy="true" :style="style">    
@@ -34,7 +34,7 @@
                                         </lay-out>
                                     </el-tab-pane>
                                 </el-tabs>
-                            <el-button size='mini' icon="el-icon-delete" circle class="clearBtn" @click="delAllTabs"></el-button>
+                            <el-button size='mini' v-if="editableTabs2.length>1" icon="el-icon-delete" circle class="clearBtn" @click="delAllTabs"></el-button>
                             </div>
                         </el-main>
                     </el-container>
