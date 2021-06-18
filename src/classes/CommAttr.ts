@@ -20,4 +20,9 @@ export default class CommATTR{
      * 码名|文本
      */
     readonly CODE:number = 0x40000;
+
+    /**
+     * 非输入|滤0
+     */
+    readonly NOENIT:number = 0x2000000;
 }

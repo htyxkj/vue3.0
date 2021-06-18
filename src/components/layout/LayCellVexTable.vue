@@ -769,7 +769,6 @@ export default class LayCelVexTable extends Vue {
         let columnIndex = data.columnIndex
         if(columnIndex > 0){
             let cell = this.laycell.uiCels[columnIndex]
-
             if(!this.beBill){
                 cell = this.laycell.uiCels[columnIndex-1]
                 if((this.laycell.cells.attr & 0x40)>0){
@@ -887,18 +886,12 @@ export default class LayCelVexTable extends Vue {
     }
 
     table_cell_click(data:any,event:any){ 
-        console.log("单元格单击事件")
         setTimeout(() => {
             this.cds.index = data.rowIndex;
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
             this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
-            this.$bus.$emit("row_click",value);    
-            // if(this.cds.ds_sub){
-            //     for(var i=0;i<this.cds.ds_sub.length;i++){
-            //         let cc = this.cds.ds_sub[i];
-            //         this.$bus.$emit("datachange",cc.ccells.obj_id)
-            //     }
-            // }
+            this.$bus.$emit("row_click",value);
+            this.openrefs(data,event);
         }, 250);
     }
     invokecmd(btn:any,rowIndex:any){

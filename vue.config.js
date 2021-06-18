@@ -5,6 +5,7 @@ module.exports = {
   lintOnSave: true,
   //关键点在这  
   runtimeCompiler: true,
+  productionSourceMap:false,//不生成 js.map 文件
 
   // 调整内部的 webpack 配置。
   // 查阅 https://github.com/vuejs/vue-doc-zh-cn/vue-cli/webpack.md

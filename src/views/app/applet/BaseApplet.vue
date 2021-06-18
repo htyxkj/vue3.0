@@ -175,12 +175,12 @@ export default class BaseApplet extends Vue{
                         this.fullscreenLoading = true
                         this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
                             if(res.data.id ==0){
-                                // this.findData(this.dsm.cont)
+                                this.dsm.clear();
                                 this.dsm.cdata.data.splice(this.dsm.page.index,1); 
+                                this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                                 // if(this.dsm.page.index >= this.dsm.cdata.data.length){
                                 //     this.dsm.page.index--;
                                 // }
-                                this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                                 // this.dsm.page.total--;
                                 // if( this.dsm.cdata.data.length ==0){
                                 //     this.dsm.createRecord();
@@ -265,12 +265,6 @@ export default class BaseApplet extends Vue{
                 this.dsm.page = oldPage;
                 let crd = this.dsm.currRecord;
                 this.dsm.page.index = this.dsm.cdata.data.length - 1;
-                // let row = this.dsm.cdata.data.length - 1;
-                // let newD = this.dsm.cdata.data[row];
-                // this.dsm.cdata.data.splice(row,1)
-                // this.dsm.cdata.data.splice(this.dsm.page.index,0,newD)
-                // let crd = this.dsm.cdata.data(this.dsm.page.index)
-                // this.dsm.currRecord = crd;
                 this.setListMenuName();
                 //设置当前记录审批流程信息
                 if(crd != null && this.dsm.opera){
@@ -286,10 +280,7 @@ export default class BaseApplet extends Vue{
                 }
                 await this.dsm.checkAllGS()
                 this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
-                // if (page.total > 0) {
-                //     this.JumpToIndexCRecord(_idx);
-                // }
-                // this.dsm.cdata.data.push(this.dsm.currRecord)
+                this.$message.success("复制成功！")
             }
         }else if(cmd === icl.B_CMD_UPFILE){
             let file:any = this.$refs.imExFile
@@ -1218,11 +1209,11 @@ export default class BaseApplet extends Vue{
             this.qe.oprid = this.oprid;
             this.qe.page.currPage = 1;
             this.qe.page.index = 0;
-            if(this.params.method =='pkfld'){
+            if(this.params.method =='pkfld'){ //业务关联
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value
                 this.findData(data);
-            }else if(this.params.method =='dlg'){
+            }else if(this.params.method =='dlg'){//DLG 关联
                 if(JSON.stringify(this.params.jsontj).length >=2){
                     let cData:any  = null
                     if(JSON.stringify(this.params.jsontj).length >2){
@@ -1253,9 +1244,12 @@ export default class BaseApplet extends Vue{
                         }
                     }
                 }
-            }else if(this.params.method =='BL'){
+            }else if(this.params.method =='BL'){//BL下钻
                 if(JSON.stringify(this.params.jsontj).length >2)
                 await this.findData(this.params.jsontj);
+            }else if(this.params.method == 'CUSADD'){//报表添加按钮
+                this.dsm.clear();
+                this.dsm.createRecord();
             }
         }
     }

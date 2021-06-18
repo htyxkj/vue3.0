@@ -12,13 +12,15 @@
                        {{cell.labelString}}
                     </template>
                 </span>
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled"
-                    @focus="getFocus(true)"
-                    @blur="getFocus(false)"
-                    @change="dataChange"
-                >
-                    <el-button slot="append" icon="iconfont icon-bip-shuzhuangtu" @click="iconClick"></el-button>
-                </el-input>
+                <span @click="inputClick">
+                    <el-input :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled"
+                        @focus="getFocus(true)"
+                        @blur="getFocus(false)"
+                        @change="dataChange"
+                        :readonly="readonly">
+                        <el-button slot="append" icon="iconfont icon-bip-shuzhuangtu" @click="iconClick"></el-button>
+                    </el-input>
+                </span>
                 <template v-if="cell.desc">
                     <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
                         <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
@@ -29,9 +31,11 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled">
-                 <el-button slot="append" icon="iconfont icon-bip-shuzhuangtu" @click="iconClick"></el-button>
-             </el-input>
+            <span @click="inputClick">
+                <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly">
+                    <el-button slot="append" icon="iconfont icon-bip-shuzhuangtu" @click="iconClick"></el-button>
+                </el-input>
+            </span>
         </template>
         <template v-if="showQueryInfo">
             <bip-tree-info ref="treeinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select" :row="row"></bip-tree-info>
@@ -62,7 +66,6 @@ export default class BipTreeEditor extends Vue{
     @Prop() bipInsAid!:BipInsAidNew
     span:number = 6
     model1:string = ''
-    // disabled:boolean = false
     clearable:boolean = true
     attr:CommATTR = new CommATTR()
     showQueryInfo:boolean =false;
@@ -117,7 +120,11 @@ export default class BipTreeEditor extends Vue{
         }
         this.getRefValues();
     }
-
+    inputClick(){
+        if(this.disabled || this.readonly){
+            this.iconClick();
+        }
+    }
     iconClick(){
         this.$emit("focus",{})
         if(this.bipInsAid){
@@ -171,6 +178,13 @@ export default class BipTreeEditor extends Vue{
             return dis;
         }
         return !this.cds.currCanEdit(this.row>-1?this.row:0)
+    }
+    get readonly(){
+        let dis = (this.cell.attr&this.attr.NOENIT)>0
+        if(dis){
+            return dis;
+        }
+        return false;
     }
 
     getFocus(gets: boolean) {

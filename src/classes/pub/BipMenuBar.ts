@@ -88,9 +88,9 @@ export default class BipMenuBar{
             this.menuList.push(btn)
         }
         if(this.search){
-            btn = new BipMenuBtn(CommICL.B_CMD_ROWCOLUMN,"列/行")
-            btn.setIconFontIcon('tongji');
-            this.menuList.push(btn)
+            // btn = new BipMenuBtn(CommICL.B_CMD_ROWCOLUMN,"列/行")
+            // btn.setIconFontIcon('tongji');
+            // this.menuList.push(btn)
         }
         if(this.search){
             btn = new BipMenuBtn(CommICL.B_CMD_CONDITIONSHOW,"显示/隐藏(条件)")

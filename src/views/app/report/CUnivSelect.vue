@@ -323,6 +323,7 @@ export default class CUnivSelect extends Vue {
                         this.$router.push({
                             path:'/layout',
                             name:'layout',
+                            params:{method:"CUSADD",pmenuid:pmenuid[1] },
                             query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
                         })    
                     }else{
