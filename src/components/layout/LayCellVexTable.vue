@@ -207,7 +207,7 @@
 
 
                 <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
-                <vxe-table-column type="seq" width="40"></vxe-table-column>
+                <vxe-table-column type="seq" width="55"  fixed="left"></vxe-table-column>
 
                 <!-- 表格三级表头 目前写死三级 -->
 
@@ -628,6 +628,9 @@ export default class LayCelVexTable extends Vue {
      * 表尾合计
      */
     footerMethod({ columns, data }:any) {
+        if(this.footerCellKey.length<=0){
+            return [];
+        }
         let _data:any = [];
         for(var i=0;i<data.length;i++){
             _data.push(data[i].data)
@@ -652,22 +655,24 @@ export default class LayCelVexTable extends Vue {
 
     //报表表尾合计
     footerMethod2({ columns, data }:any){
-         if(this.cds.hjList.length>0){
-            return [
-                columns.map((column :any, columnIndex :any) => {
-                    if (columnIndex === 0) {
-                        return '小计'
-                    }
-                    if (this.cds.hjList.includes(column.property)) {
-                        return this.sumNum(data, column.property)
-                    }
-                    return null
-                })
-                ]
-         }else{
-             return []
-         }
-         
+        if(this.cds.hjList.length>0){
+            if(this.env.uriParams.pclass && this.env.uriParams.pclass.indexOf("inetbas.cli.systool.CRptTool")>-1){
+                return this.footerMethod({columns, data})
+            }
+        return [
+            columns.map((column :any, columnIndex :any) => {
+                if (columnIndex === 0) {
+                    return '小计'
+                }
+                if (this.cds.hjList.includes(column.property)) {
+                    return this.sumNum(data, column.property)
+                }
+                return null
+            })
+            ]
+        }else{
+            return []
+        }
     }
 
       sumNum (list:any, field:any) {
