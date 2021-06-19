@@ -12,11 +12,15 @@
                         {{cell.labelString}}
                     </template>
                 </span>                
-                <el-input :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" 
-                        @focus="getFocus(true)"
+                <el-input :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="true" :disabled="(cell.attr&0x40)>0" 
+                        @focus="readonly?'':getFocus(true)"
                         @blur="getFocus(false)"
                         @change="dataChange"
                     >
+                    <template v-if="this.model1&&readonly">
+                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
+                    </template>
+                    
                     <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
                 </el-input>
                 <template v-if="cell.desc">
@@ -158,6 +162,11 @@ export default class BipInsAidEditor extends Vue{
                 });
             }
         }
+    }
+
+    clearvalue(){
+        this.model1 = '';
+        this.dataChange('');
     }
 
     iconClick(checkCell:boolean = true) {

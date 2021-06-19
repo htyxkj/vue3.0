@@ -18,6 +18,9 @@
                         @blur="getFocus(false)"
                         @change="dataChange"
                         :readonly="readonly">
+                    <template v-if="this.model1&&readonly">
+                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
+                    </template>
                         <el-button slot="append" icon="iconfont icon-bip-shuzhuangtu" @click="iconClick"></el-button>
                     </el-input>
                 </span>
@@ -81,6 +84,11 @@ export default class BipTreeEditor extends Vue{
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
+
+    clearvalue(){
+        this.model1 = '';
+        this.dataChange('');
+    }
 
     async mounted(){
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
