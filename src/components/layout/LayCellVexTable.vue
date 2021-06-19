@@ -1116,8 +1116,8 @@ export default class LayCelVexTable extends Vue {
         this.table_cell_click(data,event)
     }
 
-    selectChangeEvent ({ selection,checked,}:any) {
-        this.removeData = selection;
+    selectChangeEvent (data:any) {
+        this.removeData = data.records;;
         for(var i=0;i<this.removeData.length;i++){
             this.removeData[i].c_state =4;
         }
