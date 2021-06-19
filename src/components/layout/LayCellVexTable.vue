@@ -150,7 +150,7 @@
                     <el-button type="danger" icon="el-icon-plus" circle style="font-size: 28px;"  @click="addRecord"></el-button>
                 </template>
                 <template v-if="breport">
-                    <vxe-table-column field="" title="操作" fixed="right"  align="center" :width="commBtns2.length>1?250:100">
+                    <vxe-table-column field="" title="操作" fixed="right"  align="center" :width="commBtns2.length*90>300?300:commBtns2.length*90">
                         <template #default="{ rowIndex }">
                             <el-button-group v-if="breport&&commBtns2">
                                 <template  v-for="(btn,index) in commBtns2">
@@ -287,7 +287,7 @@
                     </template>
                 </template>
             
-                <vxe-table-column v-if="config.type ==2" field="" title="操作" align="center" fixed="right" :width="commBtns2.length>1?250:100">
+                <vxe-table-column v-if="config.type ==2" field="" title="操作" align="center" fixed="right" :width="commBtns2.length*90>300?300:commBtns2.length*90">
                     <template #default="{rowIndex }">
                         <template  v-for="(btn,index) in commBtns2">
                             <el-button :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     

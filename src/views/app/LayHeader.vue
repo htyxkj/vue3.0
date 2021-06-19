@@ -21,17 +21,36 @@
                 <el-badge class="header_badge_item">
                     <i :class="icon "  @click="isQP"></i>    
                 </el-badge> 
-                <el-popover  width="180" placement="bottom-end" >
+                <el-popover  width="220" placement="bottom-end" >
                     <el-row style="margin: 0px;">
                         <el-col :span="24">
-                            <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
+                            <el-row class="user_name user_padding user_hr">
+                                <el-col :span="6">
+                                    姓名：
+                                </el-col>
+                                <el-col :span="18">
+                                {{user.userName}}
+                                </el-col>
+                            </el-row> 
                             <!-- <el-row class="user_code user_padding">{{user.userCode}}</el-row> -->
-                            <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
                             <el-row class="user_padding">
-                                <template v-if="base_variable && base_variable.ITEMTYPE == 'trainPro'">
-                                    {{user.deptInfo.deptName}}-
-                                </template>
-                                <template v-if="gwName">{{gwName}}</template>
+                                <el-col :span="6">
+                                    单位：
+                                </el-col>
+                                <el-col :span="18">
+                                    {{user.deptInfo.cmcName}}
+                                </el-col>
+                            </el-row>
+                            <el-row class="user_padding">
+                                <el-col :span="6">
+                                    角色：
+                                </el-col>
+                                <el-col :span="18">
+                                    <template v-if="base_variable && base_variable.ITEMTYPE == 'trainPro'">
+                                        {{user.deptInfo.deptName}}-
+                                    </template>
+                                    <template v-if="gwName">{{gwName}}</template>
+                                </el-col>
                             </el-row>
                             <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
                             <!-- <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row> -->
@@ -44,7 +63,7 @@
                                             </el-row>                            
                                         </el-col>
                                     </el-row>  
-                                    <el-button slot="reference" type="text" class="user_button">切换公司</el-button>
+                                    <el-button slot="reference" type="text" class="user_button">切换单位</el-button>
                                 </el-popover>
                             </el-row>
                             <!-- <el-row class="user_padding user_hr" >

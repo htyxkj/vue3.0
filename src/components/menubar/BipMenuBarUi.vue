@@ -64,7 +64,11 @@ export default class BipMenuBarUI extends Vue{
                         this.btnShow[i] = true;
                     }
                 }else{
-                    this.btnShow[i] = false;
+                    if(btn.cmd == 'ADD'){
+                        this.btnShow[i] = true;
+                    }else{
+                        this.btnShow[i] = false;
+                    }
                 }
             }else{
                 this.btnShow[i] = true;
