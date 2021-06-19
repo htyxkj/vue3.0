@@ -52,15 +52,17 @@
                         </el-option>
                     </el-select>
                 </el-row>
-                <el-row class="bip-work-title"><h3>审批人员</h3></el-row>
-                <el-row>  
-                    <el-checkbox-group v-model="userListSelect">
-                        <template v-for="item in userList" >
-                            {{item.node}}
-                            <el-checkbox :disabled="item.hq" v-for="user in item.users" :key="user.userCode" :id="user.userCode" :label="user.userCode" :md-value="user.userCode">{{user.userName}}</el-checkbox>
-                        </template>
-                    </el-checkbox-group>
-                </el-row>
+                <template v-if="stateId != 6">
+                    <el-row class="bip-work-title"><h3>审批人员</h3></el-row>
+                    <el-row>  
+                        <el-checkbox-group v-model="userListSelect">
+                            <template v-for="item in userList" >
+                                {{item.node}}
+                                <el-checkbox :disabled="item.hq" v-for="user in item.users" :key="user.userCode" :id="user.userCode" :label="user.userCode" :md-value="user.userCode">{{user.userName}}</el-checkbox>
+                            </template>
+                        </el-checkbox-group>
+                    </el-row>
+                </template>
                 <el-row v-if="signature" class="el-col-sm-24">
                     <el-form @submit.native.prevent label-position="right" label-width="60px">
                         <bip-input-autograph :cell="cell" :cds="cds" :model="signatureValue" :bgrid="false" :row="0" @dataChange="dataChange"></bip-input-autograph>

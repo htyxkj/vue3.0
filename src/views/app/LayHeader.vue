@@ -1,14 +1,17 @@
 <template>
     <div>
         <el-row> 
-            <el-col :span="4" style="text-align:start" class="my-header"> 
-                <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true" @click="showMenu">
+            <el-col :span="14" style="text-align:start" class="my-header"> 
+                <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true">
                     <use xlink:href="#icon-bip-rongtong "></use>
                 </svg>
                 <img v-else src="../../assets/bip/logo.png"/>
+                <div style="color: white;font-size: 18px;">
+                    {{base_variable.Project_Name}}
+                </div>
                 <!-- <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i> -->
             </el-col>
-            <el-col :span="20" style="text-align:end" class="my-header">
+            <el-col :span="10" style="text-align:end" class="my-header">
                 <el-badge :value="taskNum" class="header_badge_item" style="margin-left: auto;">
                     <i class="el-icon-mobile pointer" @click="myTask"></i>    
                 </el-badge>
@@ -270,8 +273,6 @@ export default class LayHeader extends Vue {
         setTimeout(() => {
             let cc = tools.getTaskMsgData(200,null,null,null,null,null,null,null,null);             
         }, 500);
-    }
-    showMenu(){
     }
 
     myTask(){
