@@ -107,6 +107,7 @@ export default class Home extends Vue {
     height:number=400;
     cc:Array<any> = new Array<any>();
     layoutStyle:any = "width:100%";
+    @Provide('heightInfo') heightInfo: any = {};
     mounted() {
       this.cc=[{id:"1"},{id:"2"},{id:"1"},{id:"1"},{id:"1"}];
       this.initHeight();
@@ -490,6 +491,7 @@ export default class Home extends Vue {
           this.height=this.height-90;
       }
       this.setBipHeight(this.height)
+      this.heightInfo.height = this.height;
     }
     @Watch("$route")
     changeRoute(){

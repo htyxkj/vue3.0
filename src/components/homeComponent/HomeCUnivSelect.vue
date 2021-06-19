@@ -13,7 +13,7 @@
                                 </el-col>
                             </el-row>
                             <el-form @submit.native.prevent label-position="right" label-width="120px">
-                                <base-layout v-if="lay.binit" :layout="lay" :env="env" ></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
+                                <base-layout v-if="lay.binit" :layout="lay" :env="env" :config="config"></base-layout><!-- @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" -->
                             </el-form>
                         </div>
                     </template>
@@ -64,6 +64,7 @@ export default class HomeCUnivSelect extends Vue {
     @Prop() params:any;
     @Prop() cont:any;
     @Prop() height!:number;
+    @Prop() config!:any;
     fullscreenLoading: boolean = false;
     cells: Array<Cells> = new Array<Cells>();
     mbs: BipMenuBar = new BipMenuBar(0);
