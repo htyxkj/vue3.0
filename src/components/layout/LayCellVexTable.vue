@@ -465,7 +465,7 @@ export default class LayCelVexTable extends Vue {
     @Prop() pbuid!: string;
     @Prop() beBill!: boolean;
     @Prop() env!:CCliEnv;
-    @Prop() config?:any
+    @Prop() config!:any
 
     activeNames:any = ['1'];
     height:string = "450px";
@@ -521,6 +521,9 @@ export default class LayCelVexTable extends Vue {
             }else{
                 this.commBtns2.push(item)
             }
+            if((this.laycell.cells.attr & 0x40)>0&&item.cmd == 'DEL'){
+                this.commBtns.push(item)
+            }
         });
     }
 
@@ -550,12 +553,15 @@ export default class LayCelVexTable extends Vue {
         this.initTableTitleGroup();
         if(this.config){
             if(this.config.type ==2){
-                this.height = (this.heightInfo.height-114)+"px";
+                if(this.heightInfo)
+                    this.height = (this.heightInfo.height-114)+"px";
+                else
+                    this.height = "450px"
             }else if(this.config.type ==3){
                 this.height = "250px"
             }
         }else{
-            this.config = {type :2};
+            // this.config = {type :2};
         }
         this.initSfix();
         this.initWidth();
@@ -569,8 +575,8 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
             this.makeCommBtns();
             this.getCellLinks();
-             if(this.config.type ==2){
-                this.height = (this.heightInfo.height-114)+"px";
+             if(this.config.type ==2 && this.heightInfo){
+                    this.height = (this.heightInfo.height-114)+"px";
             }
         })
 
@@ -1141,7 +1147,6 @@ export default class LayCelVexTable extends Vue {
         return this.aidValues.get(str);
     }
     mounted(){ 
-        console.log(this.heightInfo)
         let pbds = this.env.uriParams.pbds;
         if(pbds.layout && pbds.layout == 'card'){
             this.isTable = false;

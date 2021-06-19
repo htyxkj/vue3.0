@@ -30,6 +30,7 @@ export default class CommonLayOut extends Vue {
     @Provide() uriParams: URIParams = new URIParams();
     @Provide() fullscreenLoading: boolean = false;
     @Mutation('setBipHeight', { namespace:'login' }) setBipHeight: any;
+    @Provide('heightInfo') heightInfo: any = {};
     async mounted() {
         if (this.$route.query) {
             this.pbuid = this.$route.query.pbuid + "";
@@ -60,6 +61,7 @@ export default class CommonLayOut extends Vue {
             this.height=this.height-90;
         }
         this.setBipHeight(this.height)
+        this.heightInfo.height = this.height;
     }
 }
 </script>

@@ -42,7 +42,7 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 export default class BaseLayout extends Vue{
     @Prop() layout?:BipLayout
     @Prop() env?:CCliEnv
-    @Prop() config?:any
+    @Prop() config!:any
     comps:Array<BipLayConf> = []
     mounted(){
         if(this.layout)

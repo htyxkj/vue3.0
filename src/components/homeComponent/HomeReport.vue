@@ -6,7 +6,7 @@
             </div>
         </template>
         <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
-            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight' :cont="cont" @openMenu="openMenu"></home-c-univ-select>
+            <home-c-univ-select :uriParams="uriParams" :params="$route.params" :height='chartHeight' :cont="cont" @openMenu="openMenu" :config="config"></home-c-univ-select>
         </template>
     </el-row>
 </template>
@@ -26,6 +26,7 @@ export default class HomeReport extends Vue {
     @Prop() rech!:string;
     @Prop() sid!:string;
     @Prop() type!:string;
+    config:any = {type:3};
     menuid:string = '';
     uriParams: URIParams = new URIParams();
     message:any = null;
