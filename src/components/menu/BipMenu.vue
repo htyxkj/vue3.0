@@ -30,6 +30,7 @@ export default class BipMenu extends Vue {
     menuList: Menu[] = [];
     isCollapse:boolean = true;
     style:any = "";
+    heightChangeSID:number  = 0;
     mounted() {
         this.menuList = JSON.parse(window.sessionStorage.getItem("menulist") + "");
         if (this.menuList == null) {
@@ -40,7 +41,24 @@ export default class BipMenu extends Vue {
             height=height-85;
         }
         this.style = "height:"+(height)+"px"
+        this.heightChangeSID = this.$bus.$on('totalHChange',this.totalHChange);
+
     }
+
+    totalHChange(){
+        this.$nextTick(()=>{
+             let height = document.documentElement.clientHeight
+            if(height>70){
+                height=height-85;
+            }
+            this.style = "height:"+(height)+"px"
+        })
+    }
+
+    beforeDestroy(){
+        this.$bus.$off('totalHChange',this.heightChangeSID)
+    }
+    
     //末级菜单点击
     lastClick(){
         console.log("lastClick")

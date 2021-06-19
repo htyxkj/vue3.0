@@ -493,6 +493,7 @@ export default class LayCelVexTable extends Vue {
     datachangeBusID:number=0;
     tableShapeBusID:number=0;
     findBtnBusID:number=0;
+    heightChangeSID:number=0;
     groupCells:any = [];
 
     multiple:boolean = false;//是否是多选
@@ -1151,11 +1152,22 @@ export default class LayCelVexTable extends Vue {
         this.datachangeBusID = this.$bus.$on('datachange',this.datachange)
         this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
         this.findBtnBusID = this.$bus.$on('findBtnClick',this.findBtnClick);
+        this.heightChangeSID = this.$bus.$on('totalHChange',this.totalHChange);
+    }
+
+    totalHChange(){
+        this.$nextTick(()=>{
+        if(this.heightInfo){
+                this.height = (this.heightInfo.height-114)+"px";
+                console.log(this.height)        
+            }
+        })
     }
     beforeDestroy(){
         this.$bus.$off('datachange',this.datachangeBusID)
         this.$bus.$off('ReportTableShape',this.tableShapeBusID)
         this.$bus.$off('findBtnClick',this.findBtnBusID)
+        this.$bus.$off('totalHChange',this.heightChangeSID)
     }
     findBtnClick(obj_id:string =''){
         this.multipleSelectionAll=[];
@@ -1578,7 +1590,7 @@ export default class LayCelVexTable extends Vue {
             }
         })
     }
-
+    
     /**
      * 设置选中行
      */

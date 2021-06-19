@@ -56,12 +56,28 @@ export default class CommonLayOut extends Vue {
             );
         }
 
-        this.height = document.documentElement.clientHeight
+        const that = this
+        window.onresize = () => {
+            return (() => {
+                let h = document.documentElement.clientHeight;
+                that.height = h
+                if(that.height>70){
+                    that.height=that.height-90;
+                }
+                that.setBipHeight(that.height)
+                that.heightInfo.height = that.height;
+                this.$bus.$emit('totalHChange')
+            })();
+        }
+        let h = document.documentElement.clientHeight;
+        this.height = h
         if(this.height>70){
             this.height=this.height-90;
         }
         this.setBipHeight(this.height)
         this.heightInfo.height = this.height;
+
+ 
     }
 }
 </script>

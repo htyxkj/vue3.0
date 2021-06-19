@@ -868,12 +868,6 @@ export default class CUnivSelect extends Vue {
             }else{
                 this.style+="height:"+(this.heightInfo.height)+"px;"
             }
-            // if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
-            //     this.style+="height:"+(this.height-0)+"px;"
-            // }else{
-                
-            //     this.style+="height:"+(this.height-50-)+"px;"
-            // }
         }
     }
 }
