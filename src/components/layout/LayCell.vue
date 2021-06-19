@@ -143,13 +143,16 @@ export default class LayCell extends Vue{
      */
     delRecord(rowId:any){
         if(this.cds.currCanEdit()){
-            this.cds.cdata.rmdata.push(this.cds.getRecordAtIndex(rowId));
+            let delData = this.cds.getRecordAtIndex(rowId);
+            delData.c_state =4;
+            this.cds.cdata.rmdata.push(delData);
             this.cds.cdata.data.splice(rowId,1); 
             this.cds.setState(2);
             this.updateKeyVl();
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){
                 this.cds.ds_par.currRecord.c_state |= 2;
+                this.cds.ds_par.getRecordAtIndex(this.cds.ds_par.index).c_state |= 2;
             }
         }
     }
@@ -208,6 +211,9 @@ export default class LayCell extends Vue{
             if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
                 for(var i=0;i<this.cds.cdata.data.length;i++){
                     let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                    if(!this.cds.cdata.data[i].oldpk){
+                        this.cds.cdata.data[i].oldpk=[];
+                    }
                     if(this.cds.cdata.data[i].oldpk.length == 0){
                         this.cds.cdata.data[i].oldpk.push(oldKey);
                     }

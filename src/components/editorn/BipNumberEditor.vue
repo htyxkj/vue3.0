@@ -199,7 +199,7 @@ export default class BipNumberEditor extends Vue {
         }
         if (chkr && this.model1) {
           //保留小数位数
-          if(this.cell.ccPoint && this.model1.indexOf("~") ==-1){
+          if(this.cell.ccPoint && (this.model1+"").indexOf("~") ==-1){
             this.model1 = parseFloat(this.model1).toFixed(this.cell.ccPoint);
           }
           this.cds.currRecord.data[this.cell.id] = this.model1;

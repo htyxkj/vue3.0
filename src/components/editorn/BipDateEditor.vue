@@ -178,7 +178,11 @@ export default class BipDateEditor extends Vue{
         this.model1 = this.model
         if(this.condition){//报表条件
             if(this.model && this.model.indexOf("~") == -1){
-                this.dataChange([this.model,this.model])
+                if(this.cell.initValue == '[Y-M]'){
+                    this.dataChange([this.model+"-01",this.model+"-"+new Date().getDate()])
+                }else{
+                    this.dataChange([this.model,this.model])
+                }
             }
         }
         if(!this.bgrid){
