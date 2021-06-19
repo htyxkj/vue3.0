@@ -4,8 +4,9 @@
             <el-col :span="4" style="text-align:start" class="my-header"> 
                 <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true" @click="showMenu">
                     <use xlink:href="#icon-bip-rongtong "></use>
-                 </svg>
-                <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i>
+                </svg>
+                <img v-else src="../../assets/bip/logo.png"/>
+                <!-- <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i> -->
             </el-col>
             <el-col :span="20" style="text-align:end" class="my-header">
                 <el-badge :value="taskNum" class="header_badge_item" style="margin-left: auto;">
@@ -17,15 +18,17 @@
                 <el-badge class="header_badge_item">
                     <i :class="icon "  @click="isQP"></i>    
                 </el-badge> 
-                <el-popover  width="160" placement="bottom-end" >
+                <el-popover  width="180" placement="bottom-end" >
                     <el-row style="margin: 0px;">
                         <el-col :span="24">
                             <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
-                            <el-row class="user_code user_padding">{{user.userCode}}</el-row>
+                            <!-- <el-row class="user_code user_padding">{{user.userCode}}</el-row> -->
                             <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
                             <el-row class="user_padding">
-                                {{user.deptInfo.deptName}}
-                                <template v-if="gwName">-{{gwName}}</template>
+                                <template v-if="base_variable && base_variable.ITEMTYPE == 'trainPro'">
+                                    {{user.deptInfo.deptName}}-
+                                </template>
+                                <template v-if="gwName">{{gwName}}</template>
                             </el-row>
                             <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
                             <!-- <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row> -->
@@ -112,8 +115,6 @@ export default class LayHeader extends Vue {
     @Mutation("snkey", { namespace: 'login' }) setSnkey: any;    
     @Prop() isLogin!:boolean;
     @State('login') profile!: LoginState 
-    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
-    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     qp:boolean = false;
     icon:String = "el-icon-full-screen pointer"
     skin:any=[];
@@ -271,7 +272,6 @@ export default class LayHeader extends Vue {
         }, 500);
     }
     showMenu(){
-        this.setIsOpenMenu(true)
     }
 
     myTask(){

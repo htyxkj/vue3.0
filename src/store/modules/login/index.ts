@@ -13,7 +13,6 @@ const _isOtherePage:boolean = (window.sessionStorage.getItem('isOtherePage')+'')
 const _isLogin:boolean = (window.sessionStorage.getItem('isLogin')+'')==='true'
 const _u = JSON.parse(window.sessionStorage.getItem('user')+'')
 const _m = JSON.parse(window.sessionStorage.getItem('menulist')+'')
-const _isOpenMenu = false;
 const _h = window.sessionStorage.getItem('bipHeight')+''
 
 const state:LoginState = {
@@ -22,7 +21,6 @@ const state:LoginState = {
     snkey: JSON.parse(window.sessionStorage.getItem('snkey')+''),
     user:_u ===null?new User('','',''):_u,
     menulist: _m === null?[]:_m,
-    isOpenMenu:_isOpenMenu,
     bipComHeight:parseFloat(_h)
 }
 
@@ -46,10 +44,6 @@ const mutations :MutationTree<LoginState> = {
     menulist:(state:LoginState,data:Menu[]) => {
         state.menulist = data;
         window.sessionStorage.setItem('menulist',JSON.stringify(data));
-    },
-    setIsOpenMenu:(state:LoginState,data:boolean) => {
-        state.isOpenMenu = data;
-        window.sessionStorage.setItem('isOpenMenu',JSON.stringify(data));
     },
     setBipHeight:(state:LoginState,data:number) => {
         state.bipComHeight = data;
@@ -75,9 +69,6 @@ const getters: GetterTree<LoginState, RootState> = {
     },
     menulist(state) : Menu[] {
         return state.menulist
-    },
-    isOpenMenu(state) : boolean {
-        return state.isOpenMenu
     },
 
     bipHeight(state):number{

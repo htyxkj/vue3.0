@@ -50,6 +50,7 @@
                 @edit-closed="editClose" @checkbox-change="selectChangeEvent"
                 @checkbox-all="selectChangeEvent"  @custom="toolbarCustomEvent"
                 :footer-cell-class-name="footerCellClassName"
+                :loading="table_loading"
                 >
                 <vxe-table-column v-if="cds.ds_par" type="checkbox" width="60"></vxe-table-column>
 
@@ -195,16 +196,17 @@
                 :data.sync="cds.cdata.data" :optimized="true" :height="height"
                 @cell-dblclick="openrefs" @cell-click="table_cell_click"
                 @sort-change="sortChange" :sort-config="{trigger: 'cell',remote:true}"
-                :span-method="rowspanMethod" show-footer row-id="id" :cell-style="cellStyle"
+                :span-method="rowspanMethod" row-id="id" :cell-style="cellStyle"
                 header-cell-class-name="tableHead"
                 :row-class-name="getRowStyleNew"
-                @checkbox-change="checkChange"
-                @checkbox-all="checkChange"
+                @checkbox-change="checkChange" @checkbox-all="checkChange"
                 :footer-method="footerMethod2"
-                @custom="toolbarCustomEvent">
+                :footer-cell-class-name="footerCellClassName"
+                :show-footer="haveFooterSum" @custom="toolbarCustomEvent"
+                :loading="table_loading">
 
 
-                <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="60" fixed="left"></vxe-table-column>
+                <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="55" fixed="left"></vxe-table-column>
                 <vxe-table-column type="seq" width="55"  fixed="left"></vxe-table-column>
 
                 <!-- 表格三级表头 目前写死三级 -->
@@ -510,6 +512,8 @@ export default class LayCelVexTable extends Vue {
     commBtns:Array<any> = []
     commBtns2:Array<any> = []//表身按钮
 
+    table_loading:boolean=false;//表格加载动画
+
     //初始化表格按钮
     makeCommBtns(){
         this.commBtns=[];
@@ -655,32 +659,30 @@ export default class LayCelVexTable extends Vue {
         if(this.cds.hjList.length>0){
             if(this.env.uriParams.pclass && this.env.uriParams.pclass.indexOf("inetbas.cli.systool.CRptTool")>-1){
                 return this.footerMethod({columns, data})
+            }else{
+                const sums:any = []
+                let sumData = this.cds.cdata.sumData;
+                columns.forEach((column:any, columnIndex:any) => {
+                    if (columnIndex === 0) {
+                        sums.push('合计')
+                    } else {
+                        let sumCell:any = null
+                        if(this.cds.hjList.indexOf(column.property)!=-1) { 
+                            sumData.forEach((smd:any) => {
+                                if(smd.ccName == column.property){
+                                    sumCell = smd.initval
+                                }
+                            });
+                            sumCell = parseFloat(sumCell).toFixed(this.footerCell[column.property].ccPoint);
+                        }
+                        sums.push(sumCell)
+                    }
+                })
+                return [sums]
             }
-        return [
-            columns.map((column :any, columnIndex :any) => {
-                if (columnIndex === 0) {
-                    return '小计'
-                }
-                if (this.cds.hjList.includes(column.property)) {
-                    return this.sumNum(data, column.property)
-                }
-                return null
-            })
-            ]
         }else{
             return []
         }
-    }
-
-      sumNum (list:any, field:any) {
-        let count = 0
-        list.forEach((item:any) => {
-            let nd =  Number(item.data[field]);
-            if(isNaN(nd))
-                nd = 0.0;
-            count += nd;
-        });
-        return currutil.currency(count,'',2);
     }
     /**
      * 表尾单元格class
@@ -905,6 +907,7 @@ export default class LayCelVexTable extends Vue {
             return ;
         }
         this.cds.cdata.clearValues();
+        this.table_loading = true;
         this.$emit("handleSizeChange", value);
     }
 
@@ -917,6 +920,7 @@ export default class LayCelVexTable extends Vue {
         }
         this.cds.cdata.clearValues();
         this.cds.clear();
+        this.table_loading = true;
         this.$emit("handleCurrentChange", value);
     }
     /**排序发生变化 */
@@ -936,7 +940,7 @@ export default class LayCelVexTable extends Vue {
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         let row = data.row.data
         let columnIndex = data.columnIndex
-        if(columnIndex > 0){
+        if(columnIndex >= 0){
             let cell = this.laycell.uiCels[columnIndex]
             if(!this.beBill){
                 cell = this.laycell.uiCels[columnIndex-1]
@@ -963,16 +967,14 @@ export default class LayCelVexTable extends Vue {
                     let slkbuid = ''
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
-                    let data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
+                    let bl_data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
                     let name = "BL_"+this.cds.ccells.obj_id+"_"+cell.id;
-                    console.log(name)
-                    data = await this.initCL(name);
-                    console.log(data);
-                    if(data == null){
+                    bl_data = await this.initCL(name);
+                    if(bl_data == null){
                         await this.openRefsDo(slkid , slkbuid);
                     }else{
                         //BL字段点击
-                        let slink = data.slink;
+                        let slink = bl_data.slink;
                         if(slink){
                             slink = slink.split("&");
                             let menuid = slink[0]
@@ -1006,8 +1008,6 @@ export default class LayCelVexTable extends Vue {
                                 })
                             }
                         }
-
-                        console.log(data);
                     }
                 }else{
                     console.log('主键点击')
@@ -1089,8 +1089,12 @@ export default class LayCelVexTable extends Vue {
         }else{
             this.cds.index = rowIndex;
             this.cds.currRecord = this.cds.getRecordAtIndex(rowIndex);
+            this.cds.currRecordArr = [this.cds.currRecord];
             let value = {row:this.cds.currRecord ,rowIndex:rowIndex,dsm:this.cds};
-            this.$bus.$emit("row_click",value);    
+            this.$bus.$emit("row_click",value); 
+            if(btn.cmd =='DEL'){
+                this.table_loading = true;
+            }
             this.$emit("invokecmd",btn)
         }
 
@@ -1181,6 +1185,7 @@ export default class LayCelVexTable extends Vue {
                 }
                 cc.refreshColumn();
             }
+            this.table_loading = false;
         }
         // this.rowCheckGS();
     }
@@ -1467,6 +1472,12 @@ export default class LayCelVexTable extends Vue {
                 }else if(type == 2){
                     align ="right"
                 }
+            }
+        }else{
+            if(cell.type ==2 || cell.type ==3){
+                align ="right"
+            }else if(cell.type >=4 || cell.type <=6){
+                align ="center"
             }
         }
         return align; 

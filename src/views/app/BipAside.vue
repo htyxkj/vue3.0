@@ -31,8 +31,6 @@ import { BaseVariable } from "@/utils/BaseICL";
 export default class BipAside extends Vue {
   @State('login') profile!: LoginState
   @Provide() menus: Array<Menu> = [];
-  @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
-  @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
   @Provide() loginTitle:any="";
   mounted() {
     this.loginTitle =  BaseVariable.Project_Name;
@@ -42,7 +40,6 @@ export default class BipAside extends Vue {
     }
   }
   showMenu(){ 
-    this.setIsOpenMenu(false)
   }
 }
 </script>

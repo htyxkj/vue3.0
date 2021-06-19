@@ -8,7 +8,7 @@
                 </el-menu-item>
             </template>
             <template v-else :index="item.menuId">
-                <bip-sub-menu :item="item" :appendBody="false"/>
+                <bip-sub-menu :item="item" :appendBody="false" @lastClick="lastClick"/>
             </template>
         </template>
         <template v-else>
@@ -38,8 +38,6 @@ import {BaseVariable} from "@/utils/BaseICL"
 export default class BipMenuItem extends Vue{
     name:string="BipMenuItem"
     @Prop() private item!:Menu;
-    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
-    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     uri:string='';
     canShowChile:boolean = true;
     closeMenu(command:any){
@@ -60,9 +58,8 @@ export default class BipMenuItem extends Vue{
                     query: {pmenuid:pmenuid[1]},
                 })
             }
+            this.lastClick()
         }
-        
-        this.setIsOpenMenu(false);
     }
     created(){
         if(this.item.haveChild){
@@ -76,6 +73,10 @@ export default class BipMenuItem extends Vue{
             }
         }
         this.uri = BaseVariable.BaseUri+'/'
+    }
+    //末级菜单点击
+    lastClick(){
+        this.$emit("lastClick")
     }
 }
 </script>

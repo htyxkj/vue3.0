@@ -10,7 +10,7 @@
             <span slot="title">{{item.menuName}}</span>
         </div>
         <template v-for="child in item.childMenu">
-            <bip-menu-item class="my-menu-item" v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId"></bip-menu-item>
+            <bip-menu-item class="my-menu-item" v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId" @lastClick="lastClick"></bip-menu-item>
             <template v-else>
                 <el-menu-item class="my-menu-item" v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  @click="closeMenu(child.command)"> 
                     <template slot="title" >
@@ -43,8 +43,6 @@ export default class BipSubMenu extends Vue{
     name:string="BipSubMenu"
     @Prop() private item!:Menu;
     @Prop() appendBody!:boolean
-    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
-    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
     uri:string='';
     canShowChile:boolean = true;
     closeMenu(command:any){
@@ -65,9 +63,8 @@ export default class BipSubMenu extends Vue{
                     query: {pmenuid:pmenuid[1]},
                 })
             }
+            this.lastClick();
         }
-        
-        this.setIsOpenMenu(false);
     }
     created(){
         if(this.item.haveChild){
@@ -81,6 +78,9 @@ export default class BipSubMenu extends Vue{
             }
         }
         this.uri = BaseVariable.BaseUri+'/'
+    }
+    lastClick(){
+        this.$emit("lastClick")
     }
 }
 </script>

@@ -89,13 +89,11 @@ export default class App extends Vue {
     initOk:boolean = false;//初始化数据是否加载完毕
     @State('login') profile!: LoginState
     @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
-    @Getter('isOpenMenu', { namespace: 'login' }) isOpenMenu!: boolean;
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Getter('user', { namespace: 'login' }) user?: User;
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
     @Mutation("user", { namespace:'login' }) setUserInfo: any;
-    @Mutation('setIsOpenMenu', { namespace:'login' }) setIsOpenMenu: any;
 
     @Getter('isOtherePage', { namespace: 'login' }) isOtherePage!: boolean;
     @Mutation('isOtherePage', { namespace:'login' }) setIsOtherePage: any;

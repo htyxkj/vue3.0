@@ -6,7 +6,6 @@ export interface LoginState {
     snkey: string
     user: User
     menulist: Menu[]
-    isOpenMenu:boolean
     bipComHeight:number
     isOtherePage:boolean
   }

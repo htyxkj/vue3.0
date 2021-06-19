@@ -2,7 +2,7 @@
     <el-row class="menubar">
         <el-button-group v-if="mbs && initOk">
             <template  v-for="(btn,index) in mbs.menuList">
-                <template  v-if="btnShow[index]">
+                <template  v-if="btn.btnShow">
                     <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                         <template v-if="btn.hasIcon">
                             <template v-if="btn.icon&&btn.bIconleft">
@@ -36,7 +36,6 @@ export default class BipMenuBarUI extends Vue{
     @Prop() cds!:CDataSet
     bInsert:boolean = true;
     showDlg:boolean = true;
-    btnShow:any = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,];
     initOk:boolean = false;
     invokecmd(btn:any){
         this.$emit('invokecmd',btn);
@@ -53,25 +52,24 @@ export default class BipMenuBarUI extends Vue{
 
     @Watch("cds.currRecord.c_state")
     getBtnShow(){
-        console.log("getBtnShow")
         for(var i=0;i< this.mbs.menuList.length;i++){
-            let btn = this.mbs.menuList[i];
-            if(btn.cmd=='COPY' || btn.cmd =='DEL' ||  btn.cmd =='ADD'){
+            let btn:any = this.mbs.menuList[i];
+            let btn_name = ['COPY','DEL','ADD','CHECKPROCESS','SUBMIT']; 
+            if(btn_name.indexOf(btn.cmd)>-1){
                 if(this.cds.currRecord){
                     if ((this.cds.currRecord.c_state & 1) > 0) {
-                        this.btnShow[i] = false;
+                        btn.btnShow = false;
                     }else{
-                        this.btnShow[i] = true;
+                        btn.btnShow = true;
                     }
                 }else{
-                    this.btnShow[i] = false;
+                    btn.btnShow = false;
                 }
             }else{
-                this.btnShow[i] = true;
+                btn.btnShow = true;
             }
         }
         this.initOk = true;
-        this.$forceUpdate();
     }
     @Watch("mbs")
     menuListChange(){

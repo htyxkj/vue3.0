@@ -43,7 +43,7 @@ export const CommICL = Object.assign({
     B_CMD_SUBMIT:'SUBMIT',//提交
     B_CMD_CHKINFO:'CHKINFO',//审批信息
     B_CMD_CHECK:'CHECK',//审核
-    B_CMD_CHECK_PROCESS:'CHECKPROCESS',
+    B_CMD_CHECK_PROCESS:'CHECKPROCESS',//流程查看
     B_CMD_PRINT:'PRINT',//打印
     B_CMD_LINK:'LINK',//连接
     B_CMD_LIST:'LIST',//连接
