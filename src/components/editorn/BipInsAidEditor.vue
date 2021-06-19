@@ -17,7 +17,7 @@
                         @blur="getFocus(false)"
                         @change="dataChange"
                     >
-                    <template v-if="this.model1&&readonly">
+                    <template v-if="this.model1&&readonly&&canEdit">
                         <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
                     </template>
                     
@@ -34,6 +34,9 @@
         </template>
         <template v-else>
             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
+                 <template v-if="this.model1&&canEdit">
+                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
+                </template>
                 <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
             </el-input>
         </template>
@@ -164,7 +167,12 @@ export default class BipInsAidEditor extends Vue{
         }
     }
 
+    get canEdit(){
+        return this.cds.currCanEdit(this.row>-1?this.row:0);
+    }
+
     clearvalue(){
+        
         this.model1 = '';
         this.dataChange('');
     }
