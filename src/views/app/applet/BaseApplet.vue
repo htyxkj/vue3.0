@@ -1253,21 +1253,9 @@ export default class BaseApplet extends Vue{
             }
         }
     }
-    /**
-     * 计算当前行自定义字段的公式
-     */
-    initCurrZdyGS(dsm:CDataSet){
-        let cels = dsm.ccells.cels
-        cels.forEach((cel:any) => {
-            if((cel.attr&0x4000)>0 && (cel.attr &0x1000) >0){//自定义字段 + 公式
-                dsm.checkCurrCellGs(cel);
-            }
-        });
-    }
-
     @Watch("dsm.currRecord")
     curRecoChange(){
-        this.initCurrZdyGS(this.dsm);
+        this.dsm.initCurrZdyGS();
     }
 
     @Watch('params')
