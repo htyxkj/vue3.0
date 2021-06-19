@@ -192,7 +192,6 @@
                 :ref="this.cds.ccells.obj_id" v-if="isTable" border resizable size="small"
                 highlight-hover-row show-all-overflow="tooltip"
                 show-header-overflow highlight-current-row
-                class="vxe-table-element checkbox-table"
                 :data.sync="cds.cdata.data" :optimized="true" :height="height"
                 @cell-dblclick="openrefs" @cell-click="table_cell_click"
                 @sort-change="sortChange" :sort-config="{trigger: 'cell',remote:true}"
@@ -201,7 +200,6 @@
                 :row-class-name="getRowStyleNew"
                 @checkbox-change="checkChange"
                 @checkbox-all="checkChange"
-                :checkbox-config="{checkField: 'checked',reserve:'true'}"
                 :footer-method="footerMethod2"
                 @custom="toolbarCustomEvent">
 
@@ -514,6 +512,8 @@ export default class LayCelVexTable extends Vue {
 
     //初始化表格按钮
     makeCommBtns(){
+        this.commBtns=[];
+        this.commBtns2=[];
         let mbs = this.env.mbs.menuList
         _.forEach(mbs,(item:any) => {
             if(item.cmd != 'SAVE' && item.cmd != 'DLG'&& item.cmd != 'DEL'){
@@ -530,8 +530,6 @@ export default class LayCelVexTable extends Vue {
     async created() {
         this.footerCell = {};
         this.footerCellKey = [];
-        this.commBtns =[];
-        this.commBtns2 = []
         if((this.laycell.cells.attr & 0x40)>0){//多选
             this.multiple = true;
         }
@@ -572,14 +570,7 @@ export default class LayCelVexTable extends Vue {
         if (!this.id) {
             this.id = this.laycell.cells.cels[0].id;
         }
-        this.$nextTick(()=>{
-            this.makeCommBtns();
-            this.getCellLinks();
-             if(this.config.type ==2 && this.heightInfo){
-                    this.height = (this.heightInfo.height-114)+"px";
-            }
-        })
-
+        this.menuChange();
     }
 
     /**
@@ -1106,7 +1097,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     checkChange(data:any){
-        this.checkSelected =  data.selection;
+        this.checkSelected =  data.records;
         let cc:any = this.$refs[this.cds.ccells.obj_id];
         if(cc){
             setTimeout(() => {
@@ -1191,7 +1182,6 @@ export default class LayCelVexTable extends Vue {
                 cc.refreshColumn();
             }
         }
-        
         // this.rowCheckGS();
     }
     async rowCheckGS(){
@@ -1567,6 +1557,16 @@ export default class LayCelVexTable extends Vue {
             this.setSelectRow();    
         }
     }
+    @Watch("env.mbs.menuList")
+    menuChange(){
+        this.$nextTick(()=>{
+            this.makeCommBtns();
+            this.getCellLinks();
+             if(this.config.type ==2 && this.heightInfo){
+                    this.height = (this.heightInfo.height-114)+"px";
+            }
+        })
+    }
 
     /**
      * 设置选中行
@@ -1599,7 +1599,7 @@ export default class LayCelVexTable extends Vue {
         
       let that = this;
       // 如果总记忆中还没有选择的数据，那么就直接取当前页选中的数据，不需要后面一系列计算
-      if (this.multipleSelectionAll.length <= 0) {
+      if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
         this.multipleSelectionAll = this.checkSelected;
         return;
       }

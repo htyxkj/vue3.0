@@ -1,8 +1,8 @@
 <template>
     <div>
-        <el-row class="menuSW">
-            <i :class="isCollapse?'el-icon-s-fold':'el-icon-s-unfold'" @click="isCollapse = !isCollapse"></i>
-        </el-row>
+        <div class="menuSW" @click="isCollapse = !isCollapse">
+            <i :class="isCollapse?'el-icon-s-fold':'el-icon-s-unfold'"></i>
+        </div>
         <el-row class="bip-menu-scrollbar" :style="style">
             <el-scrollbar style="height:100%">
                 <el-menu mode="vertical"  :unique-opened="false" router :collapse="isCollapse" :style="!isCollapse?'min-width:240px;max-width:240px':''">
