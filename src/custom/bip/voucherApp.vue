@@ -414,34 +414,38 @@ export default class VoucherApp extends Vue{
 
     insertPZRow(){
         this.editDrawer = true
-        let cr0:any = this.dsm.currRecord;
-        let remakstr = cr0.data['remark'];;
-        if(this.dsm.ds_sub[0].cdata.data){
-            cr0 = this.dsm.ds_sub[0].getRecordAtIndex(this.dsm.ds_sub[0].cdata.data.length-1);
-            // console.log(cr0)
-            remakstr = cr0.data['remark'];
-        }
-        let cr:any = this.dsm.ds_sub[0].createRecord();
-        cr.data['remark'] = remakstr;
-        this.formData = cr;
-         let rtb:any = this.$refs.pztb;
-         let fdata = rtb.footerData[0];
-         console.log(fdata,fdata[4],fdata[5]);
-         let rmbd = new Number(fdata[4].replace(/,/g, "")).valueOf();
-         let rmbc =new Number(fdata[5].replace(/,/g, "")).valueOf();
-         let r1 = rmbd-rmbc;
-         if(r1<0){
-             this.formData.data.rmbd = -r1;
-             this.formData.data.fcyd = -r1;
-         }else{
-            this.formData.data.rmbc = r1;
-            this.formData.data.fcyc = r1;
-         }
-        this.tableData = this.dsm.ds_sub[0].cdata.data;
-        this.attr = 0;
-        this.attr2v = '';
-        this.pCells = []
-        this.adicStrv = '';
+        this.$nextTick(()=>{
+            let cr0:any = this.dsm.currRecord;
+            let remakstr = cr0.data['remark'];
+            if(this.dsm.ds_sub[0].cdata.data){
+                cr0 = this.dsm.ds_sub[0].getRecordAtIndex(this.dsm.ds_sub[0].cdata.data.length-1);
+                console.log(cr0)
+                remakstr = cr0.data['remark'];
+            }
+            let cr:any = this.dsm.ds_sub[0].createRecord();
+            cr.data['remark'] = remakstr;
+            this.formData = cr;
+            let rtb:any = this.$refs.pztb;
+            console.log(rtb,'999999');
+            let fdata = rtb.footerTableData[0];
+            console.log(fdata,fdata[4],fdata[5]);
+            let rmbd = new Number(fdata[4].replace(/,/g, "")).valueOf();
+            let rmbc =new Number(fdata[5].replace(/,/g, "")).valueOf();
+            let r1 = rmbd-rmbc;
+            if(r1<0){
+                this.formData.data.rmbd = -r1;
+                this.formData.data.fcyd = -r1;
+            }else{
+                this.formData.data.rmbc = r1;
+                this.formData.data.fcyc = r1;
+            }
+            this.tableData = this.dsm.ds_sub[0].cdata.data;
+            this.attr = 0;
+            this.attr2v = '';
+            this.pCells = []
+            this.adicStrv = '';
+        });
+        
     }
 
     editOK(){
