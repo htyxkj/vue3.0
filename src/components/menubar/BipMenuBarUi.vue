@@ -2,7 +2,7 @@
     <el-row class="menubar">
         <el-button-group v-if="mbs && initOk">
             <template  v-for="(btn,index) in mbs.menuList">
-                <template  v-if="btn.btnShow">
+                <template v-if="btnShow[index]">
                     <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="btn.size" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                         <template v-if="btn.hasIcon">
                             <template v-if="btn.icon&&btn.bIconleft">
@@ -37,6 +37,7 @@ export default class BipMenuBarUI extends Vue{
     bInsert:boolean = true;
     showDlg:boolean = true;
     initOk:boolean = false;
+    btnShow:any=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
     invokecmd(btn:any){
         this.$emit('invokecmd',btn);
     }
@@ -58,18 +59,23 @@ export default class BipMenuBarUI extends Vue{
             if(btn_name.indexOf(btn.cmd)>-1){
                 if(this.cds.currRecord){
                     if ((this.cds.currRecord.c_state & 1) > 0) {
-                        btn.btnShow = false;
+                        this.btnShow[i] = false;
                     }else{
-                        btn.btnShow = true;
+                        this.btnShow[i] = true;
                     }
                 }else{
-                    btn.btnShow = false;
+                    if(btn.cmd == 'ADD'){
+                        this.btnShow[i] = true;
+                    }else{
+                        this.btnShow[i] = false;
+                    }
                 }
             }else{
-                btn.btnShow = true;
+                this.btnShow[i] = true;
             }
         }
         this.initOk = true;
+        this.$forceUpdate();
     }
     @Watch("mbs")
     menuListChange(){

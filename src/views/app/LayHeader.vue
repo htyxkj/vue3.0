@@ -1,14 +1,17 @@
 <template>
     <div>
         <el-row> 
-            <el-col :span="4" style="text-align:start" class="my-header"> 
-                <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true" @click="showMenu">
+            <el-col :span="14" style="text-align:start" class="my-header"> 
+                <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true">
                     <use xlink:href="#icon-bip-rongtong "></use>
                 </svg>
                 <img v-else src="../../assets/bip/logo.png"/>
+                <div style="color: white;font-size: 18px;">
+                    {{base_variable.Project_Name}}
+                </div>
                 <!-- <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i> -->
             </el-col>
-            <el-col :span="20" style="text-align:end" class="my-header">
+            <el-col :span="10" style="text-align:end" class="my-header">
                 <el-badge :value="taskNum" class="header_badge_item" style="margin-left: auto;">
                     <i class="el-icon-mobile pointer" @click="myTask"></i>    
                 </el-badge>
@@ -18,17 +21,36 @@
                 <el-badge class="header_badge_item">
                     <i :class="icon "  @click="isQP"></i>    
                 </el-badge> 
-                <el-popover  width="180" placement="bottom-end" >
+                <el-popover  width="220" placement="bottom-end" >
                     <el-row style="margin: 0px;">
                         <el-col :span="24">
-                            <el-row class="user_name user_padding user_hr">{{user.userName}}</el-row> 
+                            <el-row class="user_name user_padding user_hr">
+                                <el-col :span="6">
+                                    姓名：
+                                </el-col>
+                                <el-col :span="18">
+                                {{user.userName}}
+                                </el-col>
+                            </el-row> 
                             <!-- <el-row class="user_code user_padding">{{user.userCode}}</el-row> -->
-                            <el-row class="user_padding">{{user.deptInfo.cmcName}}</el-row>
                             <el-row class="user_padding">
-                                <template v-if="base_variable && base_variable.ITEMTYPE == 'trainPro'">
-                                    {{user.deptInfo.deptName}}-
-                                </template>
-                                <template v-if="gwName">{{gwName}}</template>
+                                <el-col :span="6">
+                                    单位：
+                                </el-col>
+                                <el-col :span="18">
+                                    {{user.deptInfo.cmcName}}
+                                </el-col>
+                            </el-row>
+                            <el-row class="user_padding">
+                                <el-col :span="6">
+                                    角色：
+                                </el-col>
+                                <el-col :span="18">
+                                    <template v-if="base_variable && base_variable.ITEMTYPE == 'trainPro'">
+                                        {{user.deptInfo.deptName}}-
+                                    </template>
+                                    <template v-if="gwName">{{gwName}}</template>
+                                </el-col>
                             </el-row>
                             <el-row class="user_padding user_hr"><el-button type="text" class="user_button" @click="uppwdClick">修改密码</el-button></el-row>                            
                             <!-- <el-row class="user_padding user_hr"><el-button type="text" class="user_button">客户端下载</el-button></el-row> -->
@@ -41,7 +63,7 @@
                                             </el-row>                            
                                         </el-col>
                                     </el-row>  
-                                    <el-button slot="reference" type="text" class="user_button">切换公司</el-button>
+                                    <el-button slot="reference" type="text" class="user_button">切换单位</el-button>
                                 </el-popover>
                             </el-row>
                             <!-- <el-row class="user_padding user_hr" >
@@ -270,8 +292,6 @@ export default class LayHeader extends Vue {
         setTimeout(() => {
             let cc = tools.getTaskMsgData(200,null,null,null,null,null,null,null,null);             
         }, 500);
-    }
-    showMenu(){
     }
 
     myTask(){
