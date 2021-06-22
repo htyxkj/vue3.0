@@ -80,8 +80,13 @@
                             </el-row> -->
                             <el-row class="user_padding" style="margin-bottom:2px"><el-button @click="loginOut" type="text" class="user_button">退出登录</el-button></el-row>
                         </el-col>
-                    </el-row>  
-                    <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
+                    </el-row>
+                    <template v-if="!user.avatar">
+                        <img slot="reference" src ='../../assets/48.jpg' class="userimg pointer"/>
+                    </template>
+                    <template v-else>
+                        <img slot="reference" v-if="base_variable" :src="base_variable.BaseUri+'/db_'+base_variable.COMM_FLD_VALUE_DBID+'/'+user.avatar" class="userimg pointer"/>
+                    </template>
                 </el-popover>
             </el-col>
         </el-row>
