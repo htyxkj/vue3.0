@@ -55,7 +55,6 @@ export default class CommonLayOut extends Vue {
                 "没有相关数据" + this.pbuid + ":" + this.pmenuid
             );
         }
-
         const that = this
         window.onresize = () => {
             return (() => {
@@ -76,8 +75,9 @@ export default class CommonLayOut extends Vue {
         }
         this.setBipHeight(this.height)
         this.heightInfo.height = this.height;
-
- 
+        setTimeout(() => {
+            this.$bus.$emit('totalHChange')    
+        }, 200);
     }
 }
 </script>

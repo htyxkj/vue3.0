@@ -288,21 +288,23 @@
                 </template>
             
                 <vxe-table-column v-if="config.type ==2" field="" title="操作" align="center" fixed="right" :width="commBtns2.length*90>300?300:commBtns2.length*90">
-                    <template #default="{rowIndex }">
-                        <template  v-for="(btn,index) in commBtns2">
-                            <el-button :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     
-                                <template v-if="btn.hasIcon">
-                                    <template v-if="btn.icon&&btn.bIconleft">
-                                        <i :class="btn.icon"></i>{{btn.name}}
-                                    </template>    
-                                    <template v-else>
-                                        {{btn.name}} <i :class="btn.icon"></i> 
+                    <template #default="{row,rowIndex }">
+                        <template v-if="(row.c_state&0x80) <=0">
+                            <template  v-for="(btn,index) in commBtns2">
+                                <el-button :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     
+                                    <template v-if="btn.hasIcon">
+                                        <template v-if="btn.icon&&btn.bIconleft">
+                                            <i :class="btn.icon"></i>{{btn.name}}
+                                        </template>    
+                                        <template v-else>
+                                            {{btn.name}} <i :class="btn.icon"></i> 
+                                        </template>
                                     </template>
-                                </template>
-                                <template v-else>
-                                    {{btn.name}}
-                                </template>
-                            </el-button>
+                                    <template v-else>
+                                        {{btn.name}}
+                                    </template>
+                                </el-button>
+                            </template>
                         </template>
                     </template>
                 </vxe-table-column>
