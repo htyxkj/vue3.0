@@ -121,7 +121,7 @@
                     <el-button type="primary" @click="editOK" size="mini">确 定</el-button>
                 </span>
              </el-dialog>
-
+            <bip-work ref="work" @checkOK="checkOK"></bip-work>
             <el-dialog title="会计科目选择" class="bip-query" :visible.sync="treeVisible" :append-to-body="true" 
                 :close-on-press-escape="true" :close-on-click-modal="false" width="30%" >
                     <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
@@ -272,7 +272,17 @@ export default class VoucherApp extends Vue{
                 let dia: any = this.$refs.se;
                 dia.open();
             }, 100);
-        } 
+        }else if(cmd=== "SUBMIT"){
+            this.submint();
+        }
+    }
+
+    checkOK(state:number|string){
+        let i = this.dsm.i_state;
+        if(i>-1){
+            this.dsm.currRecord.data[this.dsm.ccells.cels[i].id] = state
+        }
+        
     }
 
     showAdicTree(){

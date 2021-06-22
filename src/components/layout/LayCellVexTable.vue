@@ -287,7 +287,7 @@
                     </template>
                 </template>
             
-                <vxe-table-column v-if="config.type ==2" field="" title="操作" align="center" fixed="right" :width="commBtns2.length*90>300?300:commBtns2.length*90">
+                <vxe-table-column v-if="commBtns2.length>0&&config.type ==2" field="" title="操作" align="center" fixed="right" :width="commBtns2.length*90>300?300:commBtns2.length*90">
                     <template #default="{row,rowIndex }">
                         <template v-if="(row.c_state&0x80) <=0">
                             <template  v-for="(btn,index) in commBtns2">
