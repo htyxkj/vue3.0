@@ -939,7 +939,6 @@ export default class LayCelVexTable extends Vue {
      * 字段点击进行跳转操作
      */
     async openrefs(data:any,event:any){
-        console.log("openrefs")
         this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
         let row = data.row.data
         let columnIndex = data.columnIndex
@@ -973,7 +972,7 @@ export default class LayCelVexTable extends Vue {
                     let bl_data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
                     let name = "BL_"+this.cds.ccells.obj_id+"_"+cell.id;
                     bl_data = await this.initCL(name);
-                    if(bl_data == null){
+                    if(bl_data == null || bl_data == undefined){
                         await this.openRefsDo(slkid , slkbuid);
                     }else{
                         //BL字段点击
