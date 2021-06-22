@@ -514,8 +514,8 @@ export default class Home extends Vue {
 <style lang="scss" scoped>
 .bip-main-container {
     position: fixed; 
-    height: calc(100% - 104px) !important;
-    width: calc(100% - 30px) !important;
+    height: calc(100% - 101px) !important;
+    width: calc(100% - 80px) !important;
     z-index: 1;
     overflow: hidden;
     margin-right: 20px;

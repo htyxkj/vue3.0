@@ -13,11 +13,6 @@
                 <el-form @submit.native.prevent label-position="right" label-width="120px" :style="fromStyle">
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
-                <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=4 && mbs.menuList.length>0">
-                    <el-row>&nbsp;</el-row>
-                    <el-row>&nbsp;</el-row>
-                    <el-row>&nbsp;</el-row>
-                </template>
             </el-scrollbar>
             <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=6 && mbs.menuList.length>0">
                 <div class="bip-btn-small">
@@ -1289,16 +1284,15 @@ export default class BaseApplet extends Vue{
 
 <style lang="scss" scoped>
 .bip-btn-small{
-    // text-align:center;
-    // padding-top:180px;
+    position: fixed;
+    bottom: 0rem;
     text-align: center;
-    position: sticky;
-    bottom: 0.15rem;
-    width: 100%;
+    left: 50%;
 }
 .bip-btn-small .menubar{
     padding-top: 10px !important;
     background-color: transparent !important;
+    left: -50%;
 }
 .bip-tabs .el-tab-pane{
     background-color: #ffffff !important;

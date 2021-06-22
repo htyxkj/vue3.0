@@ -77,7 +77,7 @@ export default class BipMenuBarUI extends Vue{
         this.initOk = true;
         this.$forceUpdate();
     }
-    @Watch("mbs")
+    @Watch("mbs.menuList")
     menuListChange(){
         this.getBtnShow();
     }
