@@ -221,8 +221,8 @@ export default class InterfaceGetData extends Vue {
         this.initData()
     }
     //勾选
-    selectChangeEvent ({ checked, records }:any) {
-        this.selData = records;
+    selectChangeEvent (data:any) {
+        this.selData = data.records;
     }
     //显示日志
     async getLog(data:any){

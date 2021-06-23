@@ -144,22 +144,22 @@ export default class ProfitLossFunction extends Vue {
         console.log(value)
         this.calendar_id = value.calendar_id
         this.amb_purposes_id = value.id;
-        this.initData();
+        // this.initData();
     }
     //期间发生变化
     fm_Period_change(value:any){
         this.fm_period_id = value;
-        this.initData();
+        // this.initData();
     }
     //期间发生变化
     to_Period_change(value:any){
         this.to_period_id = value;
-        this.initData();
+        // this.initData();
     }
     //阿米巴发生变化
     treeChange(checkData:any){
         this.amb_group_ids = checkData.keys;
-        this.initData();
+        // this.initData();
     }
     @Watch("height")
     heightChange() {

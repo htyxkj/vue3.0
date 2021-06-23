@@ -63,9 +63,7 @@ import AmbTree from "../components/AmbTree.vue"//阿米巴树
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
-import XEUtils from 'xe-utils'
 import XLSX from "xlsx"
-import { values } from 'xe-utils/methods';
 import moment from 'moment'
 @Component({
     components: {
@@ -183,17 +181,17 @@ export default class ProfitLossFunction extends Vue {
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
         this.amb_purposes_id = value.id;
-        this.initData();
+        // this.initData();
     }
     //期间发生变化
     fm_dateChange(value:any){
         this.fm_date = moment(value).format("YYYY-MM-DD")
-        this.initData();
+        // this.initData();
     }
     //期间发生变化
     to_dateChange(value:any){
         this.to_date = moment(value).format("YYYY-MM-DD")
-        this.initData();
+        // this.initData();
     }
     //阿米巴发生变化
     treeChange(checkData:any){

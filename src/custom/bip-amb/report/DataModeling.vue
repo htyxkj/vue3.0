@@ -183,8 +183,8 @@ export default class DataModeling  extends Vue {
         }
         this.tableLoading = false;
     } 
-    selectAllEvent({ selection,checked }:any) {
-        this.selData = selection;
+    selectAllEvent(data:any) {
+        this.selData = data.records;
     }
     //查询日志
     async getLog(data:any){

@@ -146,12 +146,12 @@ export default class ProfitLossFunction extends Vue {
     accChange(value:any){
         this.amb_purposes_id = value.id;
         this.amb_period_kj = value.calendar_id;
-        this.initData();
+        // this.initData();
     }
     //期间发生变化
     fm_dateChange(value:any){
         this.fm_date = moment(value).format("YYYY-MM-DD")
-        this.initData();
+        // this.initData();
     }
     //阿米巴发生变化
     treeChange(checkData:any){

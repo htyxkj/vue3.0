@@ -636,3 +636,11 @@ $--bip-comm-color:#ffffff;//f4f6fb
 .gantt-task-list-item-select{
     background-color:#81C2DC !important;
 }
+
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #81C2DC !important;
+}
+
+.vxe-table--render-default.size--mini .vxe-header--column.col--ellipsis > .vxe-cell, .vxe-table--render-default.size--mini .vxe-body--column.col--ellipsis > .vxe-cell, .vxe-table--render-default.size--mini .vxe-footer--column.col--ellipsis > .vxe-cell {
+    max-height: 62px !important;
+}
