@@ -155,7 +155,10 @@ export default class BipGridInfo extends Vue{
                     this.bipInsAid = rr
             } 
         }
-
+    }
+    @Watch("row")
+    rowChange(){
+        this.dataloadchange()
     }
 }
 </script>

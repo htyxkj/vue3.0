@@ -43,7 +43,7 @@
                 :footer-method="footerMethod" :show-footer="haveFooterSum"
                 size="small" :data.sync="cds.cdata.data" row-id="id" resizable
                 :height="height" highlight-hover-row show-all-overflow="tooltip" show-header-overflow
-                highlight-current-row class="vxe-table-element" :optimized="true"
+                highlight-current-row class="vxe-table-element mytable-scrollbar" :optimized="true"
                 :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
                 :selectRow="cds.currRecord"  @cell-click="table_cell_click"
                 :header-cell-style="headerCellStyle" @edit-actived="rowActive"
@@ -61,10 +61,10 @@
                         <vxe-table-column :key="index" header-align="center" :align="item.align"
                             :field="item.id" :width="widths[item.widthIndex]" :title="item.labelString"
                             show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.attr&0x40)>0">
-                            <template v-slot:edit="{rowIndex}">
+                            <template #edit="{rowIndex}">
                                 <bip-comm-editor  :cell="item" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                             </template>
-                            <template v-slot="{rowIndex}">
+                            <template #default="{rowIndex}">
                                 <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
                         </vxe-table-column>
@@ -189,7 +189,7 @@
         </template>
         <!-- 报表展示表格-->
         <template v-else>
-            <vxe-table :keep-source="false"
+            <vxe-table :keep-source="false" class="mytable-scrollbar"
                 :ref="this.cds.ccells.obj_id" v-if="isTable" border resizable size="small"
                 highlight-hover-row show-all-overflow="tooltip"
                 show-header-overflow highlight-current-row
@@ -1586,7 +1586,7 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
             this.makeCommBtns();
             this.getCellLinks();
-             if(this.config.type ==2 && this.heightInfo){
+             if(this.config && this.config.type ==2 && this.heightInfo){
                     this.height = (this.heightInfo.height-114)+"px";
             }
         })
@@ -1740,5 +1740,31 @@ export default class LayCelVexTable extends Vue {
 }
 .btn_report{
     padding: 6px 5px !important;
+}
+/*滚动条整体部分*/
+.mytable-scrollbar ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+/*滚动条的轨道*/
+.mytable-scrollbar ::-webkit-scrollbar-track {
+    background-color: #FFFFFF;
+}
+/*滚动条里面的小方块，能向上向下移动*/
+.mytable-scrollbar ::-webkit-scrollbar-thumb {
+    background-color: #bfbfbf;
+    border-radius: 5px;
+    border: 1px solid #F1F1F1;
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+}
+.mytable-scrollbar ::-webkit-scrollbar-thumb:hover {
+    background-color: #A8A8A8;
+}
+.mytable-scrollbar ::-webkit-scrollbar-thumb:active {
+    background-color: #787878;
+}
+/*边角，即两个滚动条的交汇处*/
+.mytable-scrollbar ::-webkit-scrollbar-corner {
+    background-color: #FFFFFF;
 }
 </style>
