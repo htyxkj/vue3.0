@@ -7,6 +7,11 @@
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
                 </el-select>
+                &nbsp;&nbsp;
+                <el-button style="border:0px" type="primary" size="small" @click="initData">      
+                    <i class="el-icon-search"></i>
+                    <span>查询</span>
+                </el-button>
             </div>
             
             <div class="topdiv2"><!-- 导出 -->
@@ -28,32 +33,32 @@
                 <amb-tree :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
             </el-aside>
             <el-main style="padding:0px">
-                <vxe-table resizable size="mini" ref="FIncomeTable" auto-resize :loading="tableLoading" show-overflow
-                    border="inner" stripe highlight-hover-row :height="tableHeight"
-                    :data="tableData">
-                    <vxe-table-column field="element_name" title="收支项目" min-width="200">
+                <vxe-table resizable size="mini" class="mytable-scrollbar" ref="FIncomeTable" auto-resize :loading="tableLoading" show-overflow
+                    border stripe highlight-hover-row :height="tableHeight" :column-config="{'minWidth':'90px','width':'auto'}"
+                    :data="tableData" >
+                    <vxe-table-column field="element_name" title="收支项目" min-width="200" width="200">
                         <template v-slot="{row}"> 
                             <span v-for="(item) in row.level" :key="item">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                             {{ row.element_name }}
                         </template>
                     </vxe-table-column>
-                    <vxe-table-column field="tmonth_money" title="当期发生额" width="150">
+                    <vxe-table-column field="tmonth_money" title="当期发生额" align="right">
                         <template v-slot="{row}"> 
                             {{ (parseFloat(row.tmonth_money)/showType).toFixed(2) }}
                         </template>
                     </vxe-table-column>
-                    <vxe-table-column field="month_rate" title="当期结构比例" width="150"></vxe-table-column>
-                     <vxe-table-column field="month_money" title="月度发生额" width="150">
+                    <vxe-table-column field="month_rate" title="当期结构比例" align="right"></vxe-table-column>
+                     <vxe-table-column field="month_money" title="月度发生额" align="right">
                         <template v-slot="{row}"> 
                             {{ (parseFloat(row.month_money)/showType).toFixed(2) }}
                         </template>
                      </vxe-table-column>
-                    <vxe-table-column field="year_money" title="年度发生额" width="150">
+                    <vxe-table-column field="year_money" title="年度发生额" align="right">
                         <template v-slot="{row}"> 
                             {{ (parseFloat(row.year_money)/showType).toFixed(2) }}
                         </template>
                     </vxe-table-column>
-                    <vxe-table-column field="year_rate" title="年度结构比例" width="150"></vxe-table-column>
+                    <vxe-table-column field="year_rate" title="年度结构比例" width="150" align="right"> </vxe-table-column>
                 </vxe-table>
             </el-main>
         </el-container>
@@ -156,7 +161,7 @@ export default class ProfitLossFunction extends Vue {
     //阿米巴发生变化
     treeChange(checkData:any){
         this.amb_group_ids = checkData.keys;
-        this.initData();
+        // this.initData();
     }
     
     //导出excel
