@@ -330,6 +330,8 @@ export default class CDataSet {
    * 检查当前字段的 CELUIZT 单元状态编辑器。* 分成动态不可空和动态非编辑（当前字段影响其他字段）
    */
   initCELUIZT(cell:any,curr:any=this.currRecord){
+    if(!this.ccells || !this.ccells.CELUIZT)
+      return;
     let celzt:Array<any> = this.ccells.CELUIZT[cell.id];
     if(celzt){
       celzt.forEach((zt:any) => {
