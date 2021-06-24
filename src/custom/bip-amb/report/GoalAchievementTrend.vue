@@ -34,10 +34,10 @@
                     :data="tableData">
                     <vxe-table-column field="yymm" title="核算期间" width="150"></vxe-table-column>
                     <vxe-table-column field="basicelements" title="基本要素" min-width="200"></vxe-table-column>
-                    <vxe-table-column field="targettype" title="目标类型" width="150"></vxe-table-column>
-                    <vxe-table-column field="target" title="目标值" width="150"></vxe-table-column>
-                    <vxe-table-column field="act_com" title="实际完成" width="150"></vxe-table-column>
-                    <vxe-table-column field="com_rate" title="完成率" width="150"></vxe-table-column>
+                    <vxe-table-column field="targettype" title="目标类型" width="150" min-width="100"></vxe-table-column>
+                    <vxe-table-column field="target" title="目标值" width="150" min-width="100" align="right"></vxe-table-column>
+                    <vxe-table-column field="act_com" title="实际完成" width="150" min-width="100" align="right"></vxe-table-column>
+                    <vxe-table-column field="com_rate" title="完成率" width="150" min-width="100" align="right"></vxe-table-column>
                 </vxe-table>
             </el-main>
         </el-container>

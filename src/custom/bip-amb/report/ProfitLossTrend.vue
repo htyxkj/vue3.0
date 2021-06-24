@@ -8,6 +8,11 @@
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
                 </el-select>
+                &nbsp;&nbsp;
+                <el-button style="border:0px" type="primary" size="small" @click="initData">      
+                    <i class="el-icon-search"></i>
+                    <span>查询</span>
+                </el-button>
             </div>
             
             <div class="topdiv2"><!-- 导出 -->
@@ -30,7 +35,7 @@
             </el-aside>
             <el-main style="padding:0px">
                 <vxe-table resizable size="mini" ref="ProfitLossTrendTable" auto-resize :loading="tableLoading" show-overflow
-                    border="inner" stripe highlight-hover-row :height="tableHeight"
+                    border stripe highlight-hover-row :height="tableHeight"
                     :data="tableData">
                     <vxe-table-column field="element_name" title="收支项目" min-width="200">
                         <template v-slot="{row}"> 
@@ -39,12 +44,12 @@
                         </template>
                     </vxe-table-column>
                     <vxe-table-column v-for="(itemP,index) in period" :key="index" :title="itemP.name">
-                        <vxe-table-column title="发生额" min-width="80">
+                        <vxe-table-column title="发生额" min-width="100" align="right">
                             <template v-slot="{row}"> 
                                 {{ (parseFloat(row[itemP.key+'month_money'])/showType).toFixed(2) }}
                             </template>
                         </vxe-table-column>
-                        <vxe-table-column title="结构比例"  min-width="100">
+                        <vxe-table-column title="结构比例"  min-width="100" align="right">
                             <template v-slot="{row}"> 
                                 {{ row[itemP.key+'month_rate'] }}
                             </template>
@@ -196,7 +201,7 @@ export default class ProfitLossFunction extends Vue {
     //阿米巴发生变化
     treeChange(checkData:any){
         this.amb_group_ids = checkData.keys;
-        this.initData();
+        // this.initData();
     }
     
     //导出excel
