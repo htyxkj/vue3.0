@@ -251,13 +251,13 @@ export default class BipMenuBtnDlg extends Vue {
             //     })
             // }
         }else if(btn.dlgType == 'D'){ //调用后台程序 
-            let opera:any = this.env.dsm.opera;
-            if(opera && opera.statefld){
-                let state = this.env.dsm.currRecord.data[opera.statefld];
-                if(state && state !=0 && state != -1 && state !=5){
-                    return;
-                }
-            }
+            // let opera:any = this.env.dsm.opera;
+            // if(opera && opera.statefld){
+            //     let state = this.env.dsm.currRecord.data[opera.statefld];
+            //     if(state && state !=0 && state != -1 && state !=5){
+            //         return;
+            //     }
+            // }
             let dlgCont = this.btn.dlgCont;
             let cc = dlgCont.split(";")
             if(cc.length<4){

@@ -3,7 +3,11 @@ export namespace CurrUtils {
     class Currency {
 
         digitsRE = /(\d{3})(?=\d)/g
- 
+        /***
+         * value 数据
+         * currency  分位符
+         * decimals  小数位
+         */
         public currency (value:any, currency:string='', decimals:number) {
           value = parseFloat(value)
           if (!isFinite(value) || (!value && value !== 0)) return ''

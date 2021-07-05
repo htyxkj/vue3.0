@@ -4,15 +4,19 @@
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>
-            <amb-tree-dialog class="topdiv1" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree-dialog>
             <div class="topdiv2"><!-- 刷新 -->
-                <el-button style="border:0px" @click="initData"  class="bip_btn_primary">      
-                    <i class="el-icon-search"></i>
-                    <span>查找</span>
+                <el-button style="border:0px" @click="initData">      
+                    <i class="el-icon-refresh-right"></i>
+                    <span>刷新</span>
                 </el-button>
             </div>
+            
+
         </el-header>
         <el-container>
+            <el-aside width="300px">
+                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+            </el-aside>
             <el-main style="padding:0px">
                 <bip-chart :style="chartStyle" :option="chartOption" :chartStyle="chartStyle"></bip-chart>
             </el-main>
@@ -23,16 +27,18 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import Accounting from "../components/Accounting.vue"//核算目的
-import AmbTreeDialog from "../components/AmbTreeDialog.vue"//阿米巴树
+import AmbTree from "../components/AmbTree.vue"//阿米巴树
 import Period from "../components/Period.vue"//阿米期间
 import BipChart from "@/components/chart/BipChart.vue"
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
+import XEUtils from 'xe-utils'
+import { values } from 'xe-utils/methods';
 @Component({
     components: {
         Accounting,
-        AmbTreeDialog,
+        AmbTree,
         Period,
         BipChart
     }

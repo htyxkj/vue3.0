@@ -154,6 +154,14 @@ export default class LayCell extends Vue{
                 this.cds.ds_par.currRecord.c_state |= 2;
                 this.cds.ds_par.getRecordAtIndex(this.cds.ds_par.index).c_state |= 2;
             }
+            if(this.cds.ds_par){
+                let cels = this.cds.ccells.cels;
+                cels.forEach(cel => {
+                    if((cel.attr & 0x2000)>0){
+                        this.cds.checkGS(cel)
+                    }
+                });
+            }
         }
     }
 

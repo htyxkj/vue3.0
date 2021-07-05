@@ -4,17 +4,41 @@
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>
-            <amb-tree-dialog class="topdiv1" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree-dialog>
-            <div class="topdiv2"><!-- 刷新 -->
-                <el-button style="border:0px" @click="initData"  class="bip_btn_primary">      
-                    <i class="el-icon-search"></i>
-                    <span>查找</span>
+            <div class="topdiv1"><!-- 显示类别 -->
+                <el-select v-model="showType" placeholder="请选择" size="small">
+                    <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </el-select>
+            </div>
+
+            <div class="topdiv2"><!-- 导出 -->
+                <el-button style="border:0px" @click="exportDataEvent">      
+                    <i class="el-icon-download"></i>
+                     <span>导出</span>
                 </el-button>
             </div>
+             <div class="topdiv2"><!-- 刷新 -->
+                <el-button style="border:0px" @click="initData">      
+                    <i class="el-icon-refresh-right"></i>
+                    <span>刷新</span>
+                </el-button>
+            </div>
+
         </el-header>
         <el-container>
+            <el-aside width="300px">
+                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+            </el-aside>
             <el-main style="padding:0px">
-                <bip-chart :style="chartStyle" :option="chartOption" :chartStyle="chartStyle"></bip-chart>
+                <vxe-table resizable size="mini" ref="FIncomeTable" auto-resize  show-overflow
+                    border="inner" stripe highlight-hover-row :height="tableHeight"
+                    :data="tableData">
+                    <vxe-table-column field="yymm" title="核算期间" width="150"></vxe-table-column>
+                    <vxe-table-column field="basicelements" title="基本要素" min-width="200"></vxe-table-column>
+                    <vxe-table-column field="targettype" title="目标类型" width="150" min-width="100"></vxe-table-column>
+                    <vxe-table-column field="target" title="目标值" width="150" min-width="100" align="right"></vxe-table-column>
+                    <vxe-table-column field="act_com" title="实际完成" width="150" min-width="100" align="right"></vxe-table-column>
+                    <vxe-table-column field="com_rate" title="完成率" width="150" min-width="100" align="right"></vxe-table-column>
+                </vxe-table>
             </el-main>
         </el-container>
     </el-container>
@@ -23,16 +47,19 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import Accounting from "../components/Accounting.vue"//核算目的
-import AmbTreeDialog from "../components/AmbTreeDialog.vue"//阿米巴树
+import AmbTree from "../components/AmbTree.vue"//阿米巴树
 import Period from "../components/Period.vue"//阿米期间
 import BipChart from "@/components/chart/BipChart.vue"
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
+import XEUtils from 'xe-utils'
+import { values } from 'xe-utils/methods';
+import QueryEntity from "@/classes/search/QueryEntity";
 @Component({
     components: {
         Accounting,
-        AmbTreeDialog,
+        AmbTree,
         Period,
         BipChart
     }
@@ -47,12 +74,18 @@ export default class ProfitLossFunction extends Vue {
     fm_period_id:any = "";//开始期间
     to_period_id:any = "";//结束期间
     calendar_id:any = "";
+    tableHeight:any ="500";
     treeHeight:any ="500";
     chartStyle:string = "height :400px;";
     chartOption:any = null;
+    tableData:any = [];
+    showTypeData:any = [];  //经营目标类型参照
+    showType:String = '';
     async created() {
         this.treeHeight =  this.height -60
-        this.initChartOption();
+        this.tableHeight = this.height -60
+        // this.initChartOption();
+        this.getCoList();
     }
     initChartOption(){
         this.chartOption = null;
@@ -135,29 +168,54 @@ export default class ProfitLossFunction extends Vue {
     
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
-        console.log(value)
         this.calendar_id = value.calendar_id
         this.amb_purposes_id = value.id;
-        // this.initData();
+        this.initData();
     }
     //期间发生变化
     fm_Period_change(value:any){
         this.fm_period_id = value;
-        // this.initData();
+        this.initData();
     }
     //期间发生变化
     to_Period_change(value:any){
         this.to_period_id = value;
-        // this.initData();
+        this.initData();
     }
     //阿米巴发生变化
     treeChange(checkData:any){
         this.amb_group_ids = checkData.keys;
-        // this.initData();
+        this.initData();
     }
+    //导出excel
+    exportDataEvent () {
+        let refT:any = this.$refs["FIncomeTable"]
+        if(refT){
+            refT.exportData({ type: 'csv' })
+        }
+        // // 转换数据
+        // let table = this.$refs.xGrid2.$el.querySelector('.body--wrapper>.vxe-table--body')
+        // let book = XLSX.utils.book_new()
+        // let sheet = XLSX.utils.table_to_sheet(table)
+        // XLSX.utils.book_append_sheet(book, sheet)
+        // let wbout = XLSX.write(book, { bookType: 'xlsx', bookSST: false, type: 'binary' })
+        // let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
+        // // 保存导出
+        // FileSaver.saveAs(blob, '数据导出.xlsx')
+    } 
+    // 获取经营目标类型参照
+    async getCoList() {
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 200;
+        let cc = await tools.getBipInsAidInfo("TYPE_TARGET", 210, qe);
+        this.showTypeData = cc.data.data.data.values;
+       
+    }   
     @Watch("height")
     heightChange() {
         this.treeHeight =  this.height -60
+        this.tableHeight = this.height -60
     }
 }
 </script>

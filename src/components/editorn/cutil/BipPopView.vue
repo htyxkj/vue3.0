@@ -22,13 +22,13 @@
             >
             <el-table-column type="index" width="40"></el-table-column>
             <el-table-column v-if="multiple" type="selection" width="55"></el-table-column>
-            <el-table-column v-for="(item,index) in showCols" :key="index"
-            :prop="item['id']"
-            :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
-            <template slot-scope="scope">
-                <span style="margin-left: 10px">{{ scope.row[item.id]}}</span>
-            </template>
+            <el-table-column v-for="(item,index) in showCols" :key="index" :prop="item['id']"
+                :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
+                <template slot-scope="scope">
+                    <span style="margin-left: 10px">{{ scope.row[item.id]}}</span>
+                </template>
             </el-table-column>
+            <el-table-column v-if="!showCols || showCols.length ==0" prop="id" label="" :showOverflowTooltip="true" :resizable="true" ></el-table-column>
         </el-table>  
 
         <div class="block">

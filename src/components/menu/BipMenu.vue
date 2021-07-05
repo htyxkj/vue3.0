@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="menuSW" @click="isCollapse = !isCollapse">
-            <img v-if="isCollapse" src="../../assets/bip/menu/fold.png"/>
-            <img v-else src="../../assets/bip/menu/unfold.png"/>
+            <i v-if="isCollapse" class="iconfont icon-bip-fold menuicon pointer"></i>
+            <i v-else class="iconfont icon-bip-unfold menuicon pointer"></i>
         </div>
         <el-row class="bip-menu-scrollbar" :style="style">
             <el-scrollbar style="height:100%">
@@ -70,16 +70,16 @@ export default class BipMenu extends Vue {
     .menu-list{
         @include menu_list_style();
     }
-    .menuSW{
+    .menuSW{        
+        @include bip_text_primary;
         height: .78125rem;
         line-height: .78125rem;
         background-color: #fff;
         border-bottom: .015625rem solid rgba(99, 99, 99, 0.322);
-        img{
+        i {
             padding-top: .228125rem;
-            padding-left: .3rem;
-            width: .346875rem;
-            height: .346875rem;
+            padding-left: .24rem;
+            font-size: 28px;
         }
     }
     .bip-menu-scrollbar{

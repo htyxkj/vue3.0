@@ -119,7 +119,7 @@ export default class BaseApplet extends Vue{
                 }
             }
             this.setListMenuName();
-            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+            this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
         } else if (cmd === "SAVE") {
             await this.saveData();
         } else if (cmd === "FIND") {
@@ -170,7 +170,7 @@ export default class BaseApplet extends Vue{
                         this.fullscreenLoading = true
                         this.dsm.saveData(this.uriParams?this.uriParams.pflow:'').then(res=>{
                             if(res.data.id ==0){
-                                this.dsm.clear();
+                                // this.dsm.currRecord.clear();
                                 this.dsm.cdata.data.splice(this.dsm.page.index,1); 
                                 this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                                 // if(this.dsm.page.index >= this.dsm.cdata.data.length){
@@ -191,7 +191,7 @@ export default class BaseApplet extends Vue{
                                 //         this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
                                 //     }
                                 // }
-                                this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                                this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
                                 this.dsm.page.total--;
                                 this.setListMenuName();
                             }else{
@@ -274,7 +274,7 @@ export default class BaseApplet extends Vue{
                     this.dsm.ceaPars = this.cea;
                 }
                 await this.dsm.checkAllGS()
-                this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
                 this.$message.success("复制成功！")
             }
         }else if(cmd === icl.B_CMD_UPFILE){
@@ -390,7 +390,7 @@ export default class BaseApplet extends Vue{
             this.cea = new CeaPars(params);
             this.dsm.ceaPars = this.cea;
         }
-        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+        this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
     }
     //#endregion
     //#region 计算页码和获取缓存记录，记录有可能不存在
@@ -456,6 +456,8 @@ export default class BaseApplet extends Vue{
                 this.oprid = 14;
                 cont = this.uriParams.pdata
             }
+        }else{
+            this.env.ds_cont.currRecord.data = cont
         }
         await this.findData(cont); 
     }
@@ -528,10 +530,10 @@ export default class BaseApplet extends Vue{
             await this.dataLoaded(this.qe,vv);
             this.setListMenuName();
             this.$bus.$emit('dataloadchange')
-            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+            this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
             if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
                 for(var i=0;i<this.dsm.ds_sub.length;i++){
-                    this.$bus.$emit("datachange",this.dsm.ds_sub[i].ccells.obj_id)
+                    this.$bus.$emit("tableDatachange",this.dsm.ds_sub[i].ccells.obj_id)
                 }
                 this.getChildData();
             }
@@ -604,7 +606,7 @@ export default class BaseApplet extends Vue{
                         cds1.clear();
                         cds1.setCData(oneSubs)
                         // cds1.page.total = vals.length||0
-                        this.$bus.$emit("datachange", cds1.p_cell);
+                        this.$bus.$emit("tableDatachange", cds1.p_cell);
                     }
                 }
             }
@@ -696,7 +698,7 @@ export default class BaseApplet extends Vue{
                         this.dsm.setState(icl.R_POSTED);
                         if(data.message == '操作成功！'){
                             this.$message.success(data.message);
-                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                            this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
                         }else{
                             this.$message.warning(data.message);
                         }
@@ -1190,7 +1192,7 @@ export default class BaseApplet extends Vue{
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
         }
-        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+        this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
     }
     /**
      * dlg弹出框
@@ -1229,7 +1231,7 @@ export default class BaseApplet extends Vue{
                             　　}
                             }
                         }
-                        this.$bus.$emit("datachange",cell.ccells.obj_id)
+                        this.$bus.$emit("tableDatachange",cell.ccells.obj_id)
                         let pk = this.dsm.ccells.pkindex
                         for(var i=0;i<pk.length;i++){
                             let cel = this.dsm.ccells.cels[pk[i]];

@@ -382,7 +382,7 @@
                     layout="slot,total,prev, pager, next,sizes"
                     background
                     :total="cds.page.total">
-                    <el-col slot :span="8" :xs="10" :sm="10" :md="8" style="text-align: start;float: left;" >
+                    <el-col slot :span="8" :xs="10" :sm="10" :md="8" style="text-align: start;float: left;margin:5px 0px 12px 0px;" >
                         <el-button v-if="canAdd" size="small" class="bip_btn_primary" @click="addRecord">添加</el-button>
                         <el-popover v-if="canDelete" placement="top" width="180" v-model="tableDelPop">
                             <div style="padding:10px">
@@ -397,7 +397,7 @@
                     </el-col>
                 </el-pagination>
                 <template v-else>
-                    <el-col slot :span="8" :xs="10" :sm="10" :md="8" style="text-align: start;float: left;" >
+                    <el-col slot :span="8" :xs="10" :sm="10" :md="8" style="text-align: start;float: left;margin:5px 0px 12px 0px;" >
                         <el-button v-if="canAdd" size="small" class="bip_btn_primary" @click="addRecord">添加</el-button>
                         &nbsp;&nbsp;
                         <el-popover v-if="canDelete" placement="top" width="180" v-model="tableDelPop">
@@ -599,9 +599,7 @@ export default class LayCelVexTable extends Vue {
                     this.commBtns2.push(btn);
                 }else{
                     let name = "BL_"+this.cds.ccells.obj_id+"_"+item.id;
-                    console.log(name)
                     let data:any = await this.initCL(name);
-                    console.log(data)
                     if(data){
                         let btn = new BipMenuBtn(item.id,data.sremark)
                         btn.setType("primary");
@@ -649,6 +647,9 @@ export default class LayCelVexTable extends Vue {
                 if(_this.footerCellKey.indexOf(column.property)!=-1) { 
                     sumCell = XEUtils.sum(_data, column.property)
                     sumCell = parseFloat(sumCell).toFixed(this.footerCell[column.property].ccPoint);
+                    if(isNaN(sumCell)){
+                        sumCell = 0 ;
+                    }
                 }
                 sums.push(sumCell)
             }
@@ -677,6 +678,9 @@ export default class LayCelVexTable extends Vue {
                                 }
                             });
                             sumCell = parseFloat(sumCell).toFixed(this.footerCell[column.property].ccPoint);
+                            if(isNaN(sumCell)){
+                                sumCell = 0;
+                            }
                         }
                         sums.push(sumCell)
                     }
@@ -817,7 +821,6 @@ export default class LayCelVexTable extends Vue {
         this.tableDelPop = false;
         if(this.cds.currCanEdit() && this.removeData.length>0){
             this.cds.cdata.rmdata = this.removeData;
-            // console.log(this.cds)
             for(var i=this.cds.cdata.data.length-1;i>=0;i --){
                 let data = this.cds.cdata.data[i];
                 for(var j =0;j<this.removeData.length;j++){
@@ -857,6 +860,12 @@ export default class LayCelVexTable extends Vue {
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){
                 this.cds.ds_par.currRecord.c_state |= 2;
+                let cels = this.cds.ccells.cels;
+                cels.forEach(cel => {
+                    if((cel.attr & 0x2000)>0){
+                        this.cds.checkGS(cel)
+                    }
+                });
             }
         }
     }
@@ -1058,17 +1067,22 @@ export default class LayCelVexTable extends Vue {
         }
     }
 
-    table_cell_click(data:any,event:any){ 
+    table_cell_click(data:any,event:any){
+        if(data.column.title == '操作')
+            return;
+        let _this = this;
         setTimeout(() => {
-            this.cds.index = data.rowIndex;
-            let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
-            this.cds.currRecord = this.cds.getRecordAtIndex(data.rowIndex);
-            this.$bus.$emit("row_click",value);
+            _this.cds.index = data.rowIndex;
+            let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:_this.cds};
+            let curr = _this.cds.getRecordAtIndex(data.rowIndex);
+            if(curr.id != _this.cds.currRecord.id){
+                _this.cds.currRecord = curr;
+                _this.$bus.$emit("row_click",value);
+            }
             // this.openrefs(data,event);
         }, 250);
     }
     invokecmd(btn:any,rowIndex:any){
-        console.log(btn);
         if(btn.dlgType == 'SL'||btn.dlgType == 'BL'){
             let cr = this.cds.getRecordAtIndex(rowIndex);
             let _col:number = this.laycell.uiCels.findIndex((cel:any)=>{
@@ -1086,14 +1100,11 @@ export default class LayCelVexTable extends Vue {
             }
             this.cds.currRecord = cr;
             let data1 = {rowIndex:rowIndex,columnIndex:_col2,row:{data:cr.data}};
-            console.log(data1);
             this.openrefs(data1,null)
         }else{
             this.cds.index = rowIndex;
             this.cds.currRecord = this.cds.getRecordAtIndex(rowIndex);
             this.cds.currRecordArr = [this.cds.currRecord];
-            let value = {row:this.cds.currRecord ,rowIndex:rowIndex,dsm:this.cds};
-            this.$bus.$emit("row_click",value); 
             if(btn.cmd =='DEL'){
                 this.table_loading = true;
             }
@@ -1129,11 +1140,13 @@ export default class LayCelVexTable extends Vue {
      * BL_菜单参数_字段ID 定义
      */
     async initCL(name:string){
-        // let name = "BL_"+this.pbuid+"_"+id;
         let str = name
-        // let dlg = await pubMethod.getConstant(str);
         str = ICL.AID_KEYCL+str;
         let eq = new QueryEntity('','');
+        if(this.cds.ds_par){
+            eq.pcell = this.cds.ds_par.ccells.obj_id
+            eq.cont = JSON.stringify(this.cds.ds_par.currRecord.data)
+        }
         let vars = {id:300,aid:name,eq:eq}
         await this.fetchInsAid(vars);
         let vv  = window.sessionStorage.getItem(str)
@@ -1150,7 +1163,7 @@ export default class LayCelVexTable extends Vue {
         }else{
             this.isTable = true;
         }
-        this.datachangeBusID = this.$bus.$on('datachange',this.datachange)
+        this.datachangeBusID = this.$bus.$on('tableDatachange',this.datachange)
         this.tableShapeBusID = this.$bus.$on('ReportTableShape',this.ReportTableShape);
         this.findBtnBusID = this.$bus.$on('findBtnClick',this.findBtnClick);
         this.heightChangeSID = this.$bus.$on('totalHChange',this.totalHChange);
@@ -1160,12 +1173,11 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
         if(this.heightInfo){
                 this.height = (this.heightInfo.height-114)+"px";
-                console.log(this.height)        
             }
         })
     }
     beforeDestroy(){
-        this.$bus.$off('datachange',this.datachangeBusID)
+        this.$bus.$off('tableDatachange',this.datachangeBusID)
         this.$bus.$off('ReportTableShape',this.tableShapeBusID)
         this.$bus.$off('findBtnClick',this.findBtnBusID)
         this.$bus.$off('totalHChange',this.heightChangeSID)
@@ -1178,13 +1190,13 @@ export default class LayCelVexTable extends Vue {
     }
 
     datachange(obj_id:string =''){
+        console.log("datachange")
         if(this.cds.ccells)
         if(obj_id == this.cds.ccells.obj_id){
             let cc:any = this.$refs[this.cds.ccells.obj_id];
             if(cc){
                 cc.clearCurrentRow();
                 if(this.cds.currRecord && Object.keys(this.cds.currRecord.data).length>0){
-                    setTimeout(() => {
                         // cc.syncData();
                         // cc.reloadData(this.cds.cdata.data)
                         if(this.isNoHomeTable){
@@ -1192,7 +1204,6 @@ export default class LayCelVexTable extends Vue {
                         }
                         // cc.toggleRowSelection(this.cds.currRecord);
                         // this.checkChange({selection:[this.cds.currRecord],rowIndex:0})
-                    }, 200);
                 }else{
                     cc.clearCurrentRow();
                 }
@@ -1203,7 +1214,6 @@ export default class LayCelVexTable extends Vue {
         // this.rowCheckGS();
     }
     async rowCheckGS(){
-        console.log("CheckGS")
         for(var i=0;i<this.cds.cdata.data.length;i++){
             let crd = this.cds.getRecordAtIndex(i);
             let scriptProc = new BipScriptProc(crd, this.cds.ccells);
@@ -1245,7 +1255,6 @@ export default class LayCelVexTable extends Vue {
                             if(crd.data[scstr]){
                             scval = crd.data[scstr];
                             }
-                            console.log(crd.data[col.id]);
                             let vl = col.initValue.replace("%",scval);
                             crd.data[col.id] = vl;
                         }
@@ -1514,7 +1523,6 @@ export default class LayCelVexTable extends Vue {
                             if(this.rowClass['sctrl'+oneV[0]]){
                                 return this.rowClass['sctrl'+oneV[0]];
                             }
-                            console.log("动态创建CSS")
                             // 创建我们的样式表
                             var style = document.createElement('style');
                             style.innerHTML =
@@ -1558,7 +1566,6 @@ export default class LayCelVexTable extends Vue {
                 this.isTable =false;
             }
             this.cardMenuList = data[1].menuList
-            console.log(this.cardMenuList);
         }
     }
     //子表添加转抽屉样式

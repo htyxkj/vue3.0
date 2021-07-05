@@ -273,6 +273,7 @@ export default class CDataSet {
    * @param index 行数
    */
   async checkGS(cell?: Cell,curr:any=this.currRecord,index:any = this.index) {
+    console.log("checkGS")
     if(cell){
         let id = cell.id
         for(var i=0;i<this.ccells.cels.length;i++){
@@ -301,6 +302,10 @@ export default class CDataSet {
             }
           }
         }
+        if((cell.attr & 0x2000) >0){
+          this.cellChange(cell.id,null);
+        }
+
         this.checkInterbankGs(cell,index);
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
@@ -962,6 +967,7 @@ export default class CDataSet {
           });
           if (_i > -1) {
             cds.currRecord.data[fld] = vvs[index];
+            cds.cdata.data[cds.index].data[fld] = vvs[index];
           }
         });
       }

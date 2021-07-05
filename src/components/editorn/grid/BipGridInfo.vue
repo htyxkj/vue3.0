@@ -54,7 +54,7 @@ export default class BipGridInfo extends Vue{
         this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
         this.cellEdit()
         this.eventId = this.$bus.$on('cell_edit',this.cellEdit)
-        this.eventId1 = this.$bus.$on('datachange',this.dataloadchange)
+        this.eventId1 = this.$bus.$on('tableDatachange',this.dataloadchange)
         //获取关联】参照的CellId
         this.getLinkedName(this.cell)
     }
@@ -85,7 +85,7 @@ export default class BipGridInfo extends Vue{
     }
     beforeDestroy(){
         this.$bus.$off('cell_edit',this.eventId)
-        this.$bus.$off('datachange',this.eventId1)
+        this.$bus.$off('tableDatachange',this.eventId1)
     }
 
     cellEdit(){
@@ -158,6 +158,11 @@ export default class BipGridInfo extends Vue{
     }
     @Watch("row")
     rowChange(){
+        this.dataloadchange()
+    }
+
+    @Watch("cds.currRecord.data",{deep:true})
+    dataChange(){
         this.dataloadchange()
     }
 }

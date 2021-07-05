@@ -567,7 +567,7 @@ export default class Home extends Vue {
   }
   .inner > div > i{
     font-size: 30px;
-    color:#20a2FF;
+    @include bip_text_primary;
   }
   .home {
     position: absolute;
@@ -584,7 +584,7 @@ export default class Home extends Vue {
     text-align: center;
     line-height: 45px;
     border-radius: inherit;
-    color: #20a2FF;
+    @include bip_text_primary;
   }
   .home > div > i{
     font-size: 30px;

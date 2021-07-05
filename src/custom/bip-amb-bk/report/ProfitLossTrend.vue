@@ -4,13 +4,12 @@
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
             <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
             <el-date-picker v-model="to_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="to_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-            <amb-tree-dialog @dataChange="treeChange" class="topdiv1" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
             <div class="topdiv1"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
                 </el-select>
                 &nbsp;&nbsp;
-                <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
+                <el-button style="border:0px" type="primary" size="small" @click="initData">      
                     <i class="el-icon-search"></i>
                     <span>查询</span>
                 </el-button>
@@ -31,43 +30,32 @@
 
         </el-header>
         <el-container>
+            <el-aside width="300px">
+                <amb-tree :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+            </el-aside>
             <el-main style="padding:0px">
-                <template v-if="tableLoading">
-                    <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
-                        <table class="tableTitle" >
-                            <tr>
-                                <th style="text-align: left">收支项目</th>
-                            </tr>
-                        </table>
-                    </div>
-                </template>
-                <template v-else>
-                    <vxe-table resizable size="mini" ref="ProfitLossTrendTable" auto-resize :loading="valueTableLoading" show-overflow row-id="element_id" highlight-current-row
-                        border stripe highlight-hover-row :height="tableHeight" :tree-config="{children: 'children',expandRowKeys: this.defaultExpandKeys }"
-                        @cell-dblclick="cellDBClick"
-                        :data="tableData">
-                        <vxe-table-column field="element_name" title="收支项目" min-width="200" tree-node>
+                <vxe-table resizable size="mini" ref="ProfitLossTrendTable" auto-resize :loading="tableLoading" show-overflow
+                    border stripe highlight-hover-row :height="tableHeight"
+                    :data="tableData">
+                    <vxe-table-column field="element_name" title="收支项目" min-width="200">
+                        <template v-slot="{row}"> 
+                            <span v-for="(item) in row.level" :key="item">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                            {{ row.element_name }}
+                        </template>
+                    </vxe-table-column>
+                    <vxe-table-column v-for="(itemP,index) in period" :key="index" :title="itemP.name">
+                        <vxe-table-column title="发生额" min-width="100" align="right">
                             <template v-slot="{row}"> 
-                                {{ row.element_name }}
+                                {{ (parseFloat(row[itemP.key+'month_money'])/showType).toFixed(2) }}
                             </template>
                         </vxe-table-column>
-                        <vxe-table-column v-for="(itemP,index) in period" :key="index" min-width="120" :title="itemP.name+'发生额'" align="right">
+                        <vxe-table-column title="结构比例"  min-width="100" align="right">
                             <template v-slot="{row}"> 
-                                    {{getFormatValue(row[itemP.key+'month_money'])}}
-                                </template>
-                            <!-- <vxe-table-column title="发生额" min-width="100" align="right">
-                                <template v-slot="{row}"> 
-                                    {{getFormatValue(row[itemP.key+'month_money'])}}
-                                </template>
-                            </vxe-table-column> -->
-                            <!-- <vxe-table-column title="结构比例"  min-width="100" align="right">
-                                <template v-slot="{row}"> 
-                                    {{ row[itemP.key+'month_rate'] }}
-                                </template>
-                            </vxe-table-column> -->
+                                {{ row[itemP.key+'month_rate'] }}
+                            </template>
                         </vxe-table-column>
-                    </vxe-table>
-                </template>
+                    </vxe-table-column>
+                </vxe-table>
             </el-main>
         </el-container>
     </el-container>
@@ -76,18 +64,16 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import Accounting from "../components/Accounting.vue"//核算目的
-import AmbTreeDialog from "../components/AmbTreeDialog.vue"//阿米巴树
+import AmbTree from "../components/AmbTree.vue"//阿米巴树
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
 let tools = BIPUtil.ServApi;
 import XLSX from "xlsx"
 import moment from 'moment'
-import {CurrUtils} from '@/utils/CurrUtils'
-let currutil = CurrUtils.curr
 @Component({
     components: {
         Accounting,
-        AmbTreeDialog
+        AmbTree
     }
 })
 /**
@@ -101,14 +87,12 @@ export default class ProfitLossFunction extends Vue {
     to_date:any = "";//期间
     tableData:any=[];
     tableHeight:any ="500";
-    tableLoading:boolean = true;
-    valueTableLoading:boolean = false;
+    tableLoading:boolean = false;
     showType:any = 1;//选中显示类别 默认
-    defaultExpandKeys:any=[];
+
     period:any =[];//期间集合
 
-    period_fm_date:any = null;
-    period_to_date:any = null;
+
 
     showTypeData:any =[
         {id:1,label:"按元显示"},
@@ -126,13 +110,11 @@ export default class ProfitLossFunction extends Vue {
     async initData(){
         this.period=[];
         this.tableData =[];
-        this.defaultExpandKeys = [];
         this.tableLoading = true;
-        this.valueTableLoading = true;
         if(this.amb_purposes_id !="" && this.amb_group_ids.length>0 && this.fm_date){
             let btn1 = new BipMenuBtn("DLG","损益趋势分析")
             btn1.setDlgType("D")
-            btn1.setDlgCont("amb.serv.util.report.IncomeInvoke*203;0;0");//职能损益表
+            btn1.setDlgCont("amb.serv.util.report.IncomeInvoke*202;0;0");//职能损益表
             let b = JSON.stringify(btn1)
             let prarm = {
                 "purpose_id":this.amb_purposes_id,
@@ -143,31 +125,53 @@ export default class ProfitLossFunction extends Vue {
             let v = JSON.stringify(prarm);
             let res = await tools.getDlgRunClass(v,b);
             let tdata = [];
+            
+            let element_ids:any=[];
             let period_ids:any = [];
+            let td:any = [];
             if(res.data.id ==0){
+                this.period=[];
+                this.tableData =[];
                 tdata = res.data.data.data
-                this.defaultExpandKeys = res.data.data.expandRowKeys;
-                this.period = res.data.data.period
-                // for(var i =0;i<tdata.length;i++){
-                //     let d = tdata[i];
-                //     if(d.period_id)
-                //     if(period_ids.indexOf(d.period_id) ==-1){
-                //         let onep:any = {};
-                //         onep.key = d.period_id
-                //         onep.name = d.period_name
-                //         period_ids.push(d.period_id)
-                //         this.period.push(onep);
-                //     }
-                // }
-                this.tableData = tdata;
+                for(var i =0;i<tdata.length;i++){
+                    let d = tdata[i];
+                    let elid = d.element_id;
+                    let elIndex = element_ids.indexOf(elid);
+                    element_ids.push(elid);
+                    let data = td[elIndex];
+                    if(elIndex ==-1){
+                        data = {};
+                        data.element_name = d.element_name;
+                        data.level = d.level
+                        data[d.period_id+'month_money'] = d.tmonth_money
+                        data[d.period_id+'month_rate'] = d.month_rate 
+                        td.push(data);
+                    }else{
+                        data[d.period_id+'month_money'] = d.tmonth_money
+                        data[d.period_id+'month_rate'] = d.month_rate 
+                        td[elIndex] = data;
+                    }
+                    
+
+
+                    if(period_ids.indexOf(d.period_id) ==-1){
+                        let onep:any = {};
+                        onep.key = d.period_id
+                        onep.name = d.period_name
+                        period_ids.push(d.period_id)
+                        this.period.push(onep);
+                    }
+                }
+                this.tableData = td;
             }else{
                 this.$notify.error(res.data.message)
             }
+            // this.tableData = tdata
+            this.tableLoading = false;
+        }else{
+            this.tableLoading = false;
         }
-        this.tableLoading = false;
-        this.valueTableLoading = false;
     }
-
     getUpLevel(resData:any,i:any,level:any){
         let data = null;
         for(;i>=0;i--){
@@ -187,57 +191,19 @@ export default class ProfitLossFunction extends Vue {
     //期间发生变化
     fm_dateChange(value:any){
         this.fm_date = moment(value).format("YYYY-MM-DD")
-        this.initPeriodDate();
+        // this.initData();
     }
     //期间发生变化
     to_dateChange(value:any){
         this.to_date = moment(value).format("YYYY-MM-DD")
-        this.initPeriodDate();
+        // this.initData();
     }
     //阿米巴发生变化
     treeChange(checkData:any){
         this.amb_group_ids = checkData.keys;
+        // this.initData();
     }
     
-    /**
-     * 获取期间的开始时间接收时间
-     */
-    async initPeriodDate(){
-        let btn1 = new BipMenuBtn("DLG","职能式损益表")
-        btn1.setDlgType("D")
-        btn1.setDlgCont("amb.serv.util.report.IncomeInvoke*205;0;0");//职能损益表
-        let b = JSON.stringify(btn1)
-        let prarm = {
-            "purpose_id":this.amb_purposes_id,
-            "group_ids":this.amb_group_ids, 
-            "fm_date":this.fm_date,
-            "to_date":this.to_date   
-        }
-        let v = JSON.stringify(prarm);
-        let res = await tools.getDlgRunClass(v,b);
-        let fm_date = res.data.data.fm_date;
-        this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
-        let to_date = res.data.data.to_date;
-        this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
-    }
-    //单元格双击
-    cellDBClick(env:any){
-        let jsontj:any = {
-            purpose_id:this.amb_purposes_id,
-            fm_group_id:this.amb_group_ids[0],
-            element_id:env.row.element_id,
-            fm_date:this.period_fm_date+"~"+this.period_to_date
-        };
-        if(this.period_fm_date == null || this.period_to_date == null){
-            jsontj.fm_date = "";
-        }
-        this.$router.push({
-            path:'/layout',
-            name:'layout',
-            params:{method:"BL",pmenuid:'300403',jsontj:jsontj },
-            query: {pbuid:'300403',pmenuid:'300403'}
-        })
-    }
     //导出excel
     exportDataEvent () {
         this.exportEvent()
@@ -310,10 +276,6 @@ export default class ProfitLossFunction extends Vue {
         }
         return s;
     }
-    getFormatValue(value:any){
-        let cc = value/this.showType;
-        return currutil.currency(cc,'',2);
-    }
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -60
@@ -328,25 +290,5 @@ export default class ProfitLossFunction extends Vue {
 .topdiv2{
     float: right;
     margin-right: 3px;
-}
-.tableTitle{
-    width: 100%;
-    font-size: 12px;
-    background-color: #f8f8f9;
-    tr:nth-child(1){
-        width: 3.125rem;
-    }
-    tr{
-        background-color: #f8f8f9;
-        th{
-            border-right: 1px solid #f0f0f0;
-            color: #606266;
-            padding: 6px;
-            line-height: 24px;
-            background-color: #f8f8f9;
-            background-size: 1px 100%,100% 1px;
-            background-position: 100% 0,100% 100%;
-        }
-    }
 }
 </style>

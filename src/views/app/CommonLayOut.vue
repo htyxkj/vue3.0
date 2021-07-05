@@ -76,8 +76,12 @@ export default class CommonLayOut extends Vue {
         this.setBipHeight(this.height)
         this.heightInfo.height = this.height;
         setTimeout(() => {
-            this.$bus.$emit('totalHChange')    
-        }, 200);
+            this.$bus.$emit('totalHChange')
+        }, 400);
+    }
+    @Watch("heightInfo.height")
+    heightChange(){
+        this.$bus.$emit('totalHChange')
     }
 }
 </script>

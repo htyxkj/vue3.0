@@ -1,16 +1,16 @@
 /** 颜色，字体，背景的配置文件 **/
 //颜色定义规范
 $menu-background-color-theme:#FFFFFF;//左侧菜单背景色
-$menu-background-color-theme1:white;
+$menu-background-color-theme1:#FFFFFF;
 
 $menu-is-active-background-color-theme:#1890FF;//左侧菜单选中背景色
 $menu-is-active-background-color-theme1:#1890FF;
 
 $menu-is-active-text-color-theme:#ffffff;//左侧菜单选中文字颜色
-$menu-is-active-text-color-theme1:#1890FF;
+$menu-is-active-text-color-theme1:#ffffff;
 
 $head-background-color-theme:#181B2F;//头部背景色
-$head-background-color-theme1:white;
+$head-background-color-theme1:#308c57;
 
 $head-height-theme:50px;//头部高度
 $head-height-theme1:50px;
@@ -19,24 +19,36 @@ $overall-background-color-theme:#f7f7f7;//整体背景色
 $overall-background-color-theme1:#f7f7f7;//整体背景色
 
 $tabs-pane-background-color-theme:white;//菜单页签选项卡 背景色
-$tabs-pane-background-color-theme1:#f7f7f7;//菜单页签选项卡
+$tabs-pane-background-color-theme1:white;//菜单页签选项卡
 
 $tabs-pane-is-active-background-color-theme:#1890FF;//菜单页签选项卡 选中背景色
-$tabs-pane-is-active-background-color-theme1:#1890FF;//菜单页签选项卡 选中背景色
+$tabs-pane-is-active-background-color-theme1:#308c57;//菜单页签选项卡 选中背景色
 
-$bip-menu-bar-background-color-theme:#ffffff;//按钮栏默认按钮背景色
-$bip-menu-bar-background-color-theme1:#1890FF;
+//字体颜色
+$bip-text-default-color-theme: #fff;//默认
+$bip-text-default-color-theme1: #fff;
 
-$bip-menu-bar-color-theme:#111;//按钮栏默认按钮字体颜色
-$bip-menu-bar-color-theme1:#ffffff;
+$bip-text-primary-color-theme: #1890FF;//主要
+$bip-text-primary-color-theme1: #308c57;
+ 
+
+//按钮模块
+$bip-menu-bar-background-color-theme:#fff;//默认按钮背景色
+$bip-menu-bar-background-color-theme1:#fff;
+
+$bip-menu-bar-color-theme:#111;//默认按钮字体颜色
+$bip-menu-bar-color-theme1:#111;
+
 
 $bip-menu-bar-primary-background-color-theme:#1890FF;//按钮栏主要按钮背景色
-$bip-menu-bar-primary-background-color-theme1:#1890FF;
+$bip-menu-bar-primary-background-color-theme1:#308c57;
 
-$bip-menu-bar-primary-color-theme:#fff;//按钮栏主要按钮字体颜色
-$bip-menu-bar-primary-color-theme1:#1890FF;
+$bip-menu-bar-primary-color-theme:#fff;//主要按钮字体颜色
+$bip-menu-bar-primary-color-theme1:#fff;
 
-$bip-menu-bar-danger-background-color-theme:#f56c6c;
+
+$bip-menu-bar-danger-background-color-theme:#f56c6c;//危险按钮背景色
 $bip-menu-bar-danger-background-color-theme1:#f56c6c;
-$bip-menu-bar-danger-color-theme:#fff;
+
+$bip-menu-bar-danger-color-theme:#fff;//危险按钮字体颜色
 $bip-menu-bar-danger-color-theme1:#fff;

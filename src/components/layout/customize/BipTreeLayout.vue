@@ -100,19 +100,17 @@ export default class BipTreeLayout extends Vue{
       }
     }
     handleNodeClick(data:any,data1:any,data2:any) {
-      // console.log(data);
-      // console.log(data1);
-      // console.log(data2);
+      
     }
-  // @Watch("cds.currRecord",{deep:true})
-  // currRecordChange(newVl:any){
-  //   if(newVl.c_state == icl.R_POSTED){//兴建行
-  //     let father = newVl.data[this.fatherID]
-  //     let tree:any = this.$refs[this.cds.ccells.obj_id];
-  //     if(tree){
-  //       tree.append(newVl.data,father)
-  //     }
-  //   }
-  // }
+    @Watch("cds.currRecord",{deep:true})
+    currRecordChange(newVl:any){
+      if(newVl.c_state == icl.R_POSTED){//兴建行
+        let father = newVl.data[this.fatherID]
+        let tree:any = this.$refs[this.cds.ccells.obj_id];
+        if(tree){
+          tree.append(newVl.data,father)
+        }
+      }
+    }
 }
 </script>

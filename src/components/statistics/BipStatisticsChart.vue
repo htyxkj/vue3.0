@@ -1881,10 +1881,9 @@ export default class BipStatisticsDialog extends Vue {
     line-height: 40px;
     font-size: 14px;
     padding: 0 10px; 
-    color: #4A77FA;
-    // letter-spacing: 1px;
     font-weight: 600;
     background-color: white;
+    @include bip_text_primary
 }
 .main-title-icon {
     text-align: right;

@@ -270,10 +270,10 @@ export default class HomeMenu extends Vue {
         line-height: 40px;
         font-size: 14px;
         padding: 0 10px;
-        color: #4A77FA;
         letter-spacing: 1px;
         font-weight: 600;
         margin-bottom: 8px;
+        @include bip_text_primary
     }
     .title {
         width: 100%;

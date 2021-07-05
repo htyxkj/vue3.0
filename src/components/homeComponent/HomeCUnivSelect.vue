@@ -288,7 +288,7 @@ export default class HomeCUnivSelect extends Vue {
         }else{
             this.$notify.error(data)
         }
-        this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+        this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
     }
     beforeDestroy(){
         this.$bus.$off('handleSizeChange',this.handleSizeChangeBusID)
@@ -478,7 +478,7 @@ export default class HomeCUnivSelect extends Vue {
                             cds1.clear();
                             cds1.setCData(oneSubs)
                             cds1.page.total = vals.length||0
-                            this.$bus.$emit("datachange",cds1.ccells.obj_id)
+                            this.$bus.$emit("tableDatachange",cds1.ccells.obj_id)
                         }
                     }
                 }

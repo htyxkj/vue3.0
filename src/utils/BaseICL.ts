@@ -10,5 +10,6 @@ export const BaseVariable = Object.assign({
     SMSURL : "",
     ITEMTYPE:"",
     AouthTokenUrl:"",
-    UniteLoginUrl:""
+    UniteLoginUrl:"",
+    SKIN:"",
   });

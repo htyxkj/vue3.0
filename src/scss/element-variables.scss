@@ -272,6 +272,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
         .el-dialog__title{
             color: #ffffff;
             font-size: 16px;
+            line-height:24px;
         }
     }
     .search {
@@ -532,6 +533,9 @@ $--bip-comm-color:#ffffff;//f4f6fb
     border-color: #e6e6e6;
     border-right: 0px solid #e6e6e6 ;
     text-overflow: ellipsis;
+}
+.bip-input-item .el-form-item__content {
+    line-height: 0px;
 }
 .bip-input-item .el-form-item__content .el-input__inner {
     border-radius: 0px 2px 2px 0;

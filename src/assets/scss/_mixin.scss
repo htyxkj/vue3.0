@@ -18,11 +18,9 @@
 @mixin menu_head_style(){
   background-color:$head-background-color-theme;
   height:$head-height-theme !important;
-  line-height:$head-height-theme !important;
   [data-theme="theme1"] & {
     background-color:$head-background-color-theme1;
     height:$head-height-theme1 !important;
-    line-height:$head-height-theme1 !important;
   }
 }
 //左侧菜单选中样式
@@ -128,5 +126,19 @@
   [data-theme="theme1"] & {
     background-color:$bip-menu-bar-danger-background-color-theme1 !important;
     color:$bip-menu-bar-danger-color-theme1 !important;
+  }
+}
+//默认字体颜色
+@mixin bip_text_default(){
+  color: $bip-text-default-color-theme !important;
+  [data-theme="theme1"] & {
+    color:$bip-text-default-color-theme1 !important;
+  }
+}
+//主要字体颜色
+@mixin bip_text_primary(){
+  color: $bip-text-primary-color-theme !important;
+  [data-theme="theme1"] & {
+    color:$bip-text-primary-color-theme1 !important;
   }
 }

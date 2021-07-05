@@ -119,8 +119,10 @@ export default class App extends Vue {
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
             BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
-            BaseVariable.AouthTokenUrl = res.data.AouthTokenUrl;
             BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
+            BaseVariable.SKIN = res.data.SKIN;
+            if(BaseVariable.SKIN)
+                window.document.documentElement.setAttribute('data-theme', BaseVariable.SKIN)
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()
@@ -144,8 +146,10 @@ export default class App extends Vue {
             BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
             BaseVariable.SMSURL = res.data.SMSURL;
             BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
-            BaseVariable.AouthTokenUrl = res.data.AouthTokenUrl;
             BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
+            BaseVariable.SKIN = res.data.SKIN;
+            if(BaseVariable.SKIN)
+                window.document.documentElement.setAttribute('data-theme', BaseVariable.SKIN)
         }).catch((err:any) => {
             console.log(err)
             window.location.reload()

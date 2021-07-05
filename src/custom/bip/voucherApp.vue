@@ -263,7 +263,7 @@ export default class VoucherApp extends Vue{
                 }
             }
             this.setListMenuName();
-            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+            this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
         } else if (cmd === "SAVE") {
             await this.saveData();
         }else if (cmd === "FIND") {
@@ -738,7 +738,7 @@ export default class VoucherApp extends Vue{
                         this.dsm.setState(icl.R_POSTED);
                         if(data.message == '操作成功！'){
                             this.$message.success(data.message);
-                            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+                            this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
                         }else{
                             this.$message.warning(data.message);
                         }
@@ -1011,10 +1011,10 @@ export default class VoucherApp extends Vue{
             await this.dataLoaded(this.qe,vv);
             this.setListMenuName();
             this.$bus.$emit('dataloadchange')
-            this.$bus.$emit("datachange",this.dsm.ccells.obj_id)
+            this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
             if(this.dsm.ds_sub && this.dsm.ds_sub.length>0){
                 for(var i=0;i<this.dsm.ds_sub.length;i++){
-                    this.$bus.$emit("datachange",this.dsm.ds_sub[i].ccells.obj_id)
+                    this.$bus.$emit("tableDatachange",this.dsm.ds_sub[i].ccells.obj_id)
                 }
                 this.getChildData();
             }
@@ -1102,7 +1102,7 @@ export default class VoucherApp extends Vue{
                     if(oneSubs){
                         cds1.clear();
                         cds1.setCData(oneSubs)
-                        this.$bus.$emit("datachange", cds1.p_cell);
+                        this.$bus.$emit("tableDatachange", cds1.p_cell);
                     }
                 }
             }

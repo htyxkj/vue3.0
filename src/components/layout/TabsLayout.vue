@@ -36,7 +36,7 @@ export default class TabsLayout extends Vue{
         if(this.env){
             let cds = this.env.getDataSet(r.comp.obj_id);
             this.env.dsmcurr = cds;
-            this.$bus.$emit("datachange",cds.ccells.obj_id)
+            this.$bus.$emit("tableDatachange",cds.ccells.obj_id)
         }
     }
 
