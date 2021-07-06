@@ -671,8 +671,9 @@ export default class CUnivSelect extends Vue {
                 let dlgBtn = dlg.slink.split("&")
                 dlgBtn.forEach((item:any) => {
                     let cc = item.substring(0,item.indexOf(";")); 
-                    let type = cc.substring(0,1);
-                    let bname = cc.substring(2,item.indexOf(","));  
+                    let _i = cc.indexOf(':');
+                    let type = cc.substring(0,_i);
+                    let bname = cc.substring(_i+1,item.indexOf(","));  
                     let btn1 = new BipMenuBtn("DLG",bname)
                     btn1.setDlgSname(name);
                     btn1.setDlgType(type)

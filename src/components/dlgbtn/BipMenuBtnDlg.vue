@@ -62,6 +62,25 @@
                 <el-button @click="showPayQR =false">取 消</el-button>
             </span>   
         </el-dialog> 
+        <el-dialog class="dlgbtn" :title="'系统提示'" :visible.sync="printShow" width="40%" append-to-body>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    当前页：
+                    <el-input-number v-model="pageInfo.page" size="small" :max="4" :min="1"></el-input-number>
+                </el-col>
+
+                <el-col :span="12">
+                    当前行：
+                    <el-input-number v-model="pageInfo.row" size="small" :min="1" :max="15"></el-input-number>
+                </el-col>
+            </el-row>
+
+            <span  slot="footer" class="dialog-footer">
+            <hr>
+                <el-button @click="printShow = false">取 消</el-button>
+                <el-button type="primary" @click="doPrint()">确 定</el-button>
+            </span>  
+        </el-dialog> 
     </el-row>
 </template>
 <script lang="ts">
@@ -105,6 +124,12 @@ export default class BipMenuBtnDlg extends Vue {
     code_url:any ="";//二维码内容
     total_fee:any = 0;//支付金额
     uri:string=""//附件操作接口
+    currBtn:any = null;
+    pageInfo:any = {
+        page:1,
+        row:1
+    }
+    printShow:boolean = false;
     mounted() {
 
     }
@@ -407,6 +432,74 @@ export default class BipMenuBtnDlg extends Vue {
                 loading.close();
             }) 
              
+        }else if(btn.dlgType == 'P'){
+            let b = JSON.stringify(this.btn);
+            let state = this.env.dsm.currRecord.c_state
+            if((state&1)>0||(state&2)>0){
+                this.$message({
+                        type: "error",
+                        message: '请先保存!',
+                        center:true
+                    });
+                    return ;
+            }
+            let _env:any = {
+                dsm:this.env.dsm.currRecord,
+            }
+            let v = JSON.stringify(_env);
+            let res = await tools.getDlgRunClass(v,b);
+            console.log(res);
+            if(res.status == 200){
+                let data= res.data;
+                if(data.id==0){
+                    window.open(data.message);
+                }else{
+                    this.$message({
+                        type: "error",
+                        message: data.message,
+                        center:true
+                    });
+                }
+            }else{
+                this.$notify.error("操作失败！")
+            }
+        }else if(btn.dlgType == 'P1'){
+             let state = this.env.dsm.currRecord.c_state
+            if((state&1)>0||(state&2)>0){
+                this.$message({
+                        type: "error",
+                        message: '请先保存!',
+                        center:true
+                    });
+                    return ;
+            }
+            let b = JSON.stringify(this.btn);
+            let _env:any = {
+                dsm:this.env.dsm.currRecord,
+                type:0
+            }
+            let v = JSON.stringify(_env);
+            let res = await tools.getDlgRunClass(v,b);
+            console.log(res);
+            
+            if(res.status == 200){
+                let data= res.data;
+                if(data.id==0){
+                    this.currBtn = this.btn;
+                    this.pageInfo = res.data.data.pageInfo
+                    this.printShow = true;
+                }else{
+                    this.$message({
+                        type: "error",
+                        message: data.message,
+                        center:true
+                        
+                    });
+                }
+            }else{
+                this.$notify.error("操作失败！")
+            }
+            
         }
     }
     async dlgDOk(){
@@ -451,6 +544,34 @@ export default class BipMenuBtnDlg extends Vue {
             }
         })
     }
+
+    /**
+     * 
+     */
+    async doPrint(){
+        let b = JSON.stringify(this.currBtn);
+            let _env:any = {
+                dsm:this.env.dsm.currRecord,
+                type:1,
+                pageInfo:this.pageInfo
+            }
+            let v = JSON.stringify(_env);
+            let res = await tools.getDlgRunClass(v,b);
+            console.log(res);
+            this.printShow = false
+            if(res.status == 200){
+                let data= res.data;
+                if(data.id==0){
+                    window.open(data.message);
+                }else{
+                    this.$notify.error(data.message)
+                }
+            }else{
+                this.$notify.error("操作失败！")
+            }
+  
+    }
+
     /**
      * sql弹出框确定
      */
