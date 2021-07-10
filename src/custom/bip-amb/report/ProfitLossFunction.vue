@@ -177,7 +177,7 @@ export default class ProfitLossFunction extends Vue {
     accChange(value:any){
         this.amb_purposes_id = value.id;
         this.amb_period_kj = value.calendar_id;
-        // this.initData();
+        this.initPeriodDate();
     }
     //期间发生变化
     fm_dateChange(value:any){
@@ -236,7 +236,6 @@ export default class ProfitLossFunction extends Vue {
         }
         let v = JSON.stringify(prarm);
         let res = await tools.getDlgRunClass(v,b);
-        console.log(res)
         let fm_date = res.data.data.fm_date;
         this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
         let to_date = res.data.data.to_date;

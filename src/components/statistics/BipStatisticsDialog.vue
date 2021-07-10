@@ -103,6 +103,11 @@
                     </el-row> 
                 </el-form> 
                 <template v-if="program.isdesktop">
+                    <el-row style="padding:10px 45px 0px 25px" v-if="this.userAttr <=1">
+                        <el-input placeholder="岗位编码分号分隔" size="small" v-model="gwCode">
+                            <template slot="prepend">岗位编码</template>
+                        </el-input>
+                    </el-row>
                     <el-row style="padding:10px 45px 0px 25px">
                         <bip-search-cont :env="programEnv"></bip-search-cont>
                     </el-row>
@@ -173,6 +178,7 @@ export default class BipStatisticsDialog extends Vue {
     showSelX2:boolean=false;//是否是堆叠系列
     ProgramList :Array<any> = new Array<any>()
     programModel:any = -1;
+    gwCode:any = null;
     chartT:any = {
         'line-0':'折线图', 'line-1':'折线面积图', 'line-2':'平滑折线图', 'line-3':'平滑面积折线图', 'line-4':'堆叠折线图',
         'line-5':'堆叠面积折线图', 'line-6':'平滑堆叠折线图', 'line-7':'平滑堆叠面积折线图',
@@ -181,6 +187,7 @@ export default class BipStatisticsDialog extends Vue {
     };
     desktopListDlg:boolean = false;
     dlProgram:any={name:"",menuid:'',ishowtj:false};
+    userAttr:any = 99;
     mounted() {
         this.chartTypeValue = "line-0"; 
         this.groupCells = this.env.dsm.ccells.cels.filter(item=>{
@@ -194,6 +201,11 @@ export default class BipStatisticsDialog extends Vue {
         })
     }
     open() {
+        let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
+        userAttr = parseInt(userAttr)
+        if(isNaN(userAttr))
+            userAttr = 99
+        this.userAttr = userAttr;
         if(this.ProgramList.length == 0)
         this.getProgram();
         this.dialogVisible = true;
@@ -215,14 +227,14 @@ export default class BipStatisticsDialog extends Vue {
         if(cds1 !=null){
             let cell:CDataSet = cds1; 
             cell.currRecord = cell.createOne();
-            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-            if(userAttr <=1){
+            if(this.userAttr <=1){
                 cell.currRecord.data.usrcode = "*";
             }
             cell.currRecord.data.rech="{}"
             cell.currRecord.data.comtype= "ReportList";
             cell.currRecord.data.cont = JSON.stringify(this.dlProgram);
             cell.currRecord.data.sname= this.dlProgram.name;
+            cell.currRecord.data.gwcode = this.gwCode;
             let res = await cell.saveData();
             if(res.data.id == 0 ){
                 this.$notify.success("桌面组件保存成功！");
@@ -373,8 +385,7 @@ export default class BipStatisticsDialog extends Vue {
             cell.currRecord.data.cid = 10;
             cell.currRecord.data.c_corp = 0;
             cell.currRecord.data.cellid = this.env.dsm.ccells.obj_id;
-            let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-            if(userAttr <=1){
+            if(this.userAttr <=1){
                 cell.currRecord.data.usrcode = "*";
             } 
             let res = await cell.saveData();
@@ -390,8 +401,7 @@ export default class BipStatisticsDialog extends Vue {
                     cell.currRecord = cell.createOne();
                     let cont = {spflds:selValue,spbds:selGroup,charttype:this.chartTypeValue,
                                 showchart:this.showChart?1:0,menuid:this.$route.query.pmenuid,};
-                    let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
-                    if(userAttr <=1){
+                    if(this.userAttr <=1){
                         cell.currRecord.data.usrcode = "*";
                     } 
                     let cc = JSON.stringify(this.programEnv.ds_cont.currRecord.data,this.testReplacer);
@@ -399,6 +409,7 @@ export default class BipStatisticsDialog extends Vue {
                     cell.currRecord.data.comtype= "Report";
                     cell.currRecord.data.cont = JSON.stringify(cont);
                     cell.currRecord.data.sname= this.program.name;
+                    cell.currRecord.data.gwcode = this.gwCode;
                     let res = await cell.saveData();
                     if(res.data.id == 0 ){
                         this.$notify.success("桌面组件保存成功！");

@@ -61,6 +61,7 @@ export default class AmbTree extends Vue {
         await this.initTreeData();
     }
     async select(){
+        this.initTreeData();
         this.showDialog = true;
     }
 

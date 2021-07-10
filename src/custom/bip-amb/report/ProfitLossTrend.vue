@@ -182,7 +182,7 @@ export default class ProfitLossFunction extends Vue {
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
         this.amb_purposes_id = value.id;
-        // this.initData();
+        this.initPeriodDate();
     }
     //期间发生变化
     fm_dateChange(value:any){
