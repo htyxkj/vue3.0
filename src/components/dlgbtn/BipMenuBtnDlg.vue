@@ -62,6 +62,7 @@
                 <el-button @click="showPayQR =false">取 消</el-button>
             </span>   
         </el-dialog> 
+        <!-- 三资股权打印 -->
         <el-dialog class="dlgbtn" :title="'系统提示'" :visible.sync="printShow" width="40%" append-to-body>
             <el-row :gutter="20">
                 <el-col :span="12">
@@ -77,8 +78,30 @@
 
             <span  slot="footer" class="dialog-footer">
             <hr>
-                <el-button @click="printShow = false">取 消</el-button>
-                <el-button type="primary" @click="doPrint()">确 定</el-button>
+                <el-button size="small" @click="printShow = false">取 消</el-button>
+                <el-button size="small" class="bip_btn_primary" @click="doPrint()">确 定</el-button>
+            </span>  
+        </el-dialog> 
+        <!-- 三资费用审批记录 -->
+        <el-dialog class="dlgbtn" :title="'流程查看'" :visible.sync="dlgGShow" width="40%" append-to-body>
+            <vxe-table :keep-source="false" class="mytable-scrollbar" border resizable size="small"
+                highlight-hover-row show-all-overflow="tooltip"
+                show-header-overflow highlight-current-row
+                :data.sync="dlgGCell.cdata.data" :optimized="true" height="250" row-id="id"  
+                header-cell-class-name="tableHead" :loading="g_table_loading"> 
+                <template v-for="(item,index) in dlgGCell.ccells.cels">
+                    <vxe-table-column header-align="center" :align="item.align" :field="item.id" :key="index"
+                        :title="item.labelString" show-header-overflow v-if="(item.attr&0x400)<=0"
+                        :show-overflow="item.editType!=6" :sortable ="(item.attr&0x400000)>0"  >
+                        <template v-slot="{rowIndex}"> 
+                            <bip-grid-info :cds="dlgGCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                        </template>
+                    </vxe-table-column>
+                </template>
+            </vxe-table>
+            <span  slot="footer" class="dialog-footer">
+            <hr>
+                <el-button size="small" class="bip_btn_primary" @click="dlgGShow = false">确 定</el-button>
             </span>  
         </el-dialog> 
     </el-row>
@@ -101,8 +124,9 @@ let baseTool = BIPUtils.baseUtil;
 import { GlobalVariable } from '@/utils/ICL';
 import {BaseVariable} from "@/utils/BaseICL"
 import BipYgxzDia from './BipYGXZDia.vue';
+import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
 @Component({
-    components: {BipYgxzDia,VueQr}
+    components: {BipYgxzDia,VueQr,BipGridInfo}
 })
 export default class BipMenuBtnDlg extends Vue { 
     btn:any = ""; 
@@ -130,6 +154,9 @@ export default class BipMenuBtnDlg extends Vue {
         row:1
     }
     printShow:boolean = false;
+    dlgGCell: CDataSet = new CDataSet("");//G: 弹出对象表格形式
+    dlgGShow:boolean = false;
+    g_table_loading:boolean = false;
     mounted() {
 
     }
@@ -138,7 +165,6 @@ export default class BipMenuBtnDlg extends Vue {
      */
     async open(btn:any,env:CCliEnv){
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
-        console.log(btn)
         this.btn = btn; 
         this.env = env;
         this.Title = btn.name;
@@ -445,6 +471,7 @@ export default class BipMenuBtnDlg extends Vue {
             }
             let _env:any = {
                 dsm:this.env.dsm.currRecord,
+                dsmArr:this.env.dsm.currRecordArr,
             }
             let v = JSON.stringify(_env);
             let res = await tools.getDlgRunClass(v,b);
@@ -500,6 +527,30 @@ export default class BipMenuBtnDlg extends Vue {
                 this.$notify.error("操作失败！")
             }
             
+        }else if(btn.dlgType == 'G'){//点击按钮弹出一个表格(对象定义)
+            this.dlgGShow = true;
+            this.g_table_loading = true;
+            let cont = btn.dlgCont.split(";")
+            this.dlgGCell = await this.getCells(cont[0]);
+            let selTj:any = {};
+            if(cont.length>=2){
+                let tj = cont[1];
+                if(tj){
+                    let tjs = tj.split(",");
+                    for(var i=0;i<tjs.length;i++){
+                        let t = tjs[i].split("=");
+                        selTj[t[0]] = this.env.dsm.currRecord.data[t[1]];
+                    }
+                }
+            }
+            let qe:QueryEntity = new QueryEntity(cont[0],cont[0],selTj);
+            qe.page.pageSize=1000
+            let vv = await tools.query(qe);
+            if(vv.data.id ==0){
+                let data = vv.data.data.data.data;
+                this.dlgGCell.cdata.data = data;
+            }
+            this.g_table_loading = false;
         }
     }
     async dlgDOk(){

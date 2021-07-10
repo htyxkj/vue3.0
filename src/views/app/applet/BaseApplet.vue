@@ -173,6 +173,11 @@ export default class BaseApplet extends Vue{
                                 // this.dsm.currRecord.clear();
                                 this.dsm.cdata.data.splice(this.dsm.page.index,1); 
                                 this.dsm.currRecord = this.dsm.cdata.data[this.dsm.page.index]
+                                if(this.dsm.ds_sub){
+                                    for(var i=0;i<this.dsm.ds_sub.length ;i++){
+                                        this.dsm.ds_sub[i].clear();
+                                    }
+                                }
                                 // if(this.dsm.page.index >= this.dsm.cdata.data.length){
                                 //     this.dsm.page.index--;
                                 // }
@@ -527,6 +532,7 @@ export default class BaseApplet extends Vue{
             this.dsm.page = vv.page;
             this.dsm.cdata.page = vv.page;
             console.log('服务器获取数据',vv)
+            vv.page.index = 0;
             await this.dataLoaded(this.qe,vv);
             this.setListMenuName();
             this.$bus.$emit('dataloadchange')
@@ -1291,6 +1297,7 @@ export default class BaseApplet extends Vue{
     bottom: 0rem;
     text-align: center;
     left: 50%;
+    z-index: 999;
 }
 .bip-btn-small .menubar{
     padding-top: 10px !important;

@@ -16,7 +16,7 @@
                     <template v-if="breport&&commBtns">
                     <!-- <el-button-group v-if="breport&&commBtns"> -->
                         <template  v-for="(btn,index) in commBtns">
-                            <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" v-if="btn.dlgType == '' || showDlg" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
+                            <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                                 <template v-if="btn.hasIcon">
                                     <template v-if="btn.icon&&btn.bIconleft">
                                         <i :class="btn.icon"></i>{{btn.name}}
@@ -522,14 +522,23 @@ export default class LayCelVexTable extends Vue {
         this.commBtns=[];
         this.commBtns2=[];
         let mbs = this.env.mbs.menuList
+
         _.forEach(mbs,(item:any) => {
-            if(item.cmd != 'SAVE' && item.cmd != 'DLG'&& item.cmd != 'DEL'){
-                this.commBtns.push(item)
+            if( item.cmd == 'DLG'){
+                if((this.cds.ccells.attr & 0x40 )>0){
+                    this.commBtns.push(item)
+                }else{
+                    this.commBtns2.push(item)
+                }
             }else{
-                this.commBtns2.push(item)
-            }
-            if((this.laycell.cells.attr & 0x40)>0&&item.cmd == 'DEL'){
-                this.commBtns.push(item)
+                if(item.cmd != 'SAVE' && item.cmd != 'DEL'){
+                    this.commBtns.push(item)
+                }else{
+                    this.commBtns2.push(item)
+                }
+                if((this.laycell.cells.attr & 0x40)>0&&item.cmd == 'DEL'){
+                    this.commBtns.push(item)
+                }
             }
         });
     }
@@ -1075,10 +1084,8 @@ export default class LayCelVexTable extends Vue {
             _this.cds.index = data.rowIndex;
             let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:_this.cds};
             let curr = _this.cds.getRecordAtIndex(data.rowIndex);
-            if(curr.id != _this.cds.currRecord.id){
-                _this.cds.currRecord = curr;
-                _this.$bus.$emit("row_click",value);
-            }
+            _this.cds.currRecord = curr;
+            _this.$bus.$emit("row_click",value);
             // this.openrefs(data,event);
         }, 250);
     }
@@ -1104,9 +1111,17 @@ export default class LayCelVexTable extends Vue {
         }else{
             this.cds.index = rowIndex;
             this.cds.currRecord = this.cds.getRecordAtIndex(rowIndex);
-            this.cds.currRecordArr = [this.cds.currRecord];
-            if(btn.cmd =='DEL'){
-                this.table_loading = true;
+            if((this.cds.ccells.attr & 0x40 )<=0){
+                this.cds.currRecordArr = [this.cds.currRecord];
+                if(btn.cmd =='DEL'){
+                    this.table_loading = true;
+                }
+            }else{
+                if(this.cds.currRecordArr && this.cds.currRecordArr.length>0){
+                    if(btn.cmd =='DEL'){
+                        this.table_loading = true;
+                    }
+                }
             }
             this.$emit("invokecmd",btn)
         }

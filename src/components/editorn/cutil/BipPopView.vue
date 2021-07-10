@@ -45,7 +45,7 @@
         <hr />
         <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="cancel()">取 消</el-button>
-            <el-button size="small" type="info" @click="selectOK(false)">选 中</el-button>
+            <!-- <el-button size="small" type="info" @click="selectOK(false)">选 中</el-button> -->
             <el-button size="small" type="primary" @click="selectOK(true)">选中并关闭</el-button>
         </span>
     </el-dialog>

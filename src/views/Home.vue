@@ -60,7 +60,6 @@
 import { Component, Vue, Provide ,Watch} from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { User } from '@/classes/User';
-import { Menu } from "@/classes/Menu";
 import BipTask from './app/taskMsg/bipTask.vue';
 import BipMsg from './app/taskMsg/bipMsg.vue';
 import CDataSet from "@/classes/pub/CDataSet"; 
@@ -121,14 +120,25 @@ export default class Home extends Vue {
         return;
       }
       this.isDraggable = false;
-      this.isResizable = false;
-      let dataStr = "usrcode = '*' ";
+      this.isResizable = false; 
       if(this.user){
-        dataStr = " usrcode ='"+this.user.userCode+"'";
-        await this.selectCoList(dataStr);
+          let cont = "usrcode='"+this.user.userCode+"'";
+          await this.selectCoList(cont);
         if(this.layout.length ==0 && this.user.userCode != 'portal'){
-          dataStr = "usrcode = '*' ";
-          await this.selectCoList(dataStr);
+          let gw = this.user.gwCode;
+          let cont = " usrcode='*'  ";
+          if(gw){
+            let gws = gw.split(";")
+            gw = "";
+            for(var i=0;i<gws.length;i++){
+              gw += "'"+gws[i]+"'"
+              if(i<gws.length-1){
+                gw +=","
+              }
+            }
+            cont = "(usrcode='*' or usrcode in ("+gw+"))";
+          }
+          await this.selectCoList(cont);
         }
       }
     }
@@ -164,11 +174,6 @@ export default class Home extends Vue {
       qe.page.currPage = this.page.currPage;
       qe.page.pageSize = this.page.pageSize;
       if(this.conditionValue!=null){
-        // if(this.conditionItem != '-1'){
-        //   qe.cont = "~"+this.conditionItem +" like '%"+this.conditionValue+"%'"
-        // }else{
-        //   qe.cont = "~sid like '%"+this.conditionValue+"%' or sname like '%"+this.conditionValue+"%'"
-        // }
         let allCont = [];
         let oneCont = []; 
         if(this.conditionItem != '-1'){
@@ -188,6 +193,18 @@ export default class Home extends Vue {
           qe.cont = "~" + JSON.stringify(allCont);
         }else{
           qe.cont = "";
+        }
+      }else{
+        if(this.user){
+          let oneCont = []; 
+          let qCont = new QueryCont('gwcode',this.user.gwCode,12);
+          qCont.setContrast(5);
+          oneCont.push(qCont);
+          qCont = new QueryCont('usrcode',"*",12);
+          oneCont.push(qCont);
+          qCont = new QueryCont('usrcode',this.user.userCode,12);
+          oneCont.push(qCont);
+          qe.cont = "~[" + JSON.stringify(oneCont)+"]";
         }
       }
       let cc = await tools.getBipInsAidInfo("COMPU",210,qe)
@@ -209,7 +226,7 @@ export default class Home extends Vue {
     selectionSelectOK(){
       let newLayout:Array<any> = [];
       for(var i =0;i<this.selection.length;i++){
-        let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:"",usrcode:""}
+        let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:"",usrcode:"",gwcode:""}
         let dd = this.selection[i];
         let cc = this.mapList[dd];
         if(this.layout.length==0){ 
@@ -223,6 +240,7 @@ export default class Home extends Vue {
           layout.maxh = cc.maxh;
           layout.sid = cc.sid;
           layout.rech = cc.rech;
+          layout.gwcode = cc.gwcode;
           try{
             if( typeof(cc.cont)=='string'){
               cc.cont = JSON.parse(cc.cont)
@@ -268,6 +286,7 @@ export default class Home extends Vue {
           cc.cont.sname = cc.sname;
           layout.cont = JSON.stringify(cc.cont);
           layout.comtype = cc.comtype; 
+          layout.gwcode = cc.gwcode;
           let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
           if(userAttr <=1){
             layout.usrcode = "*"

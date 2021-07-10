@@ -8,13 +8,14 @@ export class User{
     private _userName:string
     private _password:string
     private _attr:number = 5
+    private _gwCode:string
     private _deptInfo:Dept = new Dept();
-    constructor(userId:string,userName:string,pwd:string){
+    constructor(userId:string,userName:string,pwd:string,gwCode:string = ''){
         this._userCode = userId;
         this._userName = userName;
         this._password = pwd;
+        this._gwCode = gwCode;
     }
-
     public get userCode(){
         return this._userCode;
     }
@@ -54,4 +55,11 @@ export class User{
         this._deptInfo = value;
     }
 
+    public get gwCode(){
+        return this._gwCode;
+    }
+
+    public set gwCode(gwCode:any){
+        this._gwCode = gwCode;
+    }
 }

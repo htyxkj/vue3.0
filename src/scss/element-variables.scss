@@ -85,6 +85,17 @@ body{
       }
   }
 
+  //菜单 悬浮 背景色
+.el-menu-item:hover, .el-menu-item:focus{
+    @include menu_item_is_hover()
+}
+.el-submenu__title:hover, .el-submenu__title:focus{
+    @include menu_item_is_hover()
+}
+//表格分页选中背景色
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+    @include menu_item_is_active()
+}
 
 .el-input-number--small{
     width: 100% !important;

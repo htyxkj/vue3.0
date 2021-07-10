@@ -37,7 +37,7 @@ export default class BipMenuBarUI extends Vue{
     bInsert:boolean = true;
     showDlg:boolean = true;
     initOk:boolean = false;
-    btnShow:any=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
+    btnShow:any=[]
     invokecmd(btn:any){
         this.$emit('invokecmd',btn);
     }
@@ -53,25 +53,61 @@ export default class BipMenuBarUI extends Vue{
 
     @Watch("cds.currRecord.c_state")
     getBtnShow(){
+        this.btnShow =[];
         for(var i=0;i< this.mbs.menuList.length;i++){
+            this.btnShow.push(false)
             let btn:any = this.mbs.menuList[i];
-            let btn_name = ['COPY','DEL','ADD','CHECKPROCESS','SUBMIT']; 
-            if(btn_name.indexOf(btn.cmd)>-1){
-                if(this.cds.currRecord){
-                    if ((this.cds.currRecord.c_state & 1) > 0) {
-                        this.btnShow[i] = false;
-                    }else{
-                        this.btnShow[i] = true;
-                    }
-                }else{
-                    if(btn.cmd == 'ADD'){
-                        this.btnShow[i] = true;
+            if(btn.cmd =='SAVE'){
+                if ((this.cds.currRecord.c_state & 2) > 0 || (this.cds.currRecord.c_state & 1) > 0) {
+                    this.btnShow[i] = true;
+                }
+                if(this.cds.opera){
+                    let statefld = this.cds.opera.statefld;
+                    let state = this.cds.currRecord.data[statefld];
+                    state = state+""
+                    if(state == '0' || state =='-1'){
+                        // this.btnShow[i] = true;
                     }else{
                         this.btnShow[i] = false;
                     }
                 }
+            }else if(btn.cmd =='DEL'){
+                if ((this.cds.currRecord.c_state & 1) > 0) {
+                    this.btnShow[i] = false;
+                    break;
+                }
+                if(this.cds.opera){
+                    let statefld = this.cds.opera.statefld;
+                    let state = this.cds.currRecord.data[statefld];
+                    state = state+""
+                    
+                    if(state == '0' || state =='-1'){
+                        this.btnShow[i] = true;
+                    }else{
+                        this.btnShow[i] = false;
+                    }
+                }else{
+                    this.btnShow[i] = true;
+                }
             }else{
-                this.btnShow[i] = true;
+                let save_after = ['COPY','ADD','CHECKPROCESS','SUBMIT']
+                if(save_after.indexOf(btn.cmd)>-1){
+                    if(this.cds.currRecord){
+                        if ((this.cds.currRecord.c_state & 1) > 0) {
+                            this.btnShow[i] = false;
+                        }else{
+                            this.btnShow[i] = true;
+                        }
+                    }else{
+                        if(btn.cmd == 'ADD'){
+                            this.btnShow[i] = true;
+                        }else{
+                            this.btnShow[i] = false;
+                        }
+                    }
+                }else{
+                    this.btnShow[i] = true;
+                }
             }
         }
         this.initOk = true;
@@ -79,6 +115,14 @@ export default class BipMenuBarUI extends Vue{
     }
     @Watch("mbs.menuList")
     menuListChange(){
+        this.getBtnShow();
+    }
+    @Watch("cds.currRecord",{deep:true})
+    cdsChange(){
+        this.getBtnShow();
+    }
+    @Watch("cds.opera")
+    cdsOperaChange(){
         this.getBtnShow();
     }
 }
