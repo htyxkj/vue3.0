@@ -85,7 +85,7 @@
         <!-- DLG  G -->
         <el-dialog class="dlgbtn" :title="this.btn.name" :visible.sync="dlgGShow" width="40%" append-to-body>
             <vxe-table :keep-source="false" class="mytable-scrollbar" border resizable size="small"
-                highlight-hover-row show-all-overflow="tooltip"
+                highlight-hover-row show-all-overflow="tooltip" show-footer
                 show-header-overflow highlight-current-row
                 :data.sync="dlgGCell.cdata.data" :optimized="true" height="250" row-id="id"  
                 header-cell-class-name="tableHead" :loading="g_table_loading"> 
@@ -106,16 +106,17 @@
             </span>  
         </el-dialog> 
         <!-- DLG  G1 -->
-        <el-drawer :title="this.btn.name" :visible.sync="dlgG1Show" size="35%">
+        <el-drawer :title="this.btn.name" :visible.sync="dlgG1Show" size="40%" style="z-index:1000">
             <vxe-table :keep-source="false" class="mytable-scrollbar" border resizable size="small"
-                highlight-hover-row show-all-overflow="tooltip"
+                highlight-hover-row show-overflow="tooltip"
                 show-header-overflow highlight-current-row
                 :data.sync="dlgGCell.cdata.data" :optimized="true" :height="drawerTableH" row-id="id"  
-                header-cell-class-name="tableHead" :loading="g_table_loading"> 
+                header-cell-class-name="tableHead" :loading="g_table_loading"
+                > 
                 <template v-for="(item,index) in dlgGCell.ccells.cels">
                     <vxe-table-column header-align="center" :align="item.align" :field="item.id" :key="index"
                         :title="item.labelString" show-header-overflow v-if="(item.attr&0x400)<=0"
-                        :show-overflow="item.editType!=6" :sortable ="(item.attr&0x400000)>0"  >
+                        :sortable ="(item.attr&0x400000)>0"  >
                         <template v-slot="{rowIndex}"> 
                             <bip-grid-info :cds="dlgGCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                         </template>
