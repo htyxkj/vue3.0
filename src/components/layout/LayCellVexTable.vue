@@ -531,6 +531,7 @@ export default class LayCelVexTable extends Vue {
                     this.commBtns2.push(item)
                 }
             }else{
+                console.log(item.cmd)
                 if(item.cmd != 'SAVE' && item.cmd != 'DEL'){
                     this.commBtns.push(item)
                 }else{

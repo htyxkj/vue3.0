@@ -195,7 +195,8 @@ export default class CUnivSelect extends Vue {
             }
         }
         await this.initUI()
-        this.initDlgBtn();
+        this.initDlgBtn("DLG");
+        this.initDlgBtn("DLG1");
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         this.initHeight()
@@ -286,9 +287,10 @@ export default class CUnivSelect extends Vue {
                 let dia: any = this.$refs.bi_tj;
                 dia.open();
             }, 100);
-        }else if(cmd == 'DLG'){
-            if(!this.dsm.currRecord || !this.dsm.currRecord.data)
+        }else if(cmd == 'DLG' || cmd == 'DLG1'){
+            if(!this.dsm.currRecord || !this.dsm.currRecord.data){
                 return;
+            }
             let cc = JSON.stringify(this.dsm.currRecord.data);
             if(cc.length>2){
                 setTimeout(() => {
@@ -645,9 +647,9 @@ export default class CUnivSelect extends Vue {
     /**
      * 获取自定义按钮
      */
-    async initDlgBtn(){
+    async initDlgBtn(t:any){
         if(this.uriParams){
-            let name = "DLG."+this.uriParams.pbuid;
+            let name = t+"."+this.uriParams.pbuid;
             let str = name
             // let dlg = await pubMethod.getConstant(str);
             str = ICL.AID_KEYCL+str;
@@ -674,7 +676,7 @@ export default class CUnivSelect extends Vue {
                     let _i = cc.indexOf(':');
                     let type = cc.substring(0,_i);
                     let bname = cc.substring(_i+1,item.indexOf(","));  
-                    let btn1 = new BipMenuBtn("DLG",bname)
+                    let btn1 = new BipMenuBtn(t,bname)
                     btn1.setDlgSname(name);
                     btn1.setDlgType(type)
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))

@@ -231,7 +231,7 @@ export default class BaseApplet extends Vue{
                 if(wp)
                     wp.open(ceaParams);
             }
-        }else if(cmd == 'DLG'){
+        }else if(cmd == 'DLG' || cmd == 'DLG1'){
             let cc = JSON.stringify(this.dsm.currRecord.data);
             if(cc.length>2){
                 setTimeout(() => {
@@ -1040,10 +1040,10 @@ export default class BaseApplet extends Vue{
     /**
      * 获取自定义按钮
      */
-    async initDlgBtn(){
+    async initDlgBtn(t:any){
         console.log("initDLG")
         if(this.uriParams){
-            let name = "DLG."+this.uriParams.pbuid;
+            let name = t+"."+this.uriParams.pbuid;
             let str = name
             // let dlg = await pubMethod.getConstant(str);
             str = icl.AID_KEYCL+str;
@@ -1070,7 +1070,7 @@ export default class BaseApplet extends Vue{
                     let _i = cc.indexOf(':');
                     let type = cc.substring(0,_i);
                     let bname = cc.substring(_i+1,item.indexOf(","));  
-                    let btn1 = new BipMenuBtn("DLG",bname)
+                    let btn1 = new BipMenuBtn(t,bname)
                     btn1.setDlgSname(name);
                     btn1.setDlgType(type)
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
@@ -1114,7 +1114,8 @@ export default class BaseApplet extends Vue{
         }else{
             this.initGetVal();
         } 
-        this.initDlgBtn();
+        this.initDlgBtn("DLG");
+        this.initDlgBtn("DLG1");
     }
     beforeDestroy(){
         this.$bus.$off('switchChange',this.switchBusID)

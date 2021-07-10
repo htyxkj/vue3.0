@@ -82,8 +82,8 @@
                 <el-button size="small" class="bip_btn_primary" @click="doPrint()">确 定</el-button>
             </span>  
         </el-dialog> 
-        <!-- 三资费用审批记录 -->
-        <el-dialog class="dlgbtn" :title="'流程查看'" :visible.sync="dlgGShow" width="40%" append-to-body>
+        <!-- DLG  G -->
+        <el-dialog class="dlgbtn" :title="this.btn.name" :visible.sync="dlgGShow" width="40%" append-to-body>
             <vxe-table :keep-source="false" class="mytable-scrollbar" border resizable size="small"
                 highlight-hover-row show-all-overflow="tooltip"
                 show-header-overflow highlight-current-row
@@ -99,18 +99,38 @@
                     </vxe-table-column>
                 </template>
             </vxe-table>
+            <el-pagination background layout="prev, pager, next, jumper" :page-size="20" :total="dlgGCell.cdata.page.total" :current-page="dlgGCell.cdata.page.currPage" @current-change="dlgGTablePC"></el-pagination>
             <span  slot="footer" class="dialog-footer">
             <hr>
                 <el-button size="small" class="bip_btn_primary" @click="dlgGShow = false">确 定</el-button>
             </span>  
         </el-dialog> 
+        <!-- DLG  G1 -->
+        <el-drawer :title="this.btn.name" :visible.sync="dlgG1Show" size="35%">
+            <vxe-table :keep-source="false" class="mytable-scrollbar" border resizable size="small"
+                highlight-hover-row show-all-overflow="tooltip"
+                show-header-overflow highlight-current-row
+                :data.sync="dlgGCell.cdata.data" :optimized="true" :height="drawerTableH" row-id="id"  
+                header-cell-class-name="tableHead" :loading="g_table_loading"> 
+                <template v-for="(item,index) in dlgGCell.ccells.cels">
+                    <vxe-table-column header-align="center" :align="item.align" :field="item.id" :key="index"
+                        :title="item.labelString" show-header-overflow v-if="(item.attr&0x400)<=0"
+                        :show-overflow="item.editType!=6" :sortable ="(item.attr&0x400000)>0"  >
+                        <template v-slot="{rowIndex}"> 
+                            <bip-grid-info :cds="dlgGCell" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
+                        </template>
+                    </vxe-table-column>
+                </template>
+            </vxe-table>
+            <el-pagination background layout="prev, pager, next, jumper" :page-size="20" :total="dlgGCell.cdata.page.total" :current-page="dlgGCell.cdata.page.currPage" @current-change="dlgGTablePC"></el-pagination>
+        </el-drawer>
     </el-row>
 </template>
 <script lang="ts">
 /**
  * 常量定义 DLG.  解析
  */
-import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue ,Inject} from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
 import CCliEnv from "@/classes/cenv/CCliEnv";
 import { BIPUtil } from "@/utils/Request"; 
@@ -129,6 +149,7 @@ import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
     components: {BipYgxzDia,VueQr,BipGridInfo}
 })
 export default class BipMenuBtnDlg extends Vue { 
+    @Inject('heightInfo') heightInfo!:any;
     btn:any = ""; 
     env:CCliEnv = new CCliEnv();
     sqlDlg0:boolean = false;//sql弹框是否显示
@@ -156,7 +177,9 @@ export default class BipMenuBtnDlg extends Vue {
     printShow:boolean = false;
     dlgGCell: CDataSet = new CDataSet("");//G: 弹出对象表格形式
     dlgGShow:boolean = false;
+    dlgG1Show:boolean = false;
     g_table_loading:boolean = false;
+    drawerTableH:any = 400;
     mounted() {
 
     }
@@ -527,32 +550,53 @@ export default class BipMenuBtnDlg extends Vue {
                 this.$notify.error("操作失败！")
             }
             
-        }else if(btn.dlgType == 'G'){//点击按钮弹出一个表格(对象定义)
-            this.dlgGShow = true;
-            this.g_table_loading = true;
-            let cont = btn.dlgCont.split(";")
-            this.dlgGCell = await this.getCells(cont[0]);
-            let selTj:any = {};
-            if(cont.length>=2){
-                let tj = cont[1];
-                if(tj){
-                    let tjs = tj.split(",");
-                    for(var i=0;i<tjs.length;i++){
-                        let t = tjs[i].split("=");
-                        selTj[t[0]] = this.env.dsm.currRecord.data[t[1]];
-                    }
-                }
-            }
-            let qe:QueryEntity = new QueryEntity(cont[0],cont[0],selTj);
-            qe.page.pageSize=1000
-            let vv = await tools.query(qe);
-            if(vv.data.id ==0){
-                let data = vv.data.data.data.data;
-                this.dlgGCell.cdata.data = data;
-            }
-            this.g_table_loading = false;
+        }else if(btn.dlgType.startsWith("G") == true){//点击按钮弹出一个表格(对象定义)
+            this.initDLGGData(btn,1);
         }
     }
+    async initDLGGData(btn:any,page:any){
+        if(btn.dlgType =="G"){
+            this.dlgGShow = true;
+        }else {
+            this.dlgG1Show = true;
+        }
+        if(this.heightInfo){
+            this.drawerTableH = this.heightInfo.height;
+        }
+        this.g_table_loading = true;
+        let cont = btn.dlgCont.split(";")
+        this.dlgGCell = await this.getCells(cont[0]);
+        let selTj:any = {};
+        if(cont.length>=2){
+            let tj = cont[1];
+            if(tj){
+                let tjs = tj.split(",");
+                for(var i=0;i<tjs.length;i++){
+                    let t = tjs[i].split("=");
+                    selTj[t[0]] = this.env.dsm.currRecord.data[t[1]];
+                }
+            }
+        }
+        let qe:QueryEntity = new QueryEntity(cont[0],cont[0],selTj);
+        qe.page.pageSize = 20
+        qe.page.currPage = page;
+        let vv = await tools.query(qe);
+        if(vv.data.id ==0){
+            let data = vv.data.data.data.data;
+            let page = vv.data.data.data.page;
+            this.dlgGCell.cdata.data = data;
+            this.dlgGCell.cdata.page = page;
+        }
+        this.g_table_loading = false;
+    }
+
+    /**
+     * DLG 表格页数发生变化
+     */
+    dlgGTablePC(page:any){
+        this.initDLGGData(this.btn,page);
+    }
+
     async dlgDOk(){
         this.showDCell = false;
         let b = JSON.stringify(this.btn);
