@@ -67,7 +67,7 @@ export default class BipMenuBarUI extends Vue{
                         let state = this.cds.currRecord.data[statefld];
                         state = state+""
                         if(state == '0' || state =='-1'){
-                            // this.btnShow[i] = true;
+                            this.btnShow[i] = true;
                         }else{
                             this.btnShow[i] = false;
                         }
@@ -84,6 +84,7 @@ export default class BipMenuBarUI extends Vue{
                         let state = this.cds.currRecord.data[statefld];
                         state = state+""
                         if(state == '0' || state =='-1'){
+                            this.btnShow[i] = true;
                         }else{
                             this.btnShow[i] = false;
                         }
