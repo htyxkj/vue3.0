@@ -63,12 +63,14 @@ export default class BipMenuBarUI extends Vue{
                 }
                 if(this.cds.opera){
                     let statefld = this.cds.opera.statefld;
-                    let state = this.cds.currRecord.data[statefld];
-                    state = state+""
-                    if(state == '0' || state =='-1'){
-                        // this.btnShow[i] = true;
-                    }else{
-                        this.btnShow[i] = false;
+                    if(statefld){
+                        let state = this.cds.currRecord.data[statefld];
+                        state = state+""
+                        if(state == '0' || state =='-1'){
+                            // this.btnShow[i] = true;
+                        }else{
+                            this.btnShow[i] = false;
+                        }
                     }
                 }
             }else if(btn.cmd =='DEL'){
@@ -78,16 +80,14 @@ export default class BipMenuBarUI extends Vue{
                 }
                 if(this.cds.opera){
                     let statefld = this.cds.opera.statefld;
-                    let state = this.cds.currRecord.data[statefld];
-                    state = state+""
-                    
-                    if(state == '0' || state =='-1'){
-                        this.btnShow[i] = true;
-                    }else{
-                        this.btnShow[i] = false;
+                    if(statefld){
+                        let state = this.cds.currRecord.data[statefld];
+                        state = state+""
+                        if(state == '0' || state =='-1'){
+                        }else{
+                            this.btnShow[i] = false;
+                        }
                     }
-                }else{
-                    this.btnShow[i] = true;
                 }
             }else{
                 let save_after = ['COPY','ADD','CHECKPROCESS','SUBMIT']
