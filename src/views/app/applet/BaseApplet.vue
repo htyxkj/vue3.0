@@ -1,6 +1,6 @@
 <template>
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
-        <template v-if="mbs&&mbs.initOK&&mbs.menuList.length>6">
+        <template v-if="mbs&&mbs.initOK&&mbs.menuList.length>10">
             <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
         </template>
         <template v-if="searchdia">
@@ -14,7 +14,7 @@
                     <base-layout v-if="lay.binit" :layout="lay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange"></base-layout>
                 </el-form>
             </el-scrollbar>
-            <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=6 && mbs.menuList.length>0">
+            <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=10 && mbs.menuList.length>0">
                 <div class="bip-btn-small">
                     <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
                 </div>
