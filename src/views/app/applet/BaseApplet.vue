@@ -15,8 +15,8 @@
                 </el-form>
             </el-scrollbar>
             <template v-if="mbs&&mbs.initOK&&mbs.menuList.length<=10 && mbs.menuList.length>0">
-                <div class="bip-btn-small">
-                    <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> 
+                <div :class="'bip-btn-small'+pageType">
+                    <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd" :place="'bottom'"></bip-menu-bar-ui> 
                 </div>
             </template>
         </div>
@@ -26,7 +26,7 @@
         <template>
             <bip-menu-btn-dlg ref="bip_base_dlg" @selData="refreshCurrent" @saveData="saveData"></bip-menu-btn-dlg> <!--  @Recheck="Recheck" -->
             <applet-list-dlg ref ="bip_applet_list_dlg" @selectRow="selectRow"></applet-list-dlg>
-            <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @Recheck="Recheck"></im-ex-file>
+            <im-ex-file :cell="dsm.ccells" :cellID="importCellId" ref="imExFile" @Recheck="Recheck"></im-ex-file>
         </template>
         <template v-if="nodeId">
             <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
@@ -91,6 +91,8 @@ export default class BaseApplet extends Vue{
     fromStyle:string='';
     rules:any={};//form 表单验证
     nodeId:string = '';
+    pageType:any=''//页面类型，普通页签或者是弹出框页面
+    importCellId:any = null;//导入模板对象id
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -283,6 +285,7 @@ export default class BaseApplet extends Vue{
                 this.$message.success("复制成功！")
             }
         }else if(cmd === icl.B_CMD_UPFILE){
+            this.importCellId = btn.dlgCont;
             let file:any = this.$refs.imExFile
             file.open()
         }else if(cmd === icl.B_CMD_UPFILE_LOG){
@@ -978,6 +981,9 @@ export default class BaseApplet extends Vue{
             let drId = this.uriParams.pbds.importCellId;
             if(drId){
                 this.nodeId = drId.split(';')[0];
+                if(this.nodeId.indexOf("|")>-1){
+                    this.nodeId = this.nodeId.split('|')[0];
+                }
             }
             
             let res = await tools.getCCellsParams(pcell)
@@ -994,12 +1000,31 @@ export default class BaseApplet extends Vue{
                 }
                 this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm);
                 if(this.uriParams && this.uriParams.pbds.importCellId){
-                    let btn = new BipMenuBtn(icl.B_CMD_UPFILE,"导入")
-                    btn.setIconFontIcon('ruku');
-                    this.mbs.menuList.push(btn)
-                    let btn_log = new BipMenuBtn(icl.B_CMD_UPFILE_LOG,"日志")
-                    btn_log.setIconFontIcon('shuji');
-                    this.mbs.menuList.push(btn_log)
+                    var i=0;
+                    for(;i<10;i++){
+                        let impid = this.uriParams.pbds.importCellId;
+                        if(i>0){
+                            impid = this.uriParams.pbds['importCellId'+i]
+                        }
+                        if(impid){
+                            let name = "导入"
+                            if(impid.indexOf("|")>-1){
+                                name = impid.substring(impid.indexOf("|")+1,impid.length)
+                                impid = impid.substring(0,impid.indexOf("|"))
+                            }
+                            let btn = new BipMenuBtn(icl.B_CMD_UPFILE,name)
+                            btn.dlgCont = impid;
+                            btn.setIconFontIcon('ruku');
+                            this.mbs.menuList.push(btn);
+                        }else{
+                            break;
+                        }
+                    }
+                    if(i == 1){
+                        let btn_log = new BipMenuBtn(icl.B_CMD_UPFILE_LOG,"日志")
+                        btn_log.setIconFontIcon('shuji');
+                        this.mbs.menuList.push(btn_log)
+                    }
                 }
                 // console.log(this.mbs, "mbs");
                 this.listIndex = this.findListMenuIndex("LIST");
@@ -1217,6 +1242,7 @@ export default class BaseApplet extends Vue{
             if(this.params.method =='pkfld'){ //业务关联
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value
+                console.log(this.params.method )
                 this.findData(data);
             }else if(this.params.method =='dlg'){//DLG 关联
                 if(JSON.stringify(this.params.jsontj).length >=2){
@@ -1280,11 +1306,16 @@ export default class BaseApplet extends Vue{
     }
     initHeight(){
         this.style = "";
-        if(this.height>0){
-            if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
-                this.style+="height:"+(this.height-0)+"px;"
-            }else{
-                this.style+="height:"+(this.height-50)+"px;"
+        if(this.$route && this.$route.name =='layoutDlg'){//DLG 弹出页面
+            this.style = "height:400px;margin-bottom:0px !important;padding-bottom:0px !important";
+            this.pageType = "DLG"
+        }else{
+            if(this.height>0){
+                if(this.mbs.menuList.length<=4 && this.mbs.menuList.length>0){
+                    this.style+="height:"+(this.height-0)+"px;"
+                }else{
+                    this.style+="height:"+(this.height-50)+"px;"
+                }
             }
         }
     }
@@ -1299,6 +1330,10 @@ export default class BaseApplet extends Vue{
     text-align: center;
     left: 50%;
     z-index: 999;
+    width: fit-content;
+}
+.bip-btn-smallDLG{
+    text-align: center;
 }
 .bip-btn-small .menubar{
     padding-top: 10px !important;

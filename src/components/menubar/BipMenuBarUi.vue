@@ -19,7 +19,9 @@
                 </template>
             </template>
         </el-button-group>
-        <hr class="menubar-hr"/>
+        <template v-if="!place">
+            <hr class="menubar-hr"/>
+        </template>
     </el-row>
 
 </template>
@@ -33,7 +35,8 @@ import CDataSet from '@/classes/pub/CDataSet';
 @Component({})
 export default class BipMenuBarUI extends Vue{
     @Prop() mbs!:BipMenuBar;
-    @Prop() cds!:CDataSet
+    @Prop() cds!:CDataSet;
+    @Prop() place:any;//按钮组出现的位置
     bInsert:boolean = true;
     showDlg:boolean = true;
     initOk:boolean = false;
@@ -60,35 +63,52 @@ export default class BipMenuBarUI extends Vue{
             if(btn.cmd =='SAVE'){
                 if ((this.cds.currRecord.c_state & 2) > 0 || (this.cds.currRecord.c_state & 1) > 0) {
                     this.btnShow[i] = true;
+                    continue;
                 }
                 if(this.cds.opera){
                     let statefld = this.cds.opera.statefld;
                     if(statefld){
                         let state = this.cds.currRecord.data[statefld];
-                        state = state+""
-                        if(state == '0' || state =='-1'){
-                            this.btnShow[i] = true;
+                        if(state){
+                            state = state+""
+                            if(state == '0' || state =='-1'){
+                                this.btnShow[i] = true;
+                            }else{
+                                this.btnShow[i] = false;
+                            }
                         }else{
-                            this.btnShow[i] = false;
+                            this.btnShow[i] = true;
                         }
+                    }else{
+                        this.btnShow[i] = true;
                     }
+                }else{
+                    this.btnShow[i] = true;
                 }
             }else if(btn.cmd =='DEL'){
                 if ((this.cds.currRecord.c_state & 1) > 0) {
                     this.btnShow[i] = false;
-                    break;
+                    continue;
                 }
                 if(this.cds.opera){
                     let statefld = this.cds.opera.statefld;
                     if(statefld){
                         let state = this.cds.currRecord.data[statefld];
-                        state = state+""
-                        if(state == '0' || state =='-1'){
-                            this.btnShow[i] = true;
+                        if(state){
+                            state = state+""
+                            if(state == '0' || state =='-1'){
+                                this.btnShow[i] = true;
+                            }else{
+                                this.btnShow[i] = false;
+                            }
                         }else{
-                            this.btnShow[i] = false;
+                            this.btnShow[i] = true;
                         }
+                    }else{
+                        this.btnShow[i] = true;
                     }
+                }else{
+                    this.btnShow[i] = true;
                 }
             }else{
                 let save_after = ['COPY','ADD','CHECKPROCESS','SUBMIT']
