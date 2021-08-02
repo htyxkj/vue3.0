@@ -24,11 +24,11 @@
                     <span slot="label" v-if="cell.labelString">
                         <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                             <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
-                                <span>{{cell.labelString.substring(0,(cell.isReq?4:5))}}…</span>
+                                <span>{{getLabelString}}…</span>
                             </el-tooltip>
                         </template>
                         <template v-else>
-                            {{cell.labelString}}
+                            {{getLabelString}}
                         </template>
                     </span>
                     <el-input :type="cell.ccVerCell>1?'textarea':'text'" :rows="cell.ccVerCell" :maxlength="cell.ccLeng" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange" @focus="focus"></el-input>
@@ -110,6 +110,14 @@ export default class BipInputEditor extends Vue{
                 this.model1 = this.model
   
             }
+        }
+    }
+
+    get getLabelString(){
+        if(this.cell.labelString.length>(this.cell.isReq?4:6)){
+            return this.cell.labelString.substring(0,(this.cell.isReq?4:5));
+        }else{
+            return this.cell.labelString
         }
     }
 }

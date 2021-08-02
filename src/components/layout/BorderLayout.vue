@@ -143,6 +143,7 @@ export default class BorderLayout extends Vue{
     height: 100%;
     .el-card__body{
         padding: 2px;
+        padding-top:8px;
     }
 }
 </style>

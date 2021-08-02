@@ -12,7 +12,7 @@
                 </template>
             </span>            
             <div>
-                <img v-if="!url" :style="imgStyle" src="../../assets/bip/upimg.png" @click="imgClick"/> 
+                <img v-if="!url" :style="imgStyle" :src='upimgSrc' @click="imgClick"/> 
                 <img v-else :style="imgStyle" :src="url" @click="imgClick"/>
             </div>
         </el-form-item>
@@ -21,12 +21,12 @@
                 <el-col :span="24">
                     <el-card shadow="never" class="myCard">
                         <el-row>
-                            <img v-if="!url" style="width: 100px; height: 110px" src="../../assets/bip/upimg.png"/> 
+                            <img v-if="!url" style="width: 100px; height: 110px" :src="upimgSrc"/> 
                             <img v-else style="width: 100px; height: 110px" :src="url"/>
                         </el-row>
                         <el-row>
                             <a href="javascript:;" id="pic" class="el-upload__text a-upload">
-                                <input type="file" accept="image/*"  @change="upImg($event)" name="file" > 点击这里上传图片 
+                                <input type="file" accept="image/*"  @change="upImg($event)" name="file" > 点击这里上传图片
                             </a>
                         </el-row>
                         <el-row style="text-align: start;color: #518dff;cursor:pointer">
@@ -46,6 +46,7 @@ import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
+import upimg from '@/assets/bip/upimg.png'
 @Component({})
 export default class BipInputImgEditor extends Vue{
     @Prop() cds!:CDataSet
@@ -59,8 +60,11 @@ export default class BipInputImgEditor extends Vue{
     url:any = "";
     outerVisible:boolean = false;
     imgStyle:any = "width: 100px; height: 110px";
-    
+    upimgSrc:any = upimg
     mounted(){
+        if(this.$route.name == 'layoutDlg'){
+            this.upimgSrc = "../"+this.upimgSrc;
+        }
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
         this.model1 = this.model       
         if(this.bgrid){

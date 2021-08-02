@@ -2,7 +2,7 @@
     <div>
         <div v-if="editType == 6">
             <img v-if="imgUrl" :src="imgUrl" class="gridImg" v-viewer/>
-            <img v-else class="gridImg" src="../../../assets/bip/upimg.png"/> 
+            <img v-else class="gridImg" :src="upimgSrc"/> 
         </div>
         <div v-else :class="uiclass" :style="valStyle2">{{model1}}</div>
     </div>
@@ -13,6 +13,7 @@ import { Cell } from '@/classes/pub/coob/Cell';
 import {CurrUtils} from '@/utils/CurrUtils'
 import {BaseVariable} from "@/utils/BaseICL"
 let currutil = CurrUtils.curr
+import upimg from '@/assets/bip/upimg.png'
 @Component({
     components:{}
 })
@@ -25,7 +26,11 @@ export default class BipGridShow extends Vue{
     imgUrl:any = null;
     valStyle:any = "";
     valStyle2:any = "";
-    mounted(){
+    upimgSrc:any = upimg
+    mounted(){  
+        if(this.$route.name == 'layoutDlg'){
+            this.upimgSrc = "../"+this.upimgSrc;
+        }
         this.initModel();
         this.editType = this.cell.editType;
         if(this.editType ==6){
