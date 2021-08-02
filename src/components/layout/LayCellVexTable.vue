@@ -600,7 +600,11 @@ export default class LayCelVexTable extends Vue {
             let index = i;
             if((item.attr&0x80000)>0&&item.isShow){
                 let item1:any = cells[i+1];
-                if(item1&&(item1.id=='sbuid' || item1.id.startsWith('slkbuid'))){
+                let im1_id = item1.id;
+                if(im1_id.indexOf(".")>-1){
+                    im1_id = im1_id.substring(im1_id.indexOf(".")+1)
+                }
+                if(item1&&(im1_id=='sbuid' || im1_id.startsWith('slkbuid'))){
                     let slkbuidCell :any=cells[index+1];
                     let btn = new BipMenuBtn(item.id,slkbuidCell.labelString)
                     btn.setType("primary");
@@ -810,6 +814,7 @@ export default class LayCelVexTable extends Vue {
                                 let kv = kvArr[j].split("=");
                                 this.cds.currRecord.data[kv[0]] = vl[data.cells.cels[kv[1]].id]
                             }
+                            this.cds.checkAllGS();
                             let cc:any = this.$refs[this.cds.ccells.obj_id];
                             if(cc){ 
                                 cc.setCurrentRow(this.cds.currRecord); 
@@ -818,6 +823,15 @@ export default class LayCelVexTable extends Vue {
                         this.cds.currRecord.c_state |= 2;
                         if(this.cds.ds_par){
                             this.cds.ds_par.currRecord.c_state |= 2;
+                            let cels = this.cds.ccells.cels;
+                            for(var i=0;i<cels.length;i++){
+                                let cel = cels[i];
+                                let script = cel.script;
+                                if(script && script.indexOf("^") !=-1){
+                                    let _id = script.substring(script.indexOf("^")+1,script.length-1);
+                                    this.cds.checkGSByParID(_id);
+                                }
+                            }
                         }
                     }else{
                         bool = false;
@@ -848,7 +862,7 @@ export default class LayCelVexTable extends Vue {
                 let s0 = cel.psAutoInc;
                 if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
                     for(var i=0;i<this.cds.cdata.data.length;i++){
-                        let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                        let oldKey = this.cds.cdata.data[i].data[cel.id];
                         if(this.cds.cdata.data[i].oldpk == null){
                             this.cds.cdata.data[i].oldpk = [];
                         }
@@ -947,7 +961,7 @@ export default class LayCelVexTable extends Vue {
     }
     /**排序发生变化 */
     sortChange(column:any){
-        let orderby = column.prop+" "+column.order;
+        let orderby = column.property+" "+column.order;
         this.$emit("sortChange", orderby);
     }
     async cardClick(rowIndex:any,index:any,data:any){
@@ -1064,14 +1078,31 @@ export default class LayCelVexTable extends Vue {
                     let command = me.command.split("&");
                     let pbuid = command[0].split("=");
                     let pmenuid = command[1].split("="); 
-                    setTimeout(() => {
-                        this.$router.push({
-                            path:'/layout',
-                            name:'layout',
-                            params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
-                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                        })    
-                    }, 600);
+                    let res = await tools.getMenuParams(pbuid[1],pmenuid[1]);
+                    if (res.data.id === 0) {
+                        let uriParams = res.data.data.mparams;
+                        let dialog = uriParams.pbds["Dialog"]
+                        if(dialog){
+                            let param = {
+                                childDlg_width:dialog,
+                                childDlg_title:me.menuName,
+                                router:{
+                                    path:'/layoutDlg',
+                                    name:'layoutDlg',
+                                    params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
+                                    query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
+                                }
+                            };
+                            this.$bus.$emit("openChildDlg",param);
+                            return;
+                        }
+                    }
+                    this.$router.push({
+                        path:'/layout',
+                        name:'layout',
+                        params:{method:"pkfld",pkfld:opera.pkfld,value:slkid},
+                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                    })    
                 }
             }  
         }
