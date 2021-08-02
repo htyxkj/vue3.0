@@ -197,13 +197,15 @@ export default class Home extends Vue {
       }else{
         if(this.user){
           let oneCont = []; 
-          let qCont = new QueryCont('gwcode',this.user.gwCode,12);
-          qCont.setContrast(5);
-          oneCont.push(qCont);
-          qCont = new QueryCont('usrcode',"*",12);
+          let qCont = new QueryCont('usrcode',"*",12);
           oneCont.push(qCont);
           qCont = new QueryCont('usrcode',this.user.userCode,12);
           oneCont.push(qCont);
+          if(this.user.gwCode){
+            qCont = new QueryCont('gwcode',this.user.gwCode,12);
+            qCont.setContrast(5);
+            oneCont.push(qCont);
+          }
           qe.cont = "~[" + JSON.stringify(oneCont)+"]";
         }
       }
@@ -229,6 +231,9 @@ export default class Home extends Vue {
         let layout ={i:i,x:0,y:0,w:0,h:0,minh:0,minw:0,maxh:0,maxw:0,sid:"",cont:"",comtype:"",rech:"",state:1,sname:"",usrcode:"",gwcode:""}
         let dd = this.selection[i];
         let cc = this.mapList[dd];
+        if(!cc){
+          continue;
+        }
         if(this.layout.length==0){ 
           layout.x=0;
           layout.y=0,
