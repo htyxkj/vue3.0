@@ -21,6 +21,9 @@
         <template v-else-if="type == 'Carousel'">
             <home-carousel :cont ="cont" :rech="rech"></home-carousel>
         </template>
+        <template v-else-if="type == 'CodeDev'">
+            <home-code-dev :cont ="cont" :rech="rech" :sid="sid" ></home-code-dev>
+        </template>
     </el-row>
 </template>
 <script lang="ts">
@@ -30,8 +33,9 @@ import HomeMenu from './HomeMenu.vue';
 import HomeCalendar from './HomeCalendar.vue';
 import HomeNews from './HomeNews.vue';
 import HomeCarousel from './HomeCarousel.vue';
+import HomeCodeDev from './HomeCodeDev.vue';
 @Component({
-    components:{HomeReport,HomeMenu,HomeCalendar,HomeNews,HomeCarousel}
+    components:{HomeReport,HomeMenu,HomeCalendar,HomeNews,HomeCarousel,HomeCodeDev}
 })
 export default class HomeComponent extends Vue { 
     @Prop() type!:string;

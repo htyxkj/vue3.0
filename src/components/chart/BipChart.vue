@@ -1,5 +1,5 @@
 <template>
-    <div ref="chart" :style="chartStyle" class="chart"></div>
+    <div :ref="chartId" :style="chartStyle" class="chart"></div>
 </template>
 <script lang="ts">
 /**
@@ -12,10 +12,11 @@ export default class BipChart extends Vue {
     @Prop() stat!:any; 
     @Prop() option!:any;
     @Prop() chartStyle!:string;
+    chartId:any = new Date().getTime();
     myChart:any = null;
     componentsizechangeBusID:any = null;
     mounted() {  
-        this.myChart = echarts.init(this.$refs.chart as HTMLCanvasElement); 
+        this.myChart = echarts.init(this.$refs[this.chartId] as HTMLCanvasElement); 
         if(this.option){
             this.myChart.setOption(this.option);  
             this.componentsizechangeBusID= this.$bus.$on('componentsizechange',this.sizeChange)

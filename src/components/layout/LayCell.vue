@@ -7,14 +7,16 @@
                     <bip-comm-editor  v-for="(cel,index) in laycell.uiCels" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
                 </template>
                 <template v-else>
-                    <el-card class="box-card my-lay-card" v-for="(item,index) in uiCels" :key="index">
-                        <div slot="header" class="clearfix">
-                            <span>{{item.title}}</span>
-                        </div>
-                        <div>
-                            <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
-                        </div>
-                    </el-card>
+                    <template  v-for="(item,index) in uiCels">
+                        <el-card class="box-card my-lay-card" v-if="item && item.cells.length>0" :key="index">
+                            <div slot="header" class="clearfix">
+                                <span>{{item.title}}</span>
+                            </div>
+                            <div>
+                                <bip-comm-editor  v-for="(cel,index) in item.cells" :key="index" :env="env" :cell="cel" :cds="cds" :row="cds.index" :bgrid="laycell.btable" :config="config" @focus="focus"/>
+                            </div>
+                        </el-card>
+                    </template>
                 </template>
             </template>
             <template v-else>    
@@ -218,7 +220,7 @@ export default class LayCell extends Vue{
             let s0 = cel.psAutoInc;
             if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
                 for(var i=0;i<this.cds.cdata.data.length;i++){
-                    let oldKey = JSON.stringify(this.cds.cdata.data[i].data[cel.id]);
+                    let oldKey = this.cds.cdata.data[i].data[cel.id];
                     if(!this.cds.cdata.data[i].oldpk){
                         this.cds.cdata.data[i].oldpk=[];
                     }
