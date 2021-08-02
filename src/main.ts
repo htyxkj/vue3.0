@@ -4,7 +4,6 @@ import App from "./App.vue";
 import router from "./router";
 import "./plugins/element.js";
 import "./plugins/vxetable.js";
-// import layout from  "@/plugins/mylayout.js";
 import './assets/icon/iconfont.css'
 import './assets/icon/iconfont.js'
 import './assets/bip-erp/css/font.css'

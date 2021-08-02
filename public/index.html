@@ -7,7 +7,10 @@
     <!-- 动态尺寸 -->
     <script src="./static/js/bip-erp/flexible.js" type="text/javascript"></script>
     <title></title>
-    
+    <!-- <script type="text/javascript" src="https://api.tianditu.gov.cn/api?v=4.0&tk=7b036021d9213378213ecdefb18162db"></script>
+    <script src="./static/js/TMap/d3.js" charset="utf-8"></script>
+    <script src="./static/js/TMap/D3SvgOverlay.js"></script>
+    <script src="./static/js/TMap/CarTrack.js"></script> -->
     <script type="text/javascript">
         var url = "./static/config.json"
         var request = new XMLHttpRequest();
@@ -19,12 +22,10 @@
                 document.getElementsByTagName("title")[0].innerText = config.Project_Name;
                 var head= document.getElementsByTagName('head')[0];
                 if(config.ITEMTYPE =='air-super'){
-                  //<!-- 天地图 -->
                   var script1= document.createElement('script');  
                   script1.type= 'text/javascript';  
                   script1.src= 'https://api.tianditu.gov.cn/api?v=4.0&tk=7b036021d9213378213ecdefb18162db';  
                   head.appendChild(script1);
-                  //<!-- 天地图轨迹类库 -->
                   var script2= document.createElement('script');  
                   script2.type= 'text/javascript';  
                   script2.src= './static/js/TMap/d3.js';  

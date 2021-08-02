@@ -194,7 +194,6 @@ export default class Login extends Vue {
   position: fixed;
   width: 100%;
   height: 100%;
-  // background-image: url("../../assets/login/login.png");
   background-size: 100% 100%;
 }
 .login-card {

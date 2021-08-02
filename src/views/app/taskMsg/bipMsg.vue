@@ -139,8 +139,8 @@ export default class bipTask extends Vue {
       let cc = await tools.getTaskMsgData(213,row.iid,3,null,null,null,null,null,null);
       this.fetchTaskData();
     }  
-     selectChangeEvent ({ selection,checked,}:any) {
-        this.tableChecked = selection;
+    selectChangeEvent (data:any) {
+        this.tableChecked = data.records;
     }
     /**
      * 全部删除
