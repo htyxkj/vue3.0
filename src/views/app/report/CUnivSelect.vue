@@ -37,13 +37,22 @@
                 </template>
                 <template>
                     <bip-menu-btn-dlg ref="bip_dlg" @selData="Recheck" @Recheck="Recheck"></bip-menu-btn-dlg>
-                    <im-ex-file :cell="dsm.ccells" :cellID="uriParams.pbds.importCellId" ref="imExFile" @exFile="getExcel" @Recheck="Recheck"></im-ex-file>
+                    <im-ex-file :cell="dsm.ccells" :cellID="importCellId" ref="imExFile" @exFile="getExcel" @Recheck="Recheck"></im-ex-file>
                 </template>
             </el-scrollbar>
         </div>
          <template v-if="nodeId">
             <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
         </template>
+        <el-dialog :title="childDlg_title" :visible.sync="childDlg"  class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false" @close="invokecmd({cmd:'FIND'})">
+            <!--弹出框头部-->
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">{{childDlg_title}}</div>
+            </span>
+            <el-scrollbar wrap-class="scrollbar-wrapper" style="height:460px" >
+               <router-view/>
+            </el-scrollbar>
+        </el-dialog>
     </el-row>
 </template>
 <script lang="ts">
@@ -107,6 +116,12 @@ export default class CUnivSelect extends Vue {
     isMap:boolean = false;      //是否是地图页面
     isShowMap:boolean = false;  //是否是显示地图
     style:any=""
+    childDlg: boolean = false;//子路由弹出窗
+    childDlg_width:any = "50%";//子路由弹出窗宽度
+    childDlg_title:any = "";//子路由弹出窗标题
+    openDlgEventId:any = null;//子路由弹出窗bus监听  用于报表表格中
+
+    importCellId:any = null;//导入模板对象id
     @Provide('heightInfo') heightInfo: any = {};
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
@@ -118,6 +133,9 @@ export default class CUnivSelect extends Vue {
             let drId = this.uriParams.pbds.importCellId;
             if(drId){
                 this.nodeId = drId.split(';')[0];
+                if(this.nodeId.indexOf("|")>-1){
+                    this.nodeId = this.nodeId.split('|')[0];
+                }
             }
             let res = await tools.getCCellsParams(pcell)
             this.fullscreenLoading = false;
@@ -132,12 +150,31 @@ export default class CUnivSelect extends Vue {
                 }
                 this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm,true);
                 if(this.uriParams && this.uriParams.pbds.importCellId){
-                    let btn = new BipMenuBtn(ICL.B_CMD_UPFILE,"导入")
-                    btn.setIconFontIcon('ruku');
-                    this.mbs.menuList.push(btn);
-                    let btn_log = new BipMenuBtn(ICL.B_CMD_UPFILE_LOG,"日志")
-                    btn_log.setIconFontIcon('shuji');
-                    this.mbs.menuList.push(btn_log)
+                    var i=0;
+                    for(;i<10;i++){
+                        let impid = this.uriParams.pbds.importCellId;
+                        if(i>0){
+                            impid = this.uriParams.pbds['importCellId'+i]
+                        }
+                        if(impid){
+                            let name = "导入"
+                            if(impid.indexOf("|")>-1){
+                                name = impid.substring(impid.indexOf("|")+1,impid.length)
+                                impid = impid.substring(0,impid.indexOf("|"))
+                            }
+                            let btn = new BipMenuBtn(ICL.B_CMD_UPFILE,name)
+                            btn.dlgCont = impid;
+                            btn.setIconFontIcon('ruku');
+                            this.mbs.menuList.push(btn);
+                        }else{
+                            break;
+                        }
+                    }
+                    if(i == 1){
+                        let btn_log = new BipMenuBtn(ICL.B_CMD_UPFILE_LOG,"日志")
+                        btn_log.setIconFontIcon('shuji');
+                        this.mbs.menuList.push(btn_log)
+                    }
                 }
                 let _isMp = false;
                 if(this.uriParams && this.uriParams.pbds.ismap){
@@ -183,7 +220,7 @@ export default class CUnivSelect extends Vue {
     }
 
     async mounted(){
-        console.log("mounted")
+        
         this.config['type']=2;
         this.biType="SEL" 
         if(this.uriParams){
@@ -232,10 +269,8 @@ export default class CUnivSelect extends Vue {
             }
         }
         this.initHeight();
-        // let res:any = this.$refs.se;
-        // let rr = res.getBoundingClientRect();
-        // console.log(rr);
-
+        //以DLG的形式打开子菜单或 详情页面
+        this.openDlgEventId = this.$bus.$on('openChildDlg',this.openChildDlg)
     }
     initData(){
         if(this.uriParams && this.uriParams.pbds){
@@ -302,6 +337,7 @@ export default class CUnivSelect extends Vue {
             this.fullscreenLoading=true;
             this.getExcel();
         }else if(cmd === ICL.B_CMD_UPFILE){
+            this.importCellId = btn.dlgCont
             let file:any = this.$refs.imExFile
             file.open()
         }else if(cmd === ICL.B_CMD_UPFILE_LOG){
@@ -326,12 +362,34 @@ export default class CUnivSelect extends Vue {
                         let p = command.split("&");
                         let pbuid = p[0].split("=")
                         let pmenuid = p[1].split("=")
-                        this.$router.push({
-                            path:'/layout',
-                            name:'layout',
-                            params:{method:"CUSADD",pmenuid:pmenuid[1] },
-                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                        })    
+                        let res = await tools.getMenuParams(pbuid[1],pmenuid[1]);
+                        if (res.data.id === 0) {
+                            let uriParams = res.data.data.mparams;
+                            let dialog = uriParams.pbds["Dialog"]
+                            if(dialog){
+                                this.childDlg_width = dialog;
+                                this.childDlg_title = menu.menuName
+                                this.childDlg = true;
+                                let param = {
+                                    childDlg_width:dialog,
+                                    childDlg_title:menu.menuName,
+                                    router:{
+                                        path:'/layoutDlg',
+                                        name:'layoutDlg',
+                                        params:{method:"CUSADD",pmenuid:pmenuid[1] },
+                                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
+                                    }
+                                };
+                                this.openChildDlg(param);
+                            }else{
+                                this.$router.push({
+                                    path:'/layout',
+                                    name:'layout',
+                                    params:{method:"CUSADD",pmenuid:pmenuid[1] },
+                                    query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                                })
+                            }
+                        }
                     }else{
                         this.$notify.error( "没有" + MID_ + "菜单权限!" );
                     }
@@ -378,6 +436,13 @@ export default class CUnivSelect extends Vue {
         if(cmd != 'SHOWMAP'){
             this.isShowMap = false;
         }
+    }
+    //以DLG形式打开子菜单 或详情页面
+    openChildDlg(param:any){
+        this.childDlg = true;
+        this.childDlg_width =param.childDlg_width;
+        this.childDlg_title = param.childDlg_title
+        this.$router.push(param.router)
     }
     //#region 保存数据
     async saveData() {
@@ -879,5 +944,10 @@ export default class CUnivSelect extends Vue {
 <style lang="scss">
 .bip-c-search .el-card__body{
     padding:8px 20px !important;
+}
+.cus-child-dlg{
+    .el-scrollbar__wrap{
+        overflow: auto;
+    }
 }
 </style>

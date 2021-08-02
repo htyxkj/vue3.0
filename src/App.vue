@@ -289,7 +289,7 @@ export default class App extends Vue {
             if(this.editableTabs2.length==0)
                 this.addIndex();
         }
-        if(to.fullPath ==='layout?undefined'){
+        if(to.fullPath.indexOf('/layout?undefined') !=-1 || to.fullPath.indexOf("layoutDlg")!=-1 ){
             return
         }
         if (to.name === 'layout') {
