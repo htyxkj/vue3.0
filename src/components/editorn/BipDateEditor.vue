@@ -299,8 +299,10 @@ export default class BipDateEditor extends Vue{
                     dateAdd = startTime.substring(startTime.indexOf("|")+1,startTime.lastIndexOf("]"));
                     startTime = stt;
                 }
-                startTime = this.cds.currRecord.data[startTime];    
-                startTime = startTime.replace(new RegExp("\\-",'g'),"/");           
+                startTime = this.cds.currRecord.data[startTime];
+                if(startTime){
+                    startTime = startTime.replace(new RegExp("\\-",'g'),"/");       
+                }    
                 if(dateAdd !=""){
                     let add = dateAdd.split(";");
                     add.unshift(startTime);
@@ -321,7 +323,9 @@ export default class BipDateEditor extends Vue{
                     endTime = stt;
                 }
                 endTime = this.cds.currRecord.data[endTime];
-                endTime = endTime.replace(new RegExp("\\-",'g'),"/"); 
+                if(endTime){
+                    endTime = endTime.replace(new RegExp("\\-",'g'),"/"); 
+                }
                 if(dateAdd !=""){
                     let add = dateAdd.split(";");
                     add.unshift(endTime);
@@ -346,7 +350,9 @@ export default class BipDateEditor extends Vue{
                     startTime = stt;
                 }
                 startTime = this.cds.currRecord.data[startTime];
-                startTime = startTime.replace(new RegExp("\\-",'g'),"/"); 
+                if(startTime){
+                    startTime = startTime.replace(new RegExp("\\-",'g'),"/"); 
+                }
                 if(dateAdd !=""){
                     let add = dateAdd.split(";");
                     add.unshift(startTime);
@@ -369,7 +375,9 @@ export default class BipDateEditor extends Vue{
                     endTime = stt;
                 }
                 endTime = this.cds.currRecord.data[endTime];
-                endTime = endTime.replace(new RegExp("\\-",'g'),"/"); 
+                if(endTime){
+                    endTime = endTime.replace(new RegExp("\\-",'g'),"/"); 
+                }
                 if(dateAdd !=""){
                     let add = dateAdd.split(";");
                     add.unshift(endTime);
