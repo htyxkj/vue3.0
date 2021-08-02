@@ -193,7 +193,7 @@ export default class SortiesInvoke extends Vue {
         // console.log(this.tableData)
     }
     selectChange(data:any){
-        this.checkData = data.selection;
+        this.checkData = data.records;
     }
     //保存架次
     async saveSorties(){

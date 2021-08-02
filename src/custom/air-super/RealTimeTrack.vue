@@ -409,8 +409,11 @@ export default class RealTimeTrack extends Vue {
                 // }
                 await this.initAllDev();
                 let t1 = this.tMap.getViewport(this.airPoint);
-                if(t1)
-                    this.tMap.panTo(t1.center, t1.zoom);
+                if(t1){
+                    if(!isNaN(t1.center.lng) && !isNaN(t1.center.lat)){
+                        this.tMap.panTo(t1.center, t1.zoom);
+                    }
+                }
             }
             this.loading = !this.loading;
         }catch(err){
@@ -560,7 +563,7 @@ export default class RealTimeTrack extends Vue {
     }
     drawingPoing(v:any){
         let key = v.taskid+"_"+v.sbid+"_"+v.offline+"_"+v.sbtype;
-        if(v.latitude<=0 || v.longitude<=0){
+        if((v.latitude<=0 || v.longitude<=0) || (!v.latitude || !v.longitude)){
             return;
         }
         let lnglat = [v.latitude,v.longitude];
@@ -959,8 +962,11 @@ export default class RealTimeTrack extends Vue {
             // }
             await this.initAllDev()
             let t1 = this.tMap.getViewport(this.airPoint);
-            if(t1)
-                this.tMap.panTo(t1.center, t1.zoom);
+            if(t1){
+                if(!isNaN(t1.center.lng) && !isNaN(t1.center.lat)){
+                    this.tMap.panTo(t1.center, t1.zoom);
+                }
+            }
             this.loading = false;
         }catch(err){
             this.loading = false;

@@ -46,7 +46,7 @@
                     </el-header>
                     <el-main  :style="'height:'+tableHeight+'px'" style="padding:0px">
                         <vxe-table resizable size="mini" ref="BusinessModelTable" auto-resize :loading="tableLoading" show-overflow
-                            @checkbox-all="selectAllEvent" @checkbox-change="selectChangeEvent"
+                            @checkbox-all="selectChangeEvent" @checkbox-change="selectChangeEvent"
                             border="inner" stripe highlight-hover-row :height="tableHeight-60"
                             :data="modelACell.cdata.data">
                                 <vxe-table-column type="checkbox" width="60"></vxe-table-column>
@@ -383,14 +383,8 @@ export default class BusinessModel extends Vue {
         this.removeData = [];
         this.ininModalAData();
     }
-    selectAllEvent ({ selection,checked }:any) {
-        this.removeData = selection;
-        for(var i=0;i<this.removeData.length;i++){
-            this.removeData[i].c_state =4;
-        }
-    }
-    selectChangeEvent ({ selection,checked,}:any) {
-        this.removeData = selection;
+    selectChangeEvent (data:any) {
+        this.removeData = data.records;
         for(var i=0;i<this.removeData.length;i++){
             this.removeData[i].c_state =4;
         }
