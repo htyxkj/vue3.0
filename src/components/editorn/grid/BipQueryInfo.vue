@@ -34,6 +34,7 @@ export default class BipQueryInfo extends Vue{
     @Prop() cds!:CDataSet
     @Prop() cell!:Cell
     @Prop() bipInsAid!:BipInsAidNew
+    @Prop() env0!:CCliEnv
     @Provide() contCell!:Cells
     @Provide() cells!:Cells
     @Provide() biplay:BipLayout = new BipLayout("")
@@ -191,6 +192,7 @@ export default class BipQueryInfo extends Vue{
     }
 
     open(vis:boolean){
+        this.initTJ();
         this.visible = vis
         if(vis){
             setTimeout(() => {
@@ -395,6 +397,27 @@ export default class BipQueryInfo extends Vue{
                 console.log(err)
             })
         }
+    }
+    /**
+     * 初始化条件
+     * 处理条件对象公式  对象ID*字段
+     */
+    initTJ(){
+        // for(var i=0;i<this.cells.length;i++){
+        //     let cel = this.cells[i];
+        //     console.log(cel.script)
+        //     if(cel.script && cel.script.indexOf("*")>0){
+        //         let cellID = cel.script.split("*")[0];
+        //         let valueID = cel.script.split("*")[1];
+        //         console.log(cellID)
+        //         console.log(valueID)
+        //         let cell = this.env.ds_cont.getCdsByObjID(cellID);
+        //         if(!cell){
+        //             cell = this.env.dsm.getCdsByObjID(cellID);
+        //         }
+        //         console.log(cell)
+        //     }
+        // }
     }
 }
 </script>

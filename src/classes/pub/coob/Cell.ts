@@ -29,5 +29,6 @@ export class Cell {
   refCellIds:Array<string> = []
   widthIndex!:number
   rowRefCellId:Array<string> = []//跨行公式中受当前字段影响的字段
+  placeholder:any='' //input 占位符
   constructor(){}
 }

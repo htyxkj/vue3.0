@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>
-                <el-select filterable v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" @focus="focus"
+                <el-select filterable v-model="model1" :multiple="multiple" collapse-tags :placeholder="cell.placeholder" size="medium" @focus="focus"
                 :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
                     <el-option
                         v-for="item in options"
@@ -31,7 +31,7 @@
             </el-form-item>
         </template>
         <template v-else>
-            <el-select filterable v-model="model1" :multiple="multiple" collapse-tags placeholder="请选择" size="medium" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @focus="focus"  @change="dataChange">
+            <el-select filterable v-model="model1" :multiple="multiple" collapse-tags :placeholder="cell.placeholder" size="medium" style="width:100%" :disabled="(cell.attr&0x40)>0" clearable  @focus="focus"  @change="dataChange">
                 <el-option
                     v-for="item in options"
                     :key="item[cels[0].id]"
@@ -49,8 +49,6 @@ import CDataSet from '@/classes/pub/CDataSet';
 import { Cell } from '@/classes/pub/coob/Cell';
 import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
-
-import { State, Action, Getter, Mutation } from "vuex-class";
 import BipInsAidNew from '../../classes/BipInsAidNew';
 @Component({})
 export default class BipListEditor extends Vue{

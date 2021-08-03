@@ -11,7 +11,7 @@
                 <bip-up-down-editor class="BJstyle" :env="env" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-up-down-editor>
             </template>
             <template v-else-if="bipInsAid.bType === 'CQueryEditor'">
-                <bip-query-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-query-editor>
+                <bip-query-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus" :env="env"></bip-query-editor>
             </template>
              <template v-else-if="bipInsAid.bType === 'CTreePopEditor'">
                 <bip-tree-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-tree-editor>

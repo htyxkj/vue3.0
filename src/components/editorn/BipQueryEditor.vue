@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
+                <el-input :placeholder="cell.placeholder" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
                     <template v-if="this.model1">
                         <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
                     </template>
@@ -28,7 +28,7 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
+             <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
                     <template v-if="this.model1&&canEdit">
                         <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
                     </template>
@@ -48,6 +48,7 @@ import BipInsAidNew from '../../classes/BipInsAidNew';
 import CommATTR from '../../classes/CommAttr';
 import BipQueryInfo from './grid/BipQueryInfo.vue';
 import { BIPUtils } from "@/utils/BaseUtil";
+import CCliEnv from '@/classes/cenv/CCliEnv'
 let baseTool = BIPUtils.baseUtil;
 let _ = require('lodash')
 @Component({
@@ -60,6 +61,7 @@ export default class BipQueryEditor extends Vue{
     @Prop() model!:string
     @Prop() bgrid!:boolean
     @Prop() bipInsAid!:BipInsAidNew
+    @Prop() env!:CCliEnv
 
     @Provide() span:number = 6
 

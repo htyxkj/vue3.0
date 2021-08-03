@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>                 
-                <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange" @focus='focus'>
+                <el-input :placeholder="cell.placeholder" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange" @focus='focus'>
                     <el-button slot="append" icon="el-icon-tickets" @click="iconClick"></el-button>
                 </el-input>
                 <template v-if="cell.desc">
@@ -25,7 +25,7 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange" @focus='focus'>
+             <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0" :readonly="true" @change="dataChange" @focus='focus'>
                  <el-button slot="append" icon="el-icon-tickets" @click="iconClick"></el-button>
              </el-input>
         </template>

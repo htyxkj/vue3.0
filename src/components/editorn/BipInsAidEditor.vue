@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>                
-                <el-input :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="true" :disabled="(cell.attr&0x40)>0" 
+                <el-input :placeholder="cell.placeholder" :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="true" :disabled="(cell.attr&0x40)>0" 
                         @focus="readonly?'':getFocus(true)"
                         @blur="getFocus(false)"
                         @change="dataChange"
@@ -33,7 +33,7 @@
             </el-form-item>
         </template>
         <template v-else>
-            <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
+            <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
                  <template v-if="this.model1&&canEdit">
                         <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
                 </template>
