@@ -413,23 +413,48 @@ export default class CUnivSelect extends Vue {
                 isMultiple = true;
             }
             let delData:any = [];
+            let msg = "";
             if(isMultiple){//多选
                 delData = this.dsm.currRecordArr;
+                msg = "此操作将永久删除勾选数据，是否继续？"
             }else{
                 delData.push(this.dsm.currRecord);
+                let _idx = this.dsm.ccells.x_pk;
+                if(_idx == -1){
+                    let pkindex = this.dsm.ccells.pkindex;
+                    if(pkindex){
+                        _idx = pkindex[0];
+                    }
+                }
+                let id = this.dsm.ccells.cels[_idx].id
+                let sid = this.dsm.currRecord.data[id]
+                msg = `确定删除当前${sid}记录吗？`
             }
             if(delData.length<=0){
                 this.$notify.warning( "请勾选删除数据行!");
                 return;
             }
-            delData = JSON.stringify(delData)
-            let res = await tools.cusDelData(delData,this.dsm.ccells.obj_id);
-            if(res.data.id == 0){
-                this.$notify.success(res.data.message);
-            }else{
-                this.$notify.error(res.data.message);
-            }
-            this.find();
+            this.$confirm(msg,
+                `系统提醒`,
+                { type: "warning" }
+            ).then(()=>{
+                this.fullscreenLoading = true;
+                delData = JSON.stringify(delData)
+                tools.cusDelData(delData,this.dsm.ccells.obj_id).then(res=>{
+                    if(res.data.id == 0){
+                        this.$notify.success(res.data.message);
+                    }else{
+                        this.$notify.error(res.data.message);
+                    }
+                    this.find();   
+                }).finally(()=>{
+                    this.fullscreenLoading = false;
+                });
+            }).catch(() => {
+                this.fullscreenLoading = false;
+                this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
+                return;
+            });
         }else if(cmd == 'SAVE'){
             await this.saveData();
         }
