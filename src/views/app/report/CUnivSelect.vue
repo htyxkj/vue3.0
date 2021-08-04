@@ -370,10 +370,10 @@ export default class CUnivSelect extends Vue {
                             if(dialog){
                                 this.childDlg_width = dialog;
                                 this.childDlg_title = menu.menuName
-                                this.childDlg = true;
                                 let param = {
                                     childDlg_width:dialog,
                                     childDlg_title:menu.menuName,
+                                    obj_id:this.dsm.ccells.obj_id,
                                     router:{
                                         path:'/layoutDlg',
                                         name:'layoutDlg',
