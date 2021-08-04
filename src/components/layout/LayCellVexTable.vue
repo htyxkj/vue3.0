@@ -62,7 +62,7 @@
                             :field="item.id" :width="widths[item.widthIndex]" :title="item.labelString"
                             show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.attr&0x40)>0">
                             <template #edit="{rowIndex}">
-                                <bip-comm-editor  :cell="item" :cds="cds" :row="rowIndex" :bgrid="true"/> 
+                                <bip-comm-editor  :cell="item" :cds="cds" :row="rowIndex" :bgrid="true" :env="env"/> 
                             </template>
                             <template #default="{rowIndex}">
                                 <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>

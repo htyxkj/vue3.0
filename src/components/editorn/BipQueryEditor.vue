@@ -36,7 +36,7 @@
              </el-input>
         </template>
         <template v-if="showQueryInfo">
-            <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select"></bip-query-info>
+            <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select" :env0="env"></bip-query-info>
         </template>
     </el-col>
 </template>

@@ -1,7 +1,7 @@
 <template>
     <el-dialog :title="bipInsAid.title" class="bip-query" :visible.sync="visible" :append-to-body="true" 
     :close-on-press-escape="true" :close-on-click-modal="false" width="60%">
-            <bip-search-cont :env="env" :cdsCount="cds"/>
+            <bip-search-cont :env="env" :cdsCount="env.ds_cont"/>
             <el-form @submit.native.prevent label-position="right" label-width="120px">
                 <BaseLayout v-if="biplay&&biplay.binit" :layout="biplay" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" :config="config" />
             </el-form>
@@ -71,7 +71,6 @@ export default class BipQueryInfo extends Vue{
         if(!this.tomaps){
             //普通的拷贝定义赋值
              this.getCopyFlds(this.cells,this.cds.ccells,this.qcopyconf)
-            console.log(this.qcopyconf)
         }else{
             let map0 = '',s0 = '',maps=this.tomaps
             if(maps.startsWith(this.cells.obj_id+'=')){
@@ -403,21 +402,29 @@ export default class BipQueryInfo extends Vue{
      * 处理条件对象公式  对象ID*字段
      */
     initTJ(){
-        // for(var i=0;i<this.cells.length;i++){
-        //     let cel = this.cells[i];
-        //     console.log(cel.script)
-        //     if(cel.script && cel.script.indexOf("*")>0){
-        //         let cellID = cel.script.split("*")[0];
-        //         let valueID = cel.script.split("*")[1];
-        //         console.log(cellID)
-        //         console.log(valueID)
-        //         let cell = this.env.ds_cont.getCdsByObjID(cellID);
-        //         if(!cell){
-        //             cell = this.env.dsm.getCdsByObjID(cellID);
-        //         }
-        //         console.log(cell)
-        //     }
-        // }
+        let cells = this.env.ds_cont.ccells.cels;
+        if(this.env.ds_cont.currRecord.c_state ==0)
+            this.env.ds_cont.createRecord();
+        for(var i=0;i<cells.length;i++){
+            let cel = cells[i];
+            if(cel.script && cel.script.indexOf("*")>0){
+                let cellID = cel.script.split("*")[0];
+                let valueID = cel.script.split("*")[1];
+                let cell = null;
+                if(this.env0.dsm.ccells){
+                    cell = this.env0.dsm.getCdsByObjID(cellID);
+                }
+                if(!cell){
+                    if(this.env0.ds_cont.ccells){
+                        cell = this.env0.ds_cont.getCdsByObjID(cellID);
+                    }
+                }
+                if(cell){
+                    let vl = cell.currRecord.data[valueID];
+                    this.env.ds_cont.currRecord.data[cel.id] = vl;
+                }
+            }
+        }
     }
 }
 </script>
