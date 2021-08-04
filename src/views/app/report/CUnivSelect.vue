@@ -303,6 +303,7 @@ export default class CUnivSelect extends Vue {
         }
     }
     async invokecmd(btn:any) {
+        this.childDlg = false;
         let cmd = btn.cmd
         console.log(cmd);
         if(cmd == 'CLEAR'){
@@ -464,10 +465,12 @@ export default class CUnivSelect extends Vue {
     }
     //以DLG形式打开子菜单 或详情页面
     openChildDlg(param:any){
-        this.childDlg = true;
-        this.childDlg_width =param.childDlg_width;
-        this.childDlg_title = param.childDlg_title
-        this.$router.push(param.router)
+        if(this.dsm.ccells.obj_id == param.obj_id){
+            this.childDlg = true;
+            this.childDlg_width =param.childDlg_width;
+            this.childDlg_title = param.childDlg_title
+            this.$router.push(param.router)
+        }
     }
     //#region 保存数据
     async saveData() {
