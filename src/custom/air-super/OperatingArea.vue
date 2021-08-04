@@ -456,7 +456,6 @@ import CDataSet from "@/classes/pub/CDataSet";
 import tMap from "@/components/map/MyTianMap.vue";
 import bMap from "@/components/map/MyBaiMap.vue";
 import {T} from "@/components/map/js/TMap";
-import { on } from 'cluster';
 import domtoimage from 'dom-to-image';
 import { GlobalVariable } from '@/utils/ICL';
 @Component({
