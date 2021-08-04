@@ -15,7 +15,7 @@
             show-header-all-overflow class="vxe-table-element" :data.sync="msgValue"
             :optimized="true" height="450px" @checkbox-change="selectChangeEvent"  @checkbox-all="selectChangeEvent">
             <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-            <vxe-table-column type="index" title="编号" width="70"></vxe-table-column>
+            <vxe-table-column type="seq" title="编号" width="70"></vxe-table-column>
             <vxe-table-column header-align="center" align="center" field="title" title="标题" show-header-overflow show-overflow ></vxe-table-column>
             <vxe-table-column header-align="center" align="center" field="dmake" title="时间" show-header-overflow show-overflow ></vxe-table-column>
             <vxe-table-column header-align="center" align="center" field="brd" title="消息状态" show-header-overflow show-overflow >

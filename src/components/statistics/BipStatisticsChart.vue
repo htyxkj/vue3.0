@@ -68,7 +68,7 @@
                     ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
                     show-header-all-overflow class="vxe-table-element" :data.sync="tableData" style="padding-bottom: 15px;"
                     :optimized="true" height="350px">
-                    <vxe-table-column type="index" width="60"></vxe-table-column>
+                    <vxe-table-column type="seq" width="60"></vxe-table-column>
                     <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
                         :key="index" :prop="cel.id" :label="cel.labelString" show-header-overflow show-overflow > 
                     </vxe-table-column>

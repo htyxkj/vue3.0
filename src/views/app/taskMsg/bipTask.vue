@@ -6,7 +6,7 @@
             :optimized="true" height="550px" @cell-dblclick="openrefs"
             :cell-style="cellStyle"
             >
-            <vxe-table-column type="index" width="60"></vxe-table-column>
+            <vxe-table-column type="seq" width="60"></vxe-table-column>
             <vxe-table-column 
               min-width="200"
               header-align="center" align="center" v-for="(cel,index) in laycell.uiCels"
