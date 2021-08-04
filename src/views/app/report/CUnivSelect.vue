@@ -450,6 +450,7 @@ export default class CUnivSelect extends Vue {
                     this.find();   
                 }).finally(()=>{
                     this.fullscreenLoading = false;
+                    this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
                 });
             }).catch(() => {
                 this.fullscreenLoading = false;
