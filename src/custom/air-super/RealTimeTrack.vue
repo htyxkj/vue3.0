@@ -435,7 +435,6 @@ export default class RealTimeTrack extends Vue {
         let cont ="bgtime<='"+date+"' and edtime>='"+date+"' and  tkst='1' ";
         qe.cont = cont;
         let cc = await tools.getBipInsAidInfo("TKMSG", 210, qe);
-        console.log(cc);
         if(cc.data.id ==0){
             let values = cc.data.data.data.values;
             this.newTaskList = cc.data.data.data.values;

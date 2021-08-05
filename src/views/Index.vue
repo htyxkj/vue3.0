@@ -1,5 +1,5 @@
 <template >
-    <div class="m-rpt" :style="styles" v-if="haveKb"> 
+    <div class="m-rpt" :style="styles" v-if="haveKb && initOk"> 
         <div class="contain">
             <div class="one_menu">
                 <a href="javascript:;" @click="gotoIndex">
@@ -42,6 +42,7 @@ export default class Index extends Vue {
     @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
     @Mutation("isOtherePage", {  namespace: 'login' }) setIsOtherePage: any;
     uri:any = "";
+    initOk:boolean=false;
     mounted(){
         this.uri = BaseVariable.BaseUri+'/'
         this.styles="width:"+document.documentElement.clientWidth+'px;';
@@ -55,11 +56,14 @@ export default class Index extends Vue {
         }
         if(!this.haveKb){
             this.gotoIndex("");
+            return;
         }else{
             if(BaseVariable.ITEMTYPE == 'air-super'){
                 this.gotoPage(this.boards[0])
+                return;
             }
         }
+        this.initOk = true;
     }
     gotoIndex(url:any){
         this.setIsOtherePage(false)
