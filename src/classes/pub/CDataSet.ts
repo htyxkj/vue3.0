@@ -405,6 +405,9 @@ export default class CDataSet {
    * @param index 行号
    */
   async checkInterbankGs(cell:Cell,index:any){
+    if(!cell.rowRefCellId){
+      return;
+    }
     await cell.rowRefCellId.forEach((item:any) => {//跨行公式 
       if(item.startsWith(index+"_")){
         let gsKey = item.split("_")[1];
