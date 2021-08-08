@@ -20,6 +20,7 @@ export default class BipAidRef extends Vue{
     @Prop() cds!:CDataSet
     @Prop() bipInsAid!:BipInsAidNew //参照对象
     @Prop() model!:string
+    @Prop() row!:any
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
     @Action("fetchInsDataByCont", { namespace: "insaid" }) fetchInsDataByCont: any;
@@ -52,7 +53,7 @@ export default class BipAidRef extends Vue{
         }
     }
 
-    getRefValues(){
+    async getRefValues(){
         if(this.refLink && this.refLink.id.length>0 && this.model && this.model.length>0 && this.refLink.cells){
              this.refLink.values = []
             if(this.model&&this.model.length>0){
@@ -62,12 +63,21 @@ export default class BipAidRef extends Vue{
                 for(var i=0;i<vlarr.length;i++){
                     let cont = this.refLink.cells.cels[0].id+"='"+vlarr[i]+"' "
                     let key = ICL.AID_KEY+this.aidMarkKey+this.refLink.id+"_"+vlarr[i]
+                    let groupV = null;
+                    if(this.bipInsAid.bType == 'CGroupEditor'){
+                        groupV = this.cds.cdata.data[this.row].data[this.bipInsAid.groupFld]
+                        key += "_"+groupV;
+                    }
                     let vrs = this.aidValues.get(key);
                     if(!vrs){
                         let str = window.sessionStorage.getItem(key)
                         if(!str){
-                            let vvs = {id:this.refLink.id,key:key,cont:cont}
-                            this.fetchInsDataByCont(vvs)
+                            let vvs = {id:this.refLink.id,key:key,cont:cont,groupV:groupV}
+                            await this.fetchInsDataByCont(vvs)
+                            vrs = this.aidValues.get(key);
+                            if(vrs){
+                                values.push(vrs)
+                            }
                         }else{
                             vrs = JSON.parse(str);
                             this.setAidValue({key:key,value:vrs})
@@ -158,7 +168,6 @@ export default class BipAidRef extends Vue{
 
     @Watch('aidValues')
     aidValuesChange(){
-        // console.log("aidValues")
         if(this.refLink&&this.refLink.id.length>0&&this.model){
             let vlarr = this.model.split(";");
             let values = [];
