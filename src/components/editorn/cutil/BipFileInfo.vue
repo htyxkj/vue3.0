@@ -11,18 +11,18 @@
     <el-tabs v-model="activeName">
       <el-tab-pane v-if="showUpPage" label="　文件上传　" name="file-up">
         <el-upload
-          class="upload-demo"
-          ref="upload"
-          :multiple="true"
-          :action="uri"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          :file-list="fileList"
-          :on-change="fileChange"
-          :auto-upload="false"
-          list-type="text"
-          :http-request="uploadFile"
+            class="upload-demo"
+            ref="upload"
+            :multiple="true"
+            :action="uri"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            :file-list="fileList"
+            :on-change="fileChange"
+            :auto-upload="false"
+            :http-request="uploadFile"
+            :list-type="fileListType"
         >
           <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
           <el-button
@@ -89,15 +89,16 @@ export default class BipFileInfo extends Vue {
     @Prop() cds!: CDataSet;
     @Prop() cell!: Cell;
     @Prop() index!: number;
-    @Provide() outerVisible: boolean = false;
-    @Provide() title = "文件上传下载";
-    @Provide() fileList: Array<any> = [];
-    @Provide() activeName: string = "file-up";
-    @Provide() uri:string=GlobalVariable.API_UPD//附件操作接口
-    @Provide() upLoadDid:string = ''
+    outerVisible: boolean = false;
+    title = "文件上传下载";
+    fileList: Array<any> = [];
+    activeName: string = "file-up";
+    uri:string=GlobalVariable.API_UPD//附件操作接口
+    upLoadDid:string = ''
     showUpPage:boolean = true;
     canUpFile:boolean = true;
     fjrootCell:Cell = new Cell();//附件路径对象
+    fileListType:any = "text";
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
@@ -110,6 +111,9 @@ export default class BipFileInfo extends Vue {
     }
     mounted() {
         if(this.cds&&this.cell){
+            if(this.cell.refValue=='{2}'){
+                this.fileListType="picture-card";
+            }
             if(this.cds){
                 let cels = this.cds.ccells.cels;
                 for(var i=0;i<cels.length;i++){
@@ -140,7 +144,13 @@ export default class BipFileInfo extends Vue {
             let nameArr = fileName.split(";");
             for(var i=0;i<nameArr.length;i++){
                 let name = nameArr[i];
-                let f1 = {name:name,url:this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101",status:'success'}
+                let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');
+                snkey = encodeURIComponent(snkey); 
+                let fileUrl = this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101";
+                if(this.cell.refValue=='{2}'){
+                    fileUrl = this.uri+'?snkey='+snkey+'&fjroot='+this.upLoadDid+'&updid=36&fjname='+name;
+                }
+                let f1 = {name:name,url:fileUrl,status:'success'}
                 this.fileList.push(f1)
             }
         }
@@ -214,7 +224,13 @@ export default class BipFileInfo extends Vue {
                             this.upLoadDid = dir
                         }
                         let name = res.data.data.fname;
-                        let f1 = {name:name,url:this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101",status:'success'}
+                        let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');
+                        snkey = encodeURIComponent(snkey); 
+                        let fileUrl = this.uri+'/'+this.upLoadDid+'/'+name+"?imageMogr2/thumbnail/360x360/format/webp/quality/101";
+                        if(this.cell.refValue=='{2}'){
+                            fileUrl = this.uri+'?snkey='+snkey+'&fjroot='+this.upLoadDid+'&updid=36&fjname='+name;
+                        }
+                        let f1 = {name:name,url:fileUrl,status:'success'}
                         this.fileList.push(f1)
                     }
                 }
