@@ -21,10 +21,10 @@
               </el-col>-->
               <el-row>
                 <el-col :span="6">
-                  <img
+                  <!-- <img
                     src="http://news.xinhuanet.com/politics/2016-09/18/129284700_14741694437441n.jpg"
                     alt
-                  />
+                  /> -->
                 </el-col>
                 <el-col :span="18">
                   <el-row>
@@ -36,7 +36,7 @@
                     </el-col> -->
                   </el-row>
                   <el-row>
-                    <div class="newtext newcontent">{{item.data.content}}</div>
+                    <div class="newtext newcontent" :v-html="item.data.content"></div>
                   </el-row>
                   <el-row>
                            <div class="mkdate">
@@ -73,8 +73,8 @@
         </el-scrollbar>
       </template>
     </div>
-    <el-dialog title="内容" class="bipinsaid":visible.sync="showContentDialog" width="50%" :append-to-body="true">
-      <p style="min-height:500px" v-html="content">{{content}}</p>
+    <el-dialog title="内容" class="bipinsaid" :visible.sync="showContentDialog" width="50%" :append-to-body="true">
+      <p style="max-height:400px;overflow: auto;" v-html="content"></p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showContentDialog = false">取 消</el-button>
       </span>
