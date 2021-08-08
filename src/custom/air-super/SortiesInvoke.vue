@@ -23,7 +23,7 @@
                 size="mini"
                 :height="style1"
                 @checkbox-all="selectChange"
-                @select-change="selectChange"
+                @checkbox-change="selectChange"
                 ref="SortiesTable"
                 :data="tableData">
                 <vxe-table-column type="checkbox" width="60"></vxe-table-column>
@@ -185,10 +185,11 @@ export default class SortiesInvoke extends Vue {
             }        
         }
         this.$notify.success("合并成功！")
-        // let cc:any = this.$refs["SortiesTable"];
-        // if(cc){
-        //     cc.refreshData();
-        // }
+        let cc:any = this.$refs["SortiesTable"];
+        if(cc){
+            // cc.refreshData();
+            cc.clearCheckboxRow()
+        }
         // console.log(this.tableData)
     }
     selectChange(data:any){

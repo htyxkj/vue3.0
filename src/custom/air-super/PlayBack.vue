@@ -18,7 +18,7 @@
                                         size="mini"
                                         :height="style1"
                                         ref="xTable1"
-                                        @select-change="selectChangeEvent"
+                                        @checkbox-change="selectChangeEvent"
                                         :data="currentPageData">
                                         <vxe-table-column type="checkbox" width="30"></vxe-table-column>
                                         <vxe-table-column field="speedtime1" title="时间" width="90"></vxe-table-column>
