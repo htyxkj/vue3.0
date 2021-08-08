@@ -87,9 +87,11 @@ const actions: ActionTree<BipInsState, RootState> = {
         let aid = val.id
         let key = val.key
         let cont = val.cont
+        let groupV = val.groupV
         commit('setKeyMap',key);
         let qe = new QueryEntity("","");
         qe.cont = cont
+        qe.groupV = groupV
         return tools.getBipInsAidInfo(aid, 210,qe).then(res=>{
             if(res.data.id==0){
                 let vrr = res.data.data.data
