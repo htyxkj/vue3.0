@@ -2,9 +2,9 @@
     <div>
         <template v-if="item.haveChild && canShowChile">
             <template v-if="item.childMenu.length === 0">
-                <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command" -->
+                <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> 
                     <i class="el-icon-menu"></i>
-                    {{item.menuName}}
+                    <span slot="title">{{item.menuName}}</span>
                 </el-menu-item>
             </template>
             <template v-else :index="item.menuId">
@@ -12,14 +12,14 @@
             </template>
         </template>
         <template v-else>
-            <el-menu-item class="my-menu-item" :key="item.menuId" :index="item.menuId" v-if="item.menuattr != 4" @click="closeMenu(item.command)"> <!-- :route="'layout?'+item.command"  -->
+            <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4" @click="closeMenu(item.command)"> 
                 <template v-if="item.menuIcon">
                     <img class="imgpointer" :src="uri+item.menuIcon"/>
-                    </template>
+                </template>
                 <template v-else>
                     <i class="el-icon-menu"></i>
                 </template>
-                {{item.menuName}}
+                <span slot="title">{{item.menuName}}</span>
             </el-menu-item>
         </template>
     </div>
