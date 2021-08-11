@@ -1,7 +1,7 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
-            <template v-if="cell.ccVerCell>1 && span == cell.ccHorCell">
+            <template v-if="cell.ccVerCell>1 && (span == cell.ccHorCell || cds.ccells.widthCell==cell.ccHorCell)">
                 <el-row class="el-form-item__label title" v-if="cell.labelString.indexOf('.,') == -1">
                     <span :class="cell.isReq?'is-required':''">
                         <template v-if="cell.isReq">

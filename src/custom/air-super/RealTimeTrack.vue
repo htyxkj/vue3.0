@@ -772,7 +772,7 @@ export default class RealTimeTrack extends Vue {
                 }
             }
 
-            if(flow>=0.9){//有流量去划线
+            if(flow>0){//有流量去划线
                 this.sumflow += flow/60/60;
                 this.sumflow = parseFloat((this.sumflow).toFixed(3));
                 let nowArea = this.flightBeltWidth  * data.speed *1000/3600 /666.67;

@@ -4,6 +4,7 @@
           <el-button  icon="el-icon-search" size="mini" @click="getCoList">查询</el-button>
           <el-button icon="iconfont icon-bip-save" size="mini" @click="saveSorties">保存</el-button>
           <el-button icon="el-icon-full-screen" size="mini" @click="mergeSorties">合并</el-button>
+          <el-button icon="iconfont icon-bip-xiazai1" size="mini" @click="exportSorties">导出</el-button>
       </div>
       <div class="query">
           <el-row class="bip-lay">
@@ -54,6 +55,7 @@ import { User } from '@/classes/User';
 import { GlobalVariable } from "@/utils/ICL";
 import { BaseVariable } from "@/utils/BaseICL";
 import qs from "qs";
+import XLSX from "xlsx"
 @Component({
   components: {
     
@@ -298,9 +300,18 @@ export default class SortiesInvoke extends Vue {
         return bok;
     }
     @Watch("height")
-        heightChange() {
-            this.style1 = "" + (this.height - 300) ;
-        }
+    heightChange() {
+        this.style1 = "" + (this.height - 300) ;
+    }
+    /**
+     * 导出数据
+     */
+    exportSorties(){
+        let ref:any = this.$refs.SortiesTable;
+        ref.exportData({ type: 'csv' })
+        // const workBook = XLSX.utils.table_to_book(ref.$el.querySelector('.body--wrapper>.vxe-table--body'))
+        // XLSX.writeFile(workBook, '架次.xlsx')
+    }
 }
 </script>
 

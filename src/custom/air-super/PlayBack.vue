@@ -644,7 +644,7 @@ export default class OperatingArea extends Vue {
             }
             this.sumflow = ((parseFloat(this.sumflow+'') + parseFloat((parseFloat(this.nowflow+'')/60/60)+'')).toFixed(3))+'';
             
-            if(flow>0.6){//有流量去划线
+            if(flow>0){//有流量去划线
                 // 有流量的点喷洒时长+1s
                 this.sumtimeflow = this.sumtimeflow + 1;
                 this.mileage = this.mileage+data.speed /3600
