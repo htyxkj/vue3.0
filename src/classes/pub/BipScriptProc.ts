@@ -341,7 +341,7 @@ export default class BipScriptProc {
         if (o === ",") {
           bufs =  this.expcalc1(ov, bufs, x0, x1 - 1,cell);
           let cc = bufs[0];
-          if (cc) {
+          if (cc || cc=="") {
             fps[k] = cc;
           } else {
             fps[k] = 0;
