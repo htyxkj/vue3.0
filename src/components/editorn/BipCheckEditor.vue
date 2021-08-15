@@ -1,7 +1,7 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
-            <el-form-item :label="cell.labelString" :required="cell.isReq">
+            <el-form-item :label="cell.labelString" :required="cell.isReq" :class="cell.labelString.indexOf('.,') == 0 ?'bip-input-item-notitle':''" >
                 <span slot="label" v-if="cell.labelString">
                     <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                         <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
