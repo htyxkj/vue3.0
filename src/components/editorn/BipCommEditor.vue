@@ -17,7 +17,7 @@
                 <bip-tree-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @focus="focus"></bip-tree-editor>
             </template>
             <template v-else>
-                <bip-ins-aid-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @refInsAid="refInsAid" :ref="cell.id+'insaid'"  @focus="focus"></bip-ins-aid-editor>
+                <bip-ins-aid-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :bipInsAid="bipInsAid" :row="row" @refInsAid="refInsAid" :ref="cell.id+'insaid'" :env="env" @focus="focus"></bip-ins-aid-editor>
             </template>    
         </template>
         <template v-else>

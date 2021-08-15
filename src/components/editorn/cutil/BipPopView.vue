@@ -17,6 +17,7 @@
             :data="datas" size="mini" border stripe
             style="width: 100%" highlight-current-row 
             row-class-name="bip-assist-row" cell-class-name="bip-assist-cell"
+            @row-dblclick="rowDBClick"
             @current-change="selectionChange"
             @selection-change="handleSelectionChange"
             >
@@ -58,6 +59,7 @@ import BipInsAidNew from '../../../classes/BipInsAidNew';
 import QueryEntity from '../../../classes/search/QueryEntity';
 import QueryCont from '../../../classes/search/QueryCont';
 
+import CCliEnv from '@/classes/cenv/CCliEnv'
 import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 @Component({})
@@ -67,19 +69,20 @@ export default class BipPopView extends Vue{
     @Prop() bipInsAid!:BipInsAidNew
     @Prop() row!:number
     @Prop() value!:string
+    @Prop() env!:CCliEnv
 
-    @Provide() visibles:boolean = false
-    @Provide() showCols:Array<Cell> = new Array<Cell>();
-    @Provide() conditionItem:string = "-1";
-    @Provide() conditionValue:string = "";
-    @Provide() datas:Array<any> = []
-    @Provide() qe:QueryEntity = new QueryEntity("","")
-    @Provide() currSelected:any = null // 当前页选中的数据
+    visibles:boolean = false
+    showCols:Array<Cell> = new Array<Cell>();
+    conditionItem:string = "-1";
+    conditionValue:string = "";
+    datas:Array<any> = []
+    qe:QueryEntity = new QueryEntity("","")
+    currSelected:any = null // 当前页选中的数据
 
-    @Provide() multiple:boolean = false;
-    @Provide() checkSelected:any = [];
-    @Provide() multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
-    @Provide() idKey:string = "usrcode"; // 标识列表数据中每一行的唯一键的名称(需要按自己的数据改一下)
+    multiple:boolean = false;
+    checkSelected:any = [];
+    multipleSelectionAll:Array<any> = [];// 所有选中的数据包含跨页数据
+    idKey:string = "usrcode"; // 标识列表数据中每一行的唯一键的名称(需要按自己的数据改一下)
 
     mounted(){
         if(this.bipInsAid&&this.bipInsAid.bType !== ''&&this.bipInsAid.cells&&this.bipInsAid.cells.cels&&this.bipInsAid.cells.cels.length>0){
@@ -121,11 +124,15 @@ export default class BipPopView extends Vue{
         this.multiple = (this.cell.attr & 0x200000)>0
         this.visibles = true
         if(this.bipInsAid.bType === 'CGroupEditor'){
-            console.log("CGroupEditor")
             let gfld = this.bipInsAid.sref;
+            let ds = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
+            if(gfld && gfld.indexOf("*") != -1){
+                let obj_id = gfld.split("*")[0];
+                ds = this.env.getDataSet(obj_id).currRecord;
+                gfld = gfld.split("*")[1];
+            }
             if(gfld){
-                let crd = this.cds.getRecordAtIndex(this.row>-1?this.row:0);
-                let cont = crd.data[gfld]
+                let cont = ds.data[gfld]
                 if(cont&&cont.length>0){
                     this.qe.groupV = cont 
                     this.searchInsAidDatas()
@@ -360,6 +367,14 @@ export default class BipPopView extends Vue{
     }
     rowClass(val:any){
         // console.log(val)
+    }
+    /**
+     * 双击行 非多选状态直接选中关闭
+     */
+    rowDBClick(data:any){
+        if(!this.multiple){
+            this.selectOK(true);
+        }
     }
 }
 </script>

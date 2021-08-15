@@ -42,7 +42,7 @@
         </template>
 
         <!-- <template v-if="dia"> -->
-            <bip-pop-view :cell="cell" :cds="cds" :bipInsAid="bipInsAid" :row="row"
+            <bip-pop-view :cell="cell" :cds="cds" :bipInsAid="bipInsAid" :row="row" :env="env"
                 ref="ak" @select="selectOK" :value="refLink.realV"
             ></bip-pop-view>
         <!-- </template> -->
@@ -58,10 +58,9 @@ let ICL = CommICL
 
 import { State, Action, Getter, Mutation } from "vuex-class";
 import BipInsAidNew from '../../classes/BipInsAidNew';
-import { BIPUtil } from '@/utils/Request';
 import BipPopView from './cutil/BipPopView.vue'
 import CRecord from '../../classes/pub/CRecord';
-let tools = BIPUtil.ServApi
+import CCliEnv from '@/classes/cenv/CCliEnv'
 @Component({
     components:{BipPopView}
 })
@@ -72,6 +71,7 @@ export default class BipInsAidEditor extends Vue{
     @Prop() row!:number
     @Prop() bgrid!:boolean
     @Prop() bipInsAid!:BipInsAidNew
+    @Prop() env!:CCliEnv
     model1:any = ""
     clearable:boolean = false
     multiple:boolean = false
@@ -204,10 +204,18 @@ export default class BipInsAidEditor extends Vue{
                             }
                         }
                     }else{
-                        if(!this.cds.currRecord.data[groupFld]){
-                            let cel:any = this.cds.getCell(groupFld)
-                            if(cel)
-                                this.$notify.warning('请先填写：'+cel.labelString)
+                        let ds = this.cds;
+                        if(groupFld && groupFld.indexOf("*") !=-1){
+                            let obj_id = groupFld.split("*")[0];
+                            ds = this.env.getDataSet(obj_id);
+                            groupFld = groupFld.split("*")[1];
+                        }
+                        if(ds && !ds.currRecord.data[groupFld]){
+                            let cel:any = ds.getCell(groupFld)
+                            if(cel){
+                                let msg = ds.ccells.desc;
+                                this.$notify.warning('请先填写：'+msg+" "+cel.labelString)
+                            }   
                             return;
                         }
                     }
