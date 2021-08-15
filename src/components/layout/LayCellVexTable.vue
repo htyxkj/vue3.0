@@ -762,6 +762,14 @@ export default class LayCelVexTable extends Vue {
                 if(cc){
                     if(!this.isTable)
                         this.openDrawer();
+                    if(this.cds.ds_par){//处理 合计字段
+                        let cels = this.cds.ccells.cels;
+                        cels.forEach(cel => {
+                            if((cel.attr & 0x2000)>0){
+                                this.cds.checkGS(cel)
+                            }
+                        });
+                    }
                     return ;
                 }
             }
@@ -780,12 +788,21 @@ export default class LayCelVexTable extends Vue {
             }
             if(!this.isTable)
                 this.openDrawer();
+            if(this.cds.ds_par){//处理 合计字段
+                let cels = this.cds.ccells.cels;
+                cels.forEach(cel => {
+                    if((cel.attr & 0x2000)>0){
+                        this.cds.checkGS(cel)
+                    }
+                });
+            }
         }
     }
     /**
      * 处理对象上  控制字段中的 `9D = 常量
      */
     async init9DData(){
+        console.log("init9D")
         let bool = false;
         let sctrls = this.cds.ccells.sctrl;
         if(sctrls){

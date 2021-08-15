@@ -47,7 +47,7 @@
                                 </el-col>
                             </el-row>
                         </div>
-                        <el-button style="width:100%;color:#1890FF" size="mini" @click="addRecord">添加</el-button>
+                        <el-button style="width:100%;color:#1890FF;margin-bottom:30px" size="mini" @click="addRecord">添加</el-button>
                     </el-collapse-item>
                 </el-collapse>
             </template>
@@ -105,6 +105,14 @@ export default class LayCell extends Vue{
 
     addRecord(){
         this.cds.createRecord()
+        if(this.cds.ds_par){
+            let cels = this.cds.ccells.cels;
+            cels.forEach(cel => {
+                if((cel.attr & 0x2000)>0){
+                    this.cds.checkGS(cel)
+                }
+            });
+        }
     }
 
     initSfix(){
