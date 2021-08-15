@@ -78,7 +78,7 @@ export namespace BIPUtil {
       return this.getFromServer(param);
     }
     /**
-     * @description 获取对象
+     * @description 获取对象定义信息
      * @param cellId 对象编码
      */
     getCCellsParams(cellId:string) {
