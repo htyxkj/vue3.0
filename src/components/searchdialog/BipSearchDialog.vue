@@ -74,12 +74,12 @@ let tools = BIPUtil.ServApi;
 })
 export default class BipSearchDialog extends Vue {
     @Prop() cds_cont!: CDataSet;
-    @Provide() dialogVisible: boolean = false;
-    @Provide() currcont: any = {};
-    @Provide() model: any = "";
-    @Provide() options: Array<any> = [];
-    @Provide() searchValues: Array<SearchEntity> = [];
-    @Provide() cells:Array<any> = []
+    dialogVisible: boolean = false;
+    currcont: any = {};
+    model: any = "";
+    options: Array<any> = [];
+    searchValues: Array<SearchEntity> = [];
+    cells:Array<any> = []
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
 
     
