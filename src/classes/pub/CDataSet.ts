@@ -332,6 +332,7 @@ export default class CDataSet {
     });
   }
   /**
+   * 长文本 字段状态 控制
    * 检查当前字段的 CELUIZT 单元状态编辑器。* 分成动态不可空和动态非编辑（当前字段影响其他字段）
    */
   initCELUIZT(cell:any,curr:any=this.currRecord){
@@ -368,9 +369,13 @@ export default class CDataSet {
           this.ccells.cels.forEach((cel:any) =>{
             if(cel.id == f2){
               if(cc){
-                cel.attr = cel.attr | 0x40;
+                if((cel.attr & 0x40 ) <= 0){
+                  cel.attr = cel.attr | 0x40;
+                }
               }else{
-                cel.attr = cel.attr ^ 0x40;
+                if((cel.attr & 0x40 ) > 0){
+                  cel.attr = cel.attr ^ 0x40;
+                }
               }
             }
           })
