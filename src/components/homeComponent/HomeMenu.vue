@@ -62,7 +62,6 @@ import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import {BaseVariable} from "@/utils/BaseICL"
 import { BIPUtil } from "@/utils/Request";
-import { ElStep } from "element-ui/types/step";
 @Component({
   components: {}
 })

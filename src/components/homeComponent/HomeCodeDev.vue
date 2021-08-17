@@ -14,6 +14,9 @@
                     <template v-if="codeType == 'Proportion'">
                         <proportion :codeValue="codeValue" :chartHeight="chartHeight"></proportion>
                     </template>
+                    <template v-else-if="codeType == 'Breeding_alarm'">
+                        <breeding-alarm></breeding-alarm>
+                    </template>
                 </el-scrollbar>
             </template>
         </div>
@@ -25,8 +28,10 @@ import { State, Action, Getter, Mutation } from "vuex-class";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import Proportion from './component/Proportion.vue'
+import BreedingAlarm from '@/custom/breeding/component/BreedingAlarm.vue'
+
 @Component({
-  components: {Proportion}
+  components: {Proportion,BreedingAlarm}
 })
 export default class HomeCodeDev extends Vue {
     @Prop() cont!:string;

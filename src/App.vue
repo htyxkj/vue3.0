@@ -293,10 +293,12 @@ export default class App extends Vue {
             return
         }
         if (to.name === 'layout') {
-            if (this.menusList.length > 0) { 
+            if (this.menusList.length > 0) {
                 let me:any = baseTool.findMenu(to.query.pmenuid+''); 
-                // console.log(me)
-                let menu:Menu = me;
+                let menu:any = me;
+                if(to.query.menuName){
+                    menu.menuName = to.query.menuName;
+                }
                 let currTag = this.editableTabs2.filter(
                 tab => 
                     tab.name == menu.menuId
