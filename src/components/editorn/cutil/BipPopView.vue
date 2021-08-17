@@ -23,7 +23,7 @@
             >
             <el-table-column type="index" width="40"></el-table-column>
             <el-table-column v-if="multiple" type="selection" width="55"></el-table-column>
-            <el-table-column v-for="(item,index) in showCols" :key="index" :prop="item['id']"
+            <el-table-column v-for="(item,index) in showCols" :key="index" :prop="item['id']" :min-width="getWidth(item)"
                 :label="item.labelString" :showOverflowTooltip="true" :resizable="true" >
                 <template slot-scope="scope">
                     <span style="margin-left: 10px">{{ scope.row[item.id]}}</span>
@@ -97,6 +97,24 @@ export default class BipPopView extends Vue{
 
         }
 
+    }
+    /************************* 计算宽度 *************************/
+    getWidth(item:any){
+        if(this.datas.length>0){
+            let dat = this.datas[0];
+            let item_vl = dat[item.id];
+            if(!item_vl)
+                item_vl = "";
+            let item_len = item_vl.length;
+            item_len = item_len*10;
+            if(item_len <=70)
+                item_len = 70;
+            if(item_len >300)
+                item_len = 300;
+            return item_len;
+        }else{
+            return 250;
+        }
     }
 
     updated(){
