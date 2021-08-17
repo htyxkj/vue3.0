@@ -4,6 +4,7 @@
           <el-button  icon="el-icon-search" size="mini" @click="selectCoList">查询</el-button>
           <el-button icon="iconfont icon-bip-save" size="mini" @click="saveAll">保存</el-button>
           <el-button icon="el-icon-full-screen" size="mini" @click="fullImage">全图</el-button>
+          <el-button icon="iconfont icon-bip-xiazai1" size="mini" @click="exportSorties">导出</el-button>
           <!-- <el-button icon="el-icon-picture-outline" size="mini" @click="makeWorlkImg">生成作业图片</el-button> -->
       </div>
       <div class="query">
@@ -418,6 +419,15 @@ export default class followTimesLine extends Vue {
    @Watch("height")
     heightChange() {
         this.style1 = "" + (this.height - 250) ;
+    }
+    /**
+     * 导出数据
+     */
+    exportSorties(){
+        let ref:any = this.$refs.SortiesTable;
+        ref.exportData({ type: 'csv' })
+        // const workBook = XLSX.utils.table_to_book(ref.$el.querySelector('.body--wrapper>.vxe-table--body'))
+        // XLSX.writeFile(workBook, '架次.xlsx')
     }
 }
 </script>

@@ -22,6 +22,10 @@
                                         </el-switch>
                                     </el-tooltip>
                                 </span>
+                                <!-- 是否显示离线设备 -->
+                                <span class="checkLx">
+                                    <el-checkbox v-model="checkLx" @change="checkLxChange">显示离线设备</el-checkbox>
+                                </span>
                                 <!-- 查找地名 -->
                                 <span class="selAddress">
                                     <el-input placeholder="地名检索" size="medium" v-model="address" class="input-with-select">
@@ -376,7 +380,7 @@ export default class RealTimeTrack extends Vue {
     tlidCell:CDataSet = new CDataSet("");
     tlidValues:any = [];//全部设备信息
     tlidMarker:any =[];//全部设备标注点对象
-    
+    checkLx:boolean = false;//是否显示离线设备
 
     async created() {
         if (this.height) {
@@ -529,8 +533,9 @@ export default class RealTimeTrack extends Vue {
                     msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:green;'>在线</span>"
                 }
                 msg +="</div>";
-
-                TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
+                if(!offline || this.checkLx){
+                    TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
+                }
             }
         } 
     }
@@ -584,8 +589,10 @@ export default class RealTimeTrack extends Vue {
             msg += "<br/>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：<span style='color:green;'>在线</span>"
         }
         msg +="</div>";
-        let mark = TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
-        this.tlidMarker.push(mark);
+        if(!offline || this.checkLx){
+            let mark = TMapUt.markRealTimeAir(cc,this.tMap,key,this.ariClick,msg,offline)
+            this.tlidMarker.push(mark);
+        }
     }
 
 
@@ -933,6 +940,12 @@ export default class RealTimeTrack extends Vue {
             this._timer2 = null;
         } 
         this.tMap.clearOverLays();
+    }
+    /**
+     * 显示离线设备变化
+     */
+    checkLxChange(){
+        this.refresh();
     }
     /**
      * 刷新
@@ -1610,6 +1623,11 @@ export default class RealTimeTrack extends Vue {
     position: absolute;
     margin-left: 15px;
     width: 600px;
+    margin-top: 2px;
+}
+.checkLx{
+    margin-left: 15px;
+    width: 200px;
     margin-top: 2px;
 }
 </style>
