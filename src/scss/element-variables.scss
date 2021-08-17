@@ -547,6 +547,9 @@ $--bip-comm-color:#ffffff;//f4f6fb
 }
 .bip-input-item .el-form-item__content {
     line-height: 0px;
+    .el-cascader--medium{
+        line-height: 0px !important;
+    }
 }
 .bip-input-item .el-form-item__content .el-input__inner {
     border-radius: 0px 2px 2px 0;

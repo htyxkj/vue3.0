@@ -49,6 +49,9 @@
             <template v-else-if="editorType == I_EDITOR_IMG">
                 <bip-input-img-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-img-editor>
             </template>
+            <template v-else-if="editorType == I_EDITOR_CASCADER">
+                <bip-input-cascader-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-cascader-editor>
+            </template>
             <template v-else>
                 <bip-input-editor class="BJstyle" :cell="cell" :cds="cds" :model="value" :bgrid="bgrid" :row="row" @focus="focus"></bip-input-editor>
             </template>   
@@ -77,6 +80,7 @@ import BipSwitchEditor from './BipSwitchEditor.vue'
 import BipInputAutograph from './BipInputAutograph.vue'
 import BipInputColorEditor from './BipInputColorPickerEditor.vue'
 import BipInputImgEditor from './BipInputImgEditor.vue'
+import BipInputCascaderEditor from './BipInputCascaderEditor.vue'
 import {CommICL} from '@/utils/CommICL'
 let ICL = CommICL
 import { BIPUtils } from '@/utils/BaseUtil'
@@ -88,7 +92,7 @@ import { BIPUtil } from '@/utils/Request';
 let tools = BIPUtil.ServApi
 import QueryEntity from '../../classes/search/QueryEntity';
 @Component({
-    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor,BipInputColorEditor,BipInputAutograph,BipRichTextUEditor,BipInputImgEditor}
+    components:{BipInputEditor,BipNumberEditor,BipListEditor,BipInsAidEditor,BipDateEditor,BipFlowEditor,BipUpDownEditor,BipQueryEditor,BipRichTextEditor,BipTreeEditor,BipSwitchEditor,BipCheckEditor,BipRadioEditor,BipInputColorEditor,BipInputAutograph,BipRichTextUEditor,BipInputImgEditor,BipInputCascaderEditor}
 })
 export default class BipCommEditor extends Vue{
     @Prop() env!:CCliEnv
@@ -107,6 +111,7 @@ export default class BipCommEditor extends Vue{
     I_EDITOR_RADIO = ICL.I_EDITOR_RADIO
     I_EDITOR_COLOR = ICL.I_EDITOR_COLOR
     I_EDITOR_IMG = ICL.I_EDITOR_IMG
+    I_EDITOR_CASCADER = ICL.I_EDITOR_CASCADER
     model:any = ''
     bsearch:boolean = false
     assit:boolean = false
@@ -195,6 +200,8 @@ export default class BipCommEditor extends Vue{
                 this.editorType = ICL.I_EDITOR_COLOR;
             }else if(this.cell.editType == 10){
                 this.editorType = this.I_EDITOR_RTEXT
+            }else if(this.cell.editType == this.I_EDITOR_CASCADER){
+                this.editorType = this.I_EDITOR_CASCADER
             }else if(type>=2&&type<12){
                 let str = this.cell.refValue
                 if(str){

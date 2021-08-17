@@ -289,7 +289,10 @@ export default class LayCell extends Vue{
     // width: 100%;
     max-width: 100%;
     .el-form-item__content{
-        line-height: 0px !important
+        line-height: 0px !important;
+        .el-cascader--medium{
+            line-height: 0px !important;
+        }
     }
 }
 .bip-number{

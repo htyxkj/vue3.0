@@ -69,6 +69,7 @@ export const CommICL = Object.assign({
     I_EDITOR_AUTOGRAPH:13,//switch开关
     I_EDITOR_SWITCH:14,//switch开关
     I_EDITOR_COLOR:15,//颜色
+    I_EDITOR_CASCADER:16,//级联选择器
     I_EDITOR_IMG:6,//图片
 //#endregion
     //#region 数据记录状态值

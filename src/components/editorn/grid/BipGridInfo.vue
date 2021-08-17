@@ -9,6 +9,9 @@
         <template v-else-if="bipInsAid && (bipInsAid.bType == 'CUpDownEditor')">
             <bip-file-ref :bipInsAid="bipInsAid" :cell="cell" :model="model" :cds="cds" :index="row"/>
         </template>
+        <template v-else-if="editorType == I_EDITOR_CASCADER">
+            <bip-cascader-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-cascader-ref>        
+        </template>
         <template v-else>
             <bip-grid-show :cell="cell" :model="model" />
         </template>
@@ -25,13 +28,14 @@ import { BIPUtils } from '@/utils/BaseUtil'
 import BipInsAidNew from '../../../classes/BipInsAidNew';
 let baseTool = BIPUtils.baseUtil
 
+import BipCascaderRef from './BipCascaderRef.vue'
 import BipListRef from './BipListRef.vue'
 import BipAidRef from './BipAidRef.vue'
 import BipFileRef from './BipFileRef.vue'
 import BipGridShow from './BipGridShow.vue'
 let ICL = CommICL
 @Component({
-    components:{BipListRef,BipGridShow,BipAidRef,BipFileRef}
+    components:{BipListRef,BipGridShow,BipAidRef,BipFileRef,BipCascaderRef}
 })
 export default class BipGridInfo extends Vue{
     @Prop() cds!:CDataSet
@@ -40,6 +44,7 @@ export default class BipGridInfo extends Vue{
     editorType:number = 0
     I_EDITOR_LIST = ICL.I_EDITOR_LIST
     I_EDITOR_NUM = ICL.I_EDITOR_NUM
+    I_EDITOR_CASCADER = ICL.I_EDITOR_CASCADER
     bipInsAid:BipInsAidNew|null = null
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;
@@ -60,6 +65,7 @@ export default class BipGridInfo extends Vue{
     }
 
     getLinkedName(cell:Cell){
+        this.editorType = cell.editType;
         let str = cell.refValue;
         if(str){
             if(str.startsWith("{")){

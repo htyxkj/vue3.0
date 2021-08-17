@@ -58,8 +58,8 @@ import {
   CarouselItem,
   Collapse,
   CollapseItem,
-  Avatar
-
+  Avatar,
+  Cascader
 } from "element-ui";
 
 Vue.use(Alert);
@@ -118,6 +118,7 @@ Vue.use(CarouselItem)
 Vue.use(Collapse);
 Vue.use(CollapseItem);
 Vue.use(Avatar)
+Vue.use(Cascader)
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;
