@@ -312,6 +312,8 @@ export default class RealTimeTrack extends Vue {
     tMap: any = null;
     tZoom: number = 12;
 
+    operpram:any = {maxflow:100,minflow:0};//作业指标
+
     sleepTime:number = 5*60*1000;//延迟时间
     maxTime:number = 0;//当前查询的最大时间
     loading: boolean = false;
@@ -625,6 +627,8 @@ export default class RealTimeTrack extends Vue {
             let hoaid = task.hoaid;
             let oaid = task.oaid;
             let takeoff = task.takeoff;
+            let omid = task.omid;
+            this.initOMID(omid);
             this.initTakeoff(takeoff);
             if(route){
                 TMapUt.makeRoute(route,"",this.tMap);
@@ -778,8 +782,7 @@ export default class RealTimeTrack extends Vue {
                     this.sumarea = 0;
                 }
             }
-
-            if(flow>0){//有流量去划线
+            if(flow> this.operpram.minflow && flow< this.operpram.maxflow){//有流量去划线
                 this.sumflow += flow/60/60;
                 this.sumflow = parseFloat((this.sumflow).toFixed(3));
                 let nowArea = this.flightBeltWidth  * data.speed *1000/3600 /666.67;
@@ -1322,6 +1325,28 @@ export default class RealTimeTrack extends Vue {
         }
     }
 /********************************* 预警信息 *******************************/
+
+
+/********************************* 指标信息 *******************************/
+    async initOMID(omid:any){
+        if(omid){
+            let cont = "";
+            let qCont = new QueryCont('id', omid, 12);
+            qCont.setContrast(0);
+            cont = "~[["+JSON.stringify(qCont)+"]]";
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("OMID", 210, qe);
+            if(vv.data.id ==0){
+                let vl = vv.data.data.data.values;
+                if(vl.length>0){
+                    this.operpram = vl[0];
+                }
+            }
+        }
+    }
+
     //地名检索
     searchAddress(){
         if(this.address){

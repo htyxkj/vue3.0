@@ -93,7 +93,6 @@ export namespace TMapUtils {
          * @param tMap 地图对象
          */
         async getOperaRoute(oaid:any,tMap:any){
-            console.log(oaid)
             let points:any = [];
             if(oaid){
                 let aid = oaid.split(";")

@@ -167,6 +167,8 @@ export default class TrackShow extends Vue {
             this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
             let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
             let tlid = this.taskTjCell.currRecord.data.tlid;//设备信息
+            let omid = this.taskTjCell.currRecord.data.omid;
+            let operpram:any = await this.initOMID(omid);
             if(!tlid && !tkid){
                 this.$notify.warning("任务编码和设备标识不能同时为空！");
                 return;
@@ -253,7 +255,8 @@ export default class TrackShow extends Vue {
                             data.latitude = lnglat[0]
                         }
                         let flow = data.flow;
-                        if(flow>0){//有流量去划线
+                        // if(flow>0){//有流量去划线
+                        if(flow> operpram.minflow && flow< operpram.maxflow){//有流量去划线
                             if(this.sprayBreak){//中断过需要从起一条线
                                 if(sprayLine1.length>0){
                                     sprayLine1[sprayLine1.length-1].push(data);
@@ -320,8 +323,7 @@ export default class TrackShow extends Vue {
                 this.taskTjCell.currRecord.data.oaid = data.oaid;
                 this.taskTjCell.currRecord.data.hoaid = data.hoaid;
                 this.taskTjCell.currRecord.data.route = data.route;
-
-                console.log(this.taskTjCell)
+                this.taskTjCell.currRecord.data.moid = data.moid;
                 this.getOneTask();
             }
         }else{
@@ -447,6 +449,27 @@ export default class TrackShow extends Vue {
                 this.tMap.addOverLay(marker);
             }
         }
+    }
+    /********************************* 指标信息 *******************************/
+    async initOMID(omid:any){
+        let operpram = {maxflow:100,minflow:0};
+        if(omid){
+            let cont = "";
+            let qCont = new QueryCont('id', omid, 12);
+            qCont.setContrast(0);
+            cont = "~[["+JSON.stringify(qCont)+"]]";
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("OMID", 210, qe);
+            if(vv.data.id ==0){
+                let vl = vv.data.data.data.values;
+                if(vl.length>0){
+                    operpram = vl[0];
+                }
+            }
+        }
+        return operpram;
     }
     /**
      * 地图缩放结束

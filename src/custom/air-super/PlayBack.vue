@@ -340,72 +340,74 @@ import { Route, RawLocation } from "vue-router";
 })
 export default class OperatingArea extends Vue {
     @State("bipComHeight", { namespace: "login" }) height!: number;
-    @Provide() style: string =
+    style: string =
         "height:" + (this.height ? this.height - 50 : "400") + "px";
-    @Provide() style1: string = ""+ (this.height ? this.height - 85 : "400");
-    @Provide() selMap: string = "tianMap";
-    @Provide() tMap: any = null;
-    @Provide() tZoom: number = 12;
-    @Provide() areaWidth: number = 0; //测边行政区宽度
-    @Provide() areaBtnOpen: boolean = false; //左侧区域是否显示
+    style1: string = ""+ (this.height ? this.height - 85 : "400");
+    selMap: string = "tianMap";
+    tMap: any = null;
+    tZoom: number = 12;
+    areaWidth: number = 0; //测边行政区宽度
+    areaBtnOpen: boolean = false; //左侧区域是否显示
 
-    @Provide() loading: boolean = false;
-    @Provide() showTaskTjCell: boolean = false; //是否显示查询对象弹出框
-    @Provide() taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
-    @Provide() taskTrack:any = null;//轨迹对象
-    @Provide() taskData:any=[];//任务数据集
-    @Provide() isFollow:boolean = true;//画面跟随
-    @Provide() PreviousFlowPoint:any = null;//上一个流量点
-    @Provide() sprayLine0:any=[];//喷洒轨迹（农药范围）
-    @Provide() sprayLine1:any=[];//喷洒轨迹（一像素的线）
-    @Provide() sprayBreak:boolean = true;//喷洒是否中断
-    @Provide() flightBeltColor:string = "#ADFF2F"//行带颜色
-    @Provide() flightBeltOpacity:number = 0.3;//航道透明度
-    @Provide() flightBeltWidth:number = 0;//航带宽度 米
-    @Provide() trackColor:string = "#FFFF00";//航迹颜色
-    @Provide() noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
+    operpram:any = {maxflow:100,minflow:0};//作业指标
 
-    @Provide() interval:number = 1000;//数据上报间隔
+    loading: boolean = false;
+    showTaskTjCell: boolean = false; //是否显示查询对象弹出框
+    taskTjCell: CDataSet = new CDataSet(""); //飞防任务对象(查询条件)
+    taskTrack:any = null;//轨迹对象
+    taskData:any=[];//任务数据集
+    isFollow:boolean = true;//画面跟随
+    PreviousFlowPoint:any = null;//上一个流量点
+    sprayLine0:any=[];//喷洒轨迹（农药范围）
+    sprayLine1:any=[];//喷洒轨迹（一像素的线）
+    sprayBreak:boolean = true;//喷洒是否中断
+    flightBeltColor:string = "#ADFF2F"//行带颜色
+    flightBeltOpacity:number = 0.3;//航道透明度
+    flightBeltWidth:number = 0;//航带宽度 米
+    trackColor:string = "#FFFF00";//航迹颜色
+    noFlowColor:string = "#F40";//未喷洒农药时的轨迹颜色
 
-    @Provide() forward:number = 1;//快进倍数
+    interval:number = 1000;//数据上报间隔
 
-    @Provide() operaWidth: number = 0; //右侧作业区宽度
-    @Provide() operaBtnOpen: boolean = false; //右侧作业区是否显示
+    forward:number = 1;//快进倍数
+
+    operaWidth: number = 0; //右侧作业区宽度
+    operaBtnOpen: boolean = false; //右侧作业区是否显示
  
 
     // 回放时间对应的数据
-    @Provide() nowtime:String = '----';
-    @Provide() nowspeed:Number = 0;
-    @Provide() nowflow:String = '0';
-    @Provide() sumflow:String = '0';
-    @Provide() nowheight:String = '0';
-    @Provide() sumtimeflow:number = 0;
-    @Provide() sumtime:number = 0;
-    @Provide() taskname:String = "";
-    @Provide() sumarea:number = 0;
-    @Provide() mileage:number = 0;//喷洒里程
-    @Provide() haveFlow:any=[];//有流量的节点
+    nowtime:String = '----';
+    nowspeed:Number = 0;
+    nowflow:String = '0';
+    sumflow:String = '0';
+    nowheight:String = '0';
+    sumtimeflow:number = 0;
+    sumtime:number = 0;
+    taskname:String = "";
+    sumarea:number = 0;
+    mileage:number = 0;//喷洒里程
+    haveFlow:any=[];//有流量的节点
     nowpressure:any =0;//当前压力1
     nowpressure2:any =0;//当前压力2
     windSpeed:any = 0;//风速
     humidity:any = 0;//湿度
     nowtemperature:any = 0;//温度
      // 前端分页显示数据
-    @Provide() totalPage:number= 1; // 统共页数，默认为1
-    @Provide() currentPage:number= 1     //前页数 ，默认为1
-    @Provide() pageSize:number= 100; // 每页显示数量
-    @Provide() currentPageData:any =[]; //当前页显示内容
-    @Provide() lngLatList:any = []; //选中点集合
+    totalPage:number= 1; // 统共页数，默认为1
+    currentPage:number= 1     //前页数 ，默认为1
+    pageSize:number= 100; // 每页显示数量
+    currentPageData:any =[]; //当前页显示内容
+    lngLatList:any = []; //选中点集合
 
-    @Provide() percent:any = 0;//进度条当前百分比
-    @Provide() dragPoints:number =0;
+    percent:any = 0;//进度条当前百分比
+    dragPoints:number =0;
 
-    @Provide() warn:any={};//飞行预警参数
-    @Provide() warnInterval:any= 0;
+    warn:any={};//飞行预警参数
+    warnInterval:any= 0;
 
     //起降点信息
-    @Provide() takeoff:any = null;//起降点
-    @Provide() takeoffRange:any = 50;//起降点范围
+    takeoff:any = null;//起降点
+    takeoffRange:any = 50;//起降点范围
 
     async created() {
         if (this.height) {
@@ -523,6 +525,8 @@ export default class OperatingArea extends Vue {
             let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
             let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
             let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
+            let omid = this.taskTjCell.currRecord.data.omid;//作业指标
+            this.initOMID(omid);
             this.initTakeoff(takeoff);
             if(showarea == 1){
                  TMapUt.getOpera(oaid,this.tMap);//作业区
@@ -644,7 +648,7 @@ export default class OperatingArea extends Vue {
             }
             this.sumflow = ((parseFloat(this.sumflow+'') + parseFloat((parseFloat(this.nowflow+'')/60/60)+'')).toFixed(3))+'';
             
-            if(flow>0){//有流量去划线
+            if(flow> this.operpram.minflow && flow< this.operpram.maxflow){//有流量去划线
                 // 有流量的点喷洒时长+1s
                 this.sumtimeflow = this.sumtimeflow + 1;
                 this.mileage = this.mileage+data.speed /3600
@@ -741,6 +745,25 @@ export default class OperatingArea extends Vue {
             this.tMap.addOverLay(newLine);
             this.sprayLine0[i] = newLine;
             this.tMap.removeOverLay(line);
+        }
+    }
+    /********************************* 指标信息 *******************************/
+    async initOMID(omid:any){
+        if(omid){
+            let cont = "";
+            let qCont = new QueryCont('id', omid, 12);
+            qCont.setContrast(0);
+            cont = "~[["+JSON.stringify(qCont)+"]]";
+            let qe: QueryEntity = new QueryEntity("", "");
+            qe.page.currPage = 1;
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("OMID", 210, qe);
+            if(vv.data.id ==0){
+                let vl = vv.data.data.data.values;
+                if(vl.length>0){
+                    this.operpram = vl[0];
+                }
+            }
         }
     }
     //开始
