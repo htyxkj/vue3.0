@@ -337,6 +337,9 @@ export default class TrackShow extends Vue {
      * @param isFlow:是否是流量线
      */
     drawTrack(values:any,isFlow:any){
+        if(values.length ==1){
+            values.push(values[0]);
+        }
         let zoom = this.tMap.getZoom();
         let cc = 256 * Math.pow(2, zoom) / 40075017 //换算一米转多少像素
         let weight = this.flightBeltWidth *cc; //换算一米转多少像素
