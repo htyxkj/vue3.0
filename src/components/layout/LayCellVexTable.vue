@@ -531,7 +531,6 @@ export default class LayCelVexTable extends Vue {
                     this.commBtns2.push(item)
                 }
             }else{
-                console.log(item.cmd)
                 if(item.cmd != 'SAVE' && item.cmd != 'DEL'){
                     this.commBtns.push(item)
                 }else{
@@ -598,7 +597,7 @@ export default class LayCelVexTable extends Vue {
         for(let i=0;i<cells.length;i++){
             let item:any = cells[i];
             let index = i;
-            if((item.attr&0x80000)>0&&item.isShow){
+            if((item.attr&0x80000)>0){
                 let item1:any = cells[i+1];
                 let im1_id = item1.id;
                 if(im1_id.indexOf(".")>-1){
@@ -802,7 +801,6 @@ export default class LayCelVexTable extends Vue {
      * 处理对象上  控制字段中的 `9D = 常量
      */
     async init9DData(){
-        console.log("init9D")
         let bool = false;
         let sctrls = this.cds.ccells.sctrl;
         if(sctrls){
@@ -993,15 +991,18 @@ export default class LayCelVexTable extends Vue {
         let row = data.row.data
         let columnIndex = data.columnIndex
         if(columnIndex >= 0){
-            let cell = this.laycell.uiCels[columnIndex]
-            if(!this.beBill){
-                cell = this.laycell.uiCels[columnIndex-1]
-                if((this.laycell.cells.attr & 0x40)>0){
-                    cell = this.laycell.uiCels[columnIndex-2]
-                }
-            }else{
-                if(this.cds.ds_par){
+            let cell = data.cell
+            if(!cell){
+                cell = this.laycell.uiCels[columnIndex]
+                if(!this.beBill){
                     cell = this.laycell.uiCels[columnIndex-1]
+                    if((this.laycell.cells.attr & 0x40)>0){
+                        cell = this.laycell.uiCels[columnIndex-2]
+                    }
+                }else{
+                    if(this.cds.ds_par){
+                        cell = this.laycell.uiCels[columnIndex-1]
+                    }
                 }
             }
             if( (cell.attr & 1) >0 || (cell.attr & (0x80000)) >0 ) { // 0主键   0x80000关联
@@ -1145,8 +1146,15 @@ export default class LayCelVexTable extends Vue {
             let _col:number = this.laycell.uiCels.findIndex((cel:any)=>{
                 return cel.id == btn.cmd;
             });
+            let cell = null;
             if(_col<0){
-                return;
+                _col = this.laycell.cells.cels.findIndex((cel:any)=>{
+                    return cel.id == btn.cmd;
+                });
+                if(_col<0){
+                    return;
+                }
+                cell = this.laycell.cells.cels[_col];
             }
             let _col2 = _col;
             if(!this.beBill){
@@ -1156,7 +1164,7 @@ export default class LayCelVexTable extends Vue {
                 }
             }
             this.cds.currRecord = cr;
-            let data1 = {rowIndex:rowIndex,columnIndex:_col2,row:{data:cr.data}};
+            let data1 = {rowIndex:rowIndex,columnIndex:_col2,row:{data:cr.data},cell:cell};
             this.openrefs(data1,null)
         }else{
             this.cds.index = rowIndex;
