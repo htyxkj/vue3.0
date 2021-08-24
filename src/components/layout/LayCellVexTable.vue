@@ -878,7 +878,7 @@ export default class LayCelVexTable extends Vue {
                 if (s0 == null || s0 == undefined || s0.length < 1 || cel.type !== 12) {
                     for(var i=0;i<this.cds.cdata.data.length;i++){
                         let oldKey = this.cds.cdata.data[i].data[cel.id];
-                        if(this.cds.cdata.data[i].oldpk == null){
+                        if(!this.cds.cdata.data[i].oldpk){
                             this.cds.cdata.data[i].oldpk = [];
                         }
                         this.cds.cdata.data[i].oldpk.push(oldKey);
