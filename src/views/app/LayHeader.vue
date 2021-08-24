@@ -147,7 +147,7 @@ export default class LayHeader extends Vue {
     icon:String = "el-icon-full-screen pointer"
     skin:any=[];
 
-    gwName:any="";
+    gwName:any=null;
 
     async mounted() {
         this.skin = [
@@ -412,6 +412,7 @@ export default class LayHeader extends Vue {
     }
 
     async initGWName(){
+        this.gwName = '';
         if(this.user){
             let _u:any = this.user;
             let qe: QueryEntity = new QueryEntity("", "");
@@ -423,11 +424,12 @@ export default class LayHeader extends Vue {
                 qe.cont = "~[" + JSON.stringify(oneCont)+"]";
             }
             let cc = await tools.getBipInsAidInfo("GW", 210, qe);
-            this.gwName = "";
             if(cc.data.id ==0){
                 let value = cc.data.data.data.values;
                 for(var i=0;i<value.length;i++){
-                    this.gwName += value[i].gwname+";"
+                    if(value[i] != null){
+                        this.gwName += value[i].gwname+";"
+                    }
                 }
                 if(this.gwName.length>1){
                     this.gwName = this.gwName.substring(0,this.gwName.length-1)
