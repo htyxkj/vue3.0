@@ -25,6 +25,9 @@ export default class BipChart extends Vue {
                 _this.itemClick(params)
             })
         }
+        window.onresize = () => {
+            this.sizeChange();
+        }
     }
     itemClick(params:any){
         this.$emit("itemClick",params)

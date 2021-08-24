@@ -21,7 +21,7 @@
             </template>
             <template v-else>    
                 <el-collapse v-model="activeName">
-                    <el-collapse-item :title="laycell.name" name="1" >
+                    <el-collapse-item :title="isTabs?'':laycell.name" name="1" ><!-- laycell.name -->
                         <div v-for="(rowData,rowId) in cds.cdata.data" :key="rowId">
                             <el-row>
                                 <el-col class="row_data">
