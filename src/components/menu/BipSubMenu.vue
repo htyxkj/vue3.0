@@ -46,6 +46,7 @@ export default class BipSubMenu extends Vue{
     uri:string='';
     canShowChile:boolean = true;
     closeMenu(command:any){
+        console.log(command)
         if(command.indexOf("&") >-1){
             let cc = command.split("&");
             let pbuid = cc[0].split("=");
@@ -64,6 +65,11 @@ export default class BipSubMenu extends Vue{
                 })
             }
             this.lastClick();
+        }else{
+            this.$router.push({
+                path:'/'+command,
+                name:command
+            })
         }
     }
     created(){
