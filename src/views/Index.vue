@@ -50,7 +50,7 @@ export default class Index extends Vue {
         if(this.menusList){
             let _s = this.menusList.length-1;
             let lastNode = this.menusList[_s];
-            if(lastNode.menuName == "SYSKB"){
+            if(lastNode.menuId == "SYSKB"){
                 this.boards = lastNode.childMenu;
             }
         }
