@@ -45,7 +45,7 @@ export default class BipGant extends Vue{
 			},
 			maxHeight: 230,
 			row: {
-				height: 16,//设置行高
+				height: 24,//设置行高
 			},
 			times: {
 				timeScale: 24 * 60 * 1000,
