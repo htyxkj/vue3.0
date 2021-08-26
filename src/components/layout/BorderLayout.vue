@@ -27,7 +27,9 @@
                     <base-layout :layout="laycfg[wcenterIndex].comp" :env="env" :config="config" @invokecmd="invokecmd"></base-layout >
                 </el-row>
                 <el-row v-else :style="env.uriParams.beBill&&laycfg.length==1?'height:100% ;margin-top:10px;':'height:100% ;'">
-                    <el-col :span="wcenter"><lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell></el-col>
+                    <el-col :span="wcenter">
+                        <lay-cell :laycell="laycfg[wcenterIndex].comp" :env="env" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange" @sortChange="sortChange" :config="config" @invokecmd="invokecmd"></lay-cell>
+                    </el-col>
                 </el-row>
             </template>
             <template v-if="bright">
