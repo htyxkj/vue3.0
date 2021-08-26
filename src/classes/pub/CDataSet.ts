@@ -502,6 +502,7 @@ export default class CDataSet {
             }
           }
         }
+        this.initCELUIZT(col);
       }
     }
   }

@@ -42,7 +42,7 @@ import CCliEnv from '@/classes/cenv/CCliEnv'
 export default class BaseLayout extends Vue{
     @Prop() layout?:BipLayout
     @Prop() env?:CCliEnv
-    @Prop() config!:any
+    @Prop() config!:any //{type:2,collapseType:0}  type 是单据页面还是报表页面(2) 用来区分表格高度  collapseType  子表折叠样式，0：显示全部数据，1：显示当前行数据
     comps:Array<BipLayConf> = []
     mounted(){
         if(this.layout)
