@@ -232,8 +232,7 @@ export default class CUnivSelect extends Vue {
             }
         }
         await this.initUI()
-        this.initDlgBtn("DLG");
-        this.initDlgBtn("DLG1");
+        this.initDlgBtn();
         this.qe.pcell = this.dsm.ccells.obj_id
         this.qe.tcell = this.dsm_cont.ccells.obj_id
         this.initHeight()
@@ -741,43 +740,17 @@ export default class CUnivSelect extends Vue {
     /**
      * 获取自定义按钮
      */
-    async initDlgBtn(t:any){
+    async initDlgBtn(){
         if(this.uriParams){
-            let name = t+"."+this.uriParams.pbuid;
-            let str = name
-            // let dlg = await pubMethod.getConstant(str);
-            str = ICL.AID_KEYCL+str;
-            if(!this.aidValues.get(str)){
-                let vv  = window.sessionStorage.getItem(str)
-                if(!vv){
-                    let vars = {id:300,aid:name}
-                    await this.fetchInsAid(vars);
-                    let vv  = window.sessionStorage.getItem(str)
-                    if(vv){
-                        let vals = {key:str,value:JSON.parse(vv)}
-                        this.setAidValue(vals)
-                    }
-                }else{
-                    let vals = {key:str,value:JSON.parse(vv)}
-                    this.setAidValue(vals)
-                } 
-            }
-            let dlg = this.aidValues.get(str);
-            if(dlg && dlg.slink){ 
-                let dlgBtn = dlg.slink.split("&")
-                dlgBtn.forEach((item:any) => {
-                    let cc = item.substring(0,item.indexOf(";")); 
-                    let _i = cc.indexOf(':');
-                    let type = cc.substring(0,_i);
-                    let bname = cc.substring(_i+1,item.indexOf(","));  
-                    let btn1 = new BipMenuBtn(t,bname)
-                    btn1.setDlgSname(name);
-                    btn1.setDlgType(type)
-                    btn1.setDlgCont(item.substring(item.indexOf(";")+1))
-                    btn1.setIconFontIcon(cc.split(",")[1]);
-                    btn1.setType("primary");
-                    this.mbs.menuList.push(btn1)
-                });
+            let btns = this.uriParams.custBtns;
+            for(var i=0;i<btns.length;i++){
+                let item = btns[i]; 
+                let btn1 = new BipMenuBtn('DLG',item.name)
+                btn1.setDlgType(item.dlgType)
+                btn1.setDlgCont(item.dlgCont)
+                btn1.setIconFontIcon(item.icon);
+                btn1.setType(item.type);
+                this.mbs.menuList.push(btn1)
             }
         }
     } 

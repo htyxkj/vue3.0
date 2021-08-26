@@ -16,5 +16,6 @@ export class URIParams{
     pwfproc: string = "" // 流程接口 服务端调用
     width: string = "50" //表格宽度
     bgroupList:any=[]//初始化显示图标参数
+    custBtns:any =[]//DLG自定义按钮
     constructor(){}
 }
