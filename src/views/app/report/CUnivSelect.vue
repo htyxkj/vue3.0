@@ -743,14 +743,16 @@ export default class CUnivSelect extends Vue {
     async initDlgBtn(){
         if(this.uriParams){
             let btns = this.uriParams.custBtns;
-            for(var i=0;i<btns.length;i++){
-                let item = btns[i]; 
-                let btn1 = new BipMenuBtn('DLG',item.name)
-                btn1.setDlgType(item.dlgType)
-                btn1.setDlgCont(item.dlgCont)
-                btn1.setIconFontIcon(item.icon);
-                btn1.setType(item.type);
-                this.mbs.menuList.push(btn1)
+            if(btns){
+                for(var i=0;i<btns.length;i++){
+                    let item = btns[i]; 
+                    let btn1 = new BipMenuBtn('DLG',item.name)
+                    btn1.setDlgType(item.dlgType)
+                    btn1.setDlgCont(item.dlgCont)
+                    btn1.setIconFontIcon(item.icon);
+                    btn1.setType(item.type);
+                    this.mbs.menuList.push(btn1)
+                }
             }
         }
     } 

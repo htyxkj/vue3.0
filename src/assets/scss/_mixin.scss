@@ -13,6 +13,11 @@
     top: $head-height-theme1 !important;
     height: calc(100% - #{$head-height-theme1}) !important;
   }
+  [data-theme="theme2"] & {
+    background-color:$menu-background-color-theme2;
+    top: $head-height-theme2 !important;
+    height: calc(100% - #{$head-height-theme2}) !important;
+  }
 }
 //左侧菜单头部样式
 @mixin menu_head_style(){
@@ -21,6 +26,10 @@
   [data-theme="theme1"] & {
     background-color:$head-background-color-theme1;
     height:$head-height-theme1 !important;
+  }
+  [data-theme="theme2"] & {
+    background-color:$head-background-color-theme2;
+    height:$head-height-theme2 !important;
   }
 }
 //左侧菜单选中样式
@@ -31,6 +40,10 @@
     background-color:$menu-is-active-background-color-theme1;
     color:$menu-is-active-text-color-theme1;
   }
+  [data-theme="theme2"] & {
+    background-color:$menu-is-active-background-color-theme2;
+    color:$menu-is-active-text-color-theme2;
+  }
 }
 //左侧菜单选中样式
 @mixin menu_item_is_hover(){
@@ -38,6 +51,9 @@
   [data-theme="theme1"] & {
     background-color:$menu-is-hover-background-color-theme1;
   }
+  [data-theme="theme2"] & {
+    background-color:$menu-is-hover-background-color-theme2;
+  }  
 }
 
 // 头部样式
@@ -50,6 +66,9 @@
   [data-theme="theme1"] & {
     height:$head-height-theme1 !important;
   }
+  [data-theme="theme2"] & {
+    height:$head-height-theme2 !important;
+  }
 }
 //头部背景色样式
 @mixin head_bg_style() {
@@ -57,6 +76,9 @@
   [data-theme="theme1"] & {
     background-color:$head-background-color-theme1;
   }
+  [data-theme="theme2"] & {
+    background-color:$head-background-color-theme2;
+  }  
 }
 
 //页面整体背景色
@@ -64,6 +86,9 @@
   background-color:$overall-background-color-theme !important;
   [data-theme="theme1"] & {
     background-color:$overall-background-color-theme1 !important;
+  }
+  [data-theme="theme2"] & {
+    background-color:$overall-background-color-theme2 !important;
   }
 }
 
@@ -81,6 +106,9 @@
   [data-theme="theme1"] & {
     background-color:$tabs-pane-background-color-theme1; 
   }
+  [data-theme="theme2"] & {
+    background-color:$tabs-pane-background-color-theme2; 
+  }
 }
 //选项卡选中样式
 @mixin tabs_pane_is_active(){
@@ -90,6 +118,9 @@
   color: white !important;
   [data-theme="theme1"] & {
     background-color:$tabs-pane-is-active-background-color-theme1 !important;
+  }
+  [data-theme="theme2"] & {
+    background-color:$tabs-pane-is-active-background-color-theme2 !important;
   }
 }
 //按钮栏样式（默认按钮）
@@ -105,6 +136,10 @@
     background-color: $bip-menu-bar-background-color-theme1 !important;
     color: $bip-menu-bar-color-theme1 !important;
   }
+  [data-theme="theme2"] & {
+    background-color: $bip-menu-bar-background-color-theme2 !important;
+    color: $bip-menu-bar-color-theme2 !important;
+  }
 }
 //按钮栏样式（主要按钮）
 @mixin bip_menu_bar_primary(){
@@ -113,6 +148,10 @@
   [data-theme="theme1"] & {
     background-color:$bip-menu-bar-primary-background-color-theme1 !important;
     color:$bip-menu-bar-primary-color-theme1 !important;
+  }
+  [data-theme="theme2"] & {
+    background-color:$bip-menu-bar-primary-background-color-theme2 !important;
+    color:$bip-menu-bar-primary-color-theme2 !important;
   }
 }
 //按钮栏样式（成功按钮）
@@ -135,6 +174,10 @@
     background-color:$bip-menu-bar-danger-background-color-theme1 !important;
     color:$bip-menu-bar-danger-color-theme1 !important;
   }
+  [data-theme="theme2"] & {
+    background-color:$bip-menu-bar-danger-background-color-theme2 !important;
+    color:$bip-menu-bar-danger-color-theme2 !important;
+  }
 }
 //默认字体颜色
 @mixin bip_text_default(){
@@ -142,11 +185,17 @@
   [data-theme="theme1"] & {
     color:$bip-text-default-color-theme1 !important;
   }
+  [data-theme="theme2"] & {
+    color:$bip-text-default-color-theme2 !important;
+  }
 }
 //主要字体颜色
 @mixin bip_text_primary(){
   color: $bip-text-primary-color-theme !important;
   [data-theme="theme1"] & {
     color:$bip-text-primary-color-theme1 !important;
+  }
+  [data-theme="theme2"] & {
+    color:$bip-text-primary-color-theme2 !important;
   }
 }

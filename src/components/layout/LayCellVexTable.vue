@@ -176,7 +176,7 @@
             <el-drawer append-to-body :visible.sync="addDrawer" direction="btt" size="50%" :withHeader="false" :wrapperClosable="false">
                 <div class="myDrawer">
                     <el-scrollbar  v-if="addDrawer" style="height:100%">
-                        <base-layout :layout="lay" :env="env"></base-layout>
+                        <base-layout :layout="lay" :env="env" :config={collapseType:1}></base-layout>
                     </el-scrollbar>
                 </div>
                 <div style="height:15%">
