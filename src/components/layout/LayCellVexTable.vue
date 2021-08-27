@@ -182,7 +182,8 @@
                 <div style="height:15%">
                     <el-row type="flex" justify="center">
                         <!-- <el-button @click="closeDrawer(false)">  取  消  </el-button> -->
-                        <el-button @click="closeDrawer(true)" type="primary">  确  定  </el-button> 
+                        <el-button size="small" @click="closeDrawer(true)" class="bip_btn_primary">确&nbsp;&nbsp;&nbsp;&nbsp;定</el-button> 
+                        <el-button size="small" @click="closeDrawer(false)" class="bip_btn_danger">取&nbsp;&nbsp;&nbsp;&nbsp;消</el-button>
                     </el-row>
                 </div>
             </el-drawer>
@@ -455,8 +456,6 @@ import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
 import XEUtils from 'xe-utils'
 let _ = require('lodash')
-import {CurrUtils} from '@/utils/CurrUtils'
-let currutil = CurrUtils.curr
 // import GroupTableHeader from '@/components/layout/LayTableHeader/GroupTableHeader.vue'
 @Component({
     components: {  BipGridInfo}
@@ -1650,6 +1649,9 @@ export default class LayCelVexTable extends Vue {
     }
     closeDrawer(isOk:boolean){
         this.addDrawer = !this.addDrawer;
+        if(!isOk){//取消 需要删除当前行
+            this.cds.cdata.data.splice(this.cds.cdata.data.length-1,1); 
+        }
     }
 
     // 设置选中的方法
@@ -1744,7 +1746,9 @@ export default class LayCelVexTable extends Vue {
     检查非空
      */
     checkNotNull(cds:CDataSet):boolean{
-            let bok = true;
+        let bok = true;
+        if(this.cds.cdata.data.length>0){
+            this.cds.currRecord = this.cds.cdata.data[this.cds.cdata.data.length-1]
             cds.ccells.cels.forEach(item => {
                 if (item.unNull&&bok) {
                     let vl = null;
@@ -1758,9 +1762,10 @@ export default class LayCelVexTable extends Vue {
                     }
                 }
             }); 
-            return bok;
         }
+        return bok;
     }
+}
 
 
 </script>
