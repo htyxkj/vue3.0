@@ -735,7 +735,7 @@ export default class BipMenuBtnDlg extends Vue {
         let data = vv.data.data.data.data;
         let data0:any=new CRecord(0);
         let data1:any = this.cellCds.createOne();
-        if(data)
+        if(data.length>0)
             data1.c_state = 2;
         //处理二次初值
         let newData = this.cellCds.createOne();
@@ -785,7 +785,6 @@ export default class BipMenuBtnDlg extends Vue {
             for(var i=0;i<this.env.dsm.currRecordArr.length;i++){
                 let curr = this.env.dsm.currRecordArr[i];
                 dsm.currRecord.data[this.cellKey] = curr.data[this.cellKey];
-                res =  await dsm.saveData();
             }
             let data = res.data;
             if (data.id == 0) { 
