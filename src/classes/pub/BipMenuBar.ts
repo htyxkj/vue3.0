@@ -8,24 +8,31 @@ export default class BipMenuBar{
     search:boolean = false
     initOK:boolean = false
     bcheck:boolean = false
-    constructor(attr:number,cds?:any,_repot:boolean = false){
+    constructor(attr:number,cds?:any,_repot:boolean = false,pres:any = null){
         this.dsm = cds
         this.menuList = new Array<BipMenuBtn>()
         this.search = _repot
-        this.initMenuButton(attr)
-        let da = new CData("")
-
+        let presArr = this.initPresArr(pres);
+        console.log(presArr)
+        this.initMenuButton(attr,presArr)
         if(this.dsm){
             this.initOK = true;
         }
-            
     }
 
-    private initMenuButton(menuAttr:number){
+    private initMenuButton(menuAttr:number,presArr:any){
         if(menuAttr>0){
             this.menuList.splice(0);
             if((menuAttr&CommICL.B_IADD)>0){
-                let btn = new BipMenuBtn(CommICL.B_CMD_ADD,"新建")
+                let name = "新建";
+                let hint = "";
+                let pres = presArr[CommICL.B_CMD_ADD]
+                if(pres){
+                    name = pres.name;
+                    hint = pres.hint;
+                }
+                let btn = new BipMenuBtn(CommICL.B_CMD_ADD,name)
+                btn.setHint(hint);
                 btn.setType("primary");
                 btn.setIconFontIcon('EDIT');
                 this.menuList.push(btn)
@@ -37,19 +44,43 @@ export default class BipMenuBar{
                 }
             }
             if((menuAttr&CommICL.B_ISAVE)>0){
-                let btn = new BipMenuBtn(CommICL.B_CMD_SAVE,"保存")
+                let name = "保存";
+                let hint = "";
+                let pres = presArr[CommICL.B_CMD_SAVE]
+                if(pres){
+                    name = pres.name;
+                    hint = pres.hint;
+                }
+                let btn = new BipMenuBtn(CommICL.B_CMD_SAVE,name)
+                btn.setHint(hint);
                 btn.setType("primary");
                 btn.setIconFontIcon('save');
                 this.menuList.push(btn)
             }
             if((menuAttr&CommICL.B_IDEL)>0){
-                let btn = new BipMenuBtn(CommICL.B_CMD_DEL,"删除")
+                let name = "删除";
+                let hint = "";
+                let pres = presArr[CommICL.B_CMD_DEL]
+                if(pres){
+                    name = pres.name;
+                    hint = pres.hint;
+                }
+                let btn = new BipMenuBtn(CommICL.B_CMD_DEL,name)
+                btn.setHint(hint);
                 btn.setIconFontIcon('delete');
                 btn.setType("danger");
                 this.menuList.push(btn)
             }
             if((menuAttr&CommICL.B_IWORKEA)>0){
-                let btn = new BipMenuBtn(CommICL.B_CMD_SUBMIT,"提交")
+                let name = "提交";
+                let hint = "";
+                let pres = presArr[CommICL.B_CMD_SUBMIT]
+                if(pres){
+                    name = pres.name;
+                    hint = pres.hint;
+                }
+                let btn = new BipMenuBtn(CommICL.B_CMD_SUBMIT,name)
+                btn.setHint(hint);
                 btn.setType("primary");
                 btn.setIconFontIcon('tijiao');
                 this.menuList.push(btn)
@@ -63,8 +94,6 @@ export default class BipMenuBar{
             if((menuAttr&CommICL.B_IFIND)>0){
                 this.setNavButton(menuAttr)
             }
-
-            
         }
     }
 
@@ -124,5 +153,29 @@ export default class BipMenuBar{
             btn.setRight();
             this.menuList.push(btn)
         }
+    }
+    //初始化菜单参数中的 pres
+    initPresArr(pres:any){
+        let value:any = {};
+        if(pres){
+            let presArr = pres.split(";");
+            for(var i=0;i<presArr.length;i++){
+                let pre = presArr[i];
+                let p = pre.split("=");
+                let cmd = p[0];
+                let vl = p[1]; 
+                let msg = "";
+                let ps = vl.split("|");
+                if(ps.length >=2){
+                    vl = ps[0];
+                    msg = ps[1];
+                }else{
+                    vl = ps[0];
+                }
+                let vv = {name:vl,hint:msg}
+                value[cmd]= vv;
+            }
+        }
+        return value;
     }
 }

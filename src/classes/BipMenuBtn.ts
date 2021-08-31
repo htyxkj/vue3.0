@@ -7,6 +7,7 @@ export class BipMenuBtn{
     enable:boolean = true
     hasIcon:boolean = true
     type:string = "";//按钮类型
+    hint:string = "";//按钮操作前 提示语句
 
     /**自定义DLG按钮 */
     dlgType:string
@@ -64,5 +65,8 @@ export class BipMenuBtn{
     }   
     public setType(value:string):void{
         this.type = value;
+    }
+    public setHint(value:string):void{
+        this.hint = value;
     }
 }
