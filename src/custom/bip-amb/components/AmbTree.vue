@@ -4,7 +4,12 @@
             @check="checkBoxClick" :expand-on-click-node="false" :highlight-current="true" :default-checked-keys="default_checked_keys"
             :props="defaultProps" :default-expanded-keys="expandedKeys" check-strictly :show-checkbox="showCbox">
             <span class="custom-tree-node" slot-scope="{ node }">
-                <span>{{ node.label }}</span>
+                <template v-if="node.disabled">
+                    <span style="color:#bcbcbc">{{ node.label }}</span>
+                </template>
+                <template v-else>
+                    <span>{{ node.label }}</span>
+                </template>
             </span>
         </el-tree>
     </div>
@@ -65,6 +70,11 @@ export default class AmbTree extends Vue {
     //节点点击事件
     handleNodeClick(data:any,data1:any,data2:any) {
         if(this.showCbox == false){
+            if(data.disabled){
+                this.checkData  = {keys :null,data:null};
+                this.$emit("dataChange",this.checkData );
+                return;
+            }
             let checkedKeys:any = [];
             let checkedNodes:any =[];
             checkedKeys.push(data[this.keyID])
