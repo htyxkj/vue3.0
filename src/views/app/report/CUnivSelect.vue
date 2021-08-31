@@ -426,6 +426,10 @@ export default class CUnivSelect extends Vue {
                         _idx = pkindex[0];
                     }
                 }
+                if(_idx == null || _idx == undefined){
+                    this.$notify.warning( "未定义主键!");
+                    return;
+                }
                 let id = this.dsm.ccells.cels[_idx].id
                 let sid = this.dsm.currRecord.data[id]
                 msg = `确定删除当前${sid}记录吗？`
