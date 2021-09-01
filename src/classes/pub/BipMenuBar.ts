@@ -13,7 +13,6 @@ export default class BipMenuBar{
         this.menuList = new Array<BipMenuBtn>()
         this.search = _repot
         let presArr = this.initPresArr(pres);
-        console.log(presArr)
         this.initMenuButton(attr,presArr)
         if(this.dsm){
             this.initOK = true;

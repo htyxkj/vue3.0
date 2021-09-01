@@ -47,6 +47,7 @@ import {BipMenuBtn} from '@/classes/BipMenuBtn'
 export default class AmbTree extends Vue {
     @Prop() purposesId?:string;//核算目的
     @Prop() showCbox?:boolean;//是否显示checkbox 
+    @Prop() lCheckData?:any;
     expandedLevel:number = 100;//默认展开级别
     keyID:string = "id";//当前节点key字段
     defaultProps:any = {children: 'children',label: 'name'};
@@ -140,6 +141,14 @@ export default class AmbTree extends Vue {
     @Watch("purposesId")
     purposesChange(){//核算目的发生变化
         this.initTreeData();
+    }
+    @Watch("lCheckData")
+    ambChange(){
+        this.checkData = this.lCheckData;
+        this.selectName = "";
+        if(this.checkData && this.checkData.data){
+            this.selectOk();
+        }
     }
 }
 </script>
