@@ -48,7 +48,7 @@ export default class BipInputCascaderEditor extends Vue{
     @Prop() bipInsAid!:BipInsAidNew
     model1:any =[];
     props:any={
-        multiple : false
+        multiple : false //多选
     }
     span:number = 6
     options:any = []
@@ -145,7 +145,11 @@ export default class BipInputCascaderEditor extends Vue{
                     let md:any = this.searchTree(this.options[i],values[j]);
                     if(md && md.length>1){
                         if(md[md.length-1] == values[j]){
-                            this.model1.push(md);
+                            if(!this.props.multiple){
+                                this.model1 = md;
+                            }else{
+                                this.model1.push(md);
+                            }
                         }
                     }
                 }
