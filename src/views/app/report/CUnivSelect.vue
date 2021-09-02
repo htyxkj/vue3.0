@@ -2,7 +2,7 @@
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <!-- <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> -->
         <div ref="se" @keyup.enter="find">
-            <bip-search-cont2 :env="env" v-show="CondiyionShow"  @invokecmd="invokecmd"></bip-search-cont2>
+            <bip-search-cont2 :env="env" v-if="CondiyionShow"  @invokecmd="invokecmd"></bip-search-cont2>
         </div>
         <div>
             <el-scrollbar wrap-class="scrollbar-wrapper" :style="style">
@@ -413,6 +413,9 @@ export default class CUnivSelect extends Vue {
             }
         }else if(cmd === 'CONDITIONSHOW'){
             this.CondiyionShow = !this.CondiyionShow
+            setTimeout(() => {
+                this.initHeight();    
+            }, 200);
         }else if(cmd === 'SHOWMAP'){
             await this.find();
             this.isShowMap = !this.isShowMap;
@@ -962,6 +965,7 @@ export default class CUnivSelect extends Vue {
                 this.style+="height:"+(this.heightInfo.height)+"px;"
             }
         }
+        this.$bus.$emit('totalHChange')
     }
 }
 </script>
