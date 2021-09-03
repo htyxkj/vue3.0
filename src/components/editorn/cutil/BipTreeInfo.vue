@@ -141,7 +141,7 @@ export default class BipTreeInfo extends Vue{
 
     @Watch('filterText')
     filterTextChange(val:any) {
-        let ref:any = this.$refs.tree;
+        let ref:any = this.$refs.BipTreeInfoTree;
         ref.filter(val);
     }
 }
