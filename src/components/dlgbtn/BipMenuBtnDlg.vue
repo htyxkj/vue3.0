@@ -771,6 +771,7 @@ export default class BipMenuBtnDlg extends Vue {
         }
         this.cellCds.currRecord = data1;
         this.cellCds.cdata.data = [data1];
+        this.cellCds.checkAllGS();
       }
     }
     /**
