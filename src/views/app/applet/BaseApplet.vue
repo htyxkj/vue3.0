@@ -97,7 +97,23 @@ export default class BaseApplet extends Vue{
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
     @Mutation("setAidInfo", { namespace: "insaid" }) setAidInfo: any;
-    async invokecmd(btn:any) {
+    invokecmd(btn:any){
+        let hint = btn.hint;
+        let _this = this;
+        if(hint && hint.length>0){
+            this.$confirm(hint, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                _this.invokecmd1(btn);                
+            }).catch(() => {       
+            });
+        }else{
+            this.invokecmd1(btn);
+        }
+    }
+    async invokecmd1(btn:any) {
         let cmd = btn.cmd
         console.log(cmd);
         if (cmd === "ADD") {
@@ -997,7 +1013,7 @@ export default class BaseApplet extends Vue{
                 for (let i = 1; i < this.cells.length; i++) {
                     this.ds_ext[i - 1] = new CDataSet(this.cells[i]);
                 }
-                this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm);
+                this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm,this.uriParams.pbds.pres);
                 if(this.uriParams && this.uriParams.pbds.importCellId){
                     var i=0;
                     for(;i<10;i++){
@@ -1075,6 +1091,7 @@ export default class BaseApplet extends Vue{
                     btn1.setDlgCont(item.dlgCont)
                     btn1.setIconFontIcon(item.icon);
                     btn1.setType(item.type);
+                    btn1.setDlgSname(item.dlgSname);
                     this.mbs.menuList.push(btn1)
                 }
             }

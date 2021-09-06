@@ -278,6 +278,13 @@ export default new Router({
           name:'WeekStatistics',
           component :()=> import('./custom/trainPro/WeekStatistics.vue')
       },
+      //猪管家
+      {
+        //肥猪 养殖管理
+        path:'/FatPigStatistics1',
+        name:'FatPigStatistics1',
+        component :()=> import('./custom/breeding/pages/FatPigStatistics1.vue')
+      },
   ]
 })
 

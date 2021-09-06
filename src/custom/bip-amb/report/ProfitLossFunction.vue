@@ -3,7 +3,7 @@
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
             <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-            <amb-tree-dialog  @dataChange="treeChange" :purposesId="amb_purposes_id" class="topdiv1" :showCbox="false" ></amb-tree-dialog>
+            <amb-tree-dialog  @dataChange="treeChange" :purposesId="amb_purposes_id" :lCheckData="lTreeCkData" class="topdiv1" :showCbox="false" ></amb-tree-dialog>
             <div class="topdiv1"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
@@ -30,6 +30,9 @@
 
         </el-header>
         <el-container>
+            <el-aside width="300px">
+                <amb-tree :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+            </el-aside>
             <el-main style="padding:0px">
                 <template v-if="tableLoading">
                     <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
@@ -89,10 +92,12 @@ let tools = BIPUtil.ServApi;
 import moment from 'moment'
 import {CurrUtils} from '@/utils/CurrUtils'
 let currutil = CurrUtils.curr
+import AmbTree from "../components/AmbTree.vue"//阿米巴树
 @Component({
     components: {
         Accounting,
-        AmbTreeDialog
+        AmbTreeDialog,
+        AmbTree
     }
 })
 /**
@@ -101,6 +106,7 @@ let currutil = CurrUtils.curr
 export default class ProfitLossFunction extends Vue {
     
     @State('bipComHeight', { namespace: 'login' }) height!: number;
+    lTreeCkData:any=[];
     amb_purposes_id:string = "";//核算目的id
     amb_period_kj:string = "";//核算目的中的会计期间ID
     amb_group_ids:any =[];//核算阿米巴key
@@ -129,6 +135,10 @@ export default class ProfitLossFunction extends Vue {
     mounted() { 
     }
     async initData(){
+        if(!this.amb_group_ids){
+            this.$notify.error("请选择阿米巴")
+            return;
+        }
         this.tableLoading = true;
         this.valueTableLoading = true;
         this.tableData =[];
@@ -186,6 +196,7 @@ export default class ProfitLossFunction extends Vue {
     }
     //阿米巴发生变化
     treeChange(checkData:any){
+        this.lTreeCkData = checkData;
         this.amb_group_ids = checkData.keys;
     }
     //单元格双击

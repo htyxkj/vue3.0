@@ -12,6 +12,9 @@
         <template v-else-if="editorType == I_EDITOR_CASCADER">
             <bip-cascader-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-cascader-ref>        
         </template>
+        <template v-else-if="editorType == I_EDITOR_SWITCH">
+            <bip-switch-ref :bipInsAid="bipInsAid" :cell="cell" :model="model"></bip-switch-ref>
+        </template>
         <template v-else>
             <bip-grid-show :cell="cell" :model="model" />
         </template>
@@ -33,9 +36,10 @@ import BipListRef from './BipListRef.vue'
 import BipAidRef from './BipAidRef.vue'
 import BipFileRef from './BipFileRef.vue'
 import BipGridShow from './BipGridShow.vue'
+import BipSwitchRef from './BipSwitchRef.vue'
 let ICL = CommICL
 @Component({
-    components:{BipListRef,BipGridShow,BipAidRef,BipFileRef,BipCascaderRef}
+    components:{BipListRef,BipGridShow,BipAidRef,BipFileRef,BipCascaderRef,BipSwitchRef}
 })
 export default class BipGridInfo extends Vue{
     @Prop() cds!:CDataSet
@@ -45,6 +49,7 @@ export default class BipGridInfo extends Vue{
     I_EDITOR_LIST = ICL.I_EDITOR_LIST
     I_EDITOR_NUM = ICL.I_EDITOR_NUM
     I_EDITOR_CASCADER = ICL.I_EDITOR_CASCADER
+    I_EDITOR_SWITCH = ICL.I_EDITOR_SWITCH
     bipInsAid:BipInsAidNew|null = null
     @State("aidInfos", { namespace: "insaid" }) aidInfo: any;
     @State("inProcess", { namespace: "insaid" }) inProcess: any;

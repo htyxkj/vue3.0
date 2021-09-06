@@ -144,6 +144,7 @@ import { GlobalVariable } from '@/utils/ICL';
 import {BaseVariable} from "@/utils/BaseICL"
 import BipYgxzDia from './BipYGXZDia.vue';
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
+import { values } from "xe-utils";
 @Component({
     components: {BipYgxzDia,VueQr,BipGridInfo}
 })
@@ -213,8 +214,13 @@ export default class BipMenuBtnDlg extends Vue {
             this.openCell = false;
             this.laycell = [];
             this.uiCels  = []; 
-            let cellId = btn.dlgCont.split(";")[0];
-            let key = btn.dlgCont.split(";")[1];
+            let arr_cont = btn.dlgCont.split(";");
+            let cellId = arr_cont[0];
+            let key = arr_cont[1];
+            let value = null;
+            if(arr_cont.length>2){
+                value =  arr_cont[2];
+            }
             this.cellKey = key;
             if((this.env.dsm.ccells.attr & 0x40)>0){
                 if(this.env.dsm.currRecordArr.length ==0){
@@ -223,7 +229,7 @@ export default class BipMenuBtnDlg extends Vue {
                 }
             }
             let vl = this.env.dsm.currRecord.data[key]
-            this.getCell(cellId,key,vl)
+            this.getCell(cellId,key,vl,value)
         }else if(btn.dlgType == 'C'){ //打开菜单
             console.log("打开菜单")
             //D:人员补签,cdlgxx1;KQ0713;KQ0715=KQ0713A,sopr=sopr
@@ -699,7 +705,7 @@ export default class BipMenuBtnDlg extends Vue {
     /**
      * 获取对象
      */
-    async getCell(cellid:string,key:string,vl:any){
+    async getCell(cellid:string,key:string,vl:any,value:any){
         let res = await tools.getCCellsParams(cellid); 
         let rtn: any = res.data; 
         if (rtn.id == 0) {
@@ -720,13 +726,13 @@ export default class BipMenuBtnDlg extends Vue {
             this.laycell.cells = cells[0];
             this.laycell.uiCels = this.uiCels; 
         } 
-        await this.fetchCellData(cellid,key,vl);
+        await this.fetchCellData(cellid,key,vl,value);
         this.openCell = true;
     }
     /**
      * 获取对象数据
      */
-    async fetchCellData(cellid:string,key:string,vl:any) {  
+    async fetchCellData(cellid:string,key:string,vl:any,value:any) {  
       let dataStr = "{'"+key+"':'"+vl+"'}"; 
       let qe:QueryEntity = new QueryEntity(cellid,cellid,dataStr);
       qe.page.pageSize=1
@@ -735,7 +741,7 @@ export default class BipMenuBtnDlg extends Vue {
         let data = vv.data.data.data.data;
         let data0:any=new CRecord(0);
         let data1:any = this.cellCds.createOne();
-        if(data)
+        if(data.length>0)
             data1.c_state = 2;
         //处理二次初值
         let newData = this.cellCds.createOne();
@@ -755,8 +761,17 @@ export default class BipMenuBtnDlg extends Vue {
         for (var obj in data0.data) {
            data1.data[obj] = data0.data[obj];
         }
+        if(value && data.length == 0){//需要传递值
+            let aa:Array<any> = value.split(",")
+            aa.forEach(item=>{
+                let cc = item.split("=");
+                let c0 = this.env.dsm.currRecord.data[cc[0]]
+                data1.data[cc[1]] = c0;
+            })
+        }
         this.cellCds.currRecord = data1;
         this.cellCds.cdata.data = [data1];
+        this.cellCds.checkAllGS();
       }
     }
     /**
@@ -785,7 +800,6 @@ export default class BipMenuBtnDlg extends Vue {
             for(var i=0;i<this.env.dsm.currRecordArr.length;i++){
                 let curr = this.env.dsm.currRecordArr[i];
                 dsm.currRecord.data[this.cellKey] = curr.data[this.cellKey];
-                res =  await dsm.saveData();
             }
             let data = res.data;
             if (data.id == 0) { 

@@ -351,12 +351,12 @@ export default class BipQueryInfo extends Vue{
                         cd.data = retdata.data;
                         cd.page = retdata.page; 
                         this.dsmfrom.setCData(cd)
-                        // this.dsmfrom.page = vr.page
                     }
                 }
-                console.log(res)
+                this.$bus.$emit("findBtnClick",this.dsmfrom.ccells.obj_id)
             }).catch(err=>{
                 console.log(err)
+                this.$bus.$emit("findBtnClick",this.dsmfrom.ccells.obj_id)
             })
         }
     }

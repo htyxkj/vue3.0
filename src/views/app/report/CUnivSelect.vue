@@ -2,7 +2,7 @@
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
         <!-- <bip-menu-bar-ui ref="mb" :mbs="mbs" :cds="dsm" @invokecmd="invokecmd"></bip-menu-bar-ui> -->
         <div ref="se" @keyup.enter="find">
-            <bip-search-cont2 :env="env" v-show="CondiyionShow"  @invokecmd="invokecmd"></bip-search-cont2>
+            <bip-search-cont2 :env="env" v-if="CondiyionShow"  @invokecmd="invokecmd"></bip-search-cont2>
         </div>
         <div>
             <el-scrollbar wrap-class="scrollbar-wrapper" :style="style">
@@ -148,7 +148,7 @@ export default class CUnivSelect extends Vue {
                 for (let i = 1; i < this.cells.length; i++) {
                     this.ds_ext[i - 1] = new CDataSet(this.cells[i]);
                 }
-                this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm,true);
+                this.mbs = new BipMenuBar(this.uriParams.pattr, this.dsm,true,this.uriParams.pbds.pres);
                 if(this.uriParams && this.uriParams.pbds.importCellId){
                     var i=0;
                     for(;i<10;i++){
@@ -301,7 +301,23 @@ export default class CUnivSelect extends Vue {
             }
         }
     }
-    async invokecmd(btn:any) {
+    invokecmd(btn:any){
+        let hint = btn.hint;
+        let _this = this;
+        if(hint && hint.length>0){
+            this.$confirm(hint, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                _this.invokecmd1(btn);                
+            }).catch(() => {       
+            });
+        }else{
+            this.invokecmd1(btn);
+        }
+    }
+    async invokecmd1(btn:any) {
         this.childDlg = false;
         let cmd = btn.cmd
         console.log(cmd);
@@ -397,6 +413,9 @@ export default class CUnivSelect extends Vue {
             }
         }else if(cmd === 'CONDITIONSHOW'){
             this.CondiyionShow = !this.CondiyionShow
+            setTimeout(() => {
+                this.initHeight();    
+            }, 200);
         }else if(cmd === 'SHOWMAP'){
             await this.find();
             this.isShowMap = !this.isShowMap;
@@ -425,6 +444,10 @@ export default class CUnivSelect extends Vue {
                     if(pkindex){
                         _idx = pkindex[0];
                     }
+                }
+                if(_idx == null || _idx == undefined || _idx == -1){
+                    this.$notify.warning( "未定义主键!");
+                    return;
                 }
                 let id = this.dsm.ccells.cels[_idx].id
                 let sid = this.dsm.currRecord.data[id]
@@ -751,6 +774,7 @@ export default class CUnivSelect extends Vue {
                     btn1.setDlgCont(item.dlgCont)
                     btn1.setIconFontIcon(item.icon);
                     btn1.setType(item.type);
+                    btn1.setDlgSname(item.dlgSname);
                     this.mbs.menuList.push(btn1)
                 }
             }
@@ -941,6 +965,7 @@ export default class CUnivSelect extends Vue {
                 this.style+="height:"+(this.heightInfo.height)+"px;"
             }
         }
+        this.$bus.$emit('totalHChange')
     }
 }
 </script>
