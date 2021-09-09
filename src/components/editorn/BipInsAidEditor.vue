@@ -357,8 +357,10 @@ export default class BipInsAidEditor extends Vue{
                         let str = window.sessionStorage.getItem(key)
                         if(!str){
                             let vvs = {id:this.linkName,key:key,cont:cont}
-                            await this.fetchInsDataByCont(vvs)
-                            vrs = this.aidValues.get(key);
+                            let res = await this.fetchInsDataByCont(vvs)
+                            if(res.data.id ==0){
+                                vrs = res.data.data.data.values[0]
+                            }
                             if(vrs)
                                 values.push(vrs)
                         }else{

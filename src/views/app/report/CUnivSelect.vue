@@ -224,7 +224,7 @@ export default class CUnivSelect extends Vue {
         this.config['type']=2;
         this.biType="SEL" 
         if(this.uriParams){
-            if(this.uriParams.pclass=='inetbas.cli.systool.CRptTool'){
+            if(this.uriParams.pclass=='inetbas.cli.systool.CRptTool' || this.uriParams.pclass=='inetbas.cli.systool.CRptTool2'){
                 this.biType="RPT"
             }
             if((this.uriParams.pattr & 0x10000) >0){
@@ -321,7 +321,7 @@ export default class CUnivSelect extends Vue {
         this.childDlg = false;
         let cmd = btn.cmd
         console.log(cmd);
-        if(cmd == 'CLEAR'){
+        if(cmd == ICL.B_CMD_CLEAR){
             if(this.dsm_cont.ccells && this.dsm_cont.ccells.cels.length){
                 for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
                     let cel = this.dsm_cont.ccells.cels[i];
@@ -329,14 +329,20 @@ export default class CUnivSelect extends Vue {
                         this.dsm_cont.currRecord.data[cel.id] = null;
                 }
             }
-        }else if(cmd == 'FIND' ) {
+        }else if(cmd == ICL.B_CMD_FIND ) {
             this.qe.page.currPage=1;
             this.find()
-        }else if(cmd == 'ISTAT'){
+        }else if(cmd == ICL.B_CMD_PICTURE){//图形
             this.TJDlog = true;
             setTimeout(() => {
                 let dia: any = this.$refs.bi_tj;
-                dia.open();
+                dia.openPic();
+            }, 100);
+        }else if(cmd == ICL.B_CMD_ISTAT){//统计
+            this.TJDlog = true;
+            setTimeout(() => {
+                let dia: any = this.$refs.bi_tj;
+                dia.openTstat();
             }, 100);
         }else if(cmd == 'DLG' || cmd == 'DLG1'){
             if(!this.dsm.currRecord || !this.dsm.currRecord.data){
@@ -367,7 +373,7 @@ export default class CUnivSelect extends Vue {
             if(mb){
                 mb.ReportTableShape();
             }
-        }else if(cmd === 'ADD'){
+        }else if(cmd === ICL.B_CMD_ADD){
             if(this.uriParams){
                 let pclass = this.uriParams.plistener;
                 let MID_ = this.uriParams.pbds["MID_"]
@@ -411,12 +417,12 @@ export default class CUnivSelect extends Vue {
                     }
                 }
             }
-        }else if(cmd === 'CONDITIONSHOW'){
+        }else if(cmd === ICL.B_CMD_CONDITIONSHOW){
             this.CondiyionShow = !this.CondiyionShow
             setTimeout(() => {
                 this.initHeight();    
             }, 200);
-        }else if(cmd === 'SHOWMAP'){
+        }else if(cmd === ICL.B_CMD_SHOWMAP){
             await this.find();
             this.isShowMap = !this.isShowMap;
             
@@ -479,10 +485,10 @@ export default class CUnivSelect extends Vue {
                 this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
                 return;
             });
-        }else if(cmd == 'SAVE'){
+        }else if(cmd == ICL.B_CMD_SAVE){
             await this.saveData();
         }
-        if(cmd != 'SHOWMAP'){
+        if(cmd != ICL.B_CMD_SHOWMAP){
             this.isShowMap = false;
         }
     }
@@ -763,7 +769,7 @@ export default class CUnivSelect extends Vue {
     /**
      * 获取自定义按钮
      */
-    async initDlgBtn(){
+    async initDlgBtn1(){
         if(this.uriParams){
             let btns = this.uriParams.custBtns;
             if(btns){
@@ -779,6 +785,48 @@ export default class CUnivSelect extends Vue {
                 }
             }
         }
+    } 
+    async initDlgBtn(){
+        let t:any = "DLG";
+        if(this.uriParams){
+            let name = t+"."+this.uriParams.pbuid;
+            let str = name
+            // let dlg = await pubMethod.getConstant(str);
+            str = ICL.AID_KEYCL+str;
+            if(!this.aidValues.get(str)){
+                let vv  = window.sessionStorage.getItem(str)
+                if(!vv){
+                    let vars = {id:300,aid:name}
+                    await this.fetchInsAid(vars);
+                    let vv  = window.sessionStorage.getItem(str)
+                    if(vv){
+                        let vals = {key:str,value:JSON.parse(vv)}
+                        this.setAidValue(vals)
+                    }
+                }else{
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                } 
+            }
+            let dlg = this.aidValues.get(str);
+            if(dlg && dlg.slink){ 
+                let dlgBtn = dlg.slink.split("&")
+                dlgBtn.forEach((item:any) => {
+                    let cc = item.substring(0,item.indexOf(";")); 
+                    let _i = cc.indexOf(':');
+                    let type = cc.substring(0,_i);
+                    let bname = cc.substring(_i+1,item.indexOf(","));  
+                    let btn1 = new BipMenuBtn(t,bname)
+                    btn1.setDlgSname(name);
+                    btn1.setDlgType(type)
+                    btn1.setDlgCont(item.substring(item.indexOf(";")+1))
+                    btn1.setIconFontIcon(cc.split(",")[1]);
+                    btn1.setType("primary");
+                    this.mbs.menuList.push(btn1)
+                });
+            }
+        }
+        this.initDlgBtn1();
     } 
     async initVal(){
         if(this.params){

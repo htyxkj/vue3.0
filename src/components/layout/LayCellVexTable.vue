@@ -1129,15 +1129,18 @@ export default class LayCelVexTable extends Vue {
     table_cell_click(data:any,event:any){
         if(data.column.title == '操作')
             return;
-        let _this = this;
-        setTimeout(() => {
-            _this.cds.index = data.rowIndex;
-            let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:_this.cds};
-            let curr = _this.cds.getRecordAtIndex(data.rowIndex);
-            _this.cds.currRecord = curr;
-            _this.$bus.$emit("row_click",value);
-            // this.openrefs(data,event);
-        }, 250);
+        let rowChange = false;
+        if(this.cds.index != data.rowIndex){
+            rowChange = true;
+        }
+        this.cds.index = data.rowIndex;
+        let value = {row:data.row,rowIndex:data.rowIndex,columnIndex:data.columnIndex,dsm:this.cds};
+        let curr = this.cds.getRecordAtIndex(data.rowIndex);
+        this.cds.currRecord = curr;
+        this.$bus.$emit("row_click",value);
+        if(rowChange){
+            this.cds.checkCelUi();
+        }
     }
     invokecmd(btn:any,rowIndex:any){
         if(btn.dlgType == 'SL'||btn.dlgType == 'BL'){
