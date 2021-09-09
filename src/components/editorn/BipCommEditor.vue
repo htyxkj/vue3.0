@@ -373,7 +373,6 @@ export default class BipCommEditor extends Vue{
      * 是否是其他格式日期
      */
     get isOtherDate(){
-        console.log(this.editName)
         return (this.editName === 'Y' || this.editName === 'M' || this.editName === 'DATE_WEEK')
     }
 }

@@ -166,7 +166,6 @@ export default class BipScriptProc {
   }
 
   invokefun(scf: string, fps: Array<any>,cell :Cell) {
-    console.log("invokefun", scf);
     let x0 = scf.length;
     if (x0 === 1 && scf.charAt(0) === "M") {
       return this.invokemem(fps);
