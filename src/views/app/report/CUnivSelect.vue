@@ -349,7 +349,7 @@ export default class CUnivSelect extends Vue {
                     dia.open(btn,this.env); 
                 }, 100);
             }
-        }else if(cmd === 'DOWNLOADFILE'){
+        }else if(cmd === ICL.B_CMD_IFILE){
             this.fullscreenLoading=true;
             this.getExcel();
         }else if(cmd === ICL.B_CMD_UPFILE){
@@ -359,7 +359,7 @@ export default class CUnivSelect extends Vue {
         }else if(cmd === ICL.B_CMD_UPFILE_LOG){
             let log:any = this.$refs.bipLog
             log.show()
-        }else if(cmd === 'ROWCOLUMN'){
+        }else if(cmd === ICL.B_CMD_ROWCOLUMN){
             if(this.uriParams){
                 this.$bus.$emit('ReportTableShape',[this.uriParams.pbuid,this.mbs])
             }
