@@ -4,7 +4,7 @@
             <template v-if="item.childMenu.length === 0">
                 <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> 
                     <i class="el-icon-menu"></i>
-                    <span slot="title">{{item.menuName}}</span>
+                    <span slot="title">&nbsp;&nbsp;{{item.menuName}}</span>
                 </el-menu-item>
             </template>
             <template v-else :index="item.menuId">
@@ -19,7 +19,7 @@
                 <template v-else>
                     <i class="el-icon-menu"></i>
                 </template>
-                <span slot="title">{{item.menuName}}</span>
+                <span slot="title">&nbsp;&nbsp;{{item.menuName}}</span>
             </el-menu-item>
         </template>
     </div>
