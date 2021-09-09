@@ -1,7 +1,6 @@
 import CDataSet from './CDataSet';
 import { BipMenuBtn } from '../BipMenuBtn';
 import { CommICL } from "@/utils/CommICL";
-import CData from './CData';
 export default class BipMenuBar{
     dsm:CDataSet
     menuList:Array<BipMenuBtn>
@@ -111,6 +110,11 @@ export default class BipMenuBar{
         if(((menuAttr&CommICL.B_ISTAT)<=0)&&this.search){
             let btn = new BipMenuBtn(CommICL.B_CMD_ISTAT,"统计")
             btn.setIconFontIcon('tongji');
+            this.menuList.push(btn)
+        }
+        if(((menuAttr&CommICL.B_IOUTTX)>0)&&this.search){
+            let btn = new BipMenuBtn(CommICL.B_CMD_PICTURE,"图形")
+            btn.setIconFontIcon('zhexian1');
             this.menuList.push(btn)
         }
         if(((menuAttr&CommICL.B_IFILE)>0)&&this.search){
