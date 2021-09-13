@@ -3,7 +3,7 @@ import PageInfo from './PageInfo';
 export default class QueryEntity{
     pcell:string    //查询对象
     tcell:string    //条件对象
-    cont:string     //条件
+    cont:string     //条件 eg：{k:v}
     mcont:string    //初始条件
     orderBy:string      //排序
     type:number = 0     
