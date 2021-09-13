@@ -867,8 +867,10 @@ export default class BaseApplet extends Vue{
                             }
                         });
                     }
-                    cd0.currRecord = JSON.parse(cr);
-                    cd0.checkCelUi();
+                    if(cr){
+                        cd0.currRecord = JSON.parse(cr);
+                        cd0.checkCelUi();
+                    }
                 }
             }
             if(cd0.ds_sub.length>0){
