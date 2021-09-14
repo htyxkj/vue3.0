@@ -849,11 +849,16 @@ export default class BaseApplet extends Vue{
                     isok =  false;
                     return false;
                 }else{
+                    let cr = JSON.stringify(cd0.currRecord);
                     for(let i=0;i<cd0.cdata.data.length;i++){
                         let crd = cd0.getRecordAtIndex(i);
+                        cd0.currRecord = crd;
+                        cd0.checkCelUi();
                         cd0.ccells.cels.forEach(item=>{
                             if(isok&&item.unNull){
-                                let vl = crd.data[item.id]+'';
+                                let vl = crd.data[item.id];
+                                if(vl!=null)
+                                    vl+='';
                                 if (!vl) {
                                     this.$notify.warning( "【" + cd0.ccells.desc + "】第"+(i+1)+"行【" + item.labelString + "】不能为空!");//"+item.id+"
                                     isok =  false;
@@ -861,6 +866,10 @@ export default class BaseApplet extends Vue{
                                 }
                             }
                         });
+                    }
+                    if(cr){
+                        cd0.currRecord = JSON.parse(cr);
+                        cd0.checkCelUi();
                     }
                 }
             }
@@ -1081,6 +1090,48 @@ export default class BaseApplet extends Vue{
      * 获取自定义按钮
      */
     async initDlgBtn(){
+    let t:any = "DLG";
+        if(this.uriParams){
+            let name = t+"."+this.uriParams.pbuid;
+            let str = name
+            // let dlg = await pubMethod.getConstant(str);
+            str = icl.AID_KEYCL+str;
+            if(!this.aidValues.get(str)){
+                let vv  = window.sessionStorage.getItem(str)
+                if(!vv){
+                    let vars = {id:300,aid:name}
+                    await this.fetchInsAid(vars);
+                    let vv  = window.sessionStorage.getItem(str)
+                    if(vv){
+                        let vals = {key:str,value:JSON.parse(vv)}
+                        this.setAidValue(vals)
+                    }
+                }else{
+                    let vals = {key:str,value:JSON.parse(vv)}
+                    this.setAidValue(vals)
+                } 
+            }
+            let dlg = this.aidValues.get(str);
+            if(dlg && dlg.slink){ 
+                let dlgBtn = dlg.slink.split("&")
+                dlgBtn.forEach((item:any) => {
+                    let cc = item.substring(0,item.indexOf(";")); 
+                    let _i = cc.indexOf(':');
+                    let type = cc.substring(0,_i);
+                    let bname = cc.substring(_i+1,item.indexOf(","));  
+                    let btn1 = new BipMenuBtn(t,bname)
+                    btn1.setDlgSname(name);
+                    btn1.setDlgType(type)
+                    btn1.setDlgCont(item.substring(item.indexOf(";")+1))
+                    btn1.setIconFontIcon(cc.split(",")[1]);
+                    btn1.setType("primary");
+                    this.mbs.menuList.push(btn1)
+                });
+            }
+        }
+        this.initDlgBtn1();
+    } 
+    async initDlgBtn1(){
         if(this.uriParams){
             let btns = this.uriParams.custBtns;
             if(btns){

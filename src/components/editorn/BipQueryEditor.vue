@@ -12,10 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>
-                <el-input :placeholder="cell.placeholder" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
-                    <template v-if="this.model1">
-                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
-                    </template>
+                <el-input :placeholder="cell.placeholder" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus"  @clear="clearvalue">
                     <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
                 </el-input>
                 <template v-if="cell.desc">
@@ -28,12 +25,9 @@
             </el-form-item>
         </template>
         <template v-else>
-             <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus">
-                    <template v-if="this.model1&&canEdit">
-                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
-                    </template>
-                 <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
-             </el-input>
+            <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="readonly" @focus="focus" @clear="clearvalue">
+                <el-button slot="append" icon="el-icon-share" @click="iconClick"></el-button>
+            </el-input>
         </template>
         <template v-if="showQueryInfo">
             <bip-query-info ref="queryinfo" :cell="cell" :cds="cds" :bipInsAid="bipInsAid" @select="select" :env0="env"></bip-query-info>
@@ -90,18 +84,14 @@ export default class BipQueryEditor extends Vue{
             let str = this.bipInsAid.sref;
             let strv = str.split(";");
             let mstrv = strv[0].split(",");
-            console.log(mstrv)
             for(let i=1;i<mstrv.length;i++){
                 let f1 = mstrv[i];
                 let k1 = f1.split("=")[1];
-                console.log(k1)
                 let _r = _.findIndex(this.cds.ccells.cels,(cel:any)=>{
                     return cel.id == k1;
                 })
-                console.log(_r);
                 if(_r>-1){
                      this.$set(this.cds.currRecord.data,k1,null);
-
                 }
             }
         }

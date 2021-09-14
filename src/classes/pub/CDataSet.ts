@@ -273,7 +273,6 @@ export default class CDataSet {
    * @param index 行数
    */
   async checkGS(cell?: Cell,curr:any=this.currRecord,index:any = this.index) {
-    console.log("checkGS")
     if(cell){
         let id = cell.id
         for(var i=0;i<this.ccells.cels.length;i++){
@@ -355,13 +354,17 @@ export default class CDataSet {
           this.ccells.cels.forEach((cel:any) =>{
             if(cel.id == f2){
               if(cc){
-                cel.attr = cel.attr | 0x2;
-                cel.unNull = true;
-                cel.isReq = true;
+                if((cel.attr & 0x2 ) <= 0){
+                  cel.attr = cel.attr | 0x2;
+                  cel.unNull = true;
+                  cel.isReq = true;
+                }
               }else{
-                cel.attr = cel.attr ^ 0x2;
-                cel.unNull = false;
-                cel.isReq = false;
+                if((cel.attr & 0x2 ) > 0){
+                  cel.attr = cel.attr ^ 0x2;
+                  cel.unNull = false;
+                  cel.isReq = false;
+                }
               }
             }
           })
@@ -383,7 +386,15 @@ export default class CDataSet {
       });
     }
   }
-
+  checkCelUi(){
+    if(this.scriptProc.data.id != this.currRecord.id){
+      this.scriptProc = new BipScriptProc(this.currRecord, this.ccells,this);
+    }
+    for(var i=0;i<this.ccells.cels.length;i++){
+      let col = this.ccells.cels[i];
+      this.initCELUIZT(col);
+    }
+  }
   /**
    * 公式计算 计算当前cell 字段的公式
    * @param cell  当前字段
@@ -483,8 +494,8 @@ export default class CDataSet {
           }
         }
       }
-      this.initCELUIZT(col);
     };
+    this.checkCelUi();
   }
   /**
    * 更具父级字段重新计算子表
@@ -503,7 +514,6 @@ export default class CDataSet {
             }
           }
         }
-        this.initCELUIZT(col);
       }
     }
   }

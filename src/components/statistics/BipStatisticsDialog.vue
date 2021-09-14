@@ -1,6 +1,6 @@
 <template>
     <div >
-        <el-dialog  title="统计" class="bip-search " width="35%" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+        <el-dialog  title="图形" class="bip-search " width="35%" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
             <!-- <span slot="title">
                 <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">统计</div>
             </span> -->
@@ -119,7 +119,6 @@
                 </span>
             </el-dialog>
         </el-dialog>
-
         <el-dialog title="桌面报表" class="bip-search " width="35%" :visible.sync="desktopListDlg" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
             <el-form @submit.native.prevent ref="form" label-width="120px" size="mini">
                 <el-row style="padding:10px 45px 0px 25px">
@@ -136,6 +135,17 @@
             <span slot="footer" class="dialog-footer" style="padding-top:0px">
                 <el-button @click="desktopListDlg=false" size="mini">取  消</el-button>
                 <el-button @click="desktopSave" type="primary" size="mini">保存组件</el-button>    
+            </span>
+        </el-dialog>
+
+        <el-dialog title="统计" class="bip-search " width="45%" :visible.sync="dialogTstat" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+            <el-row class="statDlg">
+                <el-transfer v-model="tstatVl" :titles="['字段', '字段']" :data="groupCells" :props="{key: 'id',label: 'labelString'}"></el-transfer>
+            </el-row>
+            <hr/>
+            <span slot="footer" class="dialog-footer" style="padding-top:0px">
+                <el-button @click="close" size="mini">取  消</el-button>
+                <el-button @click="searchTjOK" type="primary" size="mini">确  定</el-button>    
             </span>
         </el-dialog>
     </div>
@@ -188,6 +198,10 @@ export default class BipStatisticsDialog extends Vue {
     desktopListDlg:boolean = false;
     dlProgram:any={name:"",menuid:'',ishowtj:false};
     userAttr:any = 99;
+
+    dialogTstat:boolean = false;//统计dialog
+    tstatVl:any=[];//统计勾选字段
+
     mounted() {
         this.chartTypeValue = "line-0"; 
         this.groupCells = this.env.dsm.ccells.cels.filter(item=>{
@@ -200,7 +214,7 @@ export default class BipStatisticsDialog extends Vue {
             return (item.type == 93 || item.type == 91 || item.type == 92) &&item.isShow
         })
     }
-    open() {
+    openPic() {//图形统计
         let userAttr = JSON.parse(window.sessionStorage.getItem("user") + "").attr;
         userAttr = parseInt(userAttr)
         if(isNaN(userAttr))
@@ -209,6 +223,21 @@ export default class BipStatisticsDialog extends Vue {
         if(this.ProgramList.length == 0)
         this.getProgram();
         this.dialogVisible = true;
+    }
+
+    openTstat(){//表格统计
+        this.dialogTstat = true;
+    }
+    searchTjOK(){
+        let selValue = [];
+        for(var i=0;i<this.valuesCells.length;i++){
+            let cel = this.valuesCells[i];
+            if((cel.attr & 0x2000)>0){
+                selValue.push(cel.id)
+            }
+        }
+        this.$emit("makeOK",this.tstatVl,selValue,this.chartTypeValue,false);
+        this.close();
     }
 
     //将报表界面保存为桌面组件
@@ -247,6 +276,7 @@ export default class BipStatisticsDialog extends Vue {
 
     close(){
         this.dialogVisible = false;
+        this.dialogTstat = false;
     }
     searchOK(){
         let selValue = [];

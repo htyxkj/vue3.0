@@ -41,7 +41,7 @@
             <vxe-table v-if="tableData && tjcell && showTable"
                 ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
                 show-header-overflow class="vxe-table-element" :data.sync="tableData" style="padding-bottom: 15px;"
-                :optimized="true" height="350px">
+                :optimized="true" height="350px" :footer-method="footerMethod2" :show-footer="showFooterHj">
                 <vxe-table-column type="seq" width="60"></vxe-table-column>
                 <vxe-table-column header-align="center" align="center" v-for="(cel,index) in tjcell.cels"
                     :key="index" :field="cel.id" :title="cel.labelString" show-header-overflow show-overflow > 
@@ -1871,6 +1871,33 @@ export default class BipStatisticsDialog extends Vue {
      */
     openMenu(){
         this.$emit('openMenu');
+    }
+    //报表表尾合计
+    footerMethod2({ columns, data }:any){
+        const sums:any = []
+        let sumData = this.tableData;
+        sums.push('合计')
+        this.tjcell.cels.forEach((item:any) => {
+            let sumCell:any = null;
+            if((item.attr & 0x2000)>0){
+                for(var i=0;i<sumData.length;i++){
+                    let row = sumData[i];
+                    sumCell += parseFloat(row[item.id])
+                }
+                if(sumCell){
+                    sumCell = sumCell.toFixed(item.ccPoint);
+                }
+            }
+            sums.push(sumCell)
+        })
+        return [sums]
+    }
+    showFooterHj(){
+        this.tjcell.cels.forEach((item:any) => {
+            if((item.attr & 0x2000)>0){
+                return true;    
+            }
+        })
     }
 }
 </script>

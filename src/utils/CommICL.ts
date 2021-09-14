@@ -48,6 +48,7 @@ export const CommICL = Object.assign({
     B_CMD_LINK:'LINK',//连接
     B_CMD_LIST:'LIST',//连接
     B_CMD_ISTAT:'ISTAT',//统计
+    B_CMD_PICTURE:'PICTURE',//图形
     B_CMD_IFILE:'DOWNLOADFILE',//文件
     B_CMD_UPFILE:'UPLOADFILE',//文件
     B_CMD_UPFILE_LOG:'UPLOADFILE_LOG',//文件

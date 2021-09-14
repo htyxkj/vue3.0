@@ -3,7 +3,7 @@
         <template v-if="uriParams.beBill">
             <base-applet :uriParams="uriParams" :params="$route.params" :height="height"></base-applet>
         </template>
-        <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool'">
+        <template v-else-if="uriParams.pclass=='inetbas.cli.systool.CUnivSelect' || uriParams.pclass=='inetbas.cli.systool.CRptTool' || uriParams.pclass=='inetbas.cli.systool.CRptTool2'">
             <c-univ-select :uriParams="uriParams" :params="$route.params" :height="height"></c-univ-select>
         </template>
     </el-row>
