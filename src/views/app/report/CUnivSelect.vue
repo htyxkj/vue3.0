@@ -586,7 +586,7 @@ export default class CUnivSelect extends Vue {
         navigator.msSaveBlob(blob, fileName)
       }
     }
-    find(){
+    async find(){
         let bok = this.checkNotNull(this.dsm_cont); 
         if(!bok)
             return ; 
@@ -605,28 +605,35 @@ export default class CUnivSelect extends Vue {
             }
             return;
         }
-        this.qe.pcell = this.dsm.ccells.obj_id
+        this.fullscreenLoading = true
         this.qe.tcell = this.dsm_cont.ccells.obj_id
-        let tj_row = JSON.parse(JSON.stringify(this.dsm_cont.currRecord));
-        for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
-            let cel = this.dsm_cont.ccells.cels[i];
-            if((cel.attr & (0x4)) >0){
-                tj_row.data[cel.id] = null;
+        for(var j=0;j<this.ds_ext.length;j++){
+            let cells = this.ds_ext[j];
+            if(j==0){
+                cells = this.dsm;
             }
+            this.qe.pcell = cells.ccells.obj_id
+            let tj_row = JSON.parse(JSON.stringify(this.dsm_cont.currRecord));
+            for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
+                let cel = this.dsm_cont.ccells.cels[i];
+                if((cel.attr & (0x4)) >0){
+                    tj_row.data[cel.id] = null;
+                }
+            }
+            if(this.biType == "SEL")
+                this.qe.cont = JSON.stringify(tj_row.data);
+            else if(this.biType == "RPT" || this.biType == "SQL"){
+                this.qe.cont = JSON.stringify(tj_row);
+            }
+            this.qe.oprid = 13
+            this.qe.type = 1
+            this.qe.page.pageSize = 20
+            if(this.isMap){
+                this.qe.page.pageSize = 50000;
+                this.qe.page.currPage = 1;
+            }
+            await this.findServerData(this.qe,cells);
         }
-        if(this.biType == "SEL")
-            this.qe.cont = JSON.stringify(tj_row.data);
-        else if(this.biType == "RPT" || this.biType == "SQL"){
-            this.qe.cont = JSON.stringify(tj_row);
-        }
-        this.qe.oprid = 13
-        this.qe.type = 1
-        this.qe.page.pageSize = 20
-        if(this.isMap){
-            this.qe.page.pageSize = 50000;
-            this.qe.page.currPage = 1;
-        }
-        this.findServerData(this.qe);
     }
     //条件非空校验
     checkNotNull(cds:CDataSet,showMsg:boolean=true):boolean{ 
@@ -653,11 +660,10 @@ export default class CUnivSelect extends Vue {
         });
     }
 
-    findServerData(queryCont:any){
-        this.fullscreenLoading = true
+    async findServerData(queryCont:any,dsm:CDataSet){
         if(this.biType =="SEL"){
-            this.dsm.queryData(queryCont).then(res=>{
-                this.processingData(res,"SEL");
+            await dsm.queryData(queryCont).then(res=>{
+                this.processingData(res,"SEL",dsm);
                 this.getCRecordByPk2();
             }).catch(err=>{
                 this.fullscreenLoading = false
@@ -665,23 +671,23 @@ export default class CUnivSelect extends Vue {
             });
         }else if(this.biType == "RPT"){
             queryCont.type = 2
-            this.dsm.queryRPTData(queryCont).then(res=>{
-                this.processingData(res,"RPT");
+            await dsm.queryRPTData(queryCont).then(res=>{
+                this.processingData(res,"RPT",dsm);
             }).catch(err=>{
                 this.fullscreenLoading = false
                 this.$notify.error(err+";CUnivSelect findServerData")
             });
         }else if(this.biType == "SQL"){
             queryCont.type = 3
-            this.dsm.queryRPTData(queryCont).then(res=>{
-                this.processingData(res,"RPT");
+            await dsm.queryRPTData(queryCont).then(res=>{
+                this.processingData(res,"RPT",dsm);
             }).catch(err=>{
                 this.fullscreenLoading = false
                 this.$notify.error(err+";CUnivSelect findServerData")
             });
         }
     }
-    processingData(res:any,type:string){
+    processingData(res:any,type:string,dsm:CDataSet){
         this.fullscreenLoading = false
         let data = res.data;
         if(data.id === 0){
@@ -696,12 +702,12 @@ export default class CUnivSelect extends Vue {
             cd.page = retdata.page; 
             cd.sumData = retdata.sumData;
             let page = retdata.page; 
-            this.dsm.setCData(cd)
-            this.dsm.index = (page.currPage - 1) * page.pageSize;
+            dsm.setCData(cd)
+            dsm.index = (page.currPage - 1) * page.pageSize;
         }else{
             this.$notify.error(data)
         }
-        this.$bus.$emit("findBtnClick",this.dsm.ccells.obj_id)
+        this.$bus.$emit("findBtnClick",dsm.ccells.obj_id)
     }
     beforeDestroy(){
         this.$bus.$off('handleSizeChange',this.handleSizeChangeBusID)
@@ -727,7 +733,7 @@ export default class CUnivSelect extends Vue {
         this.qe.page.pageSize = value
         this.qe.page.currPage = 1
         this.qe.values = []
-        this.findServerData(this.qe);
+        this.findServerData(this.qe,this.dsm);
         // this.$emit('handleSizeChange',value)
     }
     handleCurrentChangebus(value:any){
@@ -749,7 +755,7 @@ export default class CUnivSelect extends Vue {
         this.qe.type = 1
         this.qe.page.currPage = value
         this.qe.values = []
-        this.findServerData(this.qe);
+        this.findServerData(this.qe,this.dsm);
     }
 
     tjData(selGroup:Array<any>,selValue:Array<any>,chartTypeValue:string,showChart:boolean){

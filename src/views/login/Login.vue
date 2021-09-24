@@ -3,6 +3,9 @@
     <template v-if="baseVar.ITEMTYPE =='RDCost'">
       <login-r-d></login-r-d>
     </template>
+    <template v-else-if="baseVar.ITEMTYPE =='air-super'">
+      <login-air></login-air>
+    </template>
     <template v-else>
       <login-bip></login-bip>
     </template>
@@ -13,10 +16,12 @@ import { BaseVariable } from "@/utils/BaseICL";
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import LoginBip from '@/views/login/LoginBIP'
 import LoginRD from '@/views/login/LoginRD'
+import LoginAir from '@/views/login/LoginAir'
 @Component({
     components:{
       LoginBip,
-      LoginRD
+      LoginRD,
+      LoginAir
     }
 })
 export default class Login extends Vue {

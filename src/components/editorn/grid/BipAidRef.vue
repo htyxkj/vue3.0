@@ -68,7 +68,7 @@ export default class BipAidRef extends Vue{
                         groupV = this.cds.cdata.data[this.row].data[this.bipInsAid.groupFld]
                         key += "_"+groupV;
                     }
-                    let vrs = this.aidValues.get(key);
+                    let vrs:any = this.aidValues.get(key);
                     if(!vrs){
                         let str = window.sessionStorage.getItem(key)
                         if(!str){
@@ -76,6 +76,13 @@ export default class BipAidRef extends Vue{
                             await this.fetchInsDataByCont(vvs)
                             vrs = this.aidValues.get(key);
                             if(vrs){
+                                values.push(vrs)
+                            }else{
+                                vrs = {};
+                                let key1:any = this.refLink.cells.cels[0].id;
+                                let key2:any = this.refLink.cells.cels[1].id;
+                                vrs[key1] = vlarr[i];
+                                vrs[key2] = vlarr[i];
                                 values.push(vrs)
                             }
                         }else{
