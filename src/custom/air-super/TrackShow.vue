@@ -6,7 +6,8 @@
                     <el-main class="padding0" style="overflow: hidden;position: relative;">
                         <div class="nav-tools">
                             <!-- 搜索 -->
-                            <el-button icon="el-icon-search" circle @click="showTaskTjCell =!showTaskTjCell"></el-button>
+                            <el-button icon="el-icon-search" circle @click="makeTaskVTj(0)"></el-button>
+                            <el-button icon="el-icon-lollipop" circle @click="makeTaskVTj(1)"></el-button>
                             <!-- 清空 -->
                             <el-button icon="el-icon-delete" circle @click="clearCover"></el-button> 
                             <el-tooltip style="padding-left: 10px;" effect="light" content="显示数据点" placement="top" >
@@ -28,7 +29,7 @@
         </el-tabs>
         <el-dialog title="查找飞防任务" :close-on-click-modal="false" :visible.sync="showTaskTjCell" width="50%" class="bip-query">
             <el-row class="bip-lay">
-                <el-form @submit.native.prevent label-position="right" label-width="100px">
+                <el-form @submit.native.prevent label-position="right" label-width="110px">
                     <div v-for="(cel,index) in taskTjCell.ccells.cels" :key="'A'+index">
                         <bip-comm-editor
                             v-if="(cel.attr&0x400) <= 0 "
@@ -42,7 +43,7 @@
             </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showTaskTjCell = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="getOneTask" size="mini">确 定</el-button>
+                <el-button type="primary" @click="trackShowSelOk" size="mini">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -105,8 +106,6 @@ export default class TrackShow extends Vue {
         if (this.height) {
             this.style = "height:" + (this.height - 50) + "px";
         }
-        this.taskTjCell = await TMapUt.getCell("F0313TJ");
-        this.taskTjCell.createRecord();
     }
     mounted() {
         if (this.$refs.TMap) {
@@ -136,11 +135,30 @@ export default class TrackShow extends Vue {
         this.sprayLine2 = [];
         this.sprayBreak = true;
     }
+    //查询按钮点击 显示任务筛选框
+    async makeTaskVTj(type:any){
+        if(type ==0){
+            this.taskTjCell = await TMapUt.getCell("F0313TJ");
+        }else{
+            this.taskTjCell = await TMapUt.getCell("F031PL3TJ");
+        } 
+        this.taskTjCell.createRecord();
+        this.showTaskTjCell = true;
+    }
+
+    trackShowSelOk(){
+        if(this.taskTjCell.ccells.obj_id =='F031PL3TJ'){
+            this.getPlTask();
+        }else{
+            let taskData = this.taskTjCell.currRecord.data;
+            this.getOneTask(taskData);
+        }
+    }
 
     /**
      * 查找飞防轨迹信息
      */
-    async getOneTask() {
+    async getOneTask(oneTaskData:any) {
         this.showTKName = true;
         this.PreviousFlowPoint = null;        
         this.sprayLine0 = [];
@@ -154,20 +172,20 @@ export default class TrackShow extends Vue {
                 this.$notify.warning(bok);
                 return;
             }
-            let tkid = this.taskTjCell.currRecord.data.sid;//任务编码
-            let bgtime = this.taskTjCell.currRecord.data.bgtime;//开始时间
-            let edtime = this.taskTjCell.currRecord.data.edtime;//结束时间
-            let oaid = this.taskTjCell.currRecord.data.oaid;  //作业区
-            let hoaid = this.taskTjCell.currRecord.data.hoaid;//航空识别区
-            let route = this.taskTjCell.currRecord.data.route;//路线
-            this.trackType = this.taskTjCell.currRecord.data.type;//航迹类型
-            let showarea = this.taskTjCell.currRecord.data.showarea;//显示作业区
-            let showhkarea = this.taskTjCell.currRecord.data.showhkarea;//显示识别区
-            let showroot = this.taskTjCell.currRecord.data.showhkarea;//显示航线
-            this.flightBeltWidth = this.taskTjCell.currRecord.data.widcloth;
-            let takeoff = this.taskTjCell.currRecord.data.takeoff;//起降点信息
-            let tlid = this.taskTjCell.currRecord.data.tlid;//设备信息
-            let omid = this.taskTjCell.currRecord.data.omid;
+            let tkid = oneTaskData.sid;//任务编码
+            let bgtime = oneTaskData.bgtime;//开始时间
+            let edtime = oneTaskData.edtime;//结束时间
+            let oaid = oneTaskData.oaid;  //作业区
+            let hoaid = oneTaskData.hoaid;//航空识别区
+            let route = oneTaskData.route;//路线
+            this.trackType = oneTaskData.type;//航迹类型
+            let showarea = oneTaskData.showarea;//显示作业区
+            let showhkarea = oneTaskData.showhkarea;//显示识别区
+            let showroot = oneTaskData.showhkarea;//显示航线
+            this.flightBeltWidth = oneTaskData.widcloth;
+            let takeoff = oneTaskData.takeoff;//起降点信息
+            let tlid = oneTaskData.tlid;//设备信息
+            let omid = oneTaskData.omid;
             let operpram:any = await this.initOMID(omid);
             if(!tlid && !tkid){
                 this.$notify.warning("任务编码和设备标识不能同时为空！");
@@ -192,37 +210,7 @@ export default class TrackShow extends Vue {
                     TMapUt.makeRoute(route,"",this.tMap)//路线
                 }
            }
-            // TMapUt.getOpera(oaid,this.tMap);//作业区
-            // TMapUt.getOpera(hoaid,this.tMap);//航空识别区
-            // TMapUt.getOperaBr(oaid,this.tMap);//避让区
-            // TMapUt.makeRoute(route,"",this.tMap)//路线
             this.showTaskTjCell = false;
-            // let condition = {bgTime:bgtime,edTime:edtime,tkid:tkid,sbid:tlid};
-            // let btn1 = new BipMenuBtn("DLG"," 数据建模")
-            // btn1.setDlgType("D")
-            // btn1.setDlgCont("airfence.upgrade.serv.realTime.RealTimeInvoke*240;0;0");//数据建模
-            // let b = JSON.stringify(btn1)
-            // let v = JSON.stringify(condition);
-            // let t1 = new Date().getTime();
-            // let res:any = await tools.getDlgRunClass(v,b);
-            // let t2 = new Date().getTime();
-            // this.$notify.success("查询任务数据用时（秒）" + (t2 - t1) / 1000);
-            // if(res.data.id ==0){
-            //     let data = res.data.data.data;
-            //     let sprayLine0 = data[0];//有流量集合
-            //     let sprayLine1 = data[1];//没有流量集合
-            //     for(var i=0;i<sprayLine0.length;i++){
-            //         this.drawTrack(sprayLine0[i],true)
-            //     }
-            //     for(var i=0;i<sprayLine1.length;i++){
-            //         this.drawTrack(sprayLine1[i],false)
-            //     }
-            //     this.drawLine();
-            // }else{
-            //     this.$notify.error("查询任务数据出错");
-            // }
-            // this.loading = false;
-
             let qe: QueryEntity = new QueryEntity("", "");
             qe.page.currPage = 1;
             qe.page.pageSize = 50000;
@@ -297,6 +285,111 @@ export default class TrackShow extends Vue {
             this.loading = !this.loading;
         }
     }
+    //批量查询任务
+    async getPlTask(){
+        let data = this.taskTjCell.currRecord.data;
+        let tkids:any = [];
+        let qe: QueryEntity = new QueryEntity("", "");
+        qe.page.currPage = 1;
+        qe.page.pageSize = 1000;
+        let showarea = data.showarea//显示作业区
+        let showhkarea = data.showhkarea//显示识别区
+        let type = data.type//查询类型
+        if(data.sid){
+            tkids = data.sid.split(";");
+            for(var key in tkids){
+                let cont =" sid ='" +tkids[key] +"'";
+                qe.cont = cont;
+                let vv = await tools.getBipInsAidInfo("TKMSG", 210, qe);
+                let onetk = vv.data.data.data.values[0] 
+                if(onetk){
+                    let task:any = {};
+                    task.sid = onetk.sid;
+                    task.bgtime = onetk.bgtime;
+                    task.edtime = onetk.edtime;
+                    task.taskname = onetk.taskname;
+                    task.asid = onetk.asid;
+                    task.tlid = onetk.tlid;
+                    task.oaid = onetk.oaid;
+                    task.hoaid = onetk.hoaid;
+                    task.route = onetk.route;
+                    task.moid = onetk.moid;
+                    task.type = type;
+                    task.showarea = showarea;
+                    task.showhkarea = showhkarea;
+                    // task.showroot = "1";
+                    await this.getOneTask(task);
+                }
+            }
+        }else{
+            let bgtime = data.bgtime//开始时间
+            let edtime = data.edtime//结束时间
+            let season = data.season//季节
+            let sorg = data.sorg//隶属区县
+            let year = data.year//年度
+            let cont = "";
+            let haveAnd =  0;
+            if(sorg){
+                cont += " sorg ='" +sorg +"'";
+                haveAnd = 1;
+            }
+            if(season){
+                if(haveAnd ==1){
+                    cont += " and ";
+                }
+                haveAnd = 1;
+                cont += " season ='" +season +"'";
+            }
+            if(bgtime){
+                if(haveAnd ==1){
+                    cont += " and ";
+                }
+                haveAnd = 1;
+                cont += " bgtime>= '"+ bgtime +"'";
+            }
+            if(edtime){
+                if(haveAnd ==1){
+                    cont += " and ";
+                }
+                haveAnd = 1;
+                cont += " bgtime <= '"+ edtime +"'";
+            }
+            if(year){
+                if(haveAnd ==1){
+                    cont += " and ";
+                }
+                cont += " year = "+ year;
+            }
+            if(cont ==''){
+                this.$notify.warning("请指定查询条件！");
+                return;
+            }
+            qe.cont = cont;
+            let vv = await tools.getBipInsAidInfo("TKMSG", 210, qe);
+            let values = vv.data.data.data.values;
+            for(var i=0;i<values.length;i++){
+                let onetk = values[i]
+                if(onetk){
+                    let task:any = {};
+                    task.sid = onetk.sid;
+                    task.bgtime = onetk.bgtime;
+                    task.edtime = onetk.edtime;
+                    task.taskname = onetk.taskname;
+                    task.asid = onetk.asid;
+                    task.tlid = onetk.tlid;
+                    task.oaid = onetk.oaid;
+                    task.hoaid = onetk.hoaid;
+                    task.route = onetk.route;
+                    task.moid = onetk.moid;
+                    task.type = type;
+                    task.showarea = showarea;
+                    task.showhkarea = showhkarea;
+                    await this.getOneTask(task);
+                }
+            }
+            this.showTaskTjCell = false;
+        }
+    }
     /**
      * 绘制架次航带
      * @param tkid:任务编码
@@ -313,18 +406,22 @@ export default class TrackShow extends Vue {
         if(vv.data.id == 0){
             let data = vv.data.data.data.values[0] 
             if(data){
-                this.taskTjCell.createRecord()
-                this.taskTjCell.currRecord.data.sid = tkid;
-                this.taskTjCell.currRecord.data.bgtime = bgtime;
-                this.taskTjCell.currRecord.data.edtime = edtime;
-                this.taskTjCell.currRecord.data.taskname = data.taskname;
-                this.taskTjCell.currRecord.data.asid = data.asid;
-                this.taskTjCell.currRecord.data.tlid = data.tlid;
-                this.taskTjCell.currRecord.data.oaid = data.oaid;
-                this.taskTjCell.currRecord.data.hoaid = data.hoaid;
-                this.taskTjCell.currRecord.data.route = data.route;
-                this.taskTjCell.currRecord.data.moid = data.moid;
-                this.getOneTask();
+                let task:any = {};
+                task.sid = tkid;
+                task.bgtime = bgtime;
+                task.edtime = edtime;
+                task.taskname = data.taskname;
+                task.asid = data.asid;
+                task.tlid = data.tlid;
+                task.oaid = data.oaid;
+                task.hoaid = data.hoaid;
+                task.route = data.route;
+                task.moid = data.moid;
+                task.type = "2";
+                task.showarea = "1";
+                task.showhkarea = "1";
+                task.showroot = "1";
+                this.getOneTask(task);
             }
         }else{
             console.log(vv)
@@ -347,12 +444,12 @@ export default class TrackShow extends Vue {
         for(var i=0;i<values.length;i++){
             let data = values[i];
             if(data){
-                let lnglat = [data.latitude, data.longitude]
-                if(!data.sbid){
-                    lnglat = Gps.bd09_To_gps84(data.latitude,data.longitude);
-                    data.longitude = lnglat[1];
-                    data.latitude = lnglat[0]
-                }
+                // let lnglat = [data.latitude, data.longitude]
+                // if(!data.sbid){
+                //     lnglat = Gps.bd09_To_gps84(data.latitude,data.longitude);
+                //     data.longitude = lnglat[1];
+                //     data.latitude = lnglat[0]
+                // }
                 let lgt = new T.LngLat(data.longitude, data.latitude)
                 lgt.kid = data.index;
                 points.push(lgt);

@@ -6,6 +6,7 @@
                     <use xlink:href="#icon-bip-rongtong "></use>
                 </svg>
                 <img v-else-if="base_variable && base_variable.ITEMTYPE == 'bip-amb'" src="../../assets/bip/amb-logo.png"/>
+                <el-row v-else-if="base_variable && base_variable.ITEMTYPE == 'air-super'" ></el-row>
                 <img v-else src="../../assets/bip/logo.png"/>
                 <div style="color: white;font-size: 18px;">
                     {{base_variable.Project_Name}}
