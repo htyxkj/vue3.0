@@ -112,6 +112,7 @@ export default class Home extends Vue {
       this.initHeight();
     }
     async created(){
+      debugger
       if(BaseVariable.ITEMTYPE == 'air-super'){
         this.$router.push({
           path:'/RealTimeTrack',
@@ -122,8 +123,8 @@ export default class Home extends Vue {
       this.isDraggable = false;
       this.isResizable = false; 
       if(this.user){
-          let cont = "usrcode='"+this.user.userCode+"'";
-          await this.selectCoList(cont);
+        let cont = "usrcode='"+this.user.userCode+"'";
+        await this.selectCoList(cont);
         if(this.layout.length ==0 && this.user.userCode != 'portal'){
           let gw = this.user.gwCode;
           let cont = " usrcode='*'  ";
