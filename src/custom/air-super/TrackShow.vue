@@ -17,7 +17,7 @@
                                     inactive-color="#ff4949">
                                 </el-switch>
                             </el-tooltip>
-                            <el-button v-if="showTKName" style="padding-left: 10px;margin-left: 10px;">{{taskTjCell.currRecord.data.taskname}}</el-button>
+                            <el-button v-if="showTKName && taskname" style="padding-left: 10px;margin-left: 10px;">{{taskname}}</el-button>
                         </div>
                         <t-map ref="TMap" class="myTMap"></t-map>
                     </el-main>
@@ -63,7 +63,6 @@ import { TMapUtils } from "./class/TMapUtils";
 let TMapUt = TMapUtils.TMapUt;
 import { GPSUtil } from "./class/GPSUtil";
 let Gps = GPSUtil.GPS;
-import {BipMenuBtn} from '@/classes/BipMenuBtn'
 @Component({
     components: {
         tMap,
@@ -101,6 +100,7 @@ export default class TrackShow extends Vue {
     //起降点信息
     takeoffRange:any = 50;//起降点范围
     showTKName:boolean = false;//显示任务名称
+    taskname:any = null;
     async created() {
         this.params = this.$route.params;
         if (this.height) {
@@ -172,6 +172,7 @@ export default class TrackShow extends Vue {
                 this.$notify.warning(bok);
                 return;
             }
+            this.taskname = oneTaskData.taskname
             let tkid = oneTaskData.sid;//任务编码
             let bgtime = oneTaskData.bgtime;//开始时间
             let edtime = oneTaskData.edtime;//结束时间
@@ -317,6 +318,7 @@ export default class TrackShow extends Vue {
                     task.type = type;
                     task.showarea = showarea;
                     task.showhkarea = showhkarea;
+                    task.takeoff = onetk.takeoff;
                     // task.showroot = "1";
                     await this.getOneTask(task);
                 }
@@ -384,11 +386,13 @@ export default class TrackShow extends Vue {
                     task.type = type;
                     task.showarea = showarea;
                     task.showhkarea = showhkarea;
+                    task.takeoff = onetk.takeoff;
                     await this.getOneTask(task);
                 }
             }
             this.showTaskTjCell = false;
         }
+        this.showTKName = false;
     }
     /**
      * 绘制架次航带
@@ -417,6 +421,7 @@ export default class TrackShow extends Vue {
                 task.hoaid = data.hoaid;
                 task.route = data.route;
                 task.moid = data.moid;
+                task.takeoff = data.takeoff;
                 task.type = "2";
                 task.showarea = "1";
                 task.showhkarea = "1";
