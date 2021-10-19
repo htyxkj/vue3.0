@@ -112,7 +112,6 @@ export default class Home extends Vue {
       this.initHeight();
     }
     async created(){
-      debugger
       if(BaseVariable.ITEMTYPE == 'air-super'){
         this.$router.push({
           path:'/RealTimeTrack',
