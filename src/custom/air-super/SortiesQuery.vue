@@ -24,7 +24,8 @@
       </div>
 
       <div class="sortdata">
-          <vxe-table
+        <vxe-toolbar ref="xToolbar" custom class="sortiesQuery-vxe-toolbar"></vxe-toolbar>
+        <vxe-table
                 :height="style1"
                 border
                 ref="jcTable"
@@ -179,6 +180,7 @@ export default class followTimesLine extends Vue {
 
   //  1.获取任务对应架次信息
   async selectCoList() {
+    this.jcCell.cdata.data = [];
     let tkid = this.taskTjCell.currRecord.data.sid; 
     let sumarea = this.taskTjCell.currRecord.data.sumarea
     let isvalid = this.taskTjCell.currRecord.data.isvalid
@@ -432,6 +434,13 @@ export default class followTimesLine extends Vue {
 }
 </script>
 <style scoped>
+.sortiesQuery-vxe-toolbar{
+    position: absolute;
+    right: 34px;
+    z-index: 999;
+    background: unset;
+    padding-bottom: 55px;
+}
 .myTMap{
     height: 902px;
     width: 1920px;

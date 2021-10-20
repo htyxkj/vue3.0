@@ -128,6 +128,7 @@ export default class TrackShow extends Vue {
     }
     //清空地图覆盖物
     clearCover() {
+        this.taskTjCell = new CDataSet("");
         this.showTKName = false;
         this.tMap.clearOverLays();
         this.sprayLine0 = [];
@@ -137,12 +138,18 @@ export default class TrackShow extends Vue {
     }
     //查询按钮点击 显示任务筛选框
     async makeTaskVTj(type:any){
-        if(type ==0){
-            this.taskTjCell = await TMapUt.getCell("F0313TJ");
+        if(type ==0 && this.taskTjCell.ccells && this.taskTjCell.ccells.obj_id == 'F0313TJ'){
+
+        }else if(type ==1 && this.taskTjCell.ccells && this.taskTjCell.ccells.obj_id == 'F031PL3TJ'){
+
         }else{
-            this.taskTjCell = await TMapUt.getCell("F031PL3TJ");
-        } 
-        this.taskTjCell.createRecord();
+            if(type ==0){
+                this.taskTjCell = await TMapUt.getCell("F0313TJ");
+            }else{
+                this.taskTjCell = await TMapUt.getCell("F031PL3TJ");
+            } 
+            this.taskTjCell.createRecord();
+        }
         this.showTaskTjCell = true;
     }
 
