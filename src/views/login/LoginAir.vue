@@ -185,6 +185,7 @@ export default class LoginRD extends Vue {
   height: 100%;
   width: 100%;
   position: fixed;
+  background-size: 100% 100%;
 }
 .rd_login_wrap {
   width: 18rem;

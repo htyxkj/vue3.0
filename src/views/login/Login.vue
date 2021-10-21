@@ -6,6 +6,9 @@
     <template v-else-if="baseVar.ITEMTYPE =='air-super'">
       <login-air></login-air>
     </template>
+    <template v-else-if="baseVar.ITEMTYPE =='bip-amb'">
+      <login-ng-amb></login-ng-amb>
+    </template>
     <template v-else>
       <login-bip></login-bip>
     </template>
@@ -17,11 +20,13 @@ import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import LoginBip from '@/views/login/LoginBIP'
 import LoginRD from '@/views/login/LoginRD'
 import LoginAir from '@/views/login/LoginAir'
+import LoginNgAmb from '@/views/login/LoginNgAmb'
 @Component({
     components:{
       LoginBip,
       LoginRD,
-      LoginAir
+      LoginAir,
+      LoginNgAmb
     }
 })
 export default class Login extends Vue {

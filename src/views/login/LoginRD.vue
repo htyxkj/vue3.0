@@ -298,7 +298,7 @@ export default class LoginRD extends Vue {
 }
 .rd_bg{
   background: url(../../assets/login/RDCost/rd_bk.jpg) no-repeat;
-  background-size: 100%;
+  background-size: 100% 100%;
   height: 100%;
   width: 100%;
   position: fixed;
