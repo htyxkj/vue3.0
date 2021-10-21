@@ -154,6 +154,12 @@ export default class TrackShow extends Vue {
     }
 
     trackShowSelOk(){
+        this.showTKName = false;
+        this.tMap.clearOverLays();
+        this.sprayLine0 = [];
+        this.sprayLine1 = [];
+        this.sprayLine2 = [];
+        this.sprayBreak = true;
         if(this.taskTjCell.ccells.obj_id =='F031PL3TJ'){
             this.getPlTask();
         }else{
@@ -427,7 +433,7 @@ export default class TrackShow extends Vue {
                 task.oaid = data.oaid;
                 task.hoaid = data.hoaid;
                 task.route = data.route;
-                task.moid = data.moid;
+                task.omid = data.omid;
                 task.takeoff = data.takeoff;
                 task.type = "2";
                 task.showarea = "1";
