@@ -245,7 +245,12 @@ export default class BipInsAidEditor extends Vue{
                 let key = oneVal[this.bipInsAid.cells.cels[0].id] 
                 this.model1 += key+";" 
                 let key1 = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+key
-                this.setAidValue({key:key1,value:oneVal});
+                let vrs = this.aidValues.get(key1);
+                if(!vrs){
+                    this.setAidValue({key:key1,value:oneVal});
+                }else{
+                    oneVal = vrs;
+                }
                 strval+=oneVal[this.bipInsAid.cells.cels[1].id]+";"
             }
             if (this.mulcols) {
