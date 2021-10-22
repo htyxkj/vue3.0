@@ -57,6 +57,7 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button size="mini" type="danger" @click="handleDown(scope.$index, scope.row)">下载</el-button>
+              <el-button v-if="canPreviewList.includes(scope.row.name.substring(scope.row.name.lastIndexOf('.') + 1))" size="mini" type="success" @click="previewFileEvent(scope.$index, scope.row)">预览</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -94,14 +95,18 @@ export default class BipFileInfo extends Vue {
     fileList: Array<any> = [];
     activeName: string = "file-up";
     uri:string=GlobalVariable.API_UPD//附件操作接口
+    baseURL:string=''// 项目路径
     upLoadDid:string = ''
     showUpPage:boolean = true;
     canUpFile:boolean = true;
     fjrootCell:Cell = new Cell();//附件路径对象
     fileListType:any = "text";
+    canPreviewList:Array<any> = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx','pdf','txt','png','jpg']
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
+        this.baseURL = BaseVariable.BaseUri
+        console.log(this.baseURL);
         if(this.env){
             let pattr = this.env.uriParams.pattr;
             if((pattr & 0x40 ) <= 0){//菜单参数中未勾选保存属性
@@ -358,7 +363,26 @@ export default class BipFileInfo extends Vue {
         snkey = encodeURIComponent(snkey);
         window.open(this.uri+'?snkey='+snkey+'&fjroot='+fjroot+'&updid='+updid+'&fjname='+name);
     }
-
+    // 在线预览
+    previewFileEvent(index:number,file:any){
+        let name = file.name;
+        let fileExtension = name.substring(name.lastIndexOf('.') + 1);
+        let fjroot = this.upLoadDid
+        const typeArr = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx']
+        let url = ''
+        if (typeArr.indexOf(fileExtension) !== -1) {
+            // 用docx云服务的在线预览
+            url = 'http://view.xdocin.com/xdoc?_xdoc='+ this.baseURL +'/mydoc/db_01/' + fjroot +'/'+name;
+        } else {
+            url = this.baseURL +'/mydoc/db_01/' + fjroot +'/'+name;
+        }
+        console.log(url);
+        // window.open()居中打开
+        const width = 1000; const height = 800
+        const top = (window.screen.availHeight - height) / 2
+        const left = (window.screen.availWidth - width) / 2
+        window.open(url, '', 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left)
+    }
     makefjRoot(){
         if(this.cds&&this.cell){
             let record:any
