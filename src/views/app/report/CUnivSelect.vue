@@ -321,12 +321,14 @@ export default class CUnivSelect extends Vue {
         this.childDlg = false;
         let cmd = btn.cmd
         console.log(cmd);
+        // 重置功能
         if(cmd == ICL.B_CMD_CLEAR){
             if(this.dsm_cont.ccells && this.dsm_cont.ccells.cels.length){
                 for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
                     let cel = this.dsm_cont.ccells.cels[i];
                     if((cel.attr & 0x400 )<=0)
-                        this.dsm_cont.currRecord.data[cel.id] = null;
+                    if((cel.attr & 0x40 )<=0)
+                    this.dsm_cont.currRecord.data[cel.id] = null;
                 }
             }
         }else if(cmd == ICL.B_CMD_FIND ) {
@@ -419,6 +421,17 @@ export default class CUnivSelect extends Vue {
             }
         }else if(cmd === ICL.B_CMD_CONDITIONSHOW){
             this.CondiyionShow = !this.CondiyionShow
+            let index:number = 0
+            for (let i = 0; i < this.mbs.menuList.length; i++) {
+                if((this.mbs.menuList[i].cmd).indexOf("CONDITIONSHOW") > -1 ){
+                    index = i
+                }
+            }
+            if(this.CondiyionShow){
+                this.mbs.menuList[index].name = '隐藏条件'
+            }else {
+                this.mbs.menuList[index].name = '显示条件'
+            }
             setTimeout(() => {
                 this.initHeight();    
             }, 200);

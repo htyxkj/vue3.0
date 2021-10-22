@@ -128,7 +128,7 @@ export default class BipMenuBar{
             // this.menuList.push(btn)
         }
         if(this.search){
-            btn = new BipMenuBtn(CommICL.B_CMD_CONDITIONSHOW,"显示/隐藏(条件)")
+            btn = new BipMenuBtn(CommICL.B_CMD_CONDITIONSHOW,"隐藏条件")
             btn.setIconFontIcon('show');
             this.menuList.push(btn)
         }
