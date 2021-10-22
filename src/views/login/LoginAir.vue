@@ -2,10 +2,11 @@
   <div class="rd_bg">
     <div class="rd_login_wrap">
       <el-row>
-        <el-col :span="12" class="rd_login_img">
+        <el-col :span="14">
+          &nbsp;
         </el-col>
-        <el-col :span="12"  class="rd_login">
-          <div class="login_card" v-if="pageType=='loginPage'">
+        <el-col :span="10"  class="rd_login">
+          <div class="login_card">
             <div @keyup.enter="login">
               <p class="rd_title">{{loginTitle}}</p>
               <input class="rd_input rd_input_margin" placeholder="账户" v-model="user.userCode"/>
@@ -23,30 +24,6 @@
                 <el-col :span="24">
                   <el-button type="primary" class="rd_login_btn" :disabled="canClick" @click="login" >登录</el-button>
                 </el-col>
-                <el-col :span="24">
-                  <el-button type="text" class="rd_reg_btn" @click="pageType='regPage'">没有账号，立即注册</el-button>
-                </el-col>
-              </el-row>
-            </div>
-          </div>
-          <div class="login_card" v-else-if="pageType='regPage'">
-            <div @keyup.enter="registered">
-              <p class="rd_title">{{loginTitle}}</p>
-              <input class="rd_input rd_input_margin" placeholder="公司名称" v-model="regData.scmName" :show-password="true"/>
-              <input class="rd_input rd_input_margin" placeholder="信用代码" v-model="regData.creditCode" :show-password="true"/>
-              <input class="rd_input rd_input_margin" placeholder="姓名" v-model="regData.name"/>
-              <p style="margin:0px">
-                <input class="rd_input rd_input_margin rd_input_phone" placeholder="手机号" v-model="regData.tel" :show-password="true"/>
-                <el-button size="mini" style="float: right;color: #409EFF;" @click="getVCode" :disabled="getVCodeTime!=0">{{getVCodeStr}}</el-button>
-              </p>
-              <input class="rd_input" placeholder="验证码" v-model="regData.vCode" :show-password="true"/>
-              <el-row>
-                <el-col :span="24">
-                  <el-button type="primary" class="rd_login_btn" @click="registered" >注册</el-button>
-                </el-col>
-                <el-col :span="24">
-                  <el-button type="text" class="rd_reg_btn" @click="pageType='loginPage'">已有账号，立即登陆</el-button>
-                </el-col>
               </el-row>
             </div>
           </div>
@@ -56,14 +33,13 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
 import { BIPUtil } from "@/utils/Request";
 import { BaseVariable } from "@/utils/BaseICL";
-import { State, Action, Getter, Mutation } from "vuex-class";
+import { Getter, Mutation } from "vuex-class";
 const namespace: string = "login";
-import qs from "qs";
 @Component({
   components:{
   }
@@ -83,7 +59,6 @@ export default class LoginRD extends Vue {
   COPYRIGHT = "";
   SCM = "";
   styleR = "";
-  pageType:any="loginPage"
   getVCodeTime:any=0;
   mounted() {
     if (!this.user) {
@@ -160,97 +135,6 @@ export default class LoginRD extends Vue {
         this.fullscreenLoading = false;
       });
   }
-  //注册
-  async registered() {
-    if(!this.regData.scmName){
-      this.$notify.error("公司名称不能为空");
-      return;
-    }
-    if(!this.regData.creditCode){
-      this.$notify.error("信用代码不能为空");
-      return;
-    }
-    if(!this.regData.name){
-      this.$notify.error("姓名不能为空");
-      return;
-    }
-    if(!this.regData.tel){
-      this.$notify.error("手机号不能为空");
-      return;
-    }
-    if(!this.regData.vCode){
-      this.$notify.error("验证码不能为空");
-      return;
-    }
-    const loading = this.$loading({
-      lock: true,
-      text: "注册中",
-      spinner: "el-icon-loading",
-      background: "background:'rgba(0, 0, 0, 0.7)'",
-    });
-    try{
-      //检验验证码是否输入正确
-      let jdata = {verificationCode:this.regData.vCode,creditCode:this.regData.creditCode,userName:this.regData.name,name:this.regData.scmName,tel:this.regData.tel}
-      let data = {scKey:310,jdata:JSON.stringify(jdata)};
-      let param = qs.stringify(data);
-      let vv = await Vue.$axios.post("rdreg", param);
-      if(vv.data.code !=0){
-        this.$notify.error(vv.data.msg);
-        loading.close();
-        return;
-      }
-      //进行注册
-      data = {scKey:200,jdata:JSON.stringify(jdata)};
-      param = qs.stringify(data);
-      vv = await Vue.$axios.post("rdreg", param);
-      if(vv.data.code !=0){
-        this.$notify.error(vv.data.msg);
-      }else{
-        this.$notify.success(vv.data.msg);
-        let msg = "用户名为注册手机号，初始登陆密码：123456";
-        this.$notify.success(msg);
-        this.pageType = 'loginPage'
-      }
-      loading.close();
-    }catch{
-      loading.close();
-    }
-  }
-  //获取验证码
-  async getVCode(){
-    var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
-    if (myreg.test(this.regData.tel.trim())) {
-      this.getVCodeTime = 60;
-      let _this = this;
-      let timer = setInterval(function(){
-        // 定时器到底了 兄弟们回家啦
-        if(_this.getVCodeTime == 1){
-          clearInterval(timer);
-          _this.getVCodeTime = 0;
-        }else{
-          _this.getVCodeTime--;
-        }
-      }, 1000)
-      let data = {scKey:300,jdata:this.regData.tel};
-      let param = qs.stringify(data);
-      let vv = await Vue.$axios.post("rdreg", param);
-      if(vv.data.code == 0){
-        this.$notify.success(vv.data.msg);
-      }else{
-        this.$notify.error(vv.data.msg);
-      }
-    }else{
-      this.$notify.error("请输入正确的手机号！");
-    }
-  }
-  get getVCodeStr(){
-    if(this.getVCodeTime ==0){
-      return "获取验证码"
-    }else{
-      return this.getVCodeTime+"S后重新获取"
-    }
-  }
-
   get canClick() {
     if (!this.user) {
       return false;
@@ -282,7 +166,6 @@ export default class LoginRD extends Vue {
     this.loginTitle = BaseVariable.Project_Name;
     this.COPYRIGHT = BaseVariable.COPYRIGHT;
   }
-
   gotoPage() {
     this.$router.push({ path: "/report", name: "Report" });
   }
@@ -292,19 +175,20 @@ export default class LoginRD extends Vue {
 .rd_title{
   text-align: center;
   line-height:.546875rem;
-  margin-bottom:.625rem;
+  margin-bottom:.99rem;
   font-size:.3rem;
   font-weight: 600;
 }
 .rd_bg{
-  background: url(../../assets/login/RDCost/rd_bk.jpg) no-repeat;
-  background-size: 100% 100%;
+  background: url(../../assets/login/airSuper/login_bk.png) no-repeat;
+  background-size: 100%;
   height: 100%;
   width: 100%;
   position: fixed;
+  background-size: 100% 100%;
 }
 .rd_login_wrap {
-  width: 15.439rem;
+  width: 18rem;
   min-height: 8.25rem;
   border-radius: .09375rem;
   overflow: hidden;
@@ -340,21 +224,15 @@ input::-webkit-input-placeholder {
   border-radius: .09375rem;
   overflow: hidden;
   position: absolute;
-  top: 50%;
+  top: 45%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-}
-.rd_login_img{
-  background: url(../../assets/login/RDCost/rd_left_bk.png) no-repeat;
-  min-height: 8.25rem;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 .rd_login{
   position: relative;
   background-color: #fff;
   min-height: 8.25rem;
+  border-radius: .09375rem;
 }
 .rd_login-footer {
   text-align: center;

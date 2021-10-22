@@ -230,6 +230,12 @@ export default new Router({
           component :()=> import('./custom/bip-amb/report/InterfaceGetData.vue')
       },
       {
+          //阿米巴 计算产量比例
+          path: '/ProfitYieldAnalysis',
+          name: 'ProfitYieldAnalysis',
+          component :()=> import('./custom/bip-amb/report/ProfitYieldAnalysis.vue')
+      },
+      {
           //融通甘特图
           path: '/ItemKanban',
           name: 'ItemKanban',

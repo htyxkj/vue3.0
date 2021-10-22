@@ -161,15 +161,19 @@ export default class BipPopView extends Vue{
                 this.searchInsAidDatas()
             }
         }
+        this.multipleSelectionAll =[];
         if(this.value){
             let cc = this.value.split(";")
-            this.multipleSelectionAll =[];
             for(var i=0;i<cc.length;i++){
                 let k = this.idKey;
                 let kk:any = {};
                 kk[k] = cc[i];
                 this.multipleSelectionAll.push(kk)
             }
+        }else{
+            let ref:any = this.$refs.assTable;
+            if(ref)
+                ref.clearSelection();
         }
         this.setSelectRow();
     }

@@ -384,6 +384,7 @@ export namespace TMapUtils {
          */
         checkNotNull(cds: CDataSet): string {
             let bok:string = "";
+            if(cds.ccells && cds.ccells.cels)
             cds.ccells.cels.forEach(item => {
                 if (item.unNull && bok == "") {
                     let vl = null;

@@ -244,7 +244,13 @@ export default class BipInsAidEditor extends Vue{
                 let oneVal = val[i];
                 let key = oneVal[this.bipInsAid.cells.cels[0].id] 
                 this.model1 += key+";" 
-                this.setAidValue({key:this.bipInsAid.id+"_"+key,value:oneVal});
+                let key1 = ICL.AID_KEY+this.aidMarkKey+this.linkName+"_"+key
+                let vrs = this.aidValues.get(key1);
+                if(!vrs){
+                    this.setAidValue({key:key1,value:oneVal});
+                }else{
+                    oneVal = vrs;
+                }
                 strval+=oneVal[this.bipInsAid.cells.cels[1].id]+";"
             }
             if (this.mulcols) {
@@ -356,7 +362,12 @@ export default class BipInsAidEditor extends Vue{
                     if(!vrs){
                         let str = window.sessionStorage.getItem(key)
                         if(!str){
-                            let vvs = {id:this.linkName,key:key,cont:cont}
+                            let groupV = null;
+                            if(this.bipInsAid.bType =="CGroupEditor"){
+                                let groupFld = this.bipInsAid.groupFld;
+                                groupV = this.cds.currRecord.data[groupFld];
+                            }
+                            let vvs = {id:this.linkName,key:key,cont:cont,groupV:groupV}
                             let res = await this.fetchInsDataByCont(vvs)
                             if(res.data.id ==0){
                                 vrs = res.data.data.data.values[0]

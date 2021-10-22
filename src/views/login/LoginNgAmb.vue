@@ -41,8 +41,6 @@
           </el-row>
       </div>
       <div class="login-footer">
-        <address>&copy;{{COPYRIGHT}}</address>
-        <!-- <address>技术支持：北京信唐普华科技有限公司</address> -->
       </div>
     </div>
   </div>
@@ -190,6 +188,7 @@ export default class Login extends Vue {
 
 <style lang="scss" scoped>
 .login-img {
+  background: url(../../assets/login/NG/login_bk.png) no-repeat;
   top: 0%;
   left: 0%;
   position: fixed;
@@ -215,10 +214,11 @@ export default class Login extends Vue {
   text-align: center;
   font-size: 20px;
   color: #ffffff;
+  background-color: #59A7FF;
   font-family: '华文楷体'
 }
 .login-cont {
-  background-color: #F0FCFA;
+  background-color: #ffffff;
   padding: 40px 70px;
 }
 

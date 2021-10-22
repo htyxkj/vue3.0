@@ -5,7 +5,10 @@
                 <svg v-if="base_variable && base_variable.ITEMTYPE == 'itemCtrl'" class="iconfont menuicon pointer my-icon" aria-hidden="true">
                     <use xlink:href="#icon-bip-rongtong "></use>
                 </svg>
-                <img v-else-if="base_variable && base_variable.ITEMTYPE == 'bip-amb'" src="../../assets/bip/amb-logo.png"/>
+                <span v-else-if="base_variable && base_variable.ITEMTYPE == 'bip-amb'" style="color: white;font-size: 18px;padding-right: 10px;">
+                    NISCO
+                </span>
+                <el-row v-else-if="base_variable && base_variable.ITEMTYPE == 'air-super'" ></el-row>
                 <img v-else src="../../assets/bip/logo.png"/>
                 <div style="color: white;font-size: 18px;">
                     {{base_variable.Project_Name}}
@@ -424,15 +427,17 @@ export default class LayHeader extends Vue {
                 qe.cont = "~[" + JSON.stringify(oneCont)+"]";
             }
             let cc = await tools.getBipInsAidInfo("GW", 210, qe);
-            if(cc.data.id ==0){
-                let value = cc.data.data.data.values;
-                for(var i=0;i<value.length;i++){
-                    if(value[i] != null){
-                        this.gwName += value[i].gwname+";"
+            if(cc){
+                if(cc.data.id ==0){
+                    let value = cc.data.data.data.values;
+                    for(var i=0;i<value.length;i++){
+                        if(value[i] != null){
+                            this.gwName += value[i].gwname+";"
+                        }
                     }
-                }
-                if(this.gwName.length>1){
-                    this.gwName = this.gwName.substring(0,this.gwName.length-1)
+                    if(this.gwName.length>1){
+                        this.gwName = this.gwName.substring(0,this.gwName.length-1)
+                    }
                 }
             }
         }

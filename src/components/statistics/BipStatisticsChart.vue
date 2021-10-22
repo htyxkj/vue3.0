@@ -101,19 +101,19 @@ export default class BipStatisticsDialog extends Vue {
     @Prop() showBack!:boolean
     @Prop() showTable!:boolean
     @Prop() height!:number;
-    @Provide() pbuid:any="";
-    @Provide() selValue:Array<any> =[];
-    @Provide() selGroup:Array<any> =[];
-    @Provide() option:any = null;
-    @Provide() tjcell:any = null; 
-    @Provide() fullscreenLoading:boolean = false;
-    @Provide() tableData:any =null;
-    @Provide() title:any = null;
-    @Provide() restoreICON:string = "";
-    @Provide() dlConfig:any = null;
-    @Provide() comparedData:any={};
-    @Provide() chartStyle:string = "height :400px;";
-    @Provide() color:any = ["#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
+    pbuid:any="";
+    selValue:Array<any> =[];
+    selGroup:Array<any> =[];
+    option:any = null;
+    tjcell:any = null; 
+    fullscreenLoading:boolean = false;
+    tableData:any =null;
+    title:any = null;
+    restoreICON:string = "";
+    dlConfig:any = null;
+    comparedData:any={};
+    chartStyle:string = "height :400px;";
+    color:any = ["#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"];
     @State("aidValues", { namespace: "insaid" }) aidValues: any;
     @Action("fetchInsAid", { namespace: "insaid" }) fetchInsAid: any;
     @Mutation("setAidValue", { namespace: "insaid" }) setAidValue: any;
@@ -1892,12 +1892,13 @@ export default class BipStatisticsDialog extends Vue {
         })
         return [sums]
     }
-    showFooterHj(){
+    get showFooterHj(){
         this.tjcell.cels.forEach((item:any) => {
             if((item.attr & 0x2000)>0){
                 return true;    
             }
         })
+        return false;
     }
 }
 </script>

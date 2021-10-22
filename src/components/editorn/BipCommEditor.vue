@@ -176,7 +176,7 @@ export default class BipCommEditor extends Vue{
                 this.editorType = this.I_EDITOR_LIST
                 let str = this.cell.refValue
                 if(str){
-                    await this.initInsAid(str);
+                    await this.initInsAid(str,true);
                 }
             }else if(this.cell.editType == 3){//多选框
                 this.editorType = this.I_EDITOR_CHECK
@@ -281,7 +281,7 @@ export default class BipCommEditor extends Vue{
             this.bipInsAid = vv;
         }
     }
-    async getInsAidInfoValues(editName:string,bcl:boolean = false){
+    async getInsAidInfoValues(editName:string,bcl:boolean = false,getVl:boolean =false){
         let str = editName
         if(bcl){
             str = ICL.AID_KEYCL+this.aidMarkKey+str;
@@ -301,26 +301,23 @@ export default class BipCommEditor extends Vue{
             }
         }else{
             this.bipInsAid = vv;
-            return;
         }
         vv = this.aidInfo.get(str);
         //List  是辅助的 进行一下数据查询
-        if(vv){
+        if(vv && getVl){
             this.qe.page.pageSize = 1000
             await tools.getBipInsAidInfo(editName,210,this.qe).then((res:any)=>{
                 if(res.data.id==0){
                     vv.values = res.data.data.data.values;
                     this.bipInsAid = vv;
                 }
-                let vals = {key:str,value:this.bipInsAid}
-                this.setAidInfo(vals)
             }).catch((err:any)=>{
                 this.$notify.error(err+";BipCommEditor getInsAidInfoValues")
             });
         }
     }
 
-    async initInsAid(str:any){
+    async initInsAid(str:any,getVl:boolean=false){
         if(str){
             if(str.indexOf('$')>0){
                 str = str.substr(str.indexOf('$')+1,-str.indexOf('$')+str.indexOf("}")-1);
@@ -329,8 +326,7 @@ export default class BipCommEditor extends Vue{
             }else if(str.indexOf('&')>0){
                 str = str.substr(str.indexOf('&')+1,-str.indexOf('&')+str.indexOf("}")-1);
                 this.editName = str
-                await this.getInsAidInfoValues(str,false)
-
+                await this.getInsAidInfoValues(str,false,getVl)
             }else{
                 this.bipInsAid = baseTool.makeBipInsAidByStr(str,this.cell.id)
             }

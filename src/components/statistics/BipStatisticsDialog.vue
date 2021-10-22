@@ -138,9 +138,15 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="统计" class="bip-search " width="45%" :visible.sync="dialogTstat" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+        <el-dialog title="统计" class="bip-search " width="50%" :visible.sync="dialogTstat" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
             <el-row class="statDlg">
-                <el-transfer v-model="tstatVl" :titles="['字段', '字段']" :data="groupCells" :props="{key: 'id',label: 'labelString'}"></el-transfer>
+                <el-transfer v-model="tstatVl" :titles="['统计项', '统计项']" :data="groupCells" :props="{key: 'id',label: 'labelString'}"></el-transfer>
+                <div style="margin: 15px 0;"></div>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选数据项</el-checkbox>
+                <div style="margin: 15px 0;"></div>
+                <el-checkbox-group v-model="checkedCellsIndex" @change="checkChange">
+                    <el-checkbox v-for="(item,index) in valuesCells" :label="index" :key="index">{{item.labelString}}</el-checkbox>
+                </el-checkbox-group>
             </el-row>
             <hr/>
             <span slot="footer" class="dialog-footer" style="padding-top:0px">
@@ -199,10 +205,17 @@ export default class BipStatisticsDialog extends Vue {
     dlProgram:any={name:"",menuid:'',ishowtj:false};
     userAttr:any = 99;
 
+    /********* 统计 ***********/
     dialogTstat:boolean = false;//统计dialog
     tstatVl:any=[];//统计勾选字段
+    isIndeterminate:boolean = true;
+    checkedCellsIndex:any=[];
+    checkAll:boolean= true
 
     mounted() {
+        this.init();
+    }
+    init(){
         this.chartTypeValue = "line-0"; 
         this.groupCells = this.env.dsm.ccells.cels.filter(item=>{
             return (item.type !== 2 && item.type !== 3 && item.type !== 4 && item.type !== 5 && item.type !== 6 && item.type !== 8) &&item.isShow
@@ -226,9 +239,43 @@ export default class BipStatisticsDialog extends Vue {
     }
 
     openTstat(){//表格统计
-        this.dialogTstat = true;
+        this.init();
+        if(this.valuesCells && this.valuesCells.length ==0){
+            this.$notify.warning('当前页面不存在可统计的数据项字段！');
+        }else{
+            for(var i=0;i<this.valuesCells.length;i++){
+                this.checkedCellsIndex.push(i);
+            }
+            this.handleCheckAllChange(true);
+            this.dialogTstat = true;
+        }
+    }
+    //表格统计 数据项全选
+    handleCheckAllChange(val:any){
+        if(val){
+            for(var i=0;i<this.valuesCells.length;i++){
+                this.checkedCellsIndex.push(i);
+            }
+        }else{
+            this.checkedCellsIndex=[];
+        }
+        this.isIndeterminate = false;
+    }
+    //表格统计数据项单个选择
+    checkChange(value:any){
+        let checkedCount = value.length;
+        this.checkAll = checkedCount === this.valuesCells.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.valuesCells.length;
     }
     searchTjOK(){
+        if(this.tstatVl.length ==0){
+            this.$notify.warning('请勾选统计项字段！');
+            return;
+        }
+        if(this.checkedCellsIndex.length==0){
+            this.$notify.warning('请勾选数据项字段！');
+            return;
+        }
         let selValue = [];
         for(var i=0;i<this.valuesCells.length;i++){
             let cel = this.valuesCells[i];
@@ -557,7 +604,7 @@ export default class BipStatisticsDialog extends Vue {
 </style>
 <style>
 .statDlg{
-    padding:10px 25px 0px 25px
+    padding:10px 25px 0px 25px;
 }
 .statDlg .el-form-item__label{
     padding: 0px 15px !important;

@@ -59,10 +59,14 @@ export default class BipUpDownEditor extends Vue{
     span:number = 6
   
     mounted(){
-        //   if(this.cds&&this.cell){
-            this.model1 = this.model
+        if(this.model){
+            this.model1 = this.model;
+        }
+        if(this.bgrid){
+            this.span = 24
+        }else{
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
-        //   }
+        }
     }
 
     iconClick(){
