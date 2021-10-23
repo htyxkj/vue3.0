@@ -325,7 +325,7 @@ export default class CUnivSelect extends Vue {
             if(this.dsm_cont.ccells && this.dsm_cont.ccells.cels.length){
                 for(var i=0;i<this.dsm_cont.ccells.cels.length;i++){
                     let cel = this.dsm_cont.ccells.cels[i];
-                    if((cel.attr & 0x400 )<=0)
+                    if((cel.attr & 0x400 )<=0 && (cel.attr & 0x40)<=0)
                         this.dsm_cont.currRecord.data[cel.id] = null;
                 }
             }
