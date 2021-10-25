@@ -429,7 +429,7 @@ export default class TrackShow extends Vue {
                 task.edtime = edtime;
                 task.taskname = data.taskname;
                 task.asid = data.asid;
-                task.tlid = data.tlid;
+                task.tlid = null;
                 task.oaid = data.oaid;
                 task.hoaid = data.hoaid;
                 task.route = data.route;

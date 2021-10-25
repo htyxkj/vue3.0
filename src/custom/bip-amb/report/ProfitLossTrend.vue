@@ -234,8 +234,8 @@ export default class ProfitLossFunction extends Vue {
         this.$router.push({
             path:'/layout',
             name:'layout',
-            params:{method:"BL",pmenuid:'300403',jsontj:jsontj },
-            query: {pbuid:'300403',pmenuid:'300403'}
+            params:{method:"BL",pmenuid:'300504',jsontj:jsontj },
+            query: {pbuid:'300504',pmenuid:'300504'}
         })
     }
     //导出excel
