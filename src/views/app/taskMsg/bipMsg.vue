@@ -1,32 +1,37 @@
 <template>
   <el-row>
-    <!-- <el-row style="padding-top:15px">
-      我的消息
-    </el-row> -->
-    <el-row style="padding-top:15px" @keyup.enter="fetchTaskData">
-      <el-input v-model="keyword" size="mini" placeholder="关键词" style="width:220px;padding-right:20px" ></el-input>
-      <el-button type="primary" size="mini" @click="fetchTaskData" >查询</el-button>
-      <el-button type="primary" size="mini" style="padding-right:20px" @click="readById(tableChecked)">全部已读</el-button>
-      <el-button type="primary" size="mini"  @click="removeById(tableChecked)">全部删除</el-button>
+    <el-row style="padding:10px 10px 0px 10px" @keyup.enter="fetchTaskData" :gutter="20">
+      <el-col :span="10">
+        <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" size="medium">
+        <el-button slot="append" icon="el-icon-search" @click="fetchTaskData"></el-button>
+        </el-input>
+      </el-col>
+      <el-col :span="10">
+         <el-button type="success" size="medium" icon="el-icon-check" style="padding-right:20px" @click="readById(tableChecked)">已读</el-button>
+      </el-col>
+      <!-- <el-button type="primary" size="mini"  @click="removeById(tableChecked)">全部删除</el-button> -->
     </el-row>
-    <el-row style="padding-top:15px">
+    <el-row style="padding-top:10px">
       <vxe-table
             ref="_vvt" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
             show-header-all-overflow class="vxe-table-element" :data.sync="msgValue"
             :optimized="true" height="450px" @checkbox-change="selectChangeEvent"  @checkbox-all="selectChangeEvent">
             <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-            <vxe-table-column type="seq" title="编号" width="70"></vxe-table-column>
-            <vxe-table-column header-align="center" align="center" field="title" title="标题" show-header-overflow show-overflow ></vxe-table-column>
-            <vxe-table-column header-align="center" align="center" field="dmake" title="时间" show-header-overflow show-overflow ></vxe-table-column>
-            <vxe-table-column header-align="center" align="center" field="brd" title="消息状态" show-header-overflow show-overflow >
+            <vxe-table-column field="iid" title="编号" width="80" header-align="center" align="center"></vxe-table-column>
+            <vxe-table-column header-align="center" align="center" field="title" title="标题" show-header-overflow show-overflow width="200"></vxe-table-column>
+            <vxe-table-column header-align="center"  field="content" title="消息内容" show-header-overflow show-overflow  ></vxe-table-column>
+            <vxe-table-column header-align="center" align="center" field="dmake" title="接受时间" show-header-overflow show-overflow width="180"></vxe-table-column>
+            <vxe-table-column header-align="center" align="center" field="brd" title="消息状态" show-header-overflow show-overflow width="120">
               <template v-slot="{ row}">
                 {{getMsgState(row) }}
               </template>
             </vxe-table-column>
-            <vxe-table-column header-align="center" align="center" title="操作" show-header-overflow show-overflow >
+            <vxe-table-column header-align="center" align="center" title="操作" show-header-overflow show-overflow width="180">
             <template v-slot="{ rowIndex}">
-              <vxe-button type="text" @click="showMsg(rowIndex)">查看</vxe-button>
-              <vxe-button type="text" @click="delMsg(rowIndex)">删除</vxe-button>
+              <el-button type="primary" @click="showMsg(rowIndex)" size="mini" icon="el-icon-edit">查看</el-button>
+              <el-button type="success" @click="readMsg_1(rowIndex)" size="mini" icon="el-icon-check">已读</el-button>
+              <!-- <vxe-button type="text" @click="showMsg(rowIndex)"></vxe-button>
+              <vxe-button type="text" @click="delMsg(rowIndex)">删除</vxe-button> -->
             </template>
             </vxe-table-column>
 
@@ -42,24 +47,32 @@
         </el-pagination>
     </el-row>
     <template v-if="initDialog">
-      <el-dialog :title="dialogVl.title" class="bip-assist" :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" >
+         <el-dialog class="bipinsaid"  :visible.sync="outerVisible" :append-to-body="true" :close-on-press-escape="true" width="50%" >
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">我的消息</div>
+            </span>
         <template> 
-          <div class="content-area">
-            <div class="c-area">
-              <label class="area-label">消息状态</label>
-              <span>{{dialogVl.brd}}</span>
-            </div>
-            <div class="c-area">
-              <label class="area-label">时间</label>
-              <span>{{dialogVl.dmake}}</span>
-            </div>
-            <div class="c-area">
-              <label class="area-label">消息内容</label>
-              <textarea class="area-inner"  rows="5" cols="60" readonly v-model="dialogVl.content"></textarea>
-            </div> 
+          <el-form ref="form"  label-width="90px" style="padding:10px">
+            <el-form-item label="标题">
+              <el-input v-model="dialogVl.title"></el-input>
+            </el-form-item>
+            <el-form-item label="消息内容">
+              <el-input type="textarea" v-model="dialogVl.content"></el-input>
+            </el-form-item>
+             <el-form-item label="发送人">
+              <el-input v-model="dialogVl.smake.userName"></el-input>
+            </el-form-item>
+            <el-form-item label="发送时间">
+              <el-input v-model="dialogVl.dmake"></el-input>
+            </el-form-item>
+            <el-form-item label="消息状态">
+              <el-input v-model="dialogVl.brd"></el-input>
+            </el-form-item>
+          </el-form>
+            <div>
             <el-row type= "flex" justify="center" style="padding:20px">
-               <el-button size="mini" type="primary" @click="readMsg">已读</el-button>
-               <el-button size="mini" @click="close">取消</el-button>
+               <el-button size="mini" type="success" icon="el-icon-check" @click="readMsg">已读</el-button>
+               <!-- <el-button size="mini" @click="close">取消</el-button> -->
             </el-row>
           </div>
         </template> 
@@ -116,6 +129,7 @@ export default class bipTask extends Vue {
     }
     async fetchTaskData() {  
       let cc = await tools.getTaskMsgData(212,null,null,null,null,null,this.currPage,this.pageSize,this.keyword);
+      console.log(cc)
       if(cc.data.id ==0){
         let page = cc.data.data.page;
         this.msgValue = page.celData; 
@@ -199,6 +213,7 @@ export default class bipTask extends Vue {
       let row = this.dialogVl
       let cc = await tools.getTaskMsgData(213,row.iid,2,null,null,null,null,null,null);
       this.fetchTaskData();
+      this.outerVisible=false;
     }
     //显示详细信息
     async showMsg(rowIndex:any){
