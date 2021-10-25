@@ -1,8 +1,11 @@
 <template>
     <div>
-        <el-dialog title="流程查看" :visible.sync="opendlg" width="40%" append-to-body>
-            <div>
-                <div v-for="(item,index) in info" :key="index">
+        <el-dialog class="bipinsaid"  :visible.sync="opendlg" width="40%" append-to-body>
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">流程查看</div>
+            </span>
+            <div v-if="info.length > 0">
+                <div v-for="(item,index) in info" :key="index" >
                     <div class="div2-1" v-if=" (item.stfr == '驳回' || item.stfr == '新建')">
                         <img class="image2" src="@/assets/check/process/process_ty.png">
                         <div class="div3">
@@ -43,9 +46,12 @@
                     </div> 
                 </div> 
             </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="close()">取 消</el-button>
-            </span>  
+            <div v-else class="nodata-box">
+                暂无审批流程
+            </div>
+            <!-- <span slot="footer" class="dialog-footer">
+                <el-button @click="close()">关   闭</el-button>
+            </span>   -->
         </el-dialog> 
     </div>
 </template>
@@ -108,6 +114,7 @@ export default class BipWorkProcess extends Vue{
   .div2-1 {
     background-color: #F0EFF4;
     border-left: 3px solid #E6E5EA;
+    padding: 10px 15px;
     // margin-left: 20px;
     // padding-bottom: 13px;
   }
@@ -143,5 +150,11 @@ export default class BipWorkProcess extends Vue{
     position: absolute;
     right: 30%;
     margin-top: 14px;
+  }
+  .nodata-box {
+      height: 100px;
+      line-height: 100px;
+      text-align: center;
+      letter-spacing: 8px;
   }
 </style>
