@@ -5,29 +5,43 @@
         <div class="login-title">{{loginTitle}}</div>
         <div class="login-cont" @keyup.enter="login">
           <el-form @submit.native.prevent label-position="left" label-width="70px" class="login-form">
-            <el-form-item class="bip-form-item" label="账户:">
+            <el-form-item class="bip-form-item" label="账   户:">
               <el-input v-model="user.userCode"></el-input>
             </el-form-item>
-            <el-form-item class="bip-form-item" label="密码:">
+            <el-form-item class="bip-form-item" label="密   码:">
               <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
             </el-form-item>
           </el-form>
-          <el-row type="flex" justify="start">
+          <div class="remember">
+            <div>
+               <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
+            </div>
+            <div>
+              <!-- <span @click="resetPassword">忘记密码?</span> -->
+            </div>
+            <!-- <div>
+              <el-button @click="registered" type="text">注册</el-button>
+            </div> -->
+          </div>
+          <!-- <el-row type="flex" justify="start">
             <el-col :span="12">
               <el-row type="flex" justify="start">
                 <el-col :span="12">
-                  <!-- <el-button @click="registered" type="text">注册</el-button> -->
+                  <el-button @click="registered" type="text">注册</el-button>
                 </el-col> 
               </el-row>
             </el-col>
             <el-col :span="12">
-              <el-row type="flex" justify="end">
+              <el-row type="flex" >
                 <el-col :span="12">
                   <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
                 </el-col> 
+                <el-col :span="12" >
+                  忘记密码？
+                </el-col>
               </el-row>
             </el-col>
-          </el-row>
+          </el-row> -->
           <el-row>
             <el-col :span="24"  style="margin-top:10px">
               <el-button
@@ -90,6 +104,10 @@ export default class Login extends Vue {
   //注册
   registered(){
     this.$router.push({ path: "/registered", name: "registered" });
+  }
+  // 重置密码
+  resetPassword(){
+    this.$router.push({path:"/resetpassword",name:"resetpassword"});
   }
   login() {
     if(this.fullscreenLoading)
@@ -260,6 +278,21 @@ address {
 .el-form-item__label{
   background-color: #0ea0b9 I !important;
 }
+.remember {
+  display: flex;
+}
+.remember div {
+  flex: 1;
+  height: 26px;
+  line-height: 26px;
+}
+.remember div:nth-child(1){
+  padding-left: 20px;
+}
+.remember div:nth-child(2){
+  text-align: right;
+}
+
 </style>
 <style lang="scss">
 .login-form{

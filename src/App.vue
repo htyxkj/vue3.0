@@ -28,9 +28,25 @@
                             <div style='position: relative;'>
                                 <el-tabs v-model="editableTabsValue2" type="border-card" :editable="editableTabs2.length>1" :closable="false" @tab-remove="removeTab" class="bip-tabs">
                                     <el-tab-pane v-for="(item) in editableTabs2"
-                                        :key="item.name" :label="item.title" :name="item.name"
-                                        :closable="item.closable" :lazy="true" :style="style">    
-                                        <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">     
+                                        :key="item.name"  :name="item.name"
+                                        :closable="item.closable" :lazy="true" :style="style"> 
+                                        <template slot="label" v-if="item.name == 'index'">
+                                            <i class="el-icon-house pointer" ></i> 
+                                            {{item.title}}
+                                        </template>
+                                        <template slot="label" v-else-if="item.name == 'myTask'">
+                                            <i class="el-icon-mobile pointer" ></i> 
+                                            {{item.title}}
+                                        </template>
+                                         <template slot="label" v-else-if="item.name == 'myMsg'">
+                                            <i class="el-icon-bell pointer" ></i> 
+                                            {{item.title}}
+                                        </template>
+                                        <template slot="label" v-else>
+                                            <img class="imgpointer" :src="uri+item.icon"/>
+                                            <span>&nbsp;{{item.title}}</span>
+                                        </template>
+                                        <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">  
                                         </lay-out>
                                     </el-tab-pane>
                                 </el-tabs>
@@ -76,6 +92,7 @@ import BipMenu from "@/components/menu/BipMenu.vue";
   }
 })
 export default class App extends Vue {
+    uri:string='';
     name: string = "app";
     editableTabsValue2: string = "1";
     editableTabs2: BipTag[] = [];
@@ -109,6 +126,7 @@ export default class App extends Vue {
             if(url.lastIndexOf("/") == url.length-1){
                 url = url.substring(0,url.length-1);
             }
+            this.uri = url+'/';
             BaseVariable.BaseUri = url; 
             BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
             BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
@@ -186,7 +204,7 @@ export default class App extends Vue {
         }
     }
     addIndex() {
-        let tag = new BipTag("index", "首页", "/", false);
+        let tag = new BipTag("index", "首页", "/", false,'');
         this.editableTabs2.push(tag);
         this.editableTabsValue2 = "index";
     }
@@ -306,7 +324,7 @@ export default class App extends Vue {
                 // console.log(currTag)
                 if (!currTag) {
                     let strName = menu.menuName;//.substring(0,6)
-                    let tag = new BipTag(menu.menuId, strName, to.fullPath, true, menu.menuName);
+                    let tag = new BipTag(menu.menuId, strName, to.fullPath, true, menu.menuIcon, menu.menuName);
                     this.editableTabs2.push(tag);
                     this.editableTabsValue2 = menu.menuId;
                 } else {
@@ -319,7 +337,7 @@ export default class App extends Vue {
                 tab.name == 'myTask'
             )[0]; 
             if (!currTag) {
-                let tag = new BipTag('myTask', '我的任务', to.fullPath, true);
+                let tag = new BipTag('myTask', '我的任务', to.fullPath, true,'');
                 this.editableTabs2.push(tag);
                 this.editableTabsValue2 = 'myTask';
             } else {
@@ -331,7 +349,7 @@ export default class App extends Vue {
                 tab.name == 'myMsg'
             )[0]; 
             if (!currTag) {
-                let tag = new BipTag('myMsg', '我的消息', to.fullPath, true);
+                let tag = new BipTag('myMsg', '我的消息', to.fullPath, true,'');
                 this.editableTabs2.push(tag);
                 this.editableTabsValue2 = 'myMsg';
             } else {
@@ -356,7 +374,7 @@ export default class App extends Vue {
                     )[0];
                     // console.log(currTag)
                     if (!currTag) {
-                        let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true);
+                        let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true, menu.menuIcon);
                         this.editableTabs2.push(tag);
                         this.editableTabsValue2 = menu.menuId;
                     } else {
@@ -398,5 +416,10 @@ export default class App extends Vue {
 }
 #app{
     @include overall_bg_color();
+}
+.imgpointer{
+    width: 14px;
+    height: 14px;
+    transform: translate(-15%, 15%);
 }
 </style>

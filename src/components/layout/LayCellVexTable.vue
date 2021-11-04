@@ -209,7 +209,7 @@
 
 
                 <vxe-table-column v-if="(laycell.cells.attr & 0x40)>0" type="checkbox" width="55" fixed="left"></vxe-table-column>
-                <vxe-table-column type="seq" width="55"  fixed="left"></vxe-table-column>
+                <!-- <vxe-table-column type="seq" width="55"  fixed="left"></vxe-table-column> -->
 
                 <!-- 表格三级表头 目前写死三级 -->
 
