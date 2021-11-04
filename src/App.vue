@@ -43,7 +43,8 @@
                                             {{item.title}}
                                         </template>
                                         <template slot="label" v-else>
-                                            <img class="imgpointer" :src="uri+item.icon"/>
+                                            <img v-if="item.icon"  class="imgpointer" :src="uri+item.icon"/>
+                                            <i v-else class="el-icon-tickets pointer" ></i>
                                             <span>&nbsp;{{item.title}}</span>
                                         </template>
                                         <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">  
