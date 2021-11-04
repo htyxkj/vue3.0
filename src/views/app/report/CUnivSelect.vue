@@ -44,10 +44,14 @@
          <template v-if="nodeId">
             <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
         </template>
-        <el-dialog :title="childDlg_title" :visible.sync="childDlg"  class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false" @close="invokecmd({cmd:'FIND'})">
+        <el-dialog  :visible.sync="childDlg"  class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false" @close="invokecmd({cmd:'FIND'})">
             <!--弹出框头部-->
             <span slot="title">
-                <div class="el-dialog__title" style="padding-bottom:5px">{{childDlg_title}}</div>
+                <div class="el-dialog__title" style="padding-bottom:5px">
+                    <img v-if="childDlg_icon"  class="imgpointer" :src="uri+childDlg_icon"/>
+                    <i v-else class="el-icon-tickets pointer" ></i>
+                    {{childDlg_title}}
+                </div>
             </span>
             <el-scrollbar wrap-class="scrollbar-wrapper" style="height:460px" >
                <router-view/>
@@ -57,6 +61,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, Watch,Provide } from "vue-property-decorator";
+import {BaseVariable} from "@/utils/BaseICL"
 import BipMenuBarUi from "@/components/menubar/BipMenuBarUi.vue";
 import BipStatisticsDlog from "@/components/statistics/BipStatisticsDialog.vue";
 import BipStatisticsChart from "@/components/statistics/BipStatisticsChart.vue";
@@ -119,6 +124,8 @@ export default class CUnivSelect extends Vue {
     childDlg: boolean = false;//子路由弹出窗
     childDlg_width:any = "50%";//子路由弹出窗宽度
     childDlg_title:any = "";//子路由弹出窗标题
+    childDlg_icon:any = "";//子路由弹出窗图标
+    uri:string = ""; //项目路径
     openDlgEventId:any = null;//子路由弹出窗bus监听  用于报表表格中
 
     importCellId:any = null;//导入模板对象id
@@ -220,7 +227,8 @@ export default class CUnivSelect extends Vue {
     }
 
     async mounted(){
-        
+        // 获取项目路径
+        this.uri = BaseVariable.BaseUri+'/'
         this.config['type']=2;
         this.biType="SEL" 
         if(this.uriParams){
@@ -392,6 +400,7 @@ export default class CUnivSelect extends Vue {
                             if(dialog){
                                 this.childDlg_width = dialog;
                                 this.childDlg_title = menu.menuName
+                                this.childDlg_icon = menu.menuIcon
                                 let param = {
                                     childDlg_width:dialog,
                                     childDlg_title:menu.menuName,
@@ -1044,5 +1053,10 @@ export default class CUnivSelect extends Vue {
     .el-scrollbar__wrap{
         overflow: auto;
     }
+}
+.imgpointer {
+    height: 18px;
+    width: 18px;
+    transform: translate(-25%, 15%);
 }
 </style>
