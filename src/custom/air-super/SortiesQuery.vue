@@ -119,17 +119,14 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from "vuex-class";
 import QueryEntity from "@/classes/search/QueryEntity";
-import QueryCont from "@/classes/search/QueryCont";
 import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 import tMap from "@/components/map/MyTianMap.vue";
-import { T } from "@/components/map/js/TMap";
 import { TMapUtils } from "./class/TMapUtils";
-let TMapUt = TMapUtils.TMapUt;
-import domtoimage from 'dom-to-image';
+import { CommICL } from "@/utils/CommICL";
 @Component({
   components: {
     BipGridInfo,tMap,
@@ -246,21 +243,25 @@ export default class followTimesLine extends Vue {
         })
     }
     async saveAll(){
-        this.taskTjCell.currRecord.c_state = 2; 
-        let restj = await this.taskTjCell.saveData();
         var num = 0;
-        if(restj.data.id != 0){ 
-            this.$notify.error("全图保存失败！")
-            num++;
+        if((this.taskTjCell.currRecord.c_state & CommICL.R_EDITED) > 0){
+            this.taskTjCell.currRecord.c_state = 2; 
+            let restj = await this.taskTjCell.saveData();
+            if(restj.data.id != 0){ 
+                this.$notify.error("全图保存失败！")
+                num++;
+            }
         }
         let datas = this.jcCell.cdata.data;
         for(var i=0;i<datas.length;i++){
             this.jcCell.currRecord = datas[i];
-            this.jcCell.currRecord.c_state =2;
-            let cc = await this.jcCell.saveData();
-            if(cc.data.id != 0){
-                this.$notify.error("第"+datas[i].data.ssid+"架次保存失败！")
-                num++;
+            if((this.jcCell.currRecord.c_state & CommICL.R_EDITED) > 0){
+                this.jcCell.currRecord.c_state =2;
+                let cc = await this.jcCell.saveData();
+                if(cc.data.id != 0){
+                    this.$notify.error("第"+datas[i].data.ssid+"架次保存失败！")
+                    num++;
+                }
             }
         }
         if(num==0){

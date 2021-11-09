@@ -205,6 +205,8 @@ export default class TrackShow extends Vue {
                 this.$notify.warning("任务编码和设备标识不能同时为空！");
                 return;
             }
+            this.loading = !this.loading;
+            this.showTaskTjCell = false;
             if(takeoff){
                 let ofs = takeoff.split(";");
                 for(var i=0;i<ofs.length;i++){
@@ -216,7 +218,7 @@ export default class TrackShow extends Vue {
                 TMapUt.getOperaBr(oaid,this.tMap);//避让区
             }
             if(showhkarea =='1'){
-                 TMapUt.getOpera(hoaid,this.tMap);//航空识别区
+                TMapUt.getOpera(hoaid,this.tMap);//航空识别区
             }
            if(showroot == '1'){
                 TMapUt.getOperaRoute(oaid,this.tMap);
@@ -236,8 +238,6 @@ export default class TrackShow extends Vue {
                 cont+= " and sbid ='" +tlid +"' ";
             }
             qe.cont = cont;
-            this.loading = !this.loading;
-            this.showTaskTjCell = false;
             let t1 = new Date().getTime();
             let cc = await tools.getBipInsAidInfo("CORRD", 210, qe);
             let t2 = new Date().getTime();
