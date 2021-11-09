@@ -1,6 +1,5 @@
 <template>
   <el-dialog
-    :title="title"
     class="bip-file"
     :visible.sync="outerVisible"
     :append-to-body="true"
@@ -8,8 +7,16 @@
     :close-on-click-modal="false"
     :before-close="selectOK"
   >
+    <!--弹出框头部-->
+    <span slot="title">
+        <div class="el-dialog__title" style="padding-bottom:5px">
+            <i class="el-icon-upload"></i>
+            {{title}}
+        </div>
+    </span>
     <el-tabs v-model="activeName">
-      <el-tab-pane v-if="showUpPage" label="　文件上传　" name="file-up">
+      <el-tab-pane v-if="showUpPage"  name="file-up">
+         <span slot="label"><i class="el-icon-upload2"></i> 文件上传</span>
         <el-upload
             class="upload-demo"
             ref="upload"
@@ -35,7 +42,8 @@
           <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane label="　文件下载　" name="file-down">
+      <el-tab-pane 　 name="file-down">
+        <span slot="label"><i class="el-icon-download"></i> 文件下载</span>
         <el-table size="small" stripe :data="fileList" style="width: 100%">
           <el-table-column label="文件名称" :show-overflow-tooltip="true">
             <template slot-scope="scope">
@@ -400,5 +408,3 @@ export default class BipFileInfo extends Vue {
     }
 }
 </script>
-
-

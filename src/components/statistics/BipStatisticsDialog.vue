@@ -1,9 +1,16 @@
 <template>
     <div >
-        <el-dialog  title="图形" class="bip-search " width="35%" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+        <el-dialog   class="bip-search bipinsaid" width="35%" :visible.sync="dialogVisible" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
             <!-- <span slot="title">
                 <div class="el-dialog__title" style="padding-bottom: 15px;border-bottom: solid 1px #D9DFEF;">统计</div>
             </span> -->
+             <!--弹出框头部-->
+        <span slot="title">
+            <div class="el-dialog__title" style="padding-bottom:5px">
+                <i class="iconfont icon-bip-zhexian1"></i>
+                图形
+            </div>
+        </span>
             <el-row class="statDlg">
                 <el-form @submit.native.prevent ref="form" label-width="120px" size="medium">
                     <el-form-item class="bip-form-item" label="已保存方案">
@@ -138,7 +145,14 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="统计" class="bip-search " width="50%" :visible.sync="dialogTstat" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+        <el-dialog  class="bip-search bipinsaid " width="50%" :visible.sync="dialogTstat" :append-to-body="true" :close-on-press-escape="false" :close-on-click-modal="false">
+             <!--弹出框头部-->
+        <span slot="title">
+            <div class="el-dialog__title" style="padding-bottom:5px">
+                <i class="iconfont icon-bip-tongji"></i>
+                统计
+            </div>
+        </span>
             <el-row class="statDlg">
                 <el-transfer v-model="tstatVl" :titles="['统计项', '统计项']" :data="groupCells" :props="{key: 'id',label: 'labelString'}"></el-transfer>
                 <div style="margin: 15px 0;"></div>

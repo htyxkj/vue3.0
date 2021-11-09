@@ -1,6 +1,6 @@
 {
     "dbid": "01",
-    "ApiUrl": "https://greatdou.com/itemCtrl/",
+    "ApiUrl": "http://121.5.109.97:8080/cattle_breed/",
     "MQTT_SERVICE": "ws://115.28.191.203:85/ws",
     "MQTT_USERNAME": "bipmq",
     "MQTT_PASSWORD": "bipmq",

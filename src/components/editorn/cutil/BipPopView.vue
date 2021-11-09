@@ -2,7 +2,10 @@
     <el-dialog class="bipinsaid" :visible.sync="visibles" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
         <!--弹出框头部-->
         <span slot="title">
-            <div class="el-dialog__title" style="padding-bottom:5px">{{Title}}</div>
+            <div class="el-dialog__title" style="padding-bottom:5px">
+                <i class="el-icon-info"></i>
+                {{Title}}
+            </div>
         </span>
         <div @keyup.enter="searchInsAidDatasByCon" class="search" >
             <el-input placeholder="请输入筛选条件" v-model="conditionValue" class="input-with-select"  size="small" clearable >

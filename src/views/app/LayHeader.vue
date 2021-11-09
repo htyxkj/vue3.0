@@ -20,7 +20,7 @@
                     <i class="el-icon-mobile pointer" @click="myTask"></i>    
                 </el-badge>
                 <el-badge :value="msgNum" class="header_badge_item">
-                    <i class="el-icon-message-solid pointer"  @click="myMsg"></i>    
+                    <i class="el-icon-bell pointer"  @click="myMsg"></i>    
                 </el-badge> 
                 <el-badge class="header_badge_item">
                     <i :class="icon "  @click="isQP"></i>    

@@ -13,7 +13,7 @@
                     </template>
                 </span>
                 <el-input :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="true" @focus="focus">
-                    <i slot="suffix" class="el-input__icon el-icon-document"  :disabled="disabled" @click="iconClick()"></i>
+                    <i slot="suffix" class="el-input__icon el-icon-upload"  :disabled="disabled" @click="iconClick()"></i>
                 </el-input>
                 <template v-if="cell.desc">
                     <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
@@ -26,7 +26,7 @@
             </template>
         <template v-else>
                 <el-input v-model="model1" size="medium" :clearable="clearable" :disabled="disabled" :readonly="true"  @focus="focus">
-                    <i slot="suffix" class="el-input__icon el-icon-document"  :disabled="disabled" @click="iconClick()"></i>
+                    <i slot="suffix" class="el-input__icon el-icon-upload"  :disabled="disabled" @click="iconClick()"></i>
                 </el-input>
         </template>
         
