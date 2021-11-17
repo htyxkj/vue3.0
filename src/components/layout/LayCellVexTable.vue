@@ -618,9 +618,9 @@ export default class LayCelVexTable extends Vue {
         if(data){
             for(var i=0;i<data.length;i++){
                 let d1 = data[i];
-                let titles = d1.title.split("_");
-                let title = titles[titles.length-1];
-                let btn = new BipMenuBtn(title,d1.sremark)
+                let idx = d1.title.indexOf("_",d1.title.indexOf("_")+1)+1
+                let titles = d1.title.substring(idx);
+                let btn = new BipMenuBtn(titles,d1.sremark)
                 btn.setType("primary");
                 btn.setIconFontIcon('EDIT');
                 btn.setDlgType('BL');
@@ -1022,7 +1022,7 @@ export default class LayCelVexTable extends Vue {
                     let slkbuid = ''
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
-                    if(!this.openrBL(cell)){
+                    if(! await this.openrBL(cell)){
                         await this.openRefsDo(slkid , slkbuid);
                     }
                 }else{
@@ -1047,7 +1047,7 @@ export default class LayCelVexTable extends Vue {
     async openrBL(cell:any){
         let name = "BL_"+this.cds.ccells.obj_id+"_"+cell.id;
         let bl_data = await this.initCL(name);
-            //BL字段点击
+        //BL字段点击
         if(bl_data){
             let slink = bl_data.slink;
             if(slink){
