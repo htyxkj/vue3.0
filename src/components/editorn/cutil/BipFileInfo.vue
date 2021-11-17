@@ -323,37 +323,27 @@ export default class BipFileInfo extends Vue {
                     this.$alert('有未上传的文件，请上传文件！','',{type:'error'});
                     return 
                 }
-                if(this.cds&&this.cell){
-                    let record:any = this.cds.currRecord
-                    record.data[this.fjrootCell.id] = this.upLoadDid
-                    let fis = ''
-                    this.fileList.forEach(file => {
-                        fis += file.name+';'
-                    });
-                    if(fis.length>0)
-                        fis = fis.substring(0,fis.length-1)
-                    record.data[this.cell.id] = fis   
-                    this.cds.setStateOrAnd(icl.R_EDITED)
-                    this.$bus.$emit('cell_edit');
-                }
-            }else{
-                if(this.cds&&this.cell){
-                    let record:any = this.cds.currRecord
-                    record.data[this.fjrootCell.id] = this.upLoadDid
-                    let fis = ''
-                    this.fileList.forEach(file => {
-                        fis += file.name+';'
-                    });
-                    if(fis.length>0)
-                        fis = fis.substring(0,fis.length-1)
-                    record.data[this.cell.id] = fis   
-                    this.cds.setStateOrAnd(icl.R_EDITED)
-                    this.$bus.$emit('cell_edit');
+            }
+            if(this.cds&&this.cell){
+                let record:any = this.cds.currRecord
+                let old_vl = record.data[this.cell.id];
+                record.data[this.fjrootCell.id] = this.upLoadDid
+                let fis = ''
+                this.fileList.forEach(file => {
+                    fis += file.name+';'
+                });
+                if(fis.length>0)
+                    fis = fis.substring(0,fis.length-1)
+                record.data[this.cell.id] = fis   
+                this.cds.setStateOrAnd(icl.R_EDITED)
+                this.$bus.$emit('cell_edit');
+                if(old_vl != fis){
+                    this.$emit('select',true)
                 }
             }
         }
         this.outerVisible = false
-        this.$emit('select',true)
+        this.$emit('select',false)
         // this.outerVisible = false
     }
 
