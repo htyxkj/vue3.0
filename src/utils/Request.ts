@@ -218,7 +218,7 @@ export namespace BIPUtil {
      * @param qe 查询条件，有可能有
      */
     getBipInsAidInfo(aid:string,id:number=200,qe?:QueryEntity){
-        if(qe)
+        if(qe && !qe.type )
             qe.type =3 
         let param = tool.getBipInsAidParams(aid,id,qe?JSON.stringify(qe):undefined);
         return this.getFromServer(param);

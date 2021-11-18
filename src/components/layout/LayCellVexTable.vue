@@ -597,7 +597,7 @@ export default class LayCelVexTable extends Vue {
         for(let i=0;i<cells.length;i++){
             let item:any = cells[i];
             let index = i;
-            if((item.attr&0x80000)>0){
+            if((item.attr&0x80000)>0 && i<cells.length-1){
                 let item1:any = cells[i+1];
                 let im1_id = item1.id;
                 if(im1_id.indexOf(".")>-1){
@@ -610,19 +610,22 @@ export default class LayCelVexTable extends Vue {
                     btn.setIconFontIcon('EDIT');
                     btn.setDlgType('SL');
                     this.commBtns2.push(btn);
-                }else{
-                    let name = "BL_"+this.cds.ccells.obj_id+"_"+item.id;
-                    let data:any = await this.initCL(name);
-                    if(data){
-                        let btn = new BipMenuBtn(item.id,data.sremark)
-                        btn.setType("primary");
-                        btn.setIconFontIcon('EDIT');
-                        btn.setDlgType('BL');
-                        this.commBtns2.push(btn);
-                    }
                 }
             }
-      
+        }
+        let name = "BL_"+this.cds.ccells.obj_id+"_";
+        let data:any = await this.initCL(name,-1);
+        if(data){
+            for(var i=0;i<data.length;i++){
+                let d1 = data[i];
+                let idx = d1.title.indexOf("_",d1.title.indexOf("_")+1)+1
+                let titles = d1.title.substring(idx);
+                let btn = new BipMenuBtn(titles,d1.sremark)
+                btn.setType("primary");
+                btn.setIconFontIcon('EDIT');
+                btn.setDlgType('BL');
+                this.commBtns2.push(btn);
+            }
         }
     }
     /**
@@ -991,13 +994,12 @@ export default class LayCelVexTable extends Vue {
         let row = data.row.data
         let columnIndex = data.columnIndex
         if(columnIndex >= 0){
-            let cell = data.cell
+            let cell = data.cells
             if(!cell){
                 cell = this.laycell.uiCels[columnIndex]
                 if(!this.beBill){
-                    cell = this.laycell.uiCels[columnIndex-1]
                     if((this.laycell.cells.attr & 0x40)>0){
-                        cell = this.laycell.uiCels[columnIndex-2]
+                        cell = this.laycell.uiCels[columnIndex-1]
                     }
                 }else{
                     if(this.cds.ds_par){
@@ -1020,47 +1022,8 @@ export default class LayCelVexTable extends Vue {
                     let slkbuid = ''
                     if(slkbuidCell)
                         slkbuid = row[slkbuidCell.id];
-                    let bl_data = null;//获取常量定义的 BL_菜单参数_字段ID 进行菜单打开
-                    let name = "BL_"+this.cds.ccells.obj_id+"_"+cell.id;
-                    bl_data = await this.initCL(name);
-                    if(bl_data == null || bl_data == undefined){
+                    if(! await this.openrBL(cell)){
                         await this.openRefsDo(slkid , slkbuid);
-                    }else{
-                        //BL字段点击
-                        let slink = bl_data.slink;
-                        if(slink){
-                            slink = slink.split("&");
-                            let menuid = slink[0]
-                            let me = baseTool.findMenu(menuid);
-                            if (!me) {
-                                this.$notify.error( "没有" + menuid + "菜单权限!" );
-                                return false;
-                            }else{
-                                let jsontj:any={};
-                                for(var i=1;i<slink.length;i++){
-                                    let oneTJ = slink[i].split("=")
-                                    let key = oneTJ[0];
-                                    let vl = oneTJ[1]
-                                    if(vl.indexOf("*") !=-1 ){
-                                        let cds = this.env.getDataSet(vl.split("*")[0]);
-                                        vl = cds.currRecord.data[vl.split("*")[1]]
-                                    }else{
-                                        vl = this.cds.currRecord.data[vl]
-                                    }
-                                    jsontj[key] = vl;
-                                }
-
-                                let command = me.command.split("&");
-                                let pbuid = command[0].split("=");
-                                let pmenuid = command[1].split("="); 
-                                this.$router.push({
-                                    path:'/layout',
-                                    name:'layout',
-                                    params:{method:"BL",pmenuid:pmenuid[1],jsontj:jsontj },
-                                    query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                                })
-                            }
-                        }
                     }
                 }else{
                     console.log('主键点击')
@@ -1074,8 +1037,54 @@ export default class LayCelVexTable extends Vue {
                     let slkbuidCell = this.laycell.cells.cels[pk[0]+1]
                     let slkbuid = row[slkbuidCell.id];
                     await this.openRefsDo(slkid , slkbuid);
+                }else{//判断是否是 BL
+                    this.openrBL(cell)
+                } 
+            }
+        }
+    }
+    //打开BL菜单
+    async openrBL(cell:any){
+        let name = "BL_"+this.cds.ccells.obj_id+"_"+cell.id;
+        let bl_data = await this.initCL(name);
+        //BL字段点击
+        if(bl_data){
+            let slink = bl_data.slink;
+            if(slink){
+                slink = slink.split("&");
+                let menuid = slink[0]
+                let me = baseTool.findMenu(menuid);
+                if (!me) {
+                    this.$notify.error( "没有" + menuid + "菜单权限!" );
+                    return false;
+                }else{
+                    let jsontj:any={};
+                    for(var i=1;i<slink.length;i++){
+                        let oneTJ = slink[i].split("=")
+                        let key = oneTJ[0];
+                        let vl = oneTJ[1]
+                        if(vl.indexOf("*") !=-1 ){
+                            let cds = this.env.getDataSet(vl.split("*")[0]);
+                            vl = cds.currRecord.data[vl.split("*")[1]]
+                        }else{
+                            vl = this.cds.currRecord.data[vl]
+                        }
+                        jsontj[key] = vl;
+                    }
+                    let command = me.command.split("&");
+                    let pbuid = command[0].split("=");
+                    let pmenuid = command[1].split("="); 
+                    this.$router.push({
+                        path:'/layout',
+                        name:'layout',
+                        params:{method:"BL",pmenuid:pmenuid[1],jsontj:jsontj },
+                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                    })
                 }
             }
+            return true;
+        }else{
+            return false;
         }
     }
     async openRefsDo(slkid:any,slkbuid:any){
@@ -1161,13 +1170,12 @@ export default class LayCelVexTable extends Vue {
             }
             let _col2 = _col;
             if(!this.beBill){
-                _col2 = _col+1;
                 if((this.laycell.cells.attr & 0x40)>0){
-                    _col2 = _col+2;
+                    _col2 = _col+1;
                 }
             }
             this.cds.currRecord = cr;
-            let data1 = {rowIndex:rowIndex,columnIndex:_col2,row:{data:cr.data},cell:cell};
+            let data1 = {rowIndex:rowIndex,columnIndex:_col2,row:{data:cr.data},cells:cell};
             this.openrefs(data1,null)
         }else{
             this.cds.index = rowIndex;
@@ -1215,13 +1223,16 @@ export default class LayCelVexTable extends Vue {
     /**
      * BL_菜单参数_字段ID 定义
      */
-    async initCL(name:string){
+    async initCL(name:string,type:any = null){
         let str = name
         str = ICL.AID_KEYCL+str;
         let eq = new QueryEntity('','');
         if(this.cds.ds_par){
             eq.pcell = this.cds.ds_par.ccells.obj_id
             eq.cont = JSON.stringify(this.cds.ds_par.currRecord.data)
+        }
+        if(type){
+            eq.type = type
         }
         let vars = {id:300,aid:name,eq:eq}
         await this.fetchInsAid(vars);

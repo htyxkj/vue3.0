@@ -80,8 +80,14 @@ export default class BipUpDownEditor extends Vue{
     }
 
     selectOK(bok:boolean){
-            let file:any = this.$refs.file
-            file.close()
+        let file:any = this.$refs.file
+        file.close()
+        if(bok){
+            this.cds.currRecord.c_state |= 2;
+            if(this.cds.ds_par){
+                this.cds.ds_par.currRecord.c_state |= 2;
+            }
+        }
     }
     focus(){
         this.$emit("focus",{})
