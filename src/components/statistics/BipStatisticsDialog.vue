@@ -293,9 +293,7 @@ export default class BipStatisticsDialog extends Vue {
         let selValue = [];
         for(var i=0;i<this.valuesCells.length;i++){
             let cel = this.valuesCells[i];
-            if((cel.attr & 0x2000)>0){
-                selValue.push(cel.id)
-            }
+            selValue.push(cel.id)
         }
         this.$emit("makeOK",this.tstatVl,selValue,this.chartTypeValue,false);
         this.close();
