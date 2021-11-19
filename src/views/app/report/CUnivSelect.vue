@@ -53,7 +53,7 @@
                     {{childDlg_title}}
                 </div>
             </span>
-            <el-scrollbar wrap-class="scrollbar-wrapper" style="height:460px" >
+            <el-scrollbar wrap-class="scrollbar-wrapper" class="dlg-content">
                <router-view/>
             </el-scrollbar>
         </el-dialog>
@@ -1058,5 +1058,11 @@ export default class CUnivSelect extends Vue {
     height: 18px;
     width: 18px;
     transform: translate(-25%, 15%);
+}
+.dlg-content{
+    height:460px;
+    .scrollbar-wrapper{
+        margin-right: 0px !important;
+    }
 }
 </style>
