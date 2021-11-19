@@ -1053,6 +1053,9 @@ export default class CUnivSelect extends Vue {
     .el-scrollbar__wrap{
         overflow: auto;
     }
+    .el-dialog{
+        margin-bottom: 0px;
+    }
 }
 .imgpointer {
     height: 18px;
