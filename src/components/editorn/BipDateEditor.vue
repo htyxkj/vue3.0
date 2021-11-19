@@ -16,12 +16,12 @@
                     <template v-if="condition"><!-- 报表条件 -->
                         <template v-if="dateType != 'week'">
                             <template v-if="dateFormat == 'yyyy'">
-                                <el-date-picker size="medium" :style="cell.desc?'width: calc(40% - 15px);':'width:45%'"
+                                <el-date-picker size="medium" :style="cell.desc?'width: calc(50% - 30px);':'width:calc(50% - 15px)'"
                                     v-model="startYModel"  @focus='focus' :type="dateType" :format="showFormat" :value-format="dateFormat"
                                     placeholder="选择年份" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                                 </el-date-picker>
                                 ~
-                                <el-date-picker size="medium" :style="cell.desc?'width: calc(40% - 15px);':'width:45%'"
+                                <el-date-picker size="medium" :style="cell.desc?'width: calc(50% - 30px);':'width:calc(50% - 15px)'"
                                     v-model="endYModel" @focus='focus' :type="dateType" :format="showFormat" :value-format="dateFormat"
                                     :picker-options="endYOption"
                                     placeholder="选择年份" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
