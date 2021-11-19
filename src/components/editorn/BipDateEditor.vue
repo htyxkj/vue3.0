@@ -62,7 +62,7 @@
                             :format="showFormat"
                             :value-format="dateFormat"
                             :picker-options="optionaIint"
-                            placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                            :placeholder="placeholder" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                         </el-date-picker>
                     </template>
                     <template v-if="cell.desc">
@@ -82,7 +82,7 @@
                     :format="showFormat"
                     :value-format="dateFormat"
                     :picker-options="optionaIint"
-                    placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                    :placeholder="placeholder" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
                 </el-date-picker>
             </template>
         </template>
@@ -182,6 +182,8 @@ export default class BipDateEditor extends Vue{
     endYModel:any='';
     endYOption:any=null;
 
+    placeholder:any = '请选择';
+
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
         if((this.cell.attr&0x400000)>0){
@@ -212,9 +214,11 @@ export default class BipDateEditor extends Vue{
             }else if(this.cell.type<=12 && this.cell.editName =='Y'){
                 this.dateType = 'year'
                 this.dateFormat = 'yyyy';
+                this.placeholder = "选择年份"
             }else if(this.cell.type<=12 && this.cell.editName =='M'){
                 this.dateType = 'month'
                 this.dateFormat = 'MM';
+                this.placeholder = "选择月份"
             }else if(this.cell.type===93){
                 this.dateType = 'datetime'
                 this.dateFormat = 'yyyy-MM-dd HH:mm:ss'
