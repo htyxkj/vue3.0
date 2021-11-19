@@ -235,7 +235,7 @@ export default class BipStatisticsDialog extends Vue {
             return (item.type !== 2 && item.type !== 3 && item.type !== 4 && item.type !== 5 && item.type !== 6 && item.type !== 8) &&item.isShow
         })
         this.valuesCells = this.env.dsm.ccells.cels.filter(item=>{
-            return (item.type == 2 || item.type == 3 || item.type == 4 || item.type == 5 || item.type == 6 || item.type == 8) &&item.isShow
+            return (item.type == 2 || item.type == 3 || item.type == 4 || item.type == 5 || item.type == 6 || item.type == 8) && item.isShow && (item.attr & 0x2000)>0
         })
         this.ganttDateCells = this.env.dsm.ccells.cels.filter(item=>{
             return (item.type == 93 || item.type == 91 || item.type == 92) &&item.isShow
@@ -293,7 +293,9 @@ export default class BipStatisticsDialog extends Vue {
         let selValue = [];
         for(var i=0;i<this.valuesCells.length;i++){
             let cel = this.valuesCells[i];
-            selValue.push(cel.id)
+            if((cel.attr & 0x2000)>0){
+                selValue.push(cel.id)
+            }
         }
         this.$emit("makeOK",this.tstatVl,selValue,this.chartTypeValue,false);
         this.close();
