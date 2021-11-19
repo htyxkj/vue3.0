@@ -15,18 +15,25 @@
                     </span>                     
                     <template v-if="condition"><!-- 报表条件 -->
                         <template v-if="dateType != 'week'">
-                            <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
-                                v-model="model1"
-                                @focus='focus'
-                                :picker-options="pickerOptions"
-                                :type="dateType"
-                                range-separator="~"
-                                :format="showFormat"
-                                :value-format="dateFormat"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
-                            </el-date-picker>
+                            <template v-if="dateFormat == 'yyyy'">
+                                <el-date-picker size="medium" :style="cell.desc?'width: calc(40% - 15px);':'width:45%'"
+                                    v-model="startYModel"  @focus='focus' :type="dateType" :format="showFormat" :value-format="dateFormat"
+                                    placeholder="选择年份" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                                </el-date-picker>
+                                ~
+                                <el-date-picker size="medium" :style="cell.desc?'width: calc(40% - 15px);':'width:45%'"
+                                    v-model="endYModel" @focus='focus' :type="dateType" :format="showFormat" :value-format="dateFormat"
+                                    :picker-options="endYOption"
+                                    placeholder="选择年份" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                                </el-date-picker>
+                            </template>
+                            <template v-else>
+                                <el-date-picker size="medium" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'"
+                                    v-model="model1" @focus='focus' :picker-options="pickerOptions" :type="dateType" range-separator="~"
+                                    :format="showFormat" :value-format="dateFormat" start-placeholder="开始日期" end-placeholder="结束日期"
+                                    placeholder="选择日期" :clearable="clearable" :disabled="(cell.attr&0x40)>0" @change="dataChange">
+                                </el-date-picker>
+                            </template>
                         </template>
                         <template v-else>
                             <el-row>
@@ -170,6 +177,11 @@ export default class BipDateEditor extends Vue{
     weekModel:any = null;//周选择器绑定值
     weekInput1Show:boolean = true;//周选择器上层input是否显示
     weekInputModel:any=null;//周选择器上层input显示内容
+
+    startYModel:any='';
+    endYModel:any='';
+    endYOption:any=null;
+
     mounted(){
         this.condition = (this.cds.ccells.attr&0x80)>0
         if((this.cell.attr&0x400000)>0){
@@ -271,13 +283,21 @@ export default class BipDateEditor extends Vue{
             }],
             firstDayOfWeek:1
         }
+        if(this.dateFormat != 'yyyy-MM-dd'){
+            this.pickerOptions={};
+        }
         this.optionaIint={
             disabledDate: (time:any) => {
                 return this.optionalInterval(time)
             },
             firstDayOfWeek:1
         }
-
+        this.endYOption={
+            disabledDate: (time:any) => {
+                return this.endYOptionalInterval(time)
+            },
+            firstDayOfWeek:1
+        }
     }
     //判断时间是否在可选范围内
     optionalInterval(time:Date){
@@ -393,6 +413,21 @@ export default class BipDateEditor extends Vue{
         }
         return false;
     }
+    /**
+     * 报表年度，结束年范围设置
+     */
+    endYOptionalInterval(time:any){
+        let endYear = time.getFullYear();
+        if(this.startYModel){
+            let startYear = parseInt(this.startYModel);
+            if(endYear<startYear){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
 
     dataChange(value:string|number|Array<any>){
         let vl:any = "";
@@ -402,6 +437,13 @@ export default class BipDateEditor extends Vue{
             vl = value;
         }
         value = vl;
+        if(this.condition && this.dateFormat == 'yyyy'){//报表范围年
+            if(this.startYModel && this.endYModel){
+                value = this.startYModel+"~"+this.endYModel;
+            }else{
+                value = this.startYModel || this.endYModel;
+            }
+        }
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
                 this.cds.setStateOrAnd(icl.R_EDITED)
@@ -483,6 +525,16 @@ export default class BipDateEditor extends Vue{
             if(this.cds&&this.cell){
                 if( this.model1 != this.model){
                     this.model1 = this.model
+                    if(this.condition && this.dateFormat == 'yyyy'){
+                        let vl = this.model.split("~");
+                        if(vl.length >= 2){
+                            this.startYModel = vl[0];
+                            this.endYModel = vl[1];
+                        }else{
+                            this.startYModel = '';
+                            this.endYModel = '';
+                        }
+                    }
                     if(this.showFormat =='HH:mm' && this.dateFormat=='HHmm'){
                         if(this.model1.length ==1){
                             this.model1 = "000"+this.model1
