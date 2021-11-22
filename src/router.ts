@@ -34,7 +34,12 @@ export default new Router({
           path: 'layoutDlg',
           name: 'layoutDlg',
           component: () => import('./views/app/CommonLayOut.vue'),
-        }
+        },{
+          //Test
+          path:'Test',
+          name:'Test',
+          component :()=> import('./custom/basicProject/Test1.vue')
+        },
       ]
     },
     {

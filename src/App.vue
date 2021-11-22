@@ -365,7 +365,7 @@ export default class App extends Vue {
             if(to.fullPath != '/'){
                 if (this.menusList.length > 0) { 
                     let me:any = baseTool.findMenu(to.query.pmenuid+''); 
-                    console.log(me)
+                    // console.log(me)
                     let menu:Menu = me;
                     if(!me)
                         return;

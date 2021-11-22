@@ -802,7 +802,7 @@ export default class CUnivSelect extends Vue {
             if(btns){
                 for(var i=0;i<btns.length;i++){
                     let item = btns[i]; 
-                    let btn1 = new BipMenuBtn('DLG',item.name)
+                    let btn1 = new BipMenuBtn(item.cmd,item.name)
                     btn1.setDlgType(item.dlgType)
                     btn1.setDlgCont(item.dlgCont)
                     btn1.setIconFontIcon(item.icon);

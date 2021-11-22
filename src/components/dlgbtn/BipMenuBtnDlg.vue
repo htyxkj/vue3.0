@@ -144,7 +144,6 @@ import { GlobalVariable } from '@/utils/ICL';
 import {BaseVariable} from "@/utils/BaseICL"
 import BipYgxzDia from './BipYGXZDia.vue';
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
-import { values } from "xe-utils";
 @Component({
     components: {BipYgxzDia,VueQr,BipGridInfo}
 })
@@ -281,54 +280,37 @@ export default class BipMenuBtnDlg extends Vue {
                 let command = me.command.split("&");
                 let pbuid = command[0].split("=");
                 let pmenuid = command[1].split("="); 
-                this.$router.push({
-                    path:'/layout',
-                    name:'layout',
-                    params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
-                    query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                })
+                if(pbuid[0] == 'pbuid'){
+                    this.$router.push({
+                        path:'/layout',
+                        name:'layout',
+                        params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
+                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                    })
+                }else if(pbuid[0] == 'pmenu'){
+                    if(this.btn.cmd=='DLG'){
+                        this.$router.push({
+                                path:'/'+pbuid[1],
+                                name:pbuid[1],
+                                params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
+                                query: {pmenuid:pmenuid[1]},
+                            })
+                    }else if(this.btn.cmd == 'DLG1'){
+                        let param = {
+                            childDlg_width:"50%",
+                            childDlg_title:me.menuName,
+                            obj_id:this.env.dsm.ccells.obj_id,
+                            router:{
+                                path:'/'+pbuid[1],
+                                name:pbuid[1],
+                                params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
+                                query: {pmenuid:pmenuid[1]},
+                            }
+                        };
+                        this.$bus.$emit("openChildDlg",param);
+                    }
+                }
             }
-            /** 旧版规则 **/
-            // let cont = btn.dlgCont.split(";");
-            // //H105;H103=H103P,bookclass.bid=bid,btype=btype,booklist.bcid=bcid;1=2
-            // let cont0 = cont[0]; //打开的菜单
-            // let cont1 = cont[1]; //数据值
-            // let cont2 = cont[2]; //条件值
-            // let cell = cont1.substring(0,cont1.indexOf(",")).split("=")
-            // cont1 = cont1.substring(cont1.indexOf(",")+1)
-            // let data = this.finCellData(this.env.dsm,cell[0])
-            // let cont1arr = cont1.split(",")
-            // let jsoncont:any = {};//传递的内容
-            // for(var i=0;i<cont1arr.length;i++){
-            //     let zd = cont1arr[i].split("=")
-            //     jsoncont[zd[1]] = data[zd[0]]
-            // }
-            // let cont2arr = cont2.split(",")
-            // let jsontj:any = {};//传递的内容
-            // for(var i=0;i<cont2arr.length;i++){
-            //     let zd = cont2arr[i].split("=")
-            //     let vl = data[zd[1]];
-            //     if(!vl)
-            //         vl = "'"+zd[1]+"'"
-            //     jsontj[zd[0]] = vl
-            // }  
-            // //打开的菜单
-            // let me = baseTool.findMenu(cont0);  
-            // if (!me) {
-            //     this.$notify.error( "没有" + cont0 + "菜单权限!" );
-            //     return false;
-            // }else{
-            //     let command = me.command.split("&");
-            //     let pbuid = command[0].split("=");
-            //     let pmenuid = command[1].split("="); 
-                
-            //     this.$router.push({
-            //         path:'/layout',
-            //         name:'layout',
-            //         params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
-            //         query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-            //     })
-            // }
         }else if(btn.dlgType == 'D'){ //调用后台程序 
             // let opera:any = this.env.dsm.opera;
             // if(opera && opera.statefld){

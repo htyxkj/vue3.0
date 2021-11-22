@@ -359,7 +359,7 @@
                             <div style="text-align: end;padding-right:5px;">
                                 <el-row>
                                     <el-col v-for="(item,index) in cardMenuList" :key="index" :span="4">
-                                        <template v-if="item.cmd == 'DLG'">
+                                        <template v-if="item.cmd == 'DLG' || item.cmd == 'DLG1'">
                                             <el-button :size="item.size" @click.native="invokecmd(item,rowIndex)" :disabled="!item.enable">
                                                 {{item.name}}
                                             </el-button>
@@ -524,7 +524,7 @@ export default class LayCelVexTable extends Vue {
         let mbs = this.env.mbs.menuList
 
         _.forEach(mbs,(item:any) => {
-            if( item.cmd == 'DLG'){
+            if( item.cmd == 'DLG' || item.cmd == 'DLG1'){
                 if((this.cds.ccells.attr & 0x40 )>0){
                     this.commBtns.push(item)
                 }else{
