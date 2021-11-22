@@ -194,6 +194,8 @@ export default class BipDateEditor extends Vue{
             if(this.model && this.model.indexOf("~") == -1){
                 if(this.cell.initValue == '[Y-M]'){
                     this.dataChange([this.model+"-01",this.model+"-"+new Date().getDate()])
+                }else if(this.cell.type==91 && this.cell.initValue == '[Y]'){
+                    this.dataChange([this.model+"-01-01",this.model+"-12-31"])
                 }else{
                     this.dataChange([this.model,this.model])
                 }

@@ -158,7 +158,7 @@ export default class BipCheckEditor extends Vue{
 </script>
 <style scoped>
 .checkbox_div{
-    height: 36px;
-    line-height: 36px
+    /* height: 36px; */
+    line-height: 32px
 }
 </style>
