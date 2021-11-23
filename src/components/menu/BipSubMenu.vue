@@ -2,12 +2,12 @@
     <el-submenu :index="item.menuId" popper-class='bip-nav-menu' :popper-append-to-body="appendBody">
         <div slot="title"  class="my-menu-item">
             <template v-if="item.menuIcon">
-                <img class="imgpointer" :src="uri+item.menuIcon"/>
+                <img class="bip-menu-icon" :src="uri+item.menuIcon"/>
             </template>
             <template v-else>
                 <i class="el-icon-menu"></i>
             </template>
-            <span slot="title">&nbsp;&nbsp;{{item.menuName}}</span>
+            <span slot="title">{{item.menuName}}</span>
         </div>
         <template v-for="child in item.childMenu">
             <bip-menu-item class="my-menu-item" v-if="child.childMenu&&child.childMenu.length>0" :item="child" :key="child.menuId" @lastClick="lastClick"></bip-menu-item>
@@ -15,12 +15,12 @@
                 <el-menu-item class="my-menu-item" v-if="child.menuattr != 4" :key="child.menuId" :index="child.menuId"  @click="closeMenu(child.command)"> 
                     <template slot="title" >
                         <template v-if="child.menuIcon">
-                            <img class="imgpointer" :src="uri+child.menuIcon"/>
+                            <img class="bip-menu-icon" :src="uri+child.menuIcon"/>
                         </template>
                         <template v-else>
                             <i class="el-icon-location"></i>
                         </template>
-                        <span slot="title">&nbsp;&nbsp;{{child.menuName}}</span>
+                        <span slot="title">{{child.menuName}}</span>
                     </template>
                 </el-menu-item> 
             </template>
@@ -91,12 +91,17 @@ export default class BipSubMenu extends Vue{
 }
 </script>
 <style lang="scss" scoped>
-.imgpointer{
+.bip-menu-icon{
     width: 18px;
     height: 18px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 18px;
+    margin-right: 8px;
 }
 .my-menu-item{
     font-size: 14px;
+    vertical-align:middle;
 }
 </style>
 

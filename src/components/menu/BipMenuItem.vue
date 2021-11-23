@@ -4,7 +4,7 @@
             <template v-if="item.childMenu.length === 0">
                 <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4"  @click="closeMenu(item.command)"> 
                     <i class="el-icon-menu"></i>
-                    <span slot="title">&nbsp;&nbsp;{{item.menuName}}</span>
+                    <span slot="title">{{item.menuName}}</span>
                 </el-menu-item>
             </template>
             <template v-else :index="item.menuId">
@@ -14,12 +14,12 @@
         <template v-else>
             <el-menu-item class="my-menu-item" :index="item.menuId" v-if="item.menuattr != 4" @click="closeMenu(item.command)"> 
                 <template v-if="item.menuIcon">
-                    <img class="imgpointer" :src="uri+item.menuIcon"/>
+                    <img class="bip-menu-icon" :src="uri+item.menuIcon"/>
                 </template>
                 <template v-else>
                     <i class="el-icon-menu"></i>
                 </template>
-                <span slot="title">&nbsp;&nbsp;{{item.menuName}}</span>
+                <span slot="title">{{item.menuName}}</span>
             </el-menu-item>
         </template>
     </div>
@@ -81,12 +81,17 @@ export default class BipMenuItem extends Vue{
 }
 </script>
 <style lang="scss" scoped>
-.imgpointer{
+.bip-menu-icon{
     width: 18px;
     height: 18px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 18px;
+    margin-right: 8px;
 }
 .my-menu-item{
     font-size: 14px;
+    vertical-align:middle;
 }
 </style>
 
