@@ -378,7 +378,9 @@ $--bip-comm-color:#ffffff;//f4f6fb
         margin-left: 0px !important;
         margin-right: 0px !important;
         position: revert !important;
-    }
+    };
+    scrollbar-width:thin;
+    scrollbar-color: #ccc #eee;
 }
 .bip-nav-menu::-webkit-scrollbar {
     width: 4px;
@@ -608,6 +610,8 @@ $--bip-comm-color:#ffffff;//f4f6fb
             padding-right: 0px;
             height: 100%;
             width: 100%;
+            scrollbar-width:thin;
+            scrollbar-color: #ccc #eee;
         }
         .el-scrollbar__wrap::-webkit-scrollbar {
             width: 4px;
@@ -664,6 +668,10 @@ $--bip-comm-color:#ffffff;//f4f6fb
     max-height: 62px !important;
 }
 
+.mytable-scrollbar{
+    scrollbar-width:thin;
+    scrollbar-color: #ccc #eee;
+}
 /*滚动条整体部分*/
 .mytable-scrollbar ::-webkit-scrollbar {
     width: 10px;
