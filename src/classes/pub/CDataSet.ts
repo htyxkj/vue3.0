@@ -239,6 +239,11 @@ export default class CDataSet {
     this.page.index = this.index;
     this.page.total = this.page.total+1
     this.checkGS();
+    if(this.ds_sub && this.ds_sub.length>0){
+      for(var i=0;i<this.ds_sub.length;i++){
+        this.init9DData(this.ds_sub[i]);
+      }
+    }
     return this.currRecord;
   }
 
@@ -1076,9 +1081,9 @@ export default class CDataSet {
     }
   }
   return bok;
-}
-//检查子表非空
-checkChildNotNull(cds:CDataSet):any{
+  }
+  //检查子表非空
+  checkChildNotNull(cds:CDataSet):any{
     let isok:any = null ;
     cds.ds_sub.forEach(cd0=>{
         if(isok == null){
@@ -1104,5 +1109,69 @@ checkChildNotNull(cds:CDataSet):any{
 
     })
   return isok;
+  }
+  /**
+   * 处理对象上  控制字段中的 `9D = 常量
+   */
+  async init9DData(cds:any){
+    let bool = false;
+    let sctrls = cds.ccells.sctrl;
+    if(sctrls){
+      let cc = sctrls.split(";");
+      for(var i=0;i<cc.length;i++){
+        let oneSc = cc[i];
+        if(oneSc.indexOf('`9D')!=-1){
+          bool = true;
+          oneSc = oneSc.split('=')[1];
+          let eq = new QueryEntity('','');
+          let data:any = await tools.getBipInsAidInfo(oneSc, 300,eq).then(res=>{
+            if(res.data.id==0){
+              let vrr = res.data.data.data
+              return vrr;
+            }
+            return null;
+          }).catch(err=>{
+            return err;
+          });
+          if(data && data.values.length >0){
+            let value = data.values;
+            let slink = data.slink;
+            slink = slink.substring(slink.indexOf("{")+1,slink.indexOf("}"))
+            let kvArr = slink.split(",");
+            for(var i=0;i<value.length;i++){
+              let vl = value[i];
+              cds.createRecord();
+              for(var key in cds.currRecord.data){
+                let cel:any = cds.getCell(key)
+                if(cel.initValue){
+                  cds.currRecord.data[key] = '';
+                }
+              }
+              for(var j =0;j<kvArr.length;j++){
+                let kv = kvArr[j].split("=");
+                cds.currRecord.data[kv[0]] = vl[data.cells.cels[kv[1]].id]
+              }
+              cds.checkAllGS();
+            }
+            cds.currRecord.c_state |= 2;
+            if(cds.ds_par){
+              cds.ds_par.currRecord.c_state |= 2;
+              let cels = cds.ccells.cels;
+              for(var i=0;i<cels.length;i++){
+                let cel = cels[i];
+                let script = cel.script;
+                if(script && script.indexOf("^") !=-1){
+                  let _id = script.substring(script.indexOf("^")+1,script.length-1);
+                  cds.checkGSByParID(_id);
+                }
+              }
+            }
+          }else{
+            bool = false;
+          }
+        }
+      }
+    }
+    return bool;
   }
 }
