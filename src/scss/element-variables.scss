@@ -388,7 +388,13 @@ $--bip-comm-color:#ffffff;//f4f6fb
 .bip-nav-menu::-webkit-scrollbar-thumb {
     background-color: #d9d9d9;
 }
-
+.bip-menu-scrollbar{
+    background-color: #fff;
+    .el-scrollbar__wrap{
+        scrollbar-width: none;
+        margin-right:0px;
+    }
+}
 /** 统计图表样式*/
 .charttitle{
     text-align: center;
