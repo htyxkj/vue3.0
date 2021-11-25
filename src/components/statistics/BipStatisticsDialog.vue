@@ -257,9 +257,6 @@ export default class BipStatisticsDialog extends Vue {
         if(this.valuesCells && this.valuesCells.length ==0){
             this.$notify.warning('当前页面不存在可统计的数据项字段！');
         }else{
-            for(var i=0;i<this.valuesCells.length;i++){
-                this.checkedCellsIndex.push(i);
-            }
             this.handleCheckAllChange(true);
             this.dialogTstat = true;
         }
@@ -267,6 +264,7 @@ export default class BipStatisticsDialog extends Vue {
     //表格统计 数据项全选
     handleCheckAllChange(val:any){
         if(val){
+            if(this.checkedCellsIndex.length == 0)
             for(var i=0;i<this.valuesCells.length;i++){
                 this.checkedCellsIndex.push(i);
             }
@@ -291,8 +289,8 @@ export default class BipStatisticsDialog extends Vue {
             return;
         }
         let selValue = [];
-        for(var i=0;i<this.valuesCells.length;i++){
-            let cel = this.valuesCells[i];
+        for(var i=0;i<this.checkedCellsIndex.length;i++){
+            let cel = this.valuesCells[this.checkedCellsIndex[i]];
             if((cel.attr & 0x2000)>0){
                 selValue.push(cel.id)
             }
