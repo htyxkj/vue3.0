@@ -44,7 +44,7 @@
          <template v-if="nodeId">
             <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
         </template>
-        <el-dialog  :visible.sync="childDlg"  class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false" @close="invokecmd({cmd:'FIND'})">
+        <el-dialog v-if="childDlg" :visible.sync="childDlg"  class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false" @close="invokecmd({cmd:'FIND'})">
             <!--弹出框头部-->
             <span slot="title">
                 <div class="el-dialog__title" style="padding-bottom:5px">
