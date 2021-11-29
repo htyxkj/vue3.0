@@ -1247,6 +1247,7 @@ export default class BaseApplet extends Vue{
             this.dataLoaded(this.qe,vv);
             this.setListMenuName();
         }
+        this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
     }
 
     async handleCurrentChange(value:number){

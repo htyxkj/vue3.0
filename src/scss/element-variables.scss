@@ -390,10 +390,6 @@ $--bip-comm-color:#ffffff;//f4f6fb
 }
 .bip-menu-scrollbar{
     background-color: #fff;
-    .el-scrollbar__wrap{
-        scrollbar-width: none;
-        margin-right:0px;
-    }
 }
 /** 统计图表样式*/
 .charttitle{
@@ -613,6 +609,7 @@ $--bip-comm-color:#ffffff;//f4f6fb
         padding-bottom: 20px;
         .el-scrollbar__wrap {
             overflow-x: hidden !important;
+            overflow-y: auto;
             padding-right: 0px;
             height: 100%;
             width: 100%;

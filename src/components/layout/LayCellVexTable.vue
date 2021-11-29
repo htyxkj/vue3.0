@@ -43,7 +43,7 @@
                 auto-resize :ref="this.cds.ccells.obj_id" v-if="beBill" border
                 :footer-method="footerMethod" :show-footer="haveFooterSum"
                 size="small" :data.sync="cds.cdata.data" row-id="id" resizable
-                :height="'auto'" :max-height="height"
+                height="auto" :max-height="height"
                 highlight-hover-row show-all-overflow="tooltip" show-header-overflow
                 highlight-current-row class="vxe-table-element mytable-scrollbar" :optimized="true"
                 :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"

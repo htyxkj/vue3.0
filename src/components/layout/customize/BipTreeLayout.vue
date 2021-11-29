@@ -1,6 +1,6 @@
 <template>
   <div style="background-color: #e8e8e8;hegiht:100%">
-    <el-tree :node-key="keyID" :ref="cds.ccells.obj_id" style="height: 585px;overflow: scroll;" lazy :load="loadNode" @node-click="handleNodeClick"
+    <el-tree :node-key="keyID" :ref="cds.ccells.obj_id" lazy :load="loadNode" @node-click="handleNodeClick"
       :props="defaultProps" :default-expanded-keys="expandedKeys" >
     </el-tree>
   </div>
