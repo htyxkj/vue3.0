@@ -39,6 +39,7 @@
         <template v-if="beBill">
             <!-- 单据录入表格-->
             <vxe-table :keep-source="false"
+                :span-method="rowspanMethod"
                 auto-resize :ref="this.cds.ccells.obj_id" v-if="beBill" border
                 :footer-method="footerMethod" :show-footer="haveFooterSum"
                 size="small" :data.sync="cds.cdata.data" row-id="id" resizable
