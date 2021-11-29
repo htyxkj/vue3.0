@@ -1260,6 +1260,9 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
         if(this.heightInfo){
                 this.height = (this.heightInfo.height-114)+"px";
+                if(this.$route.name == 'layoutDlg'){ //如果是子菜单弹出页面  高度不设置上线
+                    this.height = '5000px'
+                }
             }
         })
     }
