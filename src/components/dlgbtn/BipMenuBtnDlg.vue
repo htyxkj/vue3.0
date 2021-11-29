@@ -304,7 +304,7 @@ export default class BipMenuBtnDlg extends Vue {
                                 path:'/'+pbuid[1],
                                 name:pbuid[1],
                                 params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
-                                query: {pmenuid:pmenuid[1]},
+                                query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
                             }
                         };
                         this.$bus.$emit("openChildDlg",param);
