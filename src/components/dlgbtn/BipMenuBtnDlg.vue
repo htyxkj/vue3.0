@@ -288,14 +288,14 @@ export default class BipMenuBtnDlg extends Vue {
                         query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
                     })
                 }else if(pbuid[0] == 'pmenu'){
-                    if(this.btn.cmd=='DLG'){
+                    if(this.btn.cmd=='DLG2'){
                         this.$router.push({
                                 path:'/'+pbuid[1],
                                 name:pbuid[1],
                                 params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
                                 query: {pmenuid:pmenuid[1]},
                             })
-                    }else if(this.btn.cmd == 'DLG1'){
+                    }else if(this.btn.cmd == 'DLG'){
                         let param = {
                             childDlg_width:"50%",
                             childDlg_title:me.menuName,

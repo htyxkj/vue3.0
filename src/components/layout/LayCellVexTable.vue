@@ -566,18 +566,8 @@ export default class LayCelVexTable extends Vue {
         }
         //组成多表头
         this.initTableTitleGroup();
-        if(this.config){
-            if(this.config.type ==2){
-                if(this.heightInfo)
-                    this.height = (this.heightInfo.height-114)+"px";
-                else
-                    this.height = "450px"
-            }else if(this.config.type ==3){
-                this.height = "250px"
-            }
-        }else{
-            // this.config = {type :2};
-        }
+        if(this.heightInfo)
+            this.height = (this.heightInfo.height-114)+"px";
         this.initSfix();
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
@@ -1686,8 +1676,8 @@ export default class LayCelVexTable extends Vue {
         this.$nextTick(()=>{
             this.makeCommBtns();
             this.getCellLinks();
-             if(this.config && this.config.type ==2 && this.heightInfo){
-                    this.height = (this.heightInfo.height-114)+"px";
+            if(this.heightInfo){
+                this.height = (this.heightInfo.height-114)+"px";
             }
         })
     }
