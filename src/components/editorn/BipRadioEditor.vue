@@ -17,6 +17,9 @@
                         :key="item[cels[0].id]" 
                         :label="item[cels[0].id]" 
                         :value="item[cels[0].id]">{{item[cels[1].id]}}</el-radio> 
+                        <template v-if="have_other">
+                            <el-input size="mini" :placeholder="other_cell.labelString" style="width: 200px;padding-left:8px" v-model="other_model" @change="otherVlChange"></el-input>
+                        </template>
                     <template v-if="cell.desc">
                         <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
                             <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
@@ -54,6 +57,9 @@ export default class BipRadioEditor extends Vue{
     @Prop() bgrid!:boolean
     @Prop() row!:number
     @Prop() bipInsAid!:BipInsAidNew
+    other_cell:Cell=new Cell();//其他选项 输入值对象
+    other_model:any = '';
+    have_other:boolean = false;
     @Provide() model1:any = [];
     @Provide() clearable:boolean = true
     @Provide() multiple:boolean = false
@@ -66,6 +72,7 @@ export default class BipRadioEditor extends Vue{
     @Provide() cels!:Array<Cell>
 
     mounted(){
+        this.other_model = '';
         this.multiple = (this.cds.ccells.attr&0x80)>0
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
@@ -77,6 +84,22 @@ export default class BipRadioEditor extends Vue{
             this.model1 = this.model;
         this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         this.initOPtions()
+
+        //查询多选其他选项 输入值对象
+        if(this.cds&&this.cell){
+            if(this.cds){
+                let cels = this.cds.ccells.cels;
+                for(var i=0;i<cels.length;i++){
+                    let cel = cels[i];
+                    if(cel.id == this.cell.id + '_rem' && (cel.attr & 0x400)>0){
+                        this.other_cell = cel;
+                        this.have_other = true;
+                        this.other_model = this.cds.currRecord.data[this.other_cell.id];
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     initOPtions(){
@@ -121,10 +144,52 @@ export default class BipRadioEditor extends Vue{
                 if(this.cds.ds_par){
                     this.cds.ds_par.currRecord.c_state |= 2;
                 }
+                //有其他项并且当前选择中有 最后一项  其他项需变更为非空
+                if(this.have_other){
+                    let k = this.cels[0].id;
+                    let oth = this.options[this.options.length-1]
+                    let kvl = oth[k];
+                    if(value.indexOf(kvl) != -1){
+                        if((this.other_cell.attr & 0x2 ) <= 0){
+                            this.other_cell.attr = this.other_cell.attr | 0x2;
+                            this.other_cell.unNull = true;
+                            this.other_cell.isReq = true;
+                        }
+                    }else{
+                        if((this.other_cell.attr & 0x2 ) > 0){
+                            this.other_cell.attr = this.other_cell.attr ^ 0x2;
+                            this.other_cell.unNull = false;
+                            this.other_cell.isReq = false;
+                        }
+                    }
+                }
             }else{
                 this.model1 = this.model;
             }   
         } 
+    }
+
+    otherVlChange(value:any){
+        if(this.cds.currCanEdit()){
+            this.cds.setStateOrAnd(icl.R_EDITED)
+            let record = this.cds.currRecord
+            record.data[this.other_cell.id] = value
+            this.cds.currRecord = Object.assign({},record);
+            this.cds.cdata.data[this.cds.index] = Object.assign({},record)
+            const key:string = this.other_cell.id
+            if(this.cds.baseI){
+                this.cds.baseI.cellDataChange(this.cds,this.other_cell.id,value)
+            }
+            this.cds.cellChange(key,value);
+            this.cds.checkGS(this.other_cell);
+            this.cds.currRecord.c_state |= 2;
+            if(this.cds.ds_par){
+                this.cds.ds_par.currRecord.c_state |= 2;
+            }
+        }else{
+            let record = this.cds.currRecord
+            this.other_model = record.data[this.other_cell.id]
+        }
     }
 
     @Watch('bipInsAid')

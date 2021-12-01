@@ -393,6 +393,24 @@ export default class CUnivSelect extends Vue {
                         let p = command.split("&");
                         let pbuid = p[0].split("=")
                         let pmenuid = p[1].split("=")
+                        if(pbuid[0] == 'pmenu'){
+                                this.childDlg_width = "60%";
+                                this.childDlg_title = menu.menuName
+                                this.childDlg_icon = menu.menuIcon
+                                let param = {
+                                    childDlg_width:"60%",
+                                    childDlg_title:menu.menuName,
+                                    obj_id:this.dsm.ccells.obj_id,
+                                    router:{
+                                        path:'/'+pbuid[1],
+                                        name:pbuid[1],
+                                        params:{method:"CUSADD",pmenuid:pmenuid[1],cellid:"",jsoncont:{},jsontj:{}},
+                                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
+                                    }
+                                };
+                                this.openChildDlg(param);
+                            return;
+                        }
                         let res = await tools.getMenuParams(pbuid[1],pmenuid[1]);
                         if (res.data.id === 0) {
                             let uriParams = res.data.data.mparams;
@@ -412,6 +430,10 @@ export default class CUnivSelect extends Vue {
                                         query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
                                     }
                                 };
+                                if(pbuid[0] == 'pmenu'){
+                                    param.router.path = '/'+pbuid[1]
+                                    param.router.name = '/'+pbuid[1]
+                                }
                                 this.openChildDlg(param);
                             }else{
                                 this.$router.push({

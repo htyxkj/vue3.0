@@ -98,7 +98,7 @@ export default class BipCheckEditor extends Vue{
                 let cels = this.cds.ccells.cels;
                 for(var i=0;i<cels.length;i++){
                     let cel = cels[i];
-                    if(cel.id == this.cell.id + '_other' && (cel.attr & 0x400)>0){
+                    if(cel.id == this.cell.id + '_rem' && (cel.attr & 0x400)>0){
                         this.other_cell = cel;
                         this.have_other = true;
                         this.other_model = this.cds.currRecord.data[this.other_cell.id];

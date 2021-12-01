@@ -119,7 +119,7 @@ export default class App extends Vue {
     style:string="height:"+(this.height?this.height:'400')+"px";
     @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
     otherPage:any=["airSuperBI","Report","ItemAnalysis"];//单独展示页面,不在UI框架内的页面
-    childPage:any = ["Test","layoutDlg"]//子路由
+    childPage:any = ["CriticalIssuesDatabase","QualityProblemDatabase","Test","layoutDlg"]//子路由
     noLoginPage:any=["wOauthToken"];//不需要登陆展示的页面
     async created(){
         await this.$axios.get('./static/config.json').then((res:any) => { 

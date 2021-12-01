@@ -39,7 +39,17 @@ export default new Router({
           path:'Test',
           name:'Test',
           component :()=> import('./custom/basicProject/Test1.vue')
-        },
+        },{
+          //208项目 质量问题信息数据编辑页面
+          path:'QualityProblemDatabase',
+          name:'QualityProblemDatabase',
+          component :()=> import('./custom/bip-208/QualityProblemDatabase.vue')
+        },{
+          //208项目 严重及以上质量问题信息数据编辑页面
+          path:'CriticalIssuesDatabase',
+          name:'CriticalIssuesDatabase',
+          component :()=> import('./custom/bip-208/CriticalIssuesDatabase.vue')
+        }
       ]
     },
     {
@@ -197,6 +207,30 @@ export default new Router({
         path: '/GoalAchievementAnalysis',
         name: 'GoalAchievementAnalysis',
         component: () => import('./custom/bip-amb/report/GoalAchievementAnalysis.vue')
+      },
+      {
+        //阿米巴 指标/要素趋势分析(单巴)
+        path: '/EssentialFactorTrend',
+        name: 'EssentialFactorTrend',
+        component: () => import('./custom/bip-amb/report/EssentialFactorTrend.vue')
+      },
+      {
+        //阿米巴 指标/要素趋势分析(多巴)
+        path: '/MultipleEssentialFactorTrend',
+        name: 'MultipleEssentialFactorTrend',
+        component: () => import('./custom/bip-amb/report/MultipleEssentialFactorTrend.vue')
+      },
+      {
+        //阿米巴  月度经营目标趋势分析
+        path: '/MonthGoalAchievementTrend',
+        name: 'MonthGoalAchievementTrend',
+        component: () => import('./custom/bip-amb/report/MonthGoalAchievementTrend.vue')
+      },
+      {
+        //阿米巴  产值目标趋势分析
+        path: '/OutputvalueTargetAnalysis',
+        name: 'OutputvalueTargetAnalysis',
+        component: () => import('./custom/bip-amb/report/OutputvalueTargetAnalysis.vue')
       },
       {
           //阿米巴会计期间

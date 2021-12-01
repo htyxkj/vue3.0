@@ -2,10 +2,12 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>
+ <!--            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
+            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period> -->
+            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <el-date-picker v-model="to_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
             <amb-tree-dialog class="topdiv1" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree-dialog>
-            <div class="topdiv2"><!-- 刷新 -->
+            <div class="topdiv1"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData"  class="bip_btn_primary">      
                     <i class="el-icon-search"></i>
                     <span>查找</span>
@@ -28,6 +30,7 @@ import Period from "../components/Period.vue"//阿米期间
 import BipChart from "@/components/chart/BipChart.vue"
 import { BIPUtil } from "@/utils/Request";
 import {BipMenuBtn} from '@/classes/BipMenuBtn'
+import moment from 'moment';
 let tools = BIPUtil.ServApi;
 @Component({
     components: {
@@ -44,13 +47,17 @@ export default class ProfitLossFunction extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
-    fm_period_id:any = "";//开始期间
-    to_period_id:any = "";//结束期间
+ /*    fm_period_id:any = "";//开始期间
+    to_period_id:any = "";//结束期间 */
+    fm_date:any =""; //开始时间
+    to_date:any=""; //结束时间  
     calendar_id:any = "";
     treeHeight:any ="500";
     chartStyle:string = "height :400px;";
     chartOption:any = null;
     async created() {
+        this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
+        this.to_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.treeHeight =  this.height -60
         this.initChartOption();
     }
@@ -101,7 +108,7 @@ export default class ProfitLossFunction extends Vue {
     }
     async initData(){
         let option:any = this.initChartOption();
-        if(this.amb_purposes_id !="" && this.amb_group_ids.length>0 && this.fm_period_id && this.to_period_id){
+        if(this.amb_purposes_id !="" && this.amb_group_ids.length>0 && this.fm_date && this.to_date){
             let btn1 = new BipMenuBtn("DLG","经营趋势分析")
             btn1.setDlgType("D")
             btn1.setDlgCont("amb.serv.util.report.ProfitsInvoke*202;0;0");//职能损益表
@@ -109,8 +116,11 @@ export default class ProfitLossFunction extends Vue {
             let prarm = {
                 "purpose_id":this.amb_purposes_id,//核算目的
                 "group_ids":this.amb_group_ids, //阿米巴集合
-                "fm_period_id":this.fm_period_id,//开始期间
-                "to_period_id":this.to_period_id   //结束期间
+                /* "fm_period_id":this.fm_period_id,//开始期间
+                "to_period_id":this.to_period_id   //结束期间 */
+                "fm_date":this.fm_date,
+                "to_date":this.to_date
+                
             }
 
             let v = JSON.stringify(prarm);
@@ -140,7 +150,7 @@ export default class ProfitLossFunction extends Vue {
         this.amb_purposes_id = value.id;
         // this.initData();
     }
-    //期间发生变化
+   /*  //期间发生变化
     fm_Period_change(value:any){
         this.fm_period_id = value;
         // this.initData();
@@ -149,6 +159,14 @@ export default class ProfitLossFunction extends Vue {
     to_Period_change(value:any){
         this.to_period_id = value;
         // this.initData();
+    } */
+    //期间发生变化
+    fm_dateChange(value:any){
+        this.fm_date = moment(value).format("YYYY-MM-DD")       
+    }
+    //期间发生变化
+    to_dateChange(value:any){
+        this.to_date = moment(value).format("YYYY-MM-DD")  
     }
     //阿米巴发生变化
     treeChange(checkData:any){

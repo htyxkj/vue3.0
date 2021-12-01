@@ -38,7 +38,7 @@ export default class BipChart extends Vue {
             if(!this.myChart){
                 this.myChart = echarts.init(this.$refs.chart as HTMLCanvasElement); 
             }
-            this.myChart.setOption(this.option);  
+            this.myChart.setOption(this.option,true);  
         }
     }
     @Watch("chartStyle")
