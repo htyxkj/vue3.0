@@ -60,7 +60,7 @@ export default class BipMenuBarUI extends Vue{
         for(var i=0;i< this.mbs.menuList.length;i++){
             this.btnShow.push(false)
             let btn:any = this.mbs.menuList[i];
-            if(btn.cmd =='SAVE'){
+            if(btn.cmd =='SAVE' && this.cds.currRecord){
                 if ((this.cds.currRecord.c_state & 2) > 0 || (this.cds.currRecord.c_state & 1) > 0) {
                     this.btnShow[i] = true;
                     continue;
@@ -85,7 +85,7 @@ export default class BipMenuBarUI extends Vue{
                 }else{
                     this.btnShow[i] = true;
                 }
-            }else if(btn.cmd =='DEL'){
+            }else if(btn.cmd =='DEL' && this.cds.currRecord){
                 if ((this.cds.currRecord.c_state & 1) > 0) {
                     this.btnShow[i] = false;
                     continue;
