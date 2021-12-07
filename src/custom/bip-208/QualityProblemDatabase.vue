@@ -1,119 +1,167 @@
 <template>
- <el-row v-if="initOK" v-loading.fullscreen.lock="fullscreenLoading">
-    <div class="bip-main-container">
-        <el-scrollbar style="height:400px;margin-bottom:0px !important;padding-bottom:0px !important" >
-            <el-form label-position="right" label-width="120px" >
-                 <template>
-                    <el-container>
-                        <el-main>
-                            <el-row>
-                                <bip-comm-editor v-if="celsAll[2]"  :cell="celsAll[2]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[3]"  :cell="celsAll[3]" :cds="cell" :row="cell.index" />
-                            </el-row>
-                        </el-main>
-                    </el-container>
-                </template>
-                <template>
-                    <el-container>
-                        <el-header>故障件基本信息</el-header>
-                        <el-main>
-                            <el-row>
-                                <bip-comm-editor v-if="celsAll[4]"  :cell="celsAll[4]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[5]"  :cell="celsAll[5]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[6]"  :cell="celsAll[6]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[7]"  :cell="celsAll[7]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[8]"  :cell="celsAll[8]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[9]"  :cell="celsAll[9]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[10]"  :cell="celsAll[10]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[11]"  :cell="celsAll[11]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[12]"  :cell="celsAll[12]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[13]"  :cell="celsAll[13]" :cds="cell" :row="cell.index" />
-                                
-                                <bip-comm-editor v-if="celsAll[14]"  :cell="celsAll[14]" :cds="cell" :row="cell.index" />
-                            
-                            </el-row>
-                        </el-main>
-                    </el-container>
-                </template>
-                <template>
+    <el-row v-if="initOK" v-loading.fullscreen.lock="fullscreenLoading" class="bip-lay">
+         <div>  
+            <el-scrollbar style="height:400px;margin-bottom:0px !important;padding-bottom:0px !important">
+                <el-form label-position="right" label-width="120px">
+                    <template>
                         <el-container>
-                            <el-header>质量问题信息</el-header>
                             <el-main>
                                 <el-row>
-                                    <bip-comm-editor v-if="celsAll[15]"  :cell="celsAll[15]" :cds="cell" :row="cell.index" />
-                                    <bip-comm-editor v-if="celsAll[16]"  :cell="celsAll[16]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[2]"  :cell="celsAll[2]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[3]"  :cell="celsAll[3]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[47]"  :cell="celsAll[47]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[48]"  :cell="celsAll[48]" :cds="cell" :row="cell.index" />
                                 </el-row>
                             </el-main>
                         </el-container>
-                </template>
-                <template>
-                    <el-container>
-                        <el-aside width="200px">原因分类(可多选)</el-aside>
-                        <el-main>
-                            <el-row>
-                                <bip-comm-editor v-if="celsAll[17]" :cell="celsAll[17]"  :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[19]" :cell="celsAll[19]"  :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[21]" :cell="celsAll[21]"  :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[23]" :cell="celsAll[23]"  :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[25]"  :cell="celsAll[25]" :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[26]" :cell="celsAll[26]"  :cds="cell" :row="cell.index" />
-                                <bip-comm-editor v-if="celsAll[28]"  :cell="celsAll[28]" :cds="cell" :row="cell.index" />
-                                <!-- 软件问题 -->
-                                <bip-comm-editor v-if="celsAll[29]" :cell="celsAll[29]"  :cds="cell" :row="cell.index" />
-                                <!-- 元器件问题 -->
-                                <bip-comm-editor v-if="celsAll[31]" :cell="celsAll[31]"  :cds="cell" :row="cell.index" />
-                                <!-- 其他问题 -->
-                                <bip-comm-editor v-if="celsAll[33]"  :cell="celsAll[33]" :cds="cell" :row="cell.index" />
-                            
-                                
-                            </el-row>
-                        </el-main>
-                    </el-container>
-                </template>
-                <template>
-                    <el-container>
-                        <el-main>
-                            <el-row>
-                                <!-- 是否批次问题 -->
-                                <bip-comm-editor v-if="celsAll[34]"  :cell="celsAll[34]" :cds="cell" :row="cell.index" />
-                                <!-- 问题发生环节 -->
-                                <bip-comm-editor v-if="celsAll[35]" :cell="celsAll[35]"  :cds="cell" :row="cell.index" />
-                            </el-row>
-                        </el-main>
-                    </el-container>
-                </template>
-                <template>
+                    </template>
+                    <template>
                         <el-container>
-                            <el-header>纠正措施</el-header>
+                            <el-header>故障件基本信息</el-header>
                             <el-main>
                                 <el-row>
-                                    <!-- 正措施概述 -->
-                                    <bip-comm-editor v-if="celsAll[37]"  :cell="celsAll[37]" :cds="cell" :row="cell.index" />
-                                    <!-- 归零方式 -->
-                                    <bip-comm-editor v-if="celsAll[38]"  :cell="celsAll[38]" :cds="cell" :row="cell.index" />
-                                    <!-- 问题处理方式 -->
-                                    <bip-comm-editor v-if="celsAll[39]" :cell="celsAll[39]"  :cds="cell" :row="cell.index" />
-                                    <!-- 编辑人 -->
-                                    <bip-comm-editor v-if="celsAll[41]"  :cell="celsAll[41]" :cds="cell" :row="cell.index" /> 
-                                    <!-- 编辑时间 -->
-                                    <bip-comm-editor v-if="celsAll[42]"  :cell="celsAll[42]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[4]"  :cell="celsAll[4]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[5]"  :cell="celsAll[5]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[6]"  :cell="celsAll[6]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[7]"  :cell="celsAll[7]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[8]"  :cell="celsAll[8]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[9]"  :cell="celsAll[9]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[10]"  :cell="celsAll[10]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[11]"  :cell="celsAll[11]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[12]"  :cell="celsAll[12]" :cds="cell" :row="cell.index" />
+                                    <bip-comm-editor v-if="celsAll[13]"  :cell="celsAll[13]" :cds="cell" :row="cell.index" />
+                                    
+                                    <bip-comm-editor v-if="celsAll[14]"  :cell="celsAll[14]" :cds="cell" :row="cell.index" />
+                                
                                 </el-row>
                             </el-main>
                         </el-container>
-                </template>
-            </el-form> 
-        </el-scrollbar> 
+                    </template>
+                    <template>
+                            <el-container>
+                                <el-header>质量问题信息</el-header>
+                                <el-main>
+                                    <el-row>
+                                        <bip-comm-editor v-if="celsAll[15]"  :cell="celsAll[15]" :cds="cell" :row="cell.index" />
+                                        <bip-comm-editor v-if="celsAll[16]"  :cell="celsAll[16]" :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                </el-main>
+                            </el-container>
+                    </template>
+                    <template>
+                        <el-container style="border: 0.5px solid #EBEEF5;">
+                            <el-aside width="200px">原因分类(可多选)</el-aside>
+                            <el-main style="border-left: 0.5px solid #EBEEF5;padding:0px;">
+                                <el-row class="nt-rowStyle">
+                                    <bip-comm-editor v-if="celsAll[17]" :cell="celsAll[17]"  :cds="cell" :row="cell.index"  />
+                                </el-row>
+                                <el-row class="nt-rowStyle">
+                                    <bip-comm-editor v-if="celsAll[19]" :cell="celsAll[19]"  :cds="cell" :row="cell.index" />
+                                </el-row>
+                                <el-row class="nt-rowStyle">   
+                                    <bip-comm-editor v-if="celsAll[21]" :cell="celsAll[21]"  :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="nt-rowStyle"> 
+                                    <bip-comm-editor v-if="celsAll[23]" :cell="celsAll[23]"  :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="nt-rowStyle"> 
+                                    <bip-comm-editor v-if="celsAll[25]"  :cell="celsAll[25]" :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="nt-rowStyle"> 
+                                    <bip-comm-editor v-if="celsAll[26]" :cell="celsAll[26]"  :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="nt-rowStyle"> 
+                                    <bip-comm-editor v-if="celsAll[28]"  :cell="celsAll[28]" :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="nt-rowStyle"> 
+                                    <!-- 软件问题 -->
+                                    <bip-comm-editor v-if="celsAll[29]" :cell="celsAll[29]"  :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="nt-rowStyle"> 
+                                    <!-- 元器件问题 -->
+                                    <bip-comm-editor v-if="celsAll[31]" :cell="celsAll[31]"  :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                <el-row class="et-rowStyle"> 
+                                    <!-- 其他问题 -->
+                                    <bip-comm-editor v-if="celsAll[33]"  :cell="celsAll[33]" :cds="cell" :row="cell.index" />
+                                
+                                    
+                                </el-row>
+                            </el-main>
+                        </el-container>
+                    </template>
+                    <template>
+                        <el-container>
+                            <el-main>
+                                <el-row>
+                                    <!-- 是否批次问题 -->
+                                    <bip-comm-editor v-if="celsAll[34]"  :cell="celsAll[34]" :cds="cell" :row="cell.index" />
+                                    <!-- 问题发生环节 -->
+                                    <bip-comm-editor v-if="celsAll[35]" :cell="celsAll[35]"  :cds="cell" :row="cell.index" />
+                                </el-row>
+                            </el-main>
+                        </el-container>
+                    </template>
+                    <template>
+                            <el-container>
+                                <el-header>纠正措施</el-header>
+                                <el-main>
+                                    <el-row>
+                                        <!-- 正措施概述 -->
+                                        <bip-comm-editor v-if="celsAll[37]"  :cell="celsAll[37]" :cds="cell" :row="cell.index" />
+                                        <!-- 归零方式 -->
+                                        <bip-comm-editor v-if="celsAll[38]"  :cell="celsAll[38]" :cds="cell" :row="cell.index" />
+                                        <!-- 问题处理方式 -->
+                                        <bip-comm-editor v-if="celsAll[39]" :cell="celsAll[39]"  :cds="cell" :row="cell.index" />
+                                        <!-- 编辑人 -->
+                                        <bip-comm-editor v-if="celsAll[41]"  :cell="celsAll[41]" :cds="cell" :row="cell.index" /> 
+                                        <!-- 编辑时间 -->
+                                        <bip-comm-editor v-if="celsAll[42]"  :cell="celsAll[42]" :cds="cell" :row="cell.index" />
+                                    </el-row>
+                                </el-main>
+                            </el-container>
+                    </template>
+                    
+                </el-form> 
+            </el-scrollbar> 
+        </div>
         <template>
             <el-row class="menubar" style="text-align: center">
-                <el-button class="el-button bip-menu-bar el-button--default el-button--mini bip_btn_primary" style="border-radius:8px" @click="saveData">     
-                    <template>
-                        <i class="iconfont icon-bip-save"></i>保存
-                    </template>      
-                </el-button>      
+                <template v-if="edit_btnShow">
+                    <el-button class="el-button bip-menu-bar el-button--default el-button--mini bip_btn_primary" style="border-radius:8px" @click="addData">     
+                        <template>
+                            <i class="iconfont icon-bip-edit"></i>新建
+                        </template>      
+                    </el-button> 
+                </template>
+                <template  v-if="copy_btnShow">
+                    <el-button class="el-button bip-menu-bar el-button--default el-button--mini bip_btn_default" style="border-radius:8px" @click="copyData">     
+                        <template>
+                            <i class="iconfont icon-bip-copy"></i>复制
+                        </template>      
+                    </el-button> 
+                </template>
+                <template v-if="save_btnShow">
+                    <el-button class="el-button bip-menu-bar el-button--default el-button--mini bip_btn_primary" style="border-radius:8px" @click="saveData">     
+                        <template>
+                            <i class="iconfont icon-bip-save"></i>保存
+                        </template>      
+                    </el-button>  
+                </template>
+                <template  v-if="del_btnShow">
+                    <el-button class="el-button bip-menu-bar el-button--default el-button--mini bip_btn_danger" style="border-radius:8px" @click="delData">     
+                        <template>
+                            <i class="iconfont icon-bip-delete"></i>删除
+                        </template>      
+                    </el-button> 
+                </template>
+
             </el-row>
         </template>
-    </div>
- </el-row>
+
+       
+    
+</el-row>
 </template>
 
 
@@ -127,7 +175,6 @@ import { Cell } from "@/classes/pub/coob/Cell";
 import QueryEntity from '@/classes/search/QueryEntity';
 import QueryCont from '@/classes/search/QueryCont';
 import BipInsAidNew from '@/classes/BipInsAidNew';
-import BipMenuBar from "@/classes/pub/BipMenuBar";
 import BipMenuBtnDlg from '@/components/dlgbtn/BipMenuBtnDlg.vue';
 import { CommICL } from "@/utils/CommICL";
 let icl = CommICL;
@@ -143,77 +190,71 @@ export default class QualityProblemDatabase extends Vue {
     cell:any = new CDataSet("");
     params:any = {};  //参数
     celsAll:Array<Cell> = [];
-    mcels:Array<Cell> = [];  //调用通用组件字段
     model1:any=[];
     bipInsAid!:BipInsAidNew  //参照数据集合
     cellId:any = ""
     initOK:Boolean =false;
-    mbs: BipMenuBar = new BipMenuBar(0);
     problemElementHeight:any =""
     switchHide:any={};
     fullscreenLoading: boolean = false;
+    listIndex: number = -1;
+    edit_btnShow:boolean = false;
+    copy_btnShow:boolean = false;
+    save_btnShow:boolean = false;
+    del_btnShow:boolean = false;
+ 
+
     async created(){
+ 
         this.params = this.$route.params;
-        this.cellId = this.params.cellid;
+        this.cellId = "P30015";             //this.params.cellid;
         this.cell = await this.getCell(this.cellId);
         this.celsAll = this.cell.ccells.cels;
-        for (var i = 0; i < 18; i++) {
-            this.mcels.push(this.cell.ccells.cels[i]);
-        }  
-        await this.initData()
         console.log(this.cell);
         
-     
-      
+        if(this.params.method =='dlg'){
+            await this.initData()
+             this.edit_btnShow =true;
+             this.copy_btnShow =true;
+             this.save_btnShow =true;
+             this.del_btnShow =true;
+        }  
+        if(this.params.method=='CUSADD'){
+            this.cell.createRecord();
+            this.initOK = true;
+            this.save_btnShow = true;
+        }
+            
+        
+            
+
     }
     
-    mounted() {
-     console.log("AAA");
-      
+    async mounted() {
+     
     }
   
     //查询数据
     async initData() {
         let sid = this.params.jsoncont[0].sid;
-        if(sid){
-            let dataStr = "{sid:'"+sid+"'}";
-            let qe:QueryEntity = new QueryEntity(this.cellId,this.cellId,dataStr);
-            qe.page.pageSize=1
-            let vv = await tools.query(qe);
-            this.cell.clear();
-            this.cell.createRecord();
-            this.cell.currRecord = vv.data.data.data.data[0];
-            this.cell.cdata.data = vv.data.data.data.data;
-          
-       }else{
-           this.cell.createRecord();
-       }
-          this.initOK = true;
+        
+        let dataStr = "{sid:'"+sid+"'}";
+        let qe:QueryEntity = new QueryEntity(this.cellId,this.cellId,dataStr);
+        qe.page.pageSize=1
+        let vv = await tools.query(qe);
+        this.cell.clear();
+        this.cell.createRecord();
+        this.cell.currRecord = vv.data.data.data.data[0];
+        this.cell.cdata.data = vv.data.data.data.data;
+        this.initOK = true;
     }
  
 
     //保存
-  /*   async saveData(){
-        console.log(this.cell);
-        
-        let res = await this.cell.saveData();
-        if (res.status == 200) {
-            let data = res.data;
-            if (data.id == 0) {
-                let ord: any = data.data;                
-                if(data.message == '操作成功！'){
-                    this.$message.success(data.message);
-
-                    this.$bus.$emit("tableDatachange",this.cell.ccells.obj_id)
-                }else{
-                    this.$message.warning(data.message);
-                    }
-                }else{
-                    this.$message.warning(data.message);
-            }
-        }  
-    } */
+   
   async saveData() {
+      console.log(this.cell);
+      
         let bok = this.checkNotNull(this.cell); 
         if(!bok)
             return ;
@@ -244,6 +285,10 @@ export default class QualityProblemDatabase extends Vue {
                          
                         //清空主健旧值
                         this.cell.clearOldpk();
+
+                        this.edit_btnShow = true;
+                        this.copy_btnShow = true;
+                        this.del_btnShow = true;
                     }else{
                         this.$message.warning(data.message);
                     }
@@ -339,6 +384,136 @@ export default class QualityProblemDatabase extends Vue {
         
         return bok;
     }
+    //新建数据
+    addData(){
+        if (this.cell.currRecord && (this.cell.currRecord.c_state & 2) > 0) {
+                this.$alert(
+                    `当前数据没有保存，请先保存当前行数据`,
+                    `系统提醒`,
+                    { type: "info" }
+                ).catch(() => {
+                    console.log("取消");
+                });
+                return;
+            }
+            if(this.cell.currRecord && this.cell.currRecord.c_state&icl.R_INSERT){
+                return 
+            }
+            this.cell.createRecord();
+            if(this.cell.ds_sub){
+                for(var i=0;i<this.cell.ds_sub.length ;i++){
+                    this.cell.ds_sub[i].clear();
+                }
+            }
+            this.edit_btnShow =false;
+            this.copy_btnShow =false;
+            this.del_btnShow =false;
+            this.save_btnShow =true;
+            this.$bus.$emit("tableDatachange",this.cell.ccells.obj_id)
+    }
+    //删除数据
+    delData(){
+        let states = this.cell.currRecord.c_state
+            if((states&icl.R_INSERT)>0){
+                //新建状态
+                this.cell.removeIndex(this.cell.index)
+            }else{
+                let candel = this.cell.canDel()
+                if(candel){
+                    let crd = this.cell.currRecord
+                    let _idx = this.cell.ccells.x_pk;
+                    if(_idx == -1){
+                        let pkindex = this.cell.ccells.pkindex;
+                        if(pkindex){
+                            _idx = pkindex[0];
+                        }
+                    }
+                    let id = this.cell.ccells.cels[_idx].id
+                    let sid = crd.data[id]
+                    this.$confirm(`确定删除当前${sid}记录吗？`,
+                        `系统提醒`,
+                        { type: "warning" }
+                    ).then(()=>{
+                        this.cell.currRecord.c_state = 4
+                        this.fullscreenLoading = true
+                        this.cell.saveData().then((res:any)=>{
+                            if(res.data.id ==0){
+                                // this.dsm.currRecord.clear();
+                                this.cell.cdata.data.splice(this.cell.page.index,1); 
+                                this.cell.currRecord = this.cell.cdata.data[this.cell.page.index]
+                                if(this.cell.ds_sub){
+                                    for(var i=0;i<this.cell.ds_sub.length ;i++){
+                                        this.cell.ds_sub[i].clear();
+                                    }
+                                }
+                                 
+                                this.$bus.$emit("tableDatachange",this.cell.ccells.obj_id)
+                                this.cell.page.total--;
+                                this.del_btnShow = false;
+                                this.copy_btnShow = false;
+                                this.save_btnShow = false;
+                               // this.setListMenuName();
+                            }else{
+                                this.$notify.error(res.data.message);
+                            }
+                        }).finally(()=>{
+                            this.fullscreenLoading = false
+                        })
+                    }).catch(() => {
+                        return;
+                    });
+                }
+            }
+    }
+    //复制数据
+    async copyData(){
+         if ((this.cell.currRecord.c_state & 2) > 0) {
+                this.$alert(
+                    `当前数据没有保存，请先保存当前行数据`,
+                    `系统提醒`,
+                    { type: "info" }
+                ).catch(() => {
+                    console.log("取消");
+                });
+                return;
+            }
+            let oldData = Object.assign({},this.cell.currRecord.data);
+            let oldPage = Object.assign({},this.cell.page);
+            let u = window.sessionStorage.getItem('user');
+            if(u){
+                this.cell.currRecord = this.cell.createRecord();
+                this.cell.currRecord.c_state=3; 
+                for(var i=0;i<this.cell.ccells.cels.length;i++){
+                    let cell = this.cell.ccells.cels[i]
+                    if(!cell.initValue && (cell.attr & 1) <= 0 && (cell.attr & 0x8000)<=0){
+                        this.cell.currRecord.data[cell.id] = oldData[cell.id]
+                    }
+                }
+                this.cell.page = oldPage;
+                let crd = this.cell.currRecord;
+                this.cell.page.index = this.cell.cdata.data.length - 1;
+                this.edit_btnShow = false;
+                this.copy_btnShow = false;
+                this.del_btnShow = false;
+                //this.setListMenuName();
+                //设置当前记录审批流程信息
+                /* if(crd != null && this.cell.opera){
+                    let params = {
+                        sid: crd.data[this.cell.opera.pkfld],
+                        sbuid: crd.data[this.cell.opera.buidfld],
+                        statefr: crd.data[this.cell.opera.statefld],
+                        stateto: crd.data[this.cell.opera.statefld],
+                        spuserId: ""
+                    }  
+                    this.cea = new CeaPars(params);
+                    this.cell.ceaPars = this.cell;
+                } */
+                await this.cell.checkAllGS()
+                this.$bus.$emit("tableDatachange",this.cell.ccells.obj_id)
+                this.$message.success("复制成功！")
+            }
+    }
+
     //获取对象
     async getCell(cellid: string) {
         let res = await tools.getCCellsParams(cellid);
@@ -353,28 +528,7 @@ export default class QualityProblemDatabase extends Vue {
             return new CDataSet("");
         }
     }
-    //调用辅助查询数据
-    async getAssistData(){
-        let qe:QueryEntity = new QueryEntity('','');
-        qe.page.currPage = 1;
-        qe.page.pageSize = 20;
-        qe.cont = "";
-
-        let allCont = [];
-        let oneCont = []; 
-        //classes/search/QueryCont'; 有详细说明
-        let qCont = new QueryCont('usrcode','admin',12);
-        qCont.setContrast(3);
-        oneCont.push(qCont);
-        if(oneCont.length !=0){
-        allCont.push(oneCont);
-            qe.cont = "~" + JSON.stringify(allCont);
-        }else{
-            qe.cont = "";
-        }
-        let vv = await tools.getBipInsAidInfo('SOPR',200,qe);
-        console.log(vv);
-    }
+     
     async initGetVal(){
         if(this.params){
             if(this.params.method =='dlg'){//DLG 关联
@@ -382,33 +536,37 @@ export default class QualityProblemDatabase extends Vue {
             }
         }
     }
-    async getAssistData1(){
-        let qe: QueryEntity = new QueryEntity("", "");
-        qe.page.currPage = 1;
-        qe.page.pageSize = 50000; 
-        let res = await tools.getBipInsAidInfo("C.DESIGNQUE", 300, qe);
-        console.log(res);
-        console.log(res.data.data.data.values);
-        this.bipInsAid=res.data.data.data
-    }
-   
+    
+
+     
   
 }
 </script>
 <style lang="scss" scoped>
+    
     .el-header {
-    background-color: #B3C0D1;
     color: #333;
     text-align: center;
-    line-height: 60px;
+    line-height: 40px;
+    border-top:0.5px solid #EBEEF5;
+    padding-top: 30px;
+    font-weight:bold;
+
   }
    .el-aside {
     color: #333;
     text-align: center;
     line-height: 200px;
     margin: auto 0;
+    font-weight:bold;
   }
-  .el-main {
-    border: 0.5px solid #EBEEF5;
+  .nt-rowStyle{
+      padding: 10px 10px 3px 10px;
+      border-bottom: 0.5px solid #EBEEF5;
   }
+  .et-rowStyle{
+      padding: 10px 10px 3px 10px;
+      
+  }
+   
 </style>
