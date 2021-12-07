@@ -59,6 +59,20 @@
             </template>
         </template>
     </template>
+    <el-dialog :visible.sync="childDlg" @close="dlgRouterClose" class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false">
+        <!--  @close="invokecmd({cmd:'FIND'})" -->
+        <!--弹出框头部-->
+        <span slot="title">
+            <div class="el-dialog__title" style="padding-bottom:5px">
+                <img v-if="childDlg_icon"  class="imgpointer" :src="uri+childDlg_icon"/>
+                <i v-else class="el-icon-tickets pointer" ></i>
+                {{childDlg_title}}
+            </div>
+        </span>
+        <el-scrollbar wrap-class="scrollbar-wrapper" class="dlg-content">
+            <router-view name="dlgRouter"/>
+        </el-scrollbar>
+    </el-dialog>
   </div>
 </template>
 
@@ -119,9 +133,15 @@ export default class App extends Vue {
     style:string="height:"+(this.height?this.height:'400')+"px";
     @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
     otherPage:any=["airSuperBI","Report","ItemAnalysis"];//单独展示页面,不在UI框架内的页面
-    childPage:any = ["CriticalIssuesDatabase","QualityProblemDatabase","Test","layoutDlg"]//子路由
     noLoginPage:any=["wOauthToken"];//不需要登陆展示的页面
+
+    childDlg: boolean = false;//子路由弹出窗
+    isDlgRouter: boolean = false;//子路由弹出窗
+    childDlg_width:any = "70%";//子路由弹出窗宽度
+    childDlg_title:any = "";//子路由弹出窗标题
+    childDlg_icon:any = "";//子路由弹出窗图标
     async created(){
+        this.$bus.$on('openChildDlg',this.openChildDlg)
         await this.$axios.get('./static/config.json').then((res:any) => { 
             this.$axios.defaults.baseURL = res.data.ApiUrl; 
             let url = res.data.ApiUrl;
@@ -205,6 +225,32 @@ export default class App extends Vue {
             }
         }
     }
+    openChildDlg(param:any){
+        this.$router.push(param.router)
+        this.isDlgRouter = true;
+        this.childDlg_width =param.childDlg_width;
+        this.childDlg_title = param.childDlg_title;
+        setTimeout(() => {
+            this.childDlg = true;
+            this.stopF5Refresh();
+        }, 200);
+    }
+    dlgRouterClose(reload:any = false){
+        if(this.isDlgRouter){
+            this.$router.go(-1);
+            setTimeout(() => {
+                this.$bus.$emit('totalHChange')
+                this.isDlgRouter = false;
+                this.childDlg = false;
+                if(reload){
+                    window.location.reload()
+                }
+            }, 500);
+            return false;
+        }else if(reload){
+            window.location.reload()
+        }
+    }
     addIndex() {
         let tag = new BipTag("index", "首页", "/", false,'');
         this.editableTabs2.push(tag);
@@ -283,7 +329,7 @@ export default class App extends Vue {
     }
     @Watch("$route")
     routerChange(to: Route, from: Route) {
-        if(this.noLoginPage.indexOf(to.name) !=-1){//登陆前显示的页面
+        if(this.noLoginPage.indexOf(to.name) !=-1 || this.isDlgRouter || to.fullPath.indexOf('/layout?undefined') !=-1){
             return;
         }
         if(!this.isLogin && to.name != "wlogin"){
@@ -308,9 +354,6 @@ export default class App extends Vue {
             this.editableTabsValue2 = 'index';
             if(this.editableTabs2.length==0)
                 this.addIndex();
-        }
-        if(to.fullPath.indexOf('/layout?undefined') !=-1 || this.childPage.indexOf(to.name) !=-1){
-            return
         }
         if (to.name === 'layout') {
             if (this.menusList.length > 0) {
@@ -399,6 +442,28 @@ export default class App extends Vue {
     heightChange(){
         this.style= "height:"+this.height+"px";
         console.log(this.style)
+    }
+    //拦截F5刷新
+    stopF5Refresh(){
+        let _this = this;
+        document.onkeydown = function(e:any){
+            var envt = window.event || e;
+            if(envt.preventDefault){
+                _this.dlgRouterClose(true);
+                envt.preventDefault();
+            }else{
+                _this.dlgRouterClose(true);
+                envt.keyCode = 0;
+                envt.returnValue = false;
+            }
+            return false;
+        }
+        // window.addEventListener('beforeunload', e => this.wkeydown(e));
+        // window.addEventListener('beforeunload', (event) => {
+        //     _this.dlgRouterClose(true);
+        //     event.preventDefault();
+        //     event.returnValue  = null ;
+        // });
     }
 }
 </script>

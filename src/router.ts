@@ -27,30 +27,21 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('./views/app/CommonLayOut.vue'),
-      children: [
-        {
-          // 当 /layout/layoutDlg 匹配成功，
-          // component 会被渲染在 layout 的 <router-view> 中
-          path: 'layoutDlg',
-          name: 'layoutDlg',
-          component: () => import('./views/app/CommonLayOut.vue'),
-        },{
-          //Test
-          path:'Test',
-          name:'Test',
-          component :()=> import('./custom/basicProject/Test1.vue')
-        },{
-          //208项目 质量问题信息数据编辑页面
-          path:'QualityProblemDatabase',
-          name:'QualityProblemDatabase',
-          component :()=> import('./custom/bip-208/QualityProblemDatabase.vue')
-        },{
-          //208项目 严重及以上质量问题信息数据编辑页面
-          path:'CriticalIssuesDatabase',
-          name:'CriticalIssuesDatabase',
-          component :()=> import('./custom/bip-208/CriticalIssuesDatabase.vue')
-        }
-      ]
+      children: []
+    },
+    {
+      path: '/layoutDlg',
+      name: 'layoutDlg',
+      components: {
+        default: () => import('./views/app/CommonLayOut.vue'),
+        dlgRouter:() => import('./views/app/CommonLayOut.vue'),
+      },
+    },
+    {
+      //Test
+      path:'/Test',
+      name:'Test',
+      component :()=> import('./custom/basicProject/Test1.vue')
     },
     {
       path: '/portal',
@@ -330,6 +321,23 @@ export default new Router({
         name:'FatPigStatistics1',
         component :()=> import('./custom/breeding/pages/FatPigStatistics1.vue')
       },
+      {
+        //208项目 质量问题信息数据编辑页面
+        path:'/QualityProblemDatabase',
+        name:'QualityProblemDatabase',
+        components: {
+          default: () => import('./views/app/CommonLayOut.vue'),
+          dlgRouter:() => import('./custom/bip-208/QualityProblemDatabase.vue'),
+        },
+      },{
+        //208项目 严重及以上质量问题信息数据编辑页面
+        path:'/CriticalIssuesDatabase',
+        name:'CriticalIssuesDatabase',
+        components: {
+          default: () => import('./views/app/CommonLayOut.vue'),
+          dlgRouter:() => import('./custom/bip-208/CriticalIssuesDatabase.vue'),
+        },
+      }
   ]
 })
 

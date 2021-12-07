@@ -44,19 +44,6 @@
          <template v-if="nodeId">
             <bip-log ref="bipLog" :nodeId="nodeId" :nodeType="'import'"></bip-log>
         </template>
-        <el-dialog v-if="childDlg" :visible.sync="childDlg"  class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false" @close="invokecmd({cmd:'FIND'})">
-            <!--弹出框头部-->
-            <span slot="title">
-                <div class="el-dialog__title" style="padding-bottom:5px">
-                    <img v-if="childDlg_icon"  class="imgpointer" :src="uri+childDlg_icon"/>
-                    <i v-else class="el-icon-tickets pointer" ></i>
-                    {{childDlg_title}}
-                </div>
-            </span>
-            <el-scrollbar wrap-class="scrollbar-wrapper" class="dlg-content">
-               <router-view/>
-            </el-scrollbar>
-        </el-dialog>
     </el-row>
 </template>
 <script lang="ts">
@@ -126,7 +113,6 @@ export default class CUnivSelect extends Vue {
     childDlg_title:any = "";//子路由弹出窗标题
     childDlg_icon:any = "";//子路由弹出窗图标
     uri:string = ""; //项目路径
-    openDlgEventId:any = null;//子路由弹出窗bus监听  用于报表表格中
 
     importCellId:any = null;//导入模板对象id
     @Provide('heightInfo') heightInfo: any = {};
@@ -276,8 +262,6 @@ export default class CUnivSelect extends Vue {
             }
         }
         this.initHeight();
-        //以DLG的形式打开子菜单或 详情页面
-        this.openDlgEventId = this.$bus.$on('openChildDlg',this.openChildDlg)
     }
     initData(){
         if(this.uriParams && this.uriParams.pbds){
@@ -408,7 +392,7 @@ export default class CUnivSelect extends Vue {
                                         query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
                                     }
                                 };
-                                this.openChildDlg(param);
+                                this.$bus.$emit("openChildDlg",param);
                             return;
                         }
                         let res = await tools.getMenuParams(pbuid[1],pmenuid[1]);
@@ -434,7 +418,7 @@ export default class CUnivSelect extends Vue {
                                     param.router.path = '/'+pbuid[1]
                                     param.router.name = '/'+pbuid[1]
                                 }
-                                this.openChildDlg(param);
+                                this.$bus.$emit("openChildDlg",param);
                             }else{
                                 this.$router.push({
                                     path:'/layout',
@@ -533,15 +517,6 @@ export default class CUnivSelect extends Vue {
         }
         if(cmd != ICL.B_CMD_SHOWMAP){
             this.isShowMap = false;
-        }
-    }
-    //以DLG形式打开子菜单 或详情页面
-    openChildDlg(param:any){
-        if(this.dsm.ccells.obj_id == param.obj_id){
-            this.childDlg = true;
-            this.childDlg_width =param.childDlg_width;
-            this.childDlg_title = param.childDlg_title
-            this.$router.push(param.router)
         }
     }
     //#region 保存数据
