@@ -529,7 +529,7 @@ export default class BipDateEditor extends Vue{
     cdataSetRecordChange(){
         if(this.model != 'Invalid date'){
             if(this.cds&&this.cell){
-                if( this.model1 != this.model){
+                // if( this.model1 != this.model){
                     this.model1 = this.model
                     if(this.condition && this.dateFormat == 'yyyy'){
                         let vl = this.model.split("~");
@@ -550,7 +550,7 @@ export default class BipDateEditor extends Vue{
                             this.model1 = "0"+this.model1
                         }
                     }
-                }
+                // }
             }
         }
     }
