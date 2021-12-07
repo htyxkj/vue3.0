@@ -1183,6 +1183,24 @@ export default class LayCelVexTable extends Vue {
                     }
                 }
             }
+            //如果是导出按钮 将当前界面字段传递出去
+            if(btn.cmd == ICL.B_CMD_IFILE){
+                let ref:any = this.$refs[this.cds.ccells.obj_id];
+                let column = "";
+                if(ref){
+                    let tableColumn = ref.getTableColumn().tableColumn;
+                    for(var i=0;i<tableColumn.length;i++){
+                        let col = tableColumn[i];
+                        if(col.property){
+                            column += (col.property)+","
+                        }
+                    }
+                }
+                if(column && column.length>0){
+                    column = column.substring(0,column.length-1)
+                }
+                btn.dlgCont = column
+            }
             this.$emit("invokecmd",btn)
         }
 

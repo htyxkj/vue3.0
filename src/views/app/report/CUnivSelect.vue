@@ -350,7 +350,7 @@ export default class CUnivSelect extends Vue {
             }
         }else if(cmd === ICL.B_CMD_IFILE){
             this.fullscreenLoading=true;
-            this.getExcel();
+            this.getExcel(btn);
         }else if(cmd === ICL.B_CMD_UPFILE){
             this.importCellId = btn.dlgCont
             let file:any = this.$refs.imExFile
@@ -560,7 +560,7 @@ export default class CUnivSelect extends Vue {
         }
     }
     /**导出Excel */
-    async getExcel(){
+    async getExcel(btn:any){
         let file:any = this.$refs.imExFile
         file.close()
         this.fullscreenLoading=true;
@@ -578,7 +578,7 @@ export default class CUnivSelect extends Vue {
         setTimeout(() => {
             this.fullscreenLoading=false;
         }, 6000);
-        var res = await tools.queryExcel(this.qe,this.biType);
+        var res = await tools.queryExcel(this.qe,this.biType,btn.dlgCont);
         this.fullscreenLoading=false;
         const content = res.data;
         let me:Menu = baseTool.findMenu(this.$route.query.pmenuid+'');

@@ -167,9 +167,11 @@ export namespace BIPUtil {
     /**
      * @description 导出Excel文件
      * @param qe QueryEntity对象
+     * @param biType 报表类型
+     * @param tableColumn 导出字段
      */
-    queryExcel(qe:QueryEntity,biType:any){
-        let param = tool.getExcelParams(JSON.stringify(qe),biType);
+    queryExcel(qe:QueryEntity,biType:any,tableColumn:any){
+        let param = tool.getExcelParams(JSON.stringify(qe),biType,tableColumn);
         return this.fileDown(param);
     }
     /**

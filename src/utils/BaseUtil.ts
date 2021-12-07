@@ -155,15 +155,17 @@ export namespace BIPUtils {
     /**
      * @description 获取淡出excel参数
      * @param qe 查询条件
+     * @param tableColumn 导出字段
      * @returns 返回的是一个Object{xxx:xxx}
      */
-    getExcelParams(qe: string,biType:any) {
+    getExcelParams(qe: string,biType:any,tableColumn:any) {
       return Object.assign({
         apiId: GlobalVariable.APIID_EXPDATA,
         dbid: BaseVariable.COMM_FLD_VALUE_DBID,
         usercode: JSON.parse(window.sessionStorage.getItem("user") + "")
           .userCode,
         qe: qe,
+        tableColumn:tableColumn,
         biType:biType
       });
     }
