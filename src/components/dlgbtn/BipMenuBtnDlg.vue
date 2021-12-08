@@ -297,7 +297,8 @@ export default class BipMenuBtnDlg extends Vue {
                             })
                     }else if(this.btn.cmd == 'DLG'){
                         let param = {
-                            childDlg_width:"50%",
+                            childDlg_width:"70%",
+                            childDlg_icon : me.menuIcon,
                             childDlg_title:me.menuName,
                             obj_id:this.env.dsm.ccells.obj_id,
                             router:{

@@ -1105,6 +1105,7 @@ export default class LayCelVexTable extends Vue {
                                 childDlg_width:dialog,
                                 childDlg_title:me.menuName,
                                 obj_id:this.cds.ccells.obj_id,
+                                childDlg_icon : me.menuIcon,
                                 router:{
                                     path:'/layoutDlg',
                                     name:'layoutDlg',

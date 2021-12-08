@@ -108,10 +108,6 @@ export default class CUnivSelect extends Vue {
     isMap:boolean = false;      //是否是地图页面
     isShowMap:boolean = false;  //是否是显示地图
     style:any=""
-    childDlg: boolean = false;//子路由弹出窗
-    childDlg_width:any = "50%";//子路由弹出窗宽度
-    childDlg_title:any = "";//子路由弹出窗标题
-    childDlg_icon:any = "";//子路由弹出窗图标
     uri:string = ""; //项目路径
 
     importCellId:any = null;//导入模板对象id
@@ -310,7 +306,6 @@ export default class CUnivSelect extends Vue {
         }
     }
     async invokecmd1(btn:any) {
-        this.childDlg = false;
         let cmd = btn.cmd
         console.log(cmd);
         // 重置功能
@@ -378,13 +373,11 @@ export default class CUnivSelect extends Vue {
                         let pbuid = p[0].split("=")
                         let pmenuid = p[1].split("=")
                         if(pbuid[0] == 'pmenu'){
-                                this.childDlg_width = "60%";
-                                this.childDlg_title = menu.menuName
-                                this.childDlg_icon = menu.menuIcon
                                 let param = {
-                                    childDlg_width:"60%",
+                                    childDlg_width:"70%",
                                     childDlg_title:menu.menuName,
                                     obj_id:this.dsm.ccells.obj_id,
+                                    childDlg_icon : menu.menuIcon,
                                     router:{
                                         path:'/'+pbuid[1],
                                         name:pbuid[1],
@@ -400,13 +393,11 @@ export default class CUnivSelect extends Vue {
                             let uriParams = res.data.data.mparams;
                             let dialog = uriParams.pbds["Dialog"]
                             if(dialog){
-                                this.childDlg_width = dialog;
-                                this.childDlg_title = menu.menuName
-                                this.childDlg_icon = menu.menuIcon
                                 let param = {
                                     childDlg_width:dialog,
                                     childDlg_title:menu.menuName,
                                     obj_id:this.dsm.ccells.obj_id,
+                                    childDlg_icon : menu.menuIcon,
                                     router:{
                                         path:'/layoutDlg',
                                         name:'layoutDlg',
@@ -604,7 +595,7 @@ export default class CUnivSelect extends Vue {
         navigator.msSaveBlob(blob, fileName)
       }
     }
-    async find(){
+    async find(page:any = null){
         let bok = this.checkNotNull(this.dsm_cont); 
         if(!bok)
             return ; 
@@ -645,10 +636,17 @@ export default class CUnivSelect extends Vue {
             }
             this.qe.oprid = 13
             this.qe.type = 1
-            this.qe.page.pageSize = 20
             if(this.isMap){
                 this.qe.page.pageSize = 50000;
                 this.qe.page.currPage = 1;
+            }
+            if(page!= null){
+                if(page.pageSize){
+                    this.qe.page.pageSize = page.pageSize;
+                }
+                if(page.currPage){
+                    this.qe.page.currPage = page.currPage;
+                }
             }
             await this.findServerData(this.qe,cells);
         }
@@ -733,47 +731,15 @@ export default class CUnivSelect extends Vue {
     }
     handleSizeChangebus(value:any){
         if(this.env.dsm.ccells.obj_id == value.obj_id){
-            this.handleSizeChange(value.value)
+            let page = {currPage:1,pageSize:value.value}
+            this.find(page)
         }
-    }
-    handleSizeChange(value:number){
-
-        this.qe.pcell = this.dsm.p_cell
-        this.qe.tcell = this.dsm_cont.ccells.obj_id
-        console.log('handleSizeChange',value)
-        if(this.biType == "SEL")
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
-        else if(this.biType == "RPT" || this.biType == "SQL"){
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
-        }
-        this.qe.oprid = 13
-        this.qe.type = 1
-        this.qe.page.pageSize = value
-        this.qe.page.currPage = 1
-        this.qe.values = []
-        this.findServerData(this.qe,this.dsm);
-        // this.$emit('handleSizeChange',value)
     }
     handleCurrentChangebus(value:any){
         if(this.env.dsm.ccells.obj_id == value.obj_id){
-            this.handleCurrentChange(value.value)
+            let page = {currPage:value.value}
+            this.find(page)
         }
-    }
-    handleCurrentChange(value:number){
-        this.qe.pcell = this.dsm.p_cell
-        this.qe.tcell = this.dsm_cont.ccells.obj_id
-        console.log('handleCurrentChange',value)
-        // this.$emit('handleCurrentChange',value)
-        if(this.biType == "SEL")
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord.data);
-        else if(this.biType == "RPT" || this.biType == "SQL"){
-            this.qe.cont = JSON.stringify(this.dsm_cont.currRecord);
-        }
-        this.qe.oprid = 13
-        this.qe.type = 1
-        this.qe.page.currPage = value
-        this.qe.values = []
-        this.findServerData(this.qe,this.dsm);
     }
 
     tjData(selGroup:Array<any>,selValue:Array<any>,chartTypeValue:string,showChart:boolean){

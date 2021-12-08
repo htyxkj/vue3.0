@@ -229,6 +229,7 @@ export default class App extends Vue {
         this.$router.push(param.router)
         this.isDlgRouter = true;
         this.childDlg_width =param.childDlg_width;
+        this.childDlg_icon =param.childDlg_icon;
         this.childDlg_title = param.childDlg_title;
         setTimeout(() => {
             this.childDlg = true;
