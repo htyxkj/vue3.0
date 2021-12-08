@@ -17,10 +17,6 @@
                         @blur="getFocus(false)"
                         @change="dataChange"
                     >
-                    <template v-if="this.model1&&readonly&&canEdit">
-                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
-                    </template>
-                    
                     <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
                 </el-input>
                 <template v-if="cell.desc">
@@ -34,9 +30,6 @@
         </template>
         <template v-else>
             <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
-                 <template v-if="this.model1&&canEdit">
-                        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="clearvalue"></i>
-                </template>
                 <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
             </el-input>
         </template>
@@ -170,13 +163,6 @@ export default class BipInsAidEditor extends Vue{
     get canEdit(){
         return this.cds.currCanEdit(this.row>-1?this.row:0);
     }
-
-    clearvalue(){
-        
-        this.model1 = '';
-        this.dataChange('');
-    }
-
     iconClick(checkCell:boolean = true) {
         console.log("iconClick")
         this.$emit("focus",{})
@@ -536,14 +522,18 @@ export default class BipInsAidEditor extends Vue{
     dataChange(value:string|number){
         if(this.cds&&this.cell){
             if(this.cds.currCanEdit()){
-                this.cds.currRecord.data[this.cell.id] = this.model1;
-                this.cds.cdata.data[this.cds.index].data[this.cell.id] = this.model1
-                this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
+                let idx = this.row;
+                this.cds.cdata.data[idx].data[this.cell.id] = this.model1
+                this.cds.cdata.data[idx].c_state |=2;
+                if(idx == this.cds.index){
+                    this.cds.currRecord.data[this.cell.id] = this.model1;
+                    this.cds.cdata.data[idx] = this.cds.currRecord;   
+                }
                 // const key:string = this.cell.id
                 // this.cds.cdata.data[this.row].c_state |=2;
+                // this.cds.currRecord.c_state |= 2;
                 this.cds.setStateOrAnd(ICL.R_EDITED)
                 this.cds.checkGS(this.cell);
-                this.cds.currRecord.c_state |= 2;
                 if(this.cds.ds_par){
                     this.cds.ds_par.currRecord.c_state |= 2;
                 }
