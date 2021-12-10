@@ -67,7 +67,7 @@ import QueryEntity from "@/classes/search/QueryEntity";
 /**
  * 经营趋势分析
  */
-export default class ProfitLossFunction extends Vue {
+export default class GoalAchievementTrend extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key

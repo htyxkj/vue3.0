@@ -95,7 +95,7 @@ export default class MultipleEssentialFactorTrend extends Vue {
                 
             },
             yAxis: {gridIndex: 0},
-            series: []
+                series: []
             }
 
 
@@ -158,12 +158,6 @@ export default class MultipleEssentialFactorTrend extends Vue {
                 this.$notify.error(res.data.message)
             } 
         } else{
-            console.info("2222");
-            console.info("this.amb_purposes_id:"+this.amb_purposes_id);
-            console.info("this.amb_accountEle_ids.length:"+this.amb_accountEle_ids.length);
-            console.info("this.amb_groups_ids.length:"+this.amb_groups_ids.length);
-            
-
             if(this.amb_purposes_id==""){
                 this.$notify.error("核算目的不能为空！")
             }else if(this.amb_accountEle_ids.length ==0){

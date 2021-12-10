@@ -1,6 +1,6 @@
 <template> 
     <div >
-        <el-input placeholder="阿米巴" :readonly="true" v-model="selectName"  size="small"> 
+        <el-input placeholder="阿米巴" :readonly="true" v-model="selectName"  size="small" @click.native="select"> 
                 <el-button slot="append" icon="el-icon-search" @click="select"></el-button>
         </el-input>
         <el-dialog :visible.sync="showDialog" class="bipinsaid" :close-on-click-modal="false">
@@ -13,7 +13,7 @@
                     <el-button slot="append" icon="el-icon-search" @click="filterTree"></el-button>
                 </el-input>
                 <div class="amb-tree">
-                    <el-tree empty-text="没有阿米巴" size="mini" ref="ambTree" :data="treeData" :node-key="keyID"  @node-click="handleNodeClick" 
+                    <el-tree empty-text="没有阿米巴" size="mini" ref="ambTree" :data="treeData" :node-key="keyID"  @node-click="handleNodeClick1" 
                         @check="checkBoxClick" :expand-on-click-node="false" :highlight-current="true" :default-checked-keys="default_checked_keys"
                         :props="defaultProps" :default-expanded-keys="expandedKeys" check-strictly :show-checkbox="showCbox" :filter-node-method="filterNode"  >
                         <span class="custom-tree-node" slot-scope="{ node }">
@@ -91,6 +91,8 @@ export default class AmbTree extends Vue {
             }
             let v = JSON.stringify(prarm);
             let res = await tools.getDlgRunClass(v,b);
+            console.log(res);
+            
             if(res.data.id == 0){
                 this.treeData = res.data.data.treeList;
                 for(var i=0;i<this.treeData.length;i++){
@@ -129,6 +131,7 @@ export default class AmbTree extends Vue {
         this.checkData = {keys :checkedKeys,data:checkedNodes};
     }
     //筛选
+    @Watch("filterText")
     filterTree(){
         let ref:any = this.$refs.ambTree;
         if(ref)
@@ -149,6 +152,52 @@ export default class AmbTree extends Vue {
         if(this.checkData && this.checkData.data){
             this.selectOk();
         }
+    }
+
+    treeClickCount = 0;
+    timer:any ="";
+    handleNodeClick1(data:any, node:any) {
+		//记录点击次数
+		this.treeClickCount++;
+		//单次点击次数超过2次不作处理,直接返回,也可以拓展成多击事件
+		if (this.treeClickCount >= 2) {
+			return;
+		}
+		//计时器,计算300毫秒为单位,可自行修改
+	    this.timer = window.setTimeout(() => {
+			if (this.treeClickCount == 1) {
+				//把次数归零
+				this.treeClickCount = 0;
+				//单击事件处理
+				
+               if(this.showCbox == false){
+                    if(data.disabled){
+                        return;
+                    }
+                    let checkedKeys:any = [];
+                    let checkedNodes:any =[];
+                    checkedKeys.push(data[this.keyID])
+                    checkedNodes.push(data)
+                    this.checkData  = {keys :checkedKeys,data:checkedNodes};
+                }
+			} else if (this.treeClickCount > 1) {
+				//把次数归零
+				this.treeClickCount = 0;
+				//双击事件
+                 if(this.showCbox == false){
+                    if(data.disabled){
+                        return;
+                    }
+                    let checkedKeys:any = [];
+                    let checkedNodes:any =[];
+                    checkedKeys.push(data[this.keyID])
+                    checkedNodes.push(data)
+                    this.checkData  = {keys :checkedKeys,data:checkedNodes};
+                }
+                console.info("双击");
+				this.selectOk();
+			} 
+		}, 200);
     }
 }
 </script>

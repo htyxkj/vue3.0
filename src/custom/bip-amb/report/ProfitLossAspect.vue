@@ -146,6 +146,8 @@ export default class ProfitLossAspect  extends Vue {
             let res = await tools.getDlgRunClass(v,b);
             if(res.data.id ==0){
                 this.tableData = res.data.data.data 
+                console.log(this.tableData);
+                
                 this.defaultExpandKeys = res.data.data.expandRowKeys;
                 this.groups = res.data.data.period
                 // for(var i =0;i<tdata.length;i++){
@@ -188,46 +190,26 @@ export default class ProfitLossAspect  extends Vue {
         let legendData = [];
         let seriesData = [];
         this.dialogTitle = row.element_name;
-        let chartOption:any = {
+        let option:any={
             color:["#3AA1FF","#975FE5","#F2637B","#FBD437","#4ECB73","#5AD4D4"],
             tooltip: {
-                trigger: 'item',
-                formatter: '{a} <br/>{b} : {c} '
-            },
-            legend: {
-                type: 'scroll',
-                orient: 'vertical',
-                right: 10,
-                top: 20,
-                bottom: 20,
-                data: [],
-            },
-            xAxis: {
-                type: 'value',
-                splitLine: {
-                    lineStyle: {
-                        type: 'dashed'
-                    }
+                trigger: 'axis',
+                axisPointer: {
+                type: 'shadow'
                 }
             },
-            yAxis: {
+            xAxis: {
                 type: 'category',
-                axisLine: {show: false},
-                axisLabel: {show: false},
-                axisTick: {show: false},
-                splitLine: {show: false},
                 data: []
+            },
+            yAxis: {
+                type: 'value'
             },
             series: [
                 {
-                    name: '巴',
-                    type: 'bar',
-                    label: {
-                        show: true,
-                        formatter: '{b}'
-                    },
-                    data: [],
-                    emphasis: {
+                data: [],
+                type: 'bar',
+                mphasis: {
                         itemStyle: {
                             shadowBlur: 10,
                             shadowOffsetX: 0,
@@ -236,19 +218,18 @@ export default class ProfitLossAspect  extends Vue {
                     }
                 }
             ]
-        };
+        }
         for(var i =0;i<this.groups.length;i++){
             let itemP = this.groups[i];
             legendData.push(itemP.name)
             let vl = {value:row[itemP.key+'month_money'],name:itemP.name}
             seriesData.push(vl)
         }
-        chartOption.legend.data = legendData
-        chartOption.yAxis.data = legendData
-        chartOption.series[0].data = seriesData
+        option.xAxis.data = legendData
+        option.series[0].data = seriesData
         setTimeout(() => {
             let myChart = echarts.init(this.$refs.ProfitLossAspectChart as HTMLCanvasElement); 
-            myChart.setOption(chartOption);  
+            myChart.setOption(option);  
         }, 200);
     }
     getUpLevel(resData:any,i:any,level:any){

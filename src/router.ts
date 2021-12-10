@@ -218,10 +218,16 @@ export default new Router({
         component: () => import('./custom/bip-amb/report/MonthGoalAchievementTrend.vue')
       },
       {
-        //阿米巴  产值目标趋势分析
+        //阿米巴  产值目标趋势分析(单巴)
         path: '/OutputvalueTargetAnalysis',
         name: 'OutputvalueTargetAnalysis',
         component: () => import('./custom/bip-amb/report/OutputvalueTargetAnalysis.vue')
+      },
+      {
+        //阿米巴  产值目标趋势分析(多巴)
+        path: '/MoreOutputvalueTargetAnalysis',
+        name: 'MoreOutputvalueTargetAnalysis',
+        component: () => import('./custom/bip-amb/report/MoreOutputvalueTargetAnalysis.vue')
       },
       {
           //阿米巴会计期间

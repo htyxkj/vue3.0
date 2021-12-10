@@ -6,7 +6,7 @@
             <el-date-picker v-model="period_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="period_dateChange" placeholder="选择日期" size="small"></el-date-picker>
             <div class="topdiv1">
                 <el-button size="small" style="margin-left:20px" type="primary" :disabled="selData.length ==0" @click="doDataM">      
-                    <span>数据建模</span>
+                    <span>数据建模</span>  
                 </el-button>
             </div>
 
@@ -23,10 +23,12 @@
         </el-header>
         <el-main> 
             <vxe-table resizable size="mini" ref="ProfitLossAspectTable" auto-resize :loading="tableLoading" show-overflow
-                stripe highlight-hover-row :height="tableHeight" :data="tableData"
+                stripe highlight-hover-row :height="tableHeight" :data="tableData" row-id="compo_id"
                 border show-header-overflow
-                @checkbox-all="selectAllEvent" @checkbox-change="selectAllEvent">
-                <vxe-table-column type="checkbox" width="60"></vxe-table-column>
+                @checkbox-all="selectAllEvent" @checkbox-change="selectEvent">
+                
+                <vxe-table-column type="checkbox" width="60"> </vxe-table-column>
+
                 <vxe-table-column header-align="center" min-width="120" align="center" field="compo_name" title="模型" show-header-overflow show-overflow></vxe-table-column>  
                 <vxe-table-column header-align="center" min-width="120" align="center" field="fm_date" title="时间" show-header-overflow show-overflow></vxe-table-column>  
                 <vxe-table-column header-align="状态" min-width="120" align="center" field="status_id" title="" show-header-overflow show-overflow></vxe-table-column>  
@@ -109,6 +111,7 @@ import XEUtils from 'xe-utils'
 import { values } from 'xe-utils/methods';
 import moment from 'moment'
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
+
 @Component({
     components: {
         Accounting,
@@ -158,15 +161,22 @@ export default class DataModeling  extends Vue {
     };
     unpricedTableData:any =[];
     item_code_name:any = "";
+
+    
+    selectedCompo_ids:any = new Set();
+    
     async created() {
         this.period_date = moment(new Date()).format("YYYY-MM-DD")
         this.tableHeight =  this.height - 120
     }
     async mounted() { 
         this.logDelCell = await this.getCell(this.logDelCellId);
+
+        
     }
+    
     async initData(){
-        this.selData = [];
+        //this.selData = [];
         this.tableLoading = true;
         let param = {purpose_id: this.amb_purposes_id,period_date:this.period_date,page:this.tablePage}
         let btn1 = new BipMenuBtn("DLG"," 数据建模")
@@ -177,14 +187,44 @@ export default class DataModeling  extends Vue {
         let res:any = await tools.getDlgRunClass(v,b);
         if(res.data.id ==0){
             let d = res.data.data.data;
-            console.log(d)
             this.tableData = d.data;
             this.tablePage = d.page;
         }
-        this.tableLoading = false;
+        if(this.selectedCompo_ids.size>0){
+             this.setCheckboxRows(this.tableData);
+        }
+        this.tableLoading = false;   
     } 
-    selectAllEvent(data:any) {
-        this.selData = data.records;
+     setCheckboxRows(rows:any) {
+        const ref:any = this.$refs.ProfitLossAspectTable;
+        if (rows) {
+            for(let i=0;i<rows.length;i++){
+                if(this.selectedCompo_ids.has(rows[i].compo_id)>0){
+                    //ref.toggleCheckboxRow(rows[i]);
+                    ref.setCheckboxRow(rows[i], true);
+                }
+            }
+        } else {
+             ref.clearCheckboxRow();
+        }
+      }
+    selectAllEvent({records, checked}:any) {       
+        if (checked) {
+           records.forEach((item:any) => this.selectedCompo_ids.add(item.compo_id))
+        } else {
+            // 注意取消全选时需要遍历当前表格数据来删除，records不管用
+            this.tableData.forEach((item:any) =>  this.selectedCompo_ids.delete(item.compo_id)); 
+        } 
+        this.selData=[...this.selectedCompo_ids];
+    }
+    
+    selectEvent({rowid, checked}:any){
+        if (checked) {
+            this.selectedCompo_ids.add(rowid);
+        } else {
+            this.selectedCompo_ids.delete(rowid);
+        }
+        this.selData=[...this.selectedCompo_ids];  
     }
     //查询日志
     async getLog(data:any){
@@ -227,10 +267,11 @@ export default class DataModeling  extends Vue {
             this.$notify.error("没有选择期间")
             return;
         }
-        let compo_ids = [];
-        for(var i=0;i<this.selData.length;i++){
+        let compo_ids = [...this.selectedCompo_ids];
+        console.log(compo_ids);
+        /* for(var i=0;i<this.selData.length;i++){
             compo_ids.push(this.selData[i].compo_id);
-        }
+        } */
         let prarm = {
             compo_ids: compo_ids,
             purpose_id:this.amb_purposes_id,

@@ -6,7 +6,7 @@
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period> -->
             <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
             <el-date-picker v-model="to_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <amb-tree-dialog class="topdiv1" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree-dialog>
+            <amb-tree-dialog class="topdiv1" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
             <div class="topdiv1"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData"  class="bip_btn_primary">      
                     <i class="el-icon-search"></i>
@@ -64,50 +64,43 @@ export default class ProfitLossFunction extends Vue {
     initChartOption(){
         this.chartOption = null;
         return  { 
+         title:{
+              text: '',
+              x:'center',
+              y:'top',
+              top:'middle',
+              textStyle:{
+                  color:'#909399',
+                  fontStyle:'微软雅⿊',
+                  fontSize:'26px',
+              }
+            },
+            dataset:{
+                source: [
+                ['product', '收入', '成本', '利润'],
+                 
+                ]
+            },
+            legend: {},
             tooltip: {
                 trigger: 'axis'
             },
-            legend: {
-                data: ['收入','成本','利润']
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            }, 
             xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: []
+                type: 'category'
+                
             },
-            yAxis: {
-                type: 'value'
-            },
+            yAxis: {gridIndex: 0},
             series: [
-                {
-                    name: '收入',
-                    type: 'line',
-                    stack: '总量',
-                    data: []
-                },
-                {
-                    name: '成本',
-                    type: 'line',
-                    stack: '总量',
-                    data: []
-                },
-                {
-                    name: '利润',
-                    type: 'line',
-                    stack: '总量',
-                    data: []
-                }
-            ]
+                {type: 'line'},
+                {type: 'line'},
+                {type: 'line'}
+            ]  
         };
     }
+
+
     async initData(){
-        let option:any = this.initChartOption();
+        let option:any = this.initChartOption(); 
         if(this.amb_purposes_id !="" && this.amb_group_ids.length>0 && this.fm_date && this.to_date){
             let btn1 = new BipMenuBtn("DLG","经营趋势分析")
             btn1.setDlgType("D")
@@ -119,24 +112,25 @@ export default class ProfitLossFunction extends Vue {
                 /* "fm_period_id":this.fm_period_id,//开始期间
                 "to_period_id":this.to_period_id   //结束期间 */
                 "fm_date":this.fm_date,
-                "to_date":this.to_date
-                
+                "to_date":this.to_date  
             }
 
             let v = JSON.stringify(prarm);
             let res = await tools.getDlgRunClass(v,b);
-            let tdata = []; 
-            let xAxisData = [];
+            let tdata = [];  
             if(res.data.id ==0){
                 tdata = res.data.data.data  
+                
                 for(var i=0;i<tdata.length;i++){
                     let row = tdata[i];
-                    option.xAxis.data.push(row.period_name);
-                    option.series[0].data.push(parseFloat(row.in_money).toFixed(2))
-                    option.series[1].data.push(parseFloat(row.out_money).toFixed(2))
-                    option.series[2].data.push(parseFloat(row.bal_money).toFixed(2))
+                    let datasetData = [];
+                    datasetData.push(row.period_name)
+                    datasetData.push(parseFloat(row.in_money).toFixed(2))
+                    datasetData.push(parseFloat(row.out_money).toFixed(2))
+                    datasetData.push(parseFloat(row.bal_money).toFixed(2))
+                    option.dataset.source.push(datasetData);
                 } 
-                this.chartOption = option
+                this.chartOption = option;
             }else{
                 this.$notify.error(res.data.message)
             }
@@ -173,6 +167,7 @@ export default class ProfitLossFunction extends Vue {
         this.amb_group_ids = checkData.keys;
         // this.initData();
     }
+    
     @Watch("height")
     heightChange() {
         this.treeHeight =  this.height -60

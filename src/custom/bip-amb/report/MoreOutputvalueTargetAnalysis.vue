@@ -2,10 +2,7 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
-            <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period> -->
             <el-date-picker v-model="fm_date"  class="topdiv1" type="month" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <!-- <el-date-picker v-model="to_date"  class="topdiv1" type="month" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker> -->
             <div class="topdiv1"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="指标类型" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
@@ -34,7 +31,7 @@
         </el-header>
         <el-container>
             <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
             </el-aside>
             <el-main style="padding:0px">
               <template v-if="tableLoading">
@@ -48,13 +45,20 @@
                 </template>
                 <template v-else> 
                     <vxe-table resizable border size="mini" ref="FIncomeTable" auto-resize :loading="valueTableLoading"  show-overflow :height="tableHeight"
-                        highlight-current-row stripe highlight-hover-row row-id="element_id" :data="tableData">
+                        highlight-current-row stripe highlight-hover-row  row-id="element_id" :data="tableData" :span-method="cellMerge">
                         <vxe-table-column field="element_name" align="center" title="收支项目" min-width="100">
-                                <template v-slot="{row}" > 
+                                <template v-slot="{row}"> 
                                 {{row.element_name}}
+                                </template>
+
+                        </vxe-table-column>
+                        <vxe-table-column align="center" title="阿米巴" min-width="100">
+                                <template v-slot="{row}" > 
+                                {{row.amb_name}}
                                 </template>
                         </vxe-table-column>
                         <vxe-table-colgroup v-for="(item,index) in monthlist" :key="index" align="center"  :title="item.month">
+                            
                                 <vxe-table-column align="center" title="目标值" min-width="100">
                                     <template v-slot="{row}"> 
                                         {{row[item.pdate+"t_value"]}}
@@ -70,6 +74,7 @@
                                         {{row[item.pdate+"CompletionRate"]}}
                                     </template>
                                 </vxe-table-column>
+                            
                         </vxe-table-colgroup>
                         
                         
@@ -116,9 +121,9 @@ import { config } from "node_modules/vue/types/umd";
     }
 })
 /**
- * 产值目标趋势分析（单巴）
+ * 产值目标趋势分析（多巴）
  */
-export default class OutputvalueTargetAnalysis extends Vue {
+export default class MoreOutputvalueTargetAnalysis extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
@@ -142,8 +147,9 @@ export default class OutputvalueTargetAnalysis extends Vue {
     year_monthlist:any=[];
     tableLoading:boolean = true;
     valueTableLoading:boolean = false;
-
-
+    spanArr:any=[];
+    pos:any=0;
+    
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'month').format("YYYY-MM")
         // this.to_date = moment(new Date()).add(-1, 'month').format("YYYY-MM")
@@ -178,6 +184,7 @@ export default class OutputvalueTargetAnalysis extends Vue {
                this.monthlist = res.data.data.monthlist 
                this.year_tableData = res.data.data.y_tardata
                this.year_monthlist = res.data.data.y_monthlist
+               this.getSpanArr(res.data.data.tardata);
             }else{
                 this.$notify.error(res.data.message)
             }  
@@ -290,8 +297,43 @@ export default class OutputvalueTargetAnalysis extends Vue {
         }, 200);
     }
 
+//合并单元格
+    cellMerge({row,column,rowIndex,columnIndex}:any) {
+ 
+       let ciNums = (this.monthlist.length-1)+3
+       
+        if ((columnIndex === 0 && column.title=="收支项目") || (columnIndex === ciNums && column.title=="图表分析")) {
+            const _row = this.spanArr[rowIndex];
+            const _col = _row > 0 ? 1 : 0;
+            return {
+                rowspan: _row,
+                colspan: _col
+                }
+            } 
+        }
+ 
+//获取合并的数  
+getSpanArr(data:any) {　 
+  this.spanArr.length=0;
+  for (var i = 0; i < data.length; i++) {
+        if (i === 0) {
+              this.spanArr.push(1);
+              this.pos = 0
+        } else {
+          // 判断当前元素与上一个元素是否相同
+    if (data[i].element_id === data[i - 1].element_id) {
+                this.spanArr[this.pos] += 1;
+                this.spanArr.push(0);
+              } else {
+                this.spanArr.push(1);
+                this.pos = i;
+              }
+        }
+    }
     
-
+    
+}
+ 
 
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
@@ -351,7 +393,13 @@ export default class OutputvalueTargetAnalysis extends Vue {
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
     }
+
+    
+ 
+   
 }
+  
+   
 </script>
 <style scoped lang="scss" >
 .topdiv1{
