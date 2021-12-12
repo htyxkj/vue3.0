@@ -201,6 +201,17 @@ export default class CUnivSelect extends Vue {
                         this.dsm.setOpera(ope)
                     }
                 }
+                if(this.uriParams.pbds.search && this.uriParams.pbds.search==="hide"){
+                    this.CondiyionShow = false;
+                    let index:number =0;
+                    for (let i = 0; i < this.mbs.menuList.length; i++) {
+                    if((this.mbs.menuList[i].cmd).indexOf("CONDITIONSHOW") > -1 ){
+                        index = i
+                        }
+                    }
+                    this.mbs.menuList[index].name = '显示条件'
+                }
+
             } else {
                 console.log(rtn)
                 this.$notify.error("没有获取到对象定义。");
@@ -220,6 +231,8 @@ export default class CUnivSelect extends Vue {
             if((this.uriParams.pattr & 0x10000) >0){
                 this.biType="SQL"
             }
+            
+             
         }
         await this.initUI()
         this.initDlgBtn();
