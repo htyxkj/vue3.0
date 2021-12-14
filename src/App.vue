@@ -233,7 +233,7 @@ export default class App extends Vue {
         this.childDlg_title = param.childDlg_title;
         setTimeout(() => {
             this.childDlg = true;
-            this.stopF5Refresh();
+            // this.stopF5Refresh();
         }, 200);
     }
     dlgRouterClose(reload:any = false){

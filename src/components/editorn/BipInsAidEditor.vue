@@ -12,7 +12,7 @@
                         {{cell.labelString}}
                     </template>
                 </span>                
-                <el-input :placeholder="cell.placeholder" :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" :clearable="true" :disabled="(cell.attr&0x40)>0" 
+                <el-input :placeholder="cell.placeholder" :readonly="readonly" :style="cell.desc?'width: calc(100% - 29px);':''" v-model="model1" size="medium" clearable :disabled="(cell.attr&0x40)>0" 
                         @focus="readonly?'':getFocus(true)"
                         @blur="getFocus(false)"
                         @change="dataChange"
@@ -29,7 +29,12 @@
             </el-form-item>
         </template>
         <template v-else>
-            <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" :clearable="clearable" :disabled="(cell.attr&0x40)>0">
+            <!-- <el-input :placeholder="cell.placeholder" v-model="model1" size="medium" clearable :disabled="(cell.attr&0x40)>0"> -->
+            <el-input :placeholder="cell.placeholder" :readonly="readonly" v-model="model1" size="medium" clearable :disabled="(cell.attr&0x40)>0" 
+                    @focus="readonly?'':getFocus(true)"
+                    @blur="getFocus(false)"
+                    @change="dataChange"
+                >
                 <el-button slot="append" icon="el-icon-search" @click="iconClick"></el-button>
             </el-input>
         </template>
@@ -66,7 +71,6 @@ export default class BipInsAidEditor extends Vue{
     @Prop() bipInsAid!:BipInsAidNew
     @Prop() env!:CCliEnv
     model1:any = ""
-    clearable:boolean = false
     multiple:boolean = false
     refId:string = ''
     initOK:boolean = false
