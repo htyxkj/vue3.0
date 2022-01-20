@@ -30,13 +30,19 @@ export class CCalcUI extends Vue implements BaseI{
         this.taxlb = parseInt(_taxlb);
     }
     public cellDataChange(cds:CDataSet,cellId:string,value:any):void{  
-        let crd = cds.currRecord;
+        let crd = cds.currRecord;  
         if(cellId==this.qty){
             crd.data[this.qty] = value
+            this.setTaxlb(crd.data["taxlb"])
             this.caclQtyhs(crd,cds.index,cds)
             this.caclFcy(crd,cds.index,cds)
         }else if(cellId==this.nup){
             crd.data[this.nup] = value
+            this.setTaxlb(crd.data["taxlb"])
+            this.caclFcy(crd,cds.index,cds)
+        }else if(cellId==this.addtaxrt){
+            crd.data[this.addtaxrt] = value
+            this.setTaxlb(crd.data["taxlb"])
             this.caclFcy(crd,cds.index,cds)
         }else if(cellId == 'taxlb'){
             this.taxlb = parseInt(value)        
@@ -76,7 +82,7 @@ export class CCalcUI extends Vue implements BaseI{
         cds.cdata.data[row] = crd
         const mm = this.getMethordName(cds.ccells.obj_id,this.fcy)
         this.$bus.$emit(mm,{cellId:this.fcy,value:crd.data[this.fcy],row:row})
-        this.caclRmbhs(crd,row,cds)
+        this.caclRmbhs(crd,row,cds)  
     }
 
     /**
@@ -85,25 +91,26 @@ export class CCalcUI extends Vue implements BaseI{
      * @param row  第几行
      */
     public caclRmbhs(crd:CRecord,row:number,cds:CDataSet){
-        let _taxrt = crd.data[this.addtaxrt]
-        let _fcy = crd.data[this.fcy]
-        let _rmbhs = 0,_tax = 0
+       
+        let _taxrt:number = crd.data[this.addtaxrt]
+        let _fcy:number = crd.data[this.fcy]
+        let _rmbhs = 0,_tax = 0   
         //0：含税，1：不含税，2：无税
         switch(this.taxlb){
             case 0:
-                _rmbhs = XEUtils.toFixedNumber(_fcy/(1+_taxrt),2)
+                _rmbhs = this.toFixedNumber(_fcy/XEUtils.add(1,_taxrt),2)
                 _tax = _fcy-_rmbhs;
                 break;
             case 1:
                 _rmbhs = _fcy
-                _tax =  XEUtils.toFixedNumber(_fcy*_taxrt,2)
+                _tax =  this.toFixedNumber(_fcy*_taxrt,2)
                 break;
             case 2:
                 _rmbhs = _fcy
                 _tax = 0;
-                break;
+                break;  
 
-        }        
+        }      
         crd.data[this.rmbhs] = _rmbhs
         crd.data[this.addtax] = _tax
         cds.currRecord = crd
@@ -121,5 +128,8 @@ export class CCalcUI extends Vue implements BaseI{
         return icl.EV_CELL_CHANGE+'_'+obj_id+'_'+fld;
     }
 
+    toFixedNumber(num1:number,num2:number){
+        return XEUtils.toNumber(num1.toFixed(num2)) 
+    }
 
 }

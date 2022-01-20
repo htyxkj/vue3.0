@@ -901,7 +901,6 @@ export default class BipMenuBtnDlg extends Vue {
         let updid =  '36';
         snkey = encodeURIComponent(snkey);
         let url = this.uri+'?snkey='+snkey+'&fjroot='+fjroot+'&updid='+updid+'&fjname='+name;
-        console.log(url)
         window.open(url);
     }
 }

@@ -1,48 +1,33 @@
 <template>
   <div class="login-img">
-    <!-- 粒子特效背景组件 -->
-     <particles></particles> 
+     <!-- <particles></particles> 粒子特效背景组件 -->
       <div class="login-card">
         <div class="login-title">{{loginTitle}}</div>
         <div class="login-cont" @keyup.enter="login">
           <el-form @submit.native.prevent label-position="left" label-width="70px" class="login-form">
-            <el-form-item class="bip-form-item" label="账   户:">
+            <el-form-item class="bip-form-item" label="账户:">
               <el-input v-model="user.userCode"></el-input>
             </el-form-item>
-            <el-form-item class="bip-form-item" label="密   码:">
+            <el-form-item class="bip-form-item" label="密码:">
               <el-input id="pwd" v-model="user.password" :show-password="true" type="password"></el-input>
             </el-form-item>
           </el-form>
-          <div class="remember">
-            <div>
-               <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
-            </div>
-            <div>
-              <!-- <span @click="resetPassword">忘记密码?</span> -->
-            </div>
-            <!-- <div>
-              <el-button @click="registered" type="text">注册</el-button>
-            </div> -->
-          </div>
-          <!-- <el-row type="flex" justify="start">
+          <el-row type="flex" justify="start">
             <el-col :span="12">
               <el-row type="flex" justify="start">
                 <el-col :span="12">
-                  <el-button @click="registered" type="text">注册</el-button>
+                  <!-- <el-button @click="registered" type="text">注册</el-button> -->
                 </el-col> 
               </el-row>
             </el-col>
             <el-col :span="12">
-              <el-row type="flex" >
+              <el-row type="flex" justify="end">
                 <el-col :span="12">
                   <el-checkbox v-model="checked" style="color:#a0a0a0;">记住账户</el-checkbox>
                 </el-col> 
-                <el-col :span="12" >
-                  忘记密码？
-                </el-col>
               </el-row>
             </el-col>
-          </el-row> -->
+          </el-row>
           <el-row>
             <el-col :span="24"  style="margin-top:10px">
               <el-button
@@ -56,8 +41,6 @@
           </el-row>
       </div>
       <div class="login-footer">
-        <address>&copy;{{COPYRIGHT}}</address>
-        <!-- <address>技术支持：北京信唐普华科技有限公司</address> -->
       </div>
     </div>
   </div>
@@ -105,10 +88,6 @@ export default class Login extends Vue {
   //注册
   registered(){
     this.$router.push({ path: "/registered", name: "registered" });
-  }
-  // 重置密码
-  resetPassword(){
-    this.$router.push({path:"/resetpassword",name:"resetpassword"});
   }
   login() {
     if(this.fullscreenLoading)
@@ -209,6 +188,7 @@ export default class Login extends Vue {
 
 <style lang="scss" scoped>
 .login-img {
+  background: url(../../assets/login/JA/login_bk.png) no-repeat;
   top: 0%;
   left: 0%;
   position: fixed;
@@ -234,10 +214,11 @@ export default class Login extends Vue {
   text-align: center;
   font-size: 20px;
   color: #ffffff;
+  background-color: #59A7FF;
   font-family: '华文楷体'
 }
 .login-cont {
-  background-color: #F0FCFA;
+  background-color: #ffffff;
   padding: 40px 70px;
 }
 
@@ -279,21 +260,6 @@ address {
 .el-form-item__label{
   background-color: #0ea0b9 I !important;
 }
-.remember {
-  display: flex;
-}
-.remember div {
-  flex: 1;
-  height: 26px;
-  line-height: 26px;
-}
-.remember div:nth-child(1){
-  padding-left: 20px;
-}
-.remember div:nth-child(2){
-  text-align: right;
-}
-
 </style>
 <style lang="scss">
 .login-form{

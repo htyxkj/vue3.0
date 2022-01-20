@@ -9,7 +9,6 @@ import { BIPUtil } from "@/utils/Request";
 let tools = BIPUtil.ServApi;
 import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from "vuex-class";
-import qs from "qs";
 @Component({
 
 })
@@ -33,6 +32,8 @@ export default class OauthToken extends Vue{
         });
         if(BaseVariable.ITEMTYPE == "bip-zzz"){//农村集体三资管理平台
             this.bip_zzz_outh_token();
+        }else if(BaseVariable.ITEMTYPE == "bip-amb"){//农村集体三资管理平台
+            this.bip_amb_outh_token();
         }
     }
     async bip_zzz_outh_token(){
@@ -42,6 +43,34 @@ export default class OauthToken extends Vue{
             let data = {"token":token,apiId:"checkYZTToken"}
             let res:any = await Vue.$axios.get("/commapi", {params: data});
             res = res.data;
+            if(res.code == 200){
+                let user_name = res.data.user_name;
+                res = await tools.loginWithOutPwd(user_name);
+                this.loginAfter(res);
+            }else{
+                this.gotoPage();
+            }
+            this.loading.close()
+        }catch(e){
+            this.$notify.error({
+                title:"",
+                type: 'error',
+                message: "认证失败！",
+                offset: 40
+            })
+            this.loading.close()
+            this.gotoPage();
+        }
+    }
+
+    async bip_amb_outh_token(){
+        try{
+            let query = this.$route.query;
+            let token = query.token;
+            let data = {"token":token,apiId:"ossToken"}
+            let res:any = await Vue.$axios.get("/commapi", {params: data});
+            res = res.data;
+            debugger
             if(res.code == 200){
                 let user_name = res.data.user_name;
                 res = await tools.loginWithOutPwd(user_name);

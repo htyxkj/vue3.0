@@ -49,6 +49,7 @@ export default class AccountingEle extends Vue {
     @Prop() purposesId?:string;//核算目的
     @Prop() showCbox?:boolean;//是否显示checkbox 
     @Prop() lCheckData?:any;
+    @Prop() showEleId?:any;
     expandedLevel:number = 100;//默认展开级别
     keyID:string = "id";//当前节点key字段
     defaultProps:any = {children: 'children',label: 'name'};
@@ -59,7 +60,7 @@ export default class AccountingEle extends Vue {
     selectName:any = "";
     checkData:any = null;
     filterText:any = "";
-    
+    newData:any=[];
 
     async created() {
         await this.initTreeData();
@@ -97,10 +98,24 @@ export default class AccountingEle extends Vue {
             let res = await tools.getDlgRunClass(v,b);
             if(res.data.id == 0){
                 this.treeData = res.data.data.treeList;
-                for(var i=0;i<this.treeData.length;i++){
-                    let node = this.treeData[i];
-                    this.initOpenKey(node,0);
-                }
+                if(this.showEleId && this.showEleId.length>0){
+                    this.newData=[];
+                    for(var i=0;i<this.treeData.length;i++){
+                        let node = this.treeData[i];
+                        if(node.id == this.showEleId){
+                            this.newData.push(node)
+                        }   
+                    }
+                    for(var j=0;j<this.newData.length;j++){
+                        this.initOpenKey(this.newData[j],0);
+                    }
+                    this.treeData = [];
+                    this.treeData=this.newData;
+                }else{
+                    for(var i=0;i<this.treeData.length;i++){
+                        this.initOpenKey(this.treeData[i],0);  
+                    }
+                }  
             }
         }
     }
@@ -200,7 +215,7 @@ export default class AccountingEle extends Vue {
 			} 
 		}, 200);
     }
-   
+  
 }
 </script>
 <style scoped lang="scss" > 

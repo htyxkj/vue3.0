@@ -6,7 +6,7 @@
         </div>
         <el-row class="bip-menu-scrollbar" :style="style">
             <el-scrollbar style="height:100%">
-                <el-menu mode="vertical" :collapse-transition="false"  :unique-opened="false" router :collapse="isCollapse" :style="!isCollapse?'min-width:240px;max-width:400px':''">
+                <el-menu mode="vertical" :collapse-transition="false"  :unique-opened="false" :collapse="isCollapse" :style="!isCollapse?'min-width:240px;max-width:400px':''">
                     <template v-for="menu in menuList" >
                         <bip-sub-menu v-if="menu.haveChild" :key="menu.path" :item="menu" :appendBody="false" @lastClick="lastClick"/>
                         <bip-menu-item v-else :key="menu.path"  :item="menu" @lastClick="lastClick"/>

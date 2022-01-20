@@ -1,14 +1,12 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
- <!--            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period> -->
-            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <el-date-picker v-model="to_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <amb-tree-dialog class="topdiv1" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
-            <div class="topdiv1"><!-- 刷新 -->
-                <el-button style="border:0px" @click="initData"  class="bip_btn_primary">      
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting> 
+            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <el-date-picker v-model="to_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <amb-tree-dialog :class="screenWidth<1600?'topdiv1_min':'topdiv1'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 刷新 -->
+                <el-button style="border:0px" @click="initData"  class="bip_btn_primary" size="small">      
                     <i class="el-icon-search"></i>
                     <span>查找</span>
                 </el-button>
@@ -55,11 +53,15 @@ export default class ProfitLossFunction extends Vue {
     treeHeight:any ="500";
     chartStyle:string = "height :400px;";
     chartOption:any = null;
+    screenWidth:number=1920;
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.to_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.treeHeight =  this.height -60
         this.initChartOption();
+    }
+     mounted() { 
+        this.screenWidth= document.body.clientWidth;
     }
     initChartOption(){
         this.chartOption = null;
@@ -171,6 +173,7 @@ export default class ProfitLossFunction extends Vue {
     @Watch("height")
     heightChange() {
         this.treeHeight =  this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
@@ -178,6 +181,11 @@ export default class ProfitLossFunction extends Vue {
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

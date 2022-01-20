@@ -723,6 +723,7 @@ export default class BaseApplet extends Vue{
                         if(data.message == '操作成功！'){
                             this.$message.success(data.message);
                             this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
+                            
                         }else{
                             this.$message.warning(data.message);
                         }

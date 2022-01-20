@@ -130,9 +130,9 @@ import { config } from "node_modules/vue/types/umd";
     }
 })
 /**
- * 产值目标趋势分析（多巴）
+ * 产量目标趋势分析（多巴）
  */
-export default class MoreOutputvalueTargetAnalysis extends Vue {
+export default class MoreYieldTargetAnalysis extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
@@ -176,9 +176,9 @@ export default class MoreOutputvalueTargetAnalysis extends Vue {
         this.tableLoading = true;
         this.valueTableLoading = true;
         if(this.amb_purposes_id !="" && this.amb_group_ids !="" && this.showType !="" && this.fm_date !=""){
-            let btn1 = new BipMenuBtn("DLG","月度经营目标趋势分析")
+            let btn1 = new BipMenuBtn("DLG","MoreYieldTargetAnalysis")
             btn1.setDlgType("D")
-            btn1.setDlgCont("amb.serv.util.report.OutputValueInvoke*202;0;0");// 产值目标
+            btn1.setDlgCont("amb.serv.util.report.OutputValueInvoke*203;0;0");// 产量目标
             let b = JSON.stringify(btn1)
             let prarm = {
                 "purpose_id":this.amb_purposes_id,//核算目的
@@ -366,7 +366,7 @@ getSpanArr(data:any) {
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
         qe.page.pageSize = 200;
-        let cc = await tools.getBipInsAidInfo("TYPE_TARGET1", 210, qe);
+        let cc = await tools.getBipInsAidInfo("TYPE_TARGET2", 210, qe);
         this.showTypeData = cc.data.data.data.values;
        
     }   

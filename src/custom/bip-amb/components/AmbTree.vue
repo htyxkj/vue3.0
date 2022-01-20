@@ -1,18 +1,28 @@
 <template> 
-    <div class="amb-tree">
-        <el-tree empty-text="没有阿米巴" size="mini" ref="ambTree" :data="treeData" :node-key="keyID"  @node-click="handleNodeClick" 
-            @check="checkBoxClick" :expand-on-click-node="false" :highlight-current="true" :default-checked-keys="default_checked_keys"
-            :props="defaultProps" :default-expanded-keys="expandedKeys" check-strictly :show-checkbox="showCbox">
-            <span class="custom-tree-node" slot-scope="{ node }">
-                <template v-if="node.disabled">
-                    <span style="color:#bcbcbc">{{ node.label }}</span>
-                </template>
-                <template v-else>
-                    <span>{{ node.label }}</span>
-                </template>
-            </span>
-        </el-tree>
+    <div>
+        <div class="menuSW" @click="isCollapse = !isCollapse">
+            <i v-if="isCollapse" class="iconfont el-icon-d-arrow-right menuicon pointer"></i>
+            <i v-else class="iconfont el-icon-d-arrow-left menuicon pointer"></i>
+        </div>
+        <el-menu mode="vertical" :collapse-transition="false"  :unique-opened="false" router :collapse="isCollapse" :style="!isCollapse?'width:300px;height:100%;':'width:36px;height:100%;'">
+            <div class="amb-tree" :style='isCollapse?"display:none;":"width:300px;height:95%"'>
+                <el-tree empty-text="没有阿米巴" size="mini" ref="ambTree" :data="treeData" :node-key="keyID"  @node-click="handleNodeClick" 
+                     @check="checkBoxClick" :expand-on-click-node="false" :highlight-current="true" :default-checked-keys="default_checked_keys"
+                        :props="defaultProps" :default-expanded-keys="expandedKeys" check-strictly :show-checkbox="showCbox">
+                    <span class="custom-tree-node" slot-scope="{ node }">
+                        <template v-if="node.disabled">
+                            <span style="color:#bcbcbc">{{ node.label }}</span>
+                        </template>
+                        <template v-else>
+                            <span>{{ node.label }}</span>
+                        </template>
+                    </span>
+                </el-tree>
+            </div>             
+        </el-menu>
     </div>
+  
+  
 </template>
 <script lang="ts">
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator"
@@ -35,6 +45,7 @@ export default class AmbTree extends Vue {
     treeData:any = [];
     selectName:any = "";
     checkData:any = null;
+    isCollapse:boolean=false;
     async created() {
         await this.initTreeData();
     }
@@ -109,4 +120,19 @@ export default class AmbTree extends Vue {
 .amb-tree::-webkit-scrollbar-thumb {
   background-color: #d9d9d9;
 }
+.menuSW{        
+       // @include bip_text_primary;
+        height: 35px;
+        line-height: 35px;
+        background-color: #fff;
+        border-bottom: 0.1px solid rgba(99, 99, 99, 0.322);
+        text-align: right;
+        cursor: pointer;
+        i {
+            padding-top: 8px;
+            padding-right: 8px;
+            font-size: 20px;
+            color:#606266;
+        }
+    }
 </style>

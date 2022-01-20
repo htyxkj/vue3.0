@@ -3,7 +3,8 @@
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
             <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change"></Period> -->
-             <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+             <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1"
+              type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
             <div class="topdiv2"><!-- 刷新 -->
                 <el-button style="border:0px" @click="initData">      
                     <i class="el-icon-refresh-right"></i>
@@ -13,9 +14,9 @@
 
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
-            </el-aside>
+            <!-- <el-aside width="300px"> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
+            <!-- </el-aside> -->
             <el-main style="padding:0px">
                 <bip-chart :style="chartStyle" :option="chartOption" :chartStyle="chartStyle"></bip-chart>
             </el-main>
@@ -57,10 +58,15 @@ export default class ProfitLossFunction extends Vue {
     treeHeight:any ="500";
     chartStyle:string = "height :400px;";
     chartOption:any = null;
+    screenWidth:number=1920;
+
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.treeHeight =  this.height -60
         this.initChartOption();
+    }
+    mounted() { 
+        this.screenWidth= document.body.clientWidth;
     }
     initChartOption(){
         this.chartOption = null;
@@ -155,13 +161,20 @@ export default class ProfitLossFunction extends Vue {
     @Watch("height")
     heightChange() {
         this.treeHeight =  this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

@@ -1,10 +1,10 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>
-            <div class="topdiv1"><!-- 显示类别 -->
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting> 
+            <Period :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
+            <Period :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
@@ -25,9 +25,9 @@
 
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
-            </el-aside>
+            <!-- <el-aside width="300px"> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+           <!--  </el-aside> -->
             <el-main style="padding:0px">
                 <vxe-table resizable size="mini" ref="FIncomeTable" auto-resize  show-overflow
                     border="inner" stripe highlight-hover-row :height="tableHeight"
@@ -81,11 +81,15 @@ export default class GoalAchievementTrend extends Vue {
     tableData:any = [];
     showTypeData:any = [];  //经营目标类型参照
     showType:String = '';
+    screenWidth:number=1920;
     async created() {
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
         // this.initChartOption();
         this.getCoList();
+    }
+     mounted() { 
+        this.screenWidth= document.body.clientWidth;
     }
     initChartOption(){
         this.chartOption = null;
@@ -216,13 +220,20 @@ export default class GoalAchievementTrend extends Vue {
     heightChange() {
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

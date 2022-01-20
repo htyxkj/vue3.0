@@ -75,13 +75,8 @@ export default class BipInsAidEditor extends Vue{
     refId:string = ''
     initOK:boolean = false
     span:number = 6
-
-    methodName:string = ''
-
     dia:boolean = false;
-
     readonly:boolean = false;//非输入
-
     mulcols: boolean = false;//多列
     bcode: boolean = false;//文本编码
     bfmt: boolean = false;//格式化
@@ -104,7 +99,7 @@ export default class BipInsAidEditor extends Vue{
         this.bfmt = (this.cell.attr & 0x10000) > 0;
         this.readonly = (this.cell.attr & 0x2000000) > 0;
         this.bcode = (this.cell.attr & 0x40000) > 0 ;//|| (this.bipInsAid!=null && this.bipInsAid.bType === 'CGroupEditor');
-        this.aidMarkKey = this.cds.ccells.obj_id + "_" + this.cell.id+'_';
+        this.aidMarkKey = this.cds.ccells.obj_id+"_"+ this.row + "_" + this.cell.id+'_';
         if(!this.bgrid){
             this.span = Math.round(24/this.cds.ccells.widthCell*this.cell.ccHorCell)
         }else{
@@ -138,7 +133,6 @@ export default class BipInsAidEditor extends Vue{
         }
 
         await this.getRefValues()
-        this.methodName = ICL.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
         if(this.mulcols){
             this.initMulColInfo()
             let record: CRecord = this.cds.getRecordAtIndex(this.row<0?0:this.row);
@@ -362,8 +356,14 @@ export default class BipInsAidEditor extends Vue{
                             if(res.data.id ==0){
                                 vrs = res.data.data.data.values[0]
                             }
-                            if(vrs)
+                            if(vrs){
                                 values.push(vrs)
+                            }else{
+                                vrs = {};
+                                vrs[this.refLink.cells.cels[0].id] = val
+                                vrs[this.refLink.cells.cels[1].id] = val
+                                values.push(vrs)
+                            }
                         }else{
                             vrs = JSON.parse(str);
                             this.setAidValue({key:key,value:vrs})

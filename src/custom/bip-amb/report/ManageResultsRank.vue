@@ -12,9 +12,9 @@
             </div>
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
-            </el-aside>
+          <!--   <el-aside width="300px"> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
+          <!--   </el-aside> -->
             <el-main style="padding:0px">
                 <bip-chart :style="chartStyle" :option="chartOption" :chartStyle="chartStyle"></bip-chart>
             </el-main>
@@ -183,6 +183,7 @@ export default class ManageResultsRank extends Vue {
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;

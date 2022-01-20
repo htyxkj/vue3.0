@@ -1,18 +1,18 @@
 <template> 
     <el-container>
-        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
+        <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;line-height: 45px;">
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting> 
             <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
             <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period> -->
-            <el-date-picker v-model="fm_date"  class="topdiv1" type="month" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <el-date-picker v-model="to_date"  class="topdiv1" type="month" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <div class="topdiv1"><!-- 显示类别 -->
+            <el-date-picker v-model="fm_date"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="month" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <el-date-picker v-model="to_date"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="month" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="指标类型" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </div>
-            <accounting-ele-dialog @dataChange="check_accountEle"  class="topdiv1" :purposesId="amb_purposes_id" :showCbox="true"></accounting-ele-dialog>
-            <div class="topdiv1">
+            <accounting-ele-dialog @dataChange="check_accountEle"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :purposesId="amb_purposes_id" :showCbox="true"></accounting-ele-dialog>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'">
                 <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
                     <i class="el-icon-search"></i>
                     <span>查询</span>
@@ -33,9 +33,9 @@
 
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
-            </el-aside>
+            <!-- <el-aside width="300px"> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+            <!-- </el-aside> -->
             <el-main style="padding:0px">
               <template v-if="tableLoading">
                     <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
@@ -148,7 +148,7 @@ export default class MonthGoalAchievementTrend extends Vue {
     year_monthlist:any=[];
     tableLoading:boolean = true;
     valueTableLoading:boolean = false;
-
+    screenWidth:number=1920;
 
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'month').format("YYYY-MM")
@@ -157,7 +157,9 @@ export default class MonthGoalAchievementTrend extends Vue {
         this.tableHeight = this.height -60
         this.getCoList();
     }
-
+     mounted() { 
+        this.screenWidth= document.body.clientWidth;
+    }
     async initData(){
          this.tableLoading = true;
         this.valueTableLoading = true;
@@ -449,13 +451,20 @@ export default class MonthGoalAchievementTrend extends Vue {
     heightChange() {
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

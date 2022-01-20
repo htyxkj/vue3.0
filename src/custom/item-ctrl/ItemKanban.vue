@@ -13,7 +13,7 @@
                     <vxe-table ref="itemKanbanTask" border resizable size="small" highlight-hover-row show-all-overflow="tooltip"
                     show-header-overflow highlight-current-row class="vxe-table-element checkbox-table"
                     @cell-click="taskDetailsGT" :loading="itemKanbanTaskLoading"
-                    :data.sync="bipInsAid.values" height='300' :optimized="true">
+                    :data.sync="bipInsAid.values" height='340' :optimized="true">
                     <vxe-table-column type="seq" fixed="left" width="40"></vxe-table-column>
                         <template v-for="(item,index) in bipInsAid.showColsIndex">
                             <vxe-table-column :key="index" header-align="center" :align="index==0?'left':'center'"  :width="tableFWidth[index]" :field="bipInsAid.cells.cels[item].id"
@@ -54,10 +54,19 @@
             </el-card>
         </el-row>
         <el-dialog class="flDialog" title="" :visible.sync="isFullScreen" fullscreen append-to-body @close="dlaClose">
-            <slot slot="title">
-                经营进展情况
-            </slot>
-           <BipGant :config="gttConfig" :height='500'></BipGant>
+            <div id="gantt_elastic_1">
+                <!-- <h2>{{this.obname}}</h2> -->
+                <!-- 经营进展情况 -->
+              <div class="gtt-title">
+                  <el-row :gutter="20">
+                      <el-col :span="12" :offset="0"> {{this.obname}}</el-col>
+                      <el-col :span="12" :offset="0">
+                          <div class="img-download"> <i class="el-icon-download" @click="makeImg">图片下载</i> </div>
+                      </el-col>
+                  </el-row>
+              </div>
+             <BipGant :config="gttConfig" :height='500'></BipGant>
+           </div>
         </el-dialog>
     </div>
 </template>
@@ -75,7 +84,7 @@ import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 import moment from "moment"
-
+import domtoimage from 'dom-to-image';
 @Component({
     components: {
         BipGant,
@@ -95,6 +104,7 @@ export default class ItemKanban extends Vue{
     itemKanbanTaskLoading:boolean = false;
     itemKanbanTaskHBLoading:boolean = false;
     tableFWidth:any=[-1,95,75,63,63];
+    obname:string = ""
     created(){
         
     }
@@ -146,6 +156,7 @@ export default class ItemKanban extends Vue{
         let row =  this.bipInsAid.values[d.rowIndex];
         let qe: QueryEntity = new QueryEntity("", "");
         let obno = row.obno
+        this.obname = row.name
         let qCont = new QueryCont('obno',obno,12);
         let oneCont = [qCont]; 
         qe.cont = "~[" + JSON.stringify(oneCont)+"]";
@@ -298,6 +309,30 @@ export default class ItemKanban extends Vue{
             return new CDataSet('');
         }
     }
+
+    makeImg(){
+        let _this = this; 
+        try{
+            // console.log("开始导出图片！")  gantt-elastic__main-view document.getElementById('gantt_elastic') 
+            domtoimage.toBlob(document.getElementById('gantt_elastic_1')).then(function (data:any) {
+                let blob = new Blob([data], {
+                    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+                });
+                let date = new Date()
+                var url = window.URL.createObjectURL(blob); 
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = _this.obname +'甘特图.png';
+                a.click(); 
+            })
+            .catch(function (error:any) {
+                _this.$notify.error("图片获取失败！");
+            });
+        }catch(e){
+            this.$notify.error("图片获取失败！");
+        } 
+    }
+
     @Watch("height")
     heightWatch(){
         this.style = "height:"+(this.height?this.height:'400')+"px";
@@ -316,5 +351,19 @@ export default class ItemKanban extends Vue{
     .el-card__body{
         padding:10px;
     }
+}
+.gtt-title {
+    padding-top: 10px;
+    padding-left: 5px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    // width: 100%;
+    // background: rgb(243, 245, 247);
+}
+.img-download {
+    font-size: 12px;
+    text-align: right;
+    padding-right: 10px;
 }
 </style>

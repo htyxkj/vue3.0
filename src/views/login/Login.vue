@@ -9,6 +9,9 @@
     <template v-else-if="baseVar.ITEMTYPE =='bip-amb'">
       <login-ng-amb></login-ng-amb>
     </template>
+    <template v-else-if="baseVar.ITEMTYPE =='JINAN-bip-amb'">
+      <login-ja-amb></login-ja-amb>
+    </template>
     <template v-else>
       <login-bip></login-bip>
     </template>
@@ -21,12 +24,14 @@ import LoginBip from '@/views/login/LoginBIP'
 import LoginRD from '@/views/login/LoginRD'
 import LoginAir from '@/views/login/LoginAir'
 import LoginNgAmb from '@/views/login/LoginNgAmb'
+import LoginJaAmb from '@/views/login/LoginJaAmb'
 @Component({
     components:{
       LoginBip,
       LoginRD,
       LoginAir,
-      LoginNgAmb
+      LoginNgAmb,
+      LoginJaAmb
     }
 })
 export default class Login extends Vue {

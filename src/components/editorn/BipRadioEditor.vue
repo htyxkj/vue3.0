@@ -203,9 +203,15 @@ export default class BipRadioEditor extends Vue{
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .raido_div{
     height: 36px;
-    line-height: 36px
+    line-height: 36px;
+    .el-radio{
+        margin-right: 10px !important;
+        .el-radio__label{
+            padding-left: 5px;
+        }
+    }
 }
 </style>

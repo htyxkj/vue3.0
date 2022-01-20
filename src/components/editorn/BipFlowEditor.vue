@@ -33,7 +33,7 @@
         <!-- <template v-if="dia"> -->
         <bip-copy-info
             ref="ak"
-            :opera='cds.opera'
+            :opera='opera'
             :ref_cds="cds"
             @select="selectCallBack"
         ></bip-copy-info>
@@ -76,8 +76,13 @@ export default class BipFlowEditor extends Vue{
     bfmt: boolean = false;//格式化
     othCols: Array<string> = [];
     othColsIndex: Array<number> = [];
+    opera:any=null;
 
     mounted(){
+        this.opera = this.cds.opera;
+        if(!this.opera && this.cds.ds_par){
+            this.opera = this.cds.ds_par.opera;
+        }
         this.multiple = (this.cds.ccells.attr&0x80)>0
         this.mulcols = (this.cell.attr & 0x100000) > 0;
         this.bfmt = (this.cell.attr & 0x10000) > 0;

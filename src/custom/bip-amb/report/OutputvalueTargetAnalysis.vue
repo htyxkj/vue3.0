@@ -1,18 +1,15 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
-            <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="fm_Period_change" :type="'min'"></Period>
-            <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="to_Period_change" :type="'max'"></Period> -->
-            <el-date-picker v-model="fm_date"  class="topdiv1" type="month" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <!-- <el-date-picker v-model="to_date"  class="topdiv1" type="month" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker> -->
-            <div class="topdiv1"><!-- 显示类别 -->
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting> 
+            <el-date-picker v-model="fm_date"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="month" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="指标类型" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </div>
-            <accounting-ele-dialog @dataChange="check_accountEle"  class="topdiv1" :purposesId="amb_purposes_id" :showCbox="true"></accounting-ele-dialog>
-            <div class="topdiv1">
+            <accounting-ele-dialog @dataChange="check_accountEle"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :purposesId="amb_purposes_id" showEleId="AE20110500004" :showCbox="true"></accounting-ele-dialog>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'">
                 <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
                     <i class="el-icon-search"></i>
                     <span>查询</span>
@@ -33,9 +30,9 @@
 
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
-            </el-aside>
+            <!-- <el-aside width="300px"> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+           <!--  </el-aside> -->
             <el-main style="padding:0px">
               <template v-if="tableLoading">
                     <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
@@ -48,11 +45,12 @@
                 </template>
                 <template v-else> 
                     <vxe-table resizable border size="mini" ref="FIncomeTable" auto-resize :loading="valueTableLoading"  show-overflow :height="tableHeight"
-                        highlight-current-row stripe highlight-hover-row row-id="element_id" :data="tableData">
-                        <vxe-table-column field="element_name" align="center" title="收支项目" min-width="100">
-                                <template v-slot="{row}" > 
-                                {{row.element_name}}
-                                </template>
+                        highlight-current-row highlight-hover-row row-id="element_id" :data="tableData" 
+                        :tree-config="{transform: true, rowField: 'element_id', parentField: 'element_parent_id',expandAll: true}">
+                        <vxe-table-column field="element_name" align="center" title="收支项目" min-width="200" tree-node fixed="left">
+                            <template v-slot="{row}" > 
+                            {{row.element_name}}
+                            </template>
                         </vxe-table-column>
                         <vxe-table-colgroup v-for="(item,index) in monthlist" :key="index" align="center"  :title="item.month">
                                 <vxe-table-column align="center" title="目标值" min-width="100">
@@ -142,25 +140,26 @@ export default class OutputvalueTargetAnalysis extends Vue {
     year_monthlist:any=[];
     tableLoading:boolean = true;
     valueTableLoading:boolean = false;
-
-
+    isTree:boolean =true;
+    screenWidth:number=1920;
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'month').format("YYYY-MM")
         // this.to_date = moment(new Date()).add(-1, 'month').format("YYYY-MM")
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
+        this.screenWidth= document.body.clientWidth;
         this.getCoList();
     }
 
     async initData(){
-        console.log(this.showType);
-        
+        if(this.amb_accountEle_ids.length>0) 
+            this.isTree=false;
         this.tableLoading = true;
         this.valueTableLoading = true;
         if(this.amb_purposes_id !="" && this.amb_group_ids !="" && this.showType !="" && this.fm_date !=""){
-            let btn1 = new BipMenuBtn("DLG","月度经营目标趋势分析")
+            let btn1 = new BipMenuBtn("DLG","单巴产值分析")
             btn1.setDlgType("D")
-            btn1.setDlgCont("amb.serv.util.report.GoalAchievementInvoke*203;0;0");// 产值目标
+            btn1.setDlgCont("amb.serv.util.report.OutputValueInvoke*202;0;0");// 产值目标
             let b = JSON.stringify(btn1)
             let prarm = {
                 "purpose_id":this.amb_purposes_id,//核算目的
@@ -174,7 +173,9 @@ export default class OutputvalueTargetAnalysis extends Vue {
             let v = JSON.stringify(prarm);
             let res = await tools.getDlgRunClass(v,b);
             if(res.data.id ==0){
-               this.tableData = res.data.data.tardata  
+               this.tableData = res.data.data.tardata 
+               console.log(this.tableData);
+               
                this.monthlist = res.data.data.monthlist 
                this.year_tableData = res.data.data.y_tardata
                this.year_monthlist = res.data.data.y_monthlist
@@ -350,13 +351,20 @@ export default class OutputvalueTargetAnalysis extends Vue {
     heightChange() {
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

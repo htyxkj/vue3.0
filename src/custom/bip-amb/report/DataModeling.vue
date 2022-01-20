@@ -1,10 +1,11 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting>
             <!-- <Period class="topdiv1" :calendar_id="calendar_id" @dataChange="period_change" :type="'max'"></Period> -->
-            <el-date-picker v-model="period_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="period_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-            <div class="topdiv1">
+            <el-date-picker v-model="period_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"
+             type="date" @change="period_dateChange" placeholder="选择日期" size="small"></el-date-picker>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'">
                 <el-button size="small" style="margin-left:20px" type="primary" :disabled="selData.length ==0" @click="doDataM">      
                     <span>数据建模</span>  
                 </el-button>
@@ -125,6 +126,7 @@ import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 export default class DataModeling  extends Vue {
     
     @State('bipComHeight', { namespace: 'login' }) height!: number;
+    screenWidth:number=1920;
     tablePage:any ={
         total: 0,
         currPage:1,
@@ -171,9 +173,10 @@ export default class DataModeling  extends Vue {
     }
     async mounted() { 
         this.logDelCell = await this.getCell(this.logDelCellId);
-
+        this.screenWidth= document.body.clientWidth;
         
     }
+     
     
     async initData(){
         //this.selData = [];
@@ -365,6 +368,7 @@ export default class DataModeling  extends Vue {
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -120
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
@@ -372,6 +376,11 @@ export default class DataModeling  extends Vue {
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

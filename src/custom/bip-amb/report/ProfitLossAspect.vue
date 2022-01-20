@@ -2,9 +2,9 @@
     <el-row>
         <el-container>
             <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-                <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-                <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-                <div class="topdiv1"><!-- 显示类别 -->
+                <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting>
+                <el-date-picker v-model="fm_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
+                <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 显示类别 -->
                     <el-select v-model="showType" placeholder="请选择" size="small">
                         <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
                     </el-select>
@@ -30,9 +30,9 @@
 
             </el-header>
             <el-container>
-                <el-aside width="300px">
-                    <amb-tree :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
-                </el-aside>
+                <!-- <el-aside width="300px"> -->
+                    <amb-tree class="el-tree-node_content" :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
+              <!--   </el-aside> -->
                 <el-main style="padding:0px">
                     <template v-if="tableLoading">
                         <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
@@ -120,9 +120,11 @@ export default class ProfitLossAspect  extends Vue {
     ];
     dialogVisible:boolean = false;
     dialogTitle:any = "";
+    screenWidth:number=1920;
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.tableHeight =  this.height - 60
+        this.screenWidth= document.body.clientWidth;
     }
     mounted() { 
     }
@@ -338,13 +340,20 @@ export default class ProfitLossAspect  extends Vue {
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

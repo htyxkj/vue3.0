@@ -219,7 +219,7 @@ export default class BipAutograph extends Vue{
         if(this.canvas_isimg){
             this.showSignature = false;
         }
-        var imgBase64 = this.canvas.toDataURL(); 
+        var imgBase64 = this.canvas.toDataURL('image/jpeg', 0.5); 
         if( imgBase64 !== this.model){
             if(this.cds.currCanEdit()){
                 this.$emit("dataChange",imgBase64)
@@ -252,7 +252,7 @@ export default class BipAutograph extends Vue{
 <style scoped>
 .img{ 
     border: 1px solid red;
-    height: 30px; 
+    height: 0.5156rem; 
     width: 100%; 
   }
 canvas{

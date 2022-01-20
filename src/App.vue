@@ -140,6 +140,7 @@ export default class App extends Vue {
     childDlg_width:any = "70%";//子路由弹出窗宽度
     childDlg_title:any = "";//子路由弹出窗标题
     childDlg_icon:any = "";//子路由弹出窗图标
+    childDlg_objid:any = "";
     async created(){
         this.$bus.$on('openChildDlg',this.openChildDlg)
         await this.$axios.get('./static/config.json').then((res:any) => { 
@@ -231,6 +232,7 @@ export default class App extends Vue {
         this.childDlg_width =param.childDlg_width;
         this.childDlg_icon =param.childDlg_icon;
         this.childDlg_title = param.childDlg_title;
+        this.childDlg_objid = param.obj_id;
         setTimeout(() => {
             this.childDlg = true;
             // this.stopF5Refresh();
@@ -241,6 +243,8 @@ export default class App extends Vue {
             this.$router.go(-1);
             setTimeout(() => {
                 this.$bus.$emit('totalHChange')
+                let v = {value:1,obj_id:this.childDlg_objid};
+                this.$bus.$emit('handleCurrentChange',v)
                 this.isDlgRouter = false;
                 this.childDlg = false;
                 if(reload){

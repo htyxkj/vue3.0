@@ -205,11 +205,21 @@ export default class CUnivSelect extends Vue {
                     this.CondiyionShow = false;
                     let index:number =0;
                     for (let i = 0; i < this.mbs.menuList.length; i++) {
-                    if((this.mbs.menuList[i].cmd).indexOf("CONDITIONSHOW") > -1 ){
-                        index = i
-                        }
+                        if((this.mbs.menuList[i].cmd).indexOf("CONDITIONSHOW") > -1 ){
+                            index = i
+                            }
                     }
                     this.mbs.menuList[index].name = '显示条件'
+                }
+                if(this.uriParams.pbds.search && this.uriParams.pbds.search==="none"){
+                    this.CondiyionShow = false;
+                    let index:number =0;
+                    for (let i = 0; i < this.mbs.menuList.length; i++) {
+                        if((this.mbs.menuList[i].cmd).indexOf("CONDITIONSHOW") > -1 ){
+                            index = i
+                            }
+                    }
+                    this.mbs.menuList.splice(index,1)
                 }
 
             } else {
@@ -402,10 +412,14 @@ export default class CUnivSelect extends Vue {
                             return;
                         }
                         let res = await tools.getMenuParams(pbuid[1],pmenuid[1]);
+                        console.log(res);
+                        
                         if (res.data.id === 0) {
                             let uriParams = res.data.data.mparams;
                             let dialog = uriParams.pbds["Dialog"]
                             if(dialog){
+                                console.log("Dialog");
+                                
                                 let param = {
                                     childDlg_width:dialog,
                                     childDlg_title:menu.menuName,

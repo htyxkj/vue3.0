@@ -129,7 +129,6 @@
                                     <bip-comm-editor v-if="celsAll[40]" :cell="celsAll[40]"  :cds="cell" :row="cell.index" />
                                     <!-- 编辑时间 -->
                                     <bip-comm-editor v-if="celsAll[41]" :cell="celsAll[41]"  :cds="cell" :row="cell.index" />
-
                                 </el-row>
                             </el-main>
                         </el-container>

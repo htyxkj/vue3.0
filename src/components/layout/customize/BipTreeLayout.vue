@@ -92,7 +92,9 @@ export default class BipTreeLayout extends Vue{
         let value = vv.data.data.data.data;
         let retVl = [];
         for(var i=0;i<value.length;i++){
-          retVl.push(value[i].data);
+          let data = value[i].data;
+          data.children = [];
+          retVl.push(data);
         }
         return retVl;
       }else{
@@ -100,15 +102,18 @@ export default class BipTreeLayout extends Vue{
       }
     }
     handleNodeClick(data:any,data1:any,data2:any) {
-      
+      console.log(data)
     }
     @Watch("cds.currRecord",{deep:true})
     currRecordChange(newVl:any){
-      if(newVl.c_state == icl.R_POSTED){//兴建行
+      if((newVl.c_state & icl.R_POSTED)>0){//兴建行
         let father = newVl.data[this.fatherID]
         let tree:any = this.$refs[this.cds.ccells.obj_id];
         if(tree){
-          tree.append(newVl.data,father)
+          let data = newVl.data;
+          data.children = [];
+          tree.remove(data);
+          tree.append(data,father);
         }
       }
     }

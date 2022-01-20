@@ -8,7 +8,11 @@
                 <span v-else-if="base_variable && base_variable.ITEMTYPE == 'bip-amb'" style="color: white;font-size: 18px;padding-right: 10px;">
                     NISCO
                 </span>
+                <span v-else-if="base_variable && base_variable.ITEMTYPE == 'JINAN-bip-amb'" style="color: white;font-size: 18px;padding-right: 10px;">
+                    JINAN MINING
+                </span>
                 <el-row v-else-if="base_variable && base_variable.ITEMTYPE == 'air-super'" ></el-row>
+                <img v-else-if="base_variable && base_variable.ITEMTYPE == 'Pro-quality'" src="../../assets/bip/208logo.png"/>
                 <img v-else src="../../assets/bip/logo.png"/>
                 <div style="color: white;font-size: 18px;">
                     {{base_variable.Project_Name}}
@@ -16,7 +20,14 @@
                 <!-- <i v-else class="iconfont icon-bip-menu menuicon pointer" @click="showMenu" style="font-size: 34px;"></i> -->
             </el-col>
             <el-col :span="10" style="text-align:end" class="my-header">
-                <el-badge :value="taskNum" class="header_badge_item" style="margin-left: auto;">
+                <template v-if="loginTimes && loginTimes.length>0">
+                    <span style="font-size:16px;color:#FFFFFF;margin-left: auto;margin-right:25px;">
+                        今日登录次数：{{loginTimes[0]["TODAYLOGINTIMES"]}}
+                        &nbsp;&nbsp;
+                        累计登录次数：{{loginTimes[0]["TOTALLOGINTIMES"]}}
+                    </span>
+                </template>
+                <el-badge :value="taskNum" class="header_badge_item" :style="(loginTimes && loginTimes.length>0)?'':'margin-left: auto;'">
                     <i class="el-icon-mobile pointer" @click="myTask"></i>    
                 </el-badge>
                 <el-badge :value="msgNum" class="header_badge_item">
@@ -151,7 +162,7 @@ export default class LayHeader extends Vue {
     skin:any=[];
 
     gwName:any=null;
-
+    loginTimes:any=null;
     async mounted() {
         this.skin = [
             {name:'默认',id:'theme'},{name:'默认1',id:'theme1'}
@@ -298,9 +309,17 @@ export default class LayHeader extends Vue {
     }
 
     async getTaskMsgNum(){
-        setTimeout(() => {
-            let cc = tools.getTaskMsgData(200,null,null,null,null,null,null,null,null);             
-        }, 500);
+        let cc = await tools.getTaskMsgData(200,null,null,null,null,null,null,null,null); 
+        if(cc.data.id ==0 ){
+            if(cc.data.data.numData){
+                let data = cc.data.data.numData;
+                for(var i=0;i<data.length;i++){
+                    if(data[1] != null){
+                        this.responseCallback({body:JSON.stringify(data[i])})
+                    }
+                }
+            }
+        }
     }
 
     myTask(){
@@ -440,6 +459,14 @@ export default class LayHeader extends Vue {
                     }
                 }
             }
+            let qe1: QueryEntity = new QueryEntity("", "");
+            let lt = await tools.getBipInsAidInfo("LOGINTIMES", 210, qe1);
+            if(lt){
+                if(lt.data.id==0){
+                    this.loginTimes = lt.data.data.data.values 
+                }             
+            }
+            
         }
     }
 }

@@ -230,6 +230,18 @@ export default new Router({
         component: () => import('./custom/bip-amb/report/MoreOutputvalueTargetAnalysis.vue')
       },
       {
+        //阿米巴  产量目标趋势分析(单巴)
+        path: '/YieldTargetAnalysis',
+        name: 'YieldTargetAnalysis',
+        component: () => import('./custom/bip-amb/report/YieldTargetAnalysis.vue')
+      },
+      {
+        //阿米巴  产量目标趋势分析(多巴)
+        path: '/MoreYieldTargetAnalysis',
+        name: 'MoreYieldTargetAnalysis',
+        component: () => import('./custom/bip-amb/report/MoreYieldTargetAnalysis.vue')
+      },
+      {
           //阿米巴会计期间
           path: '/AccountingPeriod',
           name: 'AccountingPeriod',
@@ -296,6 +308,12 @@ export default new Router({
           component :()=> import('./custom/agv/AgvRTVideo.vue')
       },
       {
+        //巡检机器机器人操作调用网址
+        path: '/AgvOperation',
+        name: 'AgvOperation',
+        component :()=> import('./custom/agv/AgvOperation.vue')
+      },
+      {
           //CRM 工作台
           path:'/workBench',
           name: 'workBench',
@@ -335,13 +353,23 @@ export default new Router({
           default: () => import('./views/app/CommonLayOut.vue'),
           dlgRouter:() => import('./custom/bip-208/QualityProblemDatabase.vue'),
         },
-      },{
+      },
+      {
         //208项目 严重及以上质量问题信息数据编辑页面
         path:'/CriticalIssuesDatabase',
         name:'CriticalIssuesDatabase',
         components: {
           default: () => import('./views/app/CommonLayOut.vue'),
           dlgRouter:() => import('./custom/bip-208/CriticalIssuesDatabase.vue'),
+        },
+      },
+      //208项目 文件处理：一键导出、一键导入
+      {
+        path:'/FileProcess',
+        name:'FileProcess',
+        components: {
+          default: () => import('./custom/bip-208/FileProcess.vue'),
+          dlgRouter:() => import('./custom/bip-208/FileProcess.vue'),
         },
       }
   ]

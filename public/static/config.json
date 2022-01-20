@@ -1,14 +1,14 @@
 {
-    "dbid": "01",
-    "ApiUrl": "http://121.5.109.97:8080/cattle_breed/",
+    "dbid": "500",
+    "ApiUrl": "http://127.0.0.1:9999/jd/",   
     "MQTT_SERVICE": "ws://115.28.191.203:85/ws",
     "MQTT_USERNAME": "bipmq",
     "MQTT_PASSWORD": "bipmq",
     "MQTT_HOST": "bipmq",
-    "Project_Name":"企业研发项目费用管理服务系统",
-    "COPYRIGHT":"2021：HCR-数字农业事业部 版权所有",
+    "Project_Name":"ShineOn-OMS",
+    "COPYRIGHT":"",
     "SMSURL":"http://www.bip-soft.com:8080/ssms/",
     "ITEMTYPE":"itemCtrl",
     "UniteLoginUrl":"http://192.168.17.76:8101/login#/",
-    "SKIN":"theme1"
+    "SKIN":"theme2"
 }

@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "skipLibCheck":true,//跳过包检查
     // "allowJs": true,
     "types": [
       "webpack-env"

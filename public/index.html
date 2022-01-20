@@ -21,24 +21,24 @@
                 var config = JSON.parse(request.responseText);
                 document.getElementsByTagName("title")[0].innerText = config.Project_Name;
                 var head= document.getElementsByTagName('head')[0];
-                if(config.ITEMTYPE =='air-super'){
-                  var script1= document.createElement('script');  
-                  script1.type= 'text/javascript';  
-                  script1.src= 'https://api.tianditu.gov.cn/api?v=4.0&tk=7b036021d9213378213ecdefb18162db';  
-                  head.appendChild(script1);
-                  var script2= document.createElement('script');  
-                  script2.type= 'text/javascript';  
-                  script2.src= './static/js/TMap/d3.js';  
-                  head.appendChild(script2);
-                  var script3= document.createElement('script');  
-                  script3.type= 'text/javascript';  
-                  script3.src= './static/js/TMap/D3SvgOverlay.js';  
-                  head.appendChild(script3);
-                  var script4= document.createElement('script');  
-                  script4.type= 'text/javascript';  
-                  script4.src= './static/js/TMap/CarTrack.js';  
-                  head.appendChild(script4);
-                }
+            //     if(config.ITEMTYPE =='air-super'){
+            //       var script1= document.createElement('script');  
+            //       script1.type= 'text/javascript';  
+            //       script1.src= 'https://api.tianditu.gov.cn/api?v=4.0&tk=7b036021d9213378213ecdefb18162db';  
+            //       head.appendChild(script1);
+            //       var script2= document.createElement('script');  
+            //       script2.type= 'text/javascript';  
+            //       script2.src= './static/js/TMap/d3.js';  
+            //       head.appendChild(script2);
+            //       var script3= document.createElement('script');  
+            //       script3.type= 'text/javascript';  
+            //       script3.src= './static/js/TMap/D3SvgOverlay.js';  
+            //       head.appendChild(script3);
+            //       var script4= document.createElement('script');  
+            //       script4.type= 'text/javascript';  
+            //       script4.src= './static/js/TMap/CarTrack.js';  
+            //       head.appendChild(script4);
+            //     }
             }
         }	
     </script>

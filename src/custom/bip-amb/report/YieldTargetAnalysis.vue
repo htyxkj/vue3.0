@@ -8,7 +8,9 @@
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </div>
-            <accounting-ele-dialog @dataChange="check_accountEle"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :purposesId="amb_purposes_id" showEleId="AE20110500004" :showCbox="true"></accounting-ele-dialog>
+            <accounting-ele-dialog @dataChange="check_accountEle"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :purposesId="amb_purposes_id" :showCbox="true"
+                showEleId="AE20110500004"
+            ></accounting-ele-dialog>
             <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'">
                 <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
                     <i class="el-icon-search"></i>
@@ -31,8 +33,8 @@
         </el-header>
         <el-container>
             <!-- <el-aside width="300px"> -->
-                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
-            <!-- </el-aside> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+           <!--  </el-aside> -->
             <el-main style="padding:0px">
               <template v-if="tableLoading">
                     <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
@@ -45,21 +47,14 @@
                 </template>
                 <template v-else> 
                     <vxe-table resizable border size="mini" ref="FIncomeTable" auto-resize :loading="valueTableLoading"  show-overflow :height="tableHeight"
-                        highlight-current-row highlight-hover-row  row-id="id" enabled="false" :data="tableData" :span-method="cellMerge">
-
-                        <vxe-table-column field="element_name" align="center" title="收支项目" min-width="200" fixed="left">
+                        highlight-current-row highlight-hover-row row-id="element_id" :data="tableData" 
+                        :tree-config="{transform: true, rowField: 'element_id', parentField: 'element_parent_id',expandAll: true}">
+                        <vxe-table-column field="element_name" align="center" title="收支项目" min-width="200" tree-node fixed="left">
                             <template v-slot="{row}" > 
                             {{row.element_name}}
                             </template>
                         </vxe-table-column>
-                      
-                        <vxe-table-column align="center" title="阿米巴" min-width="100" fixed="left">
-                                <template v-slot="{row}" > 
-                                {{row.amb_name}}
-                                </template>
-                        </vxe-table-column>
                         <vxe-table-colgroup v-for="(item,index) in monthlist" :key="index" align="center"  :title="item.month">
-                            
                                 <vxe-table-column align="center" title="目标值" min-width="100">
                                     <template v-slot="{row}"> 
                                         {{row[item.pdate+"t_value"]}}
@@ -75,23 +70,14 @@
                                         {{row[item.pdate+"CompletionRate"]}}
                                     </template>
                                 </vxe-table-column>
-                            
                         </vxe-table-colgroup>
                         
                         
 
-                        <vxe-table-column v-slot="{row}" min-width="270" title="图表分析" align="center" fixed="right">
-                            <el-button style="border:0px" type="primary" size="mini" @click="showMonthChart(row,0)">      
-                                <span>目标值</span>
-                            </el-button>
-                                
-                            <el-button style="border:0px" type="primary" size="mini" @click="showMonthChart(row,1)">      
-                                <span>实际值</span>
-                            </el-button>
-                                
-                            <el-button style="border:0px" type="primary" size="mini" @click="showMonthChart(row,2)">      
-                                <span>达成率</span>
-                            </el-button>
+                        <vxe-table-column v-slot="{row}" min-width="70" title="图表分析" align="center" fixed="right">
+                                <el-button style="border:0px" type="primary" size="small" @click="showMonthChart(row)">      
+                                    <span>分析表</span>
+                                </el-button>
                         </vxe-table-column>
                     
                     </vxe-table>
@@ -130,9 +116,9 @@ import { config } from "node_modules/vue/types/umd";
     }
 })
 /**
- * 产值目标趋势分析（多巴）
+ * 产量目标成本达成分析（单巴）
  */
-export default class MoreOutputvalueTargetAnalysis extends Vue {
+export default class YieldTargetAnalysis extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
@@ -156,8 +142,6 @@ export default class MoreOutputvalueTargetAnalysis extends Vue {
     year_monthlist:any=[];
     tableLoading:boolean = true;
     valueTableLoading:boolean = false;
-    spanArr:any=[];
-    pos:any=0;
     isTree:boolean =true;
     screenWidth:number=1920;
     async created() {
@@ -165,20 +149,19 @@ export default class MoreOutputvalueTargetAnalysis extends Vue {
         // this.to_date = moment(new Date()).add(-1, 'month').format("YYYY-MM")
         this.treeHeight =  this.height -60
         this.tableHeight = this.height -60
+        this.screenWidth= document.body.clientWidth;
         this.getCoList();
     }
-     mounted() { 
-        this.screenWidth= document.body.clientWidth;
-    }
+
     async initData(){
         if(this.amb_accountEle_ids.length>0) 
             this.isTree=false;
         this.tableLoading = true;
         this.valueTableLoading = true;
         if(this.amb_purposes_id !="" && this.amb_group_ids !="" && this.showType !="" && this.fm_date !=""){
-            let btn1 = new BipMenuBtn("DLG","月度经营目标趋势分析")
+            let btn1 = new BipMenuBtn("DLG","单巴产量分析")
             btn1.setDlgType("D")
-            btn1.setDlgCont("amb.serv.util.report.OutputValueInvoke*202;0;0");// 产值目标
+            btn1.setDlgCont("amb.serv.util.report.OutputValueInvoke*203;0;0");// 产量目标
             let b = JSON.stringify(btn1)
             let prarm = {
                 "purpose_id":this.amb_purposes_id,//核算目的
@@ -192,10 +175,12 @@ export default class MoreOutputvalueTargetAnalysis extends Vue {
             let v = JSON.stringify(prarm);
             let res = await tools.getDlgRunClass(v,b);
             if(res.data.id ==0){
-               this.tableData = res.data.data.tardata  
+               this.tableData = res.data.data.tardata 
                console.log(this.tableData);
+               
                this.monthlist = res.data.data.monthlist 
-               this.getSpanArr(res.data.data.tardata);
+               this.year_tableData = res.data.data.y_tardata
+               this.year_monthlist = res.data.data.y_monthlist
             }else{
                 this.$notify.error(res.data.message)
             }  
@@ -213,110 +198,103 @@ export default class MoreOutputvalueTargetAnalysis extends Vue {
     }
     
     //月度目标达成率图表
-    showMonthChart(row:any,rowtype:number){
+    showMonthChart(row:any){
         this.dialogVisible1 = true;
         this.dialogTitle1 = row.element_name;
-        let qjData=[];
-        let seriesP={};
+        let xAxisData = [];
+        let seriesData_0 = [];
+        let seriesData_1 = [];
+        let seriesData_2 = [];
+       
         let chartOption:any = {
-            title:{
-              text: '',
-              x:'center',
-              y:'top',
-              top:'middle',
-              textStyle:{
-                  color:'#909399',
-                  fontStyle:'微软雅⿊',
-                  fontSize:'26px',
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                    color: '#999'
+                    }
                 }
             },
-            dataset:{
-                 source: []
+            legend: {
+                data: ['目标值', '实际完成额', '达成率']
             },
-            legend: {},
-            tooltip: {
-                trigger: 'axis'
-            },
-            xAxis: {
-                type: 'category'
-                
-            },
-            yAxis: {gridIndex: 0},
-            series: []
+            xAxis: [
+                {
+                type: 'category',
+                data: [],
+                axisPointer: {
+                    type: 'shadow'
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                type: 'value',
+                name: '目标值',
+                min: 0,
+                axisLabel: {
+                    formatter: '{value} '
+                }
+                },
+                {
+                type: 'value',
+                name: '达成率',
+                min: 0,
+                axisLabel: {
+                    formatter: '{value} %'
+                }
+                }
+            ],
+            series: [
+                {
+                name: '目标值',
+                type: 'bar',
+                barWith:5,
+                data: []
+
+                },
+                {
+                name: '实际完成额',
+                barWith:5,
+                type: 'bar',
+                data: []
+                },
+                {
+                name: '达成率',
+                type: 'line',
+                yAxisIndex: 1,
+                data: []
+                }
+            ]
         };
 
-        //月份
-        qjData.push('qj');
-        for(var j=0;j<this.monthlist.length;j++){
-            if(this.monthlist[j].type==0)
-                qjData.push(this.monthlist[j].month)     
+      
+       for(var i =0;i<this.monthlist.length;i++){
+            let itemP = this.monthlist[i];
+            
+            if(itemP.type=="0"){
+                xAxisData.push(itemP.month)
+                seriesData_0.push(parseFloat(row[itemP.pdate+"t_value"]))
+                seriesData_1.push(parseFloat(row[itemP.pdate+'mc_value']))
+                seriesData_2.push(parseFloat(row[itemP.pdate+'CompletionRate']))
+            } 
         }
-        chartOption.dataset.source.push(qjData);
-        for(var i=0;i<this.tableData.length;i++){ 
-            let datarow = this.tableData[i]; 
-            if(datarow.element_name == row.element_name){
-                seriesP = {
-                    type: 'line', 
-                    smooth: false, 
-                    seriesLayoutBy: 'row'
-                };
-                let fseData:any =[];
-                fseData.push(datarow.amb_name); 
-                for(var z=0;z<this.monthlist.length;z++){
-                    if(this.monthlist[z].type==0){
-                        if(rowtype == 0)
-                            fseData.push(parseFloat(datarow[this.monthlist[z].pdate+'t_value'])); 
-                        if(rowtype == 1)
-                            fseData.push(parseFloat(datarow[this.monthlist[z].pdate+'mc_value'])); 
-                        if(rowtype == 2)
-                            fseData.push(parseFloat(datarow[this.monthlist[z].pdate+'CompletionRate']));
-                    }   
-                }
-            chartOption.dataset.source.push(fseData);
-            chartOption.series.push(seriesP);
-            }                       
-        } 
+        
+        chartOption.xAxis[0].data = xAxisData
+        chartOption.series[0].data = seriesData_0
+        chartOption.series[1].data = seriesData_1
+        chartOption.series[2].data = seriesData_2
+      
+        
     setTimeout(() => {
             let myChart = echarts.init(this.$refs.monthChart as HTMLCanvasElement); 
             myChart.setOption(chartOption);  
         }, 200);
     }
 
-//合并单元格
-    cellMerge({row,column,rowIndex,columnIndex}:any) {
-       let ciNums = (this.monthlist.length-1)+3
-        if ((columnIndex === 0 && column.title=="收支项目") || (columnIndex === ciNums && column.title=="图表分析")) {
-            const _row = this.spanArr[rowIndex];
-            const _col = _row > 0 ? 1 : 0;
-            return {
-                rowspan: _row,
-                colspan: _col
-                }
-            } 
-        }
- 
-//获取合并的数  
-getSpanArr(data:any) {
-  this.spanArr.length=0;
-  for (var i = 0; i < data.length; i++) {
-        if (i === 0) {
-              this.spanArr.push(1);
-              this.pos = 0
-        } else {
-    // 判断当前元素与上一个元素是否相同
-    if (data[i].element_name === data[i - 1].element_name) {
-                this.spanArr[this.pos] += 1;
-                this.spanArr.push(0);
-              } else {
-                this.spanArr.push(1);
-                this.pos = i;
-              }
-        }
-    }
     
-    
-}
- 
+
 
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
@@ -366,7 +344,7 @@ getSpanArr(data:any) {
         let qe: QueryEntity = new QueryEntity("", "");
         qe.page.currPage = 1;
         qe.page.pageSize = 200;
-        let cc = await tools.getBipInsAidInfo("TYPE_TARGET1", 210, qe);
+        let cc = await tools.getBipInsAidInfo("TYPE_TARGET2", 210, qe);
         this.showTypeData = cc.data.data.data.values;
        
     }   
@@ -377,12 +355,7 @@ getSpanArr(data:any) {
         this.tableHeight = this.height -60
         this.screenWidth= document.body.clientWidth;
     }
-
-    
- 
-   
 }
-   
 </script>
 <style scoped lang="scss" >
 .el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}

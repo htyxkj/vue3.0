@@ -2,7 +2,7 @@
     <el-dialog v-loading="loading" 
     element-loading-text="拼命加载中"
     element-loading-body="false"
-    :title="aIdTitle" class="bip-copy" :visible.sync="visible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
+    :title="aIdTitle" class="bip-copy" width="65%" :visible.sync="visible" :append-to-body="true" :close-on-press-escape="true" :close-on-click-modal="false">
     <!-- <template v-if="init"> -->
         <el-row class="bip-row">
             <el-form @submit.native.prevent label-position="right" label-width="120px">
@@ -10,7 +10,7 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-table v-loading="mloading"  :data="cds.cdata.data" height="200" size="small" stripe border
+            <el-table v-loading="mloading"  :data="cds.cdata.data" size="small" max-height="380" stripe border
              highlight-current-row row-class-name="bip-assist-row" @current-change="currSelectedChange">   
                 <el-table-column v-for="(cel,index) in cellsm" :key="index" :prop="cel.id"
                 :label="cel.labelString"
@@ -44,8 +44,8 @@
         </el-row>
         <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="cancel()">取 消</el-button>
-            <el-button size="small" type="primary" @click="selectOK">确 定</el-button>
-            
+            <el-button size="small" type="primary" @click="selectOK" class="bip_btn_primary">确 定</el-button>
+            &nbsp;
             <el-select v-model="buidfr" placeholder="请选择" size="small" :required="true" @change="buidfrChange">
                 <el-option 
                 v-for="item in flowList"
@@ -54,7 +54,8 @@
                 :value="item.buidfr">
                 </el-option>
             </el-select>
-            <el-button size="small" type="primary" @click="find">刷新</el-button>
+            &nbsp;
+            <el-button size="small" type="primary" @click="find" class="bip_btn_primary">刷新</el-button>
             <el-button size="small" type="warning" @click="findSub">选中</el-button>
 
         </span>

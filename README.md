@@ -1,9 +1,5 @@
 # vue3.3
 
-## 码云项目地址
-
-https://gitee.com/htyxkj/bip-web.git
-
 ## Project setup
 ```
 npm install

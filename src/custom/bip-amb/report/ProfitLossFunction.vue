@@ -1,15 +1,16 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-            <amb-tree-dialog  @dataChange="treeChange" :purposesId="amb_purposes_id" :lCheckData="lTreeCkData" class="topdiv1" :showCbox="false" ></amb-tree-dialog>
-            <div class="topdiv1"><!-- 显示类别 -->
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting>
+            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
+            <amb-tree-dialog  @dataChange="treeChange" :purposesId="amb_purposes_id" :lCheckData="lTreeCkData" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :showCbox="false" ></amb-tree-dialog>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
                 </el-select>
-                &nbsp;&nbsp;
-                <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
+            </div>
+            <div class="topdiv1" style="width:72px;">
+               <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
                     <i class="el-icon-search"></i>
                     <span>查询</span>
                 </el-button>
@@ -27,12 +28,16 @@
                     <span>刷新</span>
                 </el-button>
             </div>
-
+             <div class="topdiv2"><!-- 显示隐藏列 -->
+                <el-button style="border:0px" @click="$refs.FIncomeTable.resetColumn()">      
+                    <span>显示隐藏列</span>
+                </el-button>
+            </div>
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
-            </el-aside>
+           
+            <amb-tree class="el-tree-node_content" :style="'height:'+tableHeight+'px'" @dataChange="treeChange" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree>
+            
             <el-main style="padding:0px">
                 <template v-if="tableLoading">
                     <div v-loading="valueTableLoading" :style="'height:'+tableHeight+'px'">
@@ -49,7 +54,7 @@
                 <template v-else>
                     <vxe-table resizable size="mini" class="mytable-scrollbar" ref="FIncomeTable" auto-resize highlight-current-row
                         show-overflow :tree-config="{children: 'children',expandRowKeys: this.defaultExpandKeys }" row-id="element_id"
-                        border stripe highlight-hover-row :height="tableHeight" :column-config="{'minWidth':'90px','width':'auto'}"
+                        border highlight-hover-row :height="tableHeight" :column-config="{'minWidth':'90px','width':'auto'}"
                         @cell-dblclick="cellDBClick"
                         :data="tableData">
                         <vxe-table-column field="element_name" title="收支项目" min-width="200" width="200" tree-node></vxe-table-column>
@@ -65,11 +70,25 @@
                         </vxe-table-column>
                         <!-- <vxe-table-column field="month_rate" title="当期结构比例" align="right"></vxe-table-column> -->
                         <vxe-table-column field="month_money" title="月度发生额" align="right">
+                            <template #header>
+                                <span>月度发生额&nbsp;</span>
+                                <el-tooltip class="item" effect="dark" content="点击隐藏此列" placement="top">
+                                    <i class="iconfont el-icon-close" style="cursor: pointer;"
+                                    @click="$refs.FIncomeTable.hideColumn($refs.FIncomeTable.getColumnByField('month_money'))"></i>
+                                </el-tooltip>
+                            </template>
                             <template v-slot="{row}"> 
                                 {{getFormatValue(row.month_money)}}
                             </template>
                         </vxe-table-column>
                         <vxe-table-column field="year_money" title="年度发生额" align="right">
+                            <template #header>
+                                <span>年度发生额&nbsp;</span>
+                                <el-tooltip class="item" effect="dark" content="点击隐藏此列" placement="top">
+                                    <i class="iconfont el-icon-close" style="cursor: pointer;" 
+                                    @click="$refs.FIncomeTable.hideColumn($refs.FIncomeTable.getColumnByField('year_money'))"></i>
+                                </el-tooltip>
+                            </template>
                             <template v-slot="{row}"> 
                                 {{getFormatValue(row.year_money)}}
                             </template>
@@ -93,6 +112,7 @@ import moment from 'moment'
 import {CurrUtils} from '@/utils/CurrUtils'
 let currutil = CurrUtils.curr
 import AmbTree from "../components/AmbTree.vue"//阿米巴树
+import XLSX from "xlsx";
 @Component({
     components: {
         Accounting,
@@ -127,10 +147,14 @@ export default class ProfitLossFunction extends Vue {
 
     period_fm_date:any = null;
     period_to_date:any = null;
+    screenWidth:number=1920;
 
+    excelData:any = [];
+    isCollapse:boolean=true;
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.tableHeight =  this.height - 60
+        this.screenWidth= document.body.clientWidth;
     }
     mounted() { 
     }
@@ -220,17 +244,73 @@ export default class ProfitLossFunction extends Vue {
     //导出excel
     exportDataEvent () {
         let refT:any = this.$refs["FIncomeTable"]
-        if(refT){
-            refT.setAllTreeExpand(true);
-            setTimeout(() => {
-                refT.exportData({
-                    filename: '职能式损益表',
-                    sheetName: 'Sheet1',
-                    type: 'xlsx'
-                })
-            }, 200);
+        this.excelData=[];
+        let header = refT.$el.querySelector('.body--wrapper>.vxe-table--header')
+        let hesheet = XLSX.utils.table_to_sheet(header)
+        let headerbook:any = XLSX.utils.book_new()
+        
+        XLSX.utils.book_append_sheet(headerbook, hesheet)
+        this.formatJson(this.tableData)
+        XLSX.utils.sheet_add_json(headerbook.Sheets.Sheet1, this.excelData , {skipHeader: true, origin: "A2"});
+        let wbout = XLSX.write(headerbook, { bookType: 'xlsx', bookSST: false, type: 'binary',})
+        let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
+        this.exportFilesServ(blob, '职能式损益表')
+    }
+ /**导出Excel */
+    exportFilesServ(content:any,title:string){
+        const blob = new Blob([content]);
+        const fileName = title+'.xlsx'
+        if ('download' in document.createElement('a')) { // 非IE下载
+        const elink = document.createElement('a')
+        elink.download = fileName
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href) // 释放URL 对象
+        document.body.removeChild(elink)
+        } else { // IE10+下载
+        navigator.msSaveBlob(blob, fileName)
         }
     }
+    toBuffer (wbout:any) {
+        let buf = new ArrayBuffer(wbout.length)
+        let view = new Uint8Array(buf)
+        for (let index = 0; index !== wbout.length; ++index) view[index] = wbout.charCodeAt(index) & 0xFF
+        return buf
+    }
+
+   //处理导出数据
+    formatJson(jsonData:any) { 
+      jsonData.map((v:any, index:any) => {
+        let tempArr:any = []
+        if(v.level==1)
+            v.element_name="  "+v.element_name
+        if(v.level==2)
+            v.element_name="    "+v.element_name
+        if(v.level==3)
+            v.element_name="      "+v.element_name
+        if(v.level==4)
+            v.element_name="        "+v.element_name
+        if(v.level==5)
+            v.element_name="          "+v.element_name
+        if(v.level==6)
+            v.element_name="            "+v.element_name
+        tempArr.push(v.element_name);
+        tempArr.push(v.tmonth_money);
+        tempArr.push(v.tmonth_qty);
+        tempArr.push(v.month_money);
+        tempArr.push(v.year_money);
+        this.excelData.push(tempArr);
+        if(v.children && v.children.length>0){
+            //如果有children进行递归
+            this.formatJson( v.children)
+        }
+      });
+    }
+   
+ 
+ 
     /**
      * 获取期间的开始时间接收时间
      */
@@ -255,13 +335,27 @@ export default class ProfitLossFunction extends Vue {
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
+    handleOpen(key:any, keyPath:any) {
+        console.log(key, keyPath);
+      }
+      handleClose(key:any, keyPath:any) {
+        console.log(key, keyPath);
+      }
+
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;
@@ -287,4 +381,11 @@ export default class ProfitLossFunction extends Vue {
         }
     }
 }
+
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 300px;
+    min-height: 400px;
+  }
+
+   
 </style>

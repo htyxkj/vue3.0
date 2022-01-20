@@ -220,7 +220,6 @@ export default class BipQueryInfo extends Vue{
         }else{
             listCrd.push(this.dsmfrom.currRecord)
         }
-        let cc = this.cds.currRecord;
         for(var i=0;i<listCrd.length;i++){
             let crd = listCrd[i];
             if(i>0){
@@ -277,7 +276,7 @@ export default class BipQueryInfo extends Vue{
                 })
             }
         }
-        this.cds.currRecord =cc;
+        // this.cds.currRecord =cc;
         // this.cds.index = 0;
         // this.cds.currRecord = this.cds.cdata.data[0];
         // this.$bus.$emit('datachange',this.cds.ccells.obj_id)

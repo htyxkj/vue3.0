@@ -18,7 +18,7 @@
                                     {{title}}
                                 </template>
                                 <template v-else> 
-                                    统计维度：{{this.getTitle()}}
+                                    统计维度：{{getTitle()}}
                                 </template>
                             </el-col>
                             <el-col :span="8" class="main-title-icon pointer"  >
@@ -55,7 +55,7 @@
                     {{title}}
                 </template>
                 <template v-else> 
-                    统计维度：{{this.getTitle()}}
+                    统计维度：{{getTitle()}}
                 </template>
             </slot>
             <div v-if="stat.showChart && option"  class="showchart" :style="chartStyle" >

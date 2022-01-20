@@ -1,11 +1,11 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
-            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-            <el-date-picker v-model="to_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="to_dateChange" placeholder="选择日期" size="small"></el-date-picker>
-            <amb-tree-dialog @dataChange="treeChange" class="topdiv1" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
-            <div class="topdiv1"><!-- 显示类别 -->
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting>
+            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="fm_dateChange" placeholder="选择日期" size="small"></el-date-picker>
+            <el-date-picker v-model="to_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="to_dateChange" placeholder="选择日期" size="small"></el-date-picker>
+            <amb-tree-dialog @dataChange="treeChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'"><!-- 显示类别 -->
                 <el-select v-model="showType" placeholder="请选择" size="small">
                     <el-option v-for="item in showTypeData" :key="item.id" :label="item.label" :value="item.id"></el-option>
                 </el-select>
@@ -46,7 +46,7 @@
                         border stripe highlight-hover-row :height="tableHeight" :tree-config="{children: 'children',expandRowKeys: this.defaultExpandKeys }"
                         @cell-dblclick="cellDBClick"
                         :data="tableData">
-                        <vxe-table-column field="element_name" title="收支项目" min-width="200" tree-node>
+                        <vxe-table-column field="element_name" title="收支项目" min-width="200" fixed="left" tree-node>
                             <template v-slot="{row}"> 
                                 {{ row.element_name }}
                             </template>
@@ -109,6 +109,8 @@ export default class ProfitLossFunction extends Vue {
 
     period_fm_date:any = null;
     period_to_date:any = null;
+    screenWidth:number=1920;
+    excelData:any=[];
 
     showTypeData:any =[
         {id:1,label:"按元显示"},
@@ -120,6 +122,7 @@ export default class ProfitLossFunction extends Vue {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.to_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.tableHeight =  this.height - 60
+        this.screenWidth= document.body.clientWidth;
     }
     mounted() { 
     }
@@ -250,7 +253,7 @@ export default class ProfitLossFunction extends Vue {
             let hesheet = XLSX.utils.table_to_sheet(header)
             let headerbook:any = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(headerbook, hesheet)
-            let jsonArr = [];
+            /* let jsonArr = [];
             for(var i=0;i<this.tableData.length;i++){
                 let json:any = {}
                 let cellID = 0;
@@ -268,8 +271,10 @@ export default class ProfitLossFunction extends Vue {
                     json[v] = d1[itemP.key+'month_rate'];
                 }
                 jsonArr.push(json)
-            }
-            XLSX.utils.sheet_add_json(headerbook.Sheets.Sheet1, jsonArr , {skipHeader: true, origin: "A3"});
+            } */
+            this.excelData = [];
+            this.formatJson(this.tableData,this.period);
+            XLSX.utils.sheet_add_json(headerbook.Sheets.Sheet1, this.excelData , {skipHeader: true, origin: "A3"});
             let wbout = XLSX.write(headerbook, { bookType: 'xlsx', bookSST: false, type: 'binary' })
             let blob = new Blob([this.toBuffer(wbout)], { type: 'application/octet-stream' })
             // 保存导出
@@ -310,6 +315,35 @@ export default class ProfitLossFunction extends Vue {
         }
         return s;
     }
+    //处理导出数据
+    formatJson(jsonData:any,period:any) { 
+        jsonData.map((v:any, index:any) => {
+        let tempArr:any = []
+        if(v.level==1)
+            v.element_name="  "+v.element_name
+        if(v.level==2)
+            v.element_name="    "+v.element_name
+        if(v.level==3)
+            v.element_name="      "+v.element_name
+        if(v.level==4)
+            v.element_name="        "+v.element_name
+        if(v.level==5)
+            v.element_name="          "+v.element_name
+        if(v.level==6)
+            v.element_name="            "+v.element_name
+        tempArr.push(v.element_name);
+        for(var i=0;i<period.length;i++){
+            let itemP = period[i]
+            tempArr.push(v[itemP.key+'month_money'])
+        }
+        this.excelData.push(tempArr);
+        if(v.children && v.children.length>0){
+            //如果有children进行递归
+            this.formatJson(v.children,period)
+        }
+      });
+    }
+
     getFormatValue(value:any){
         let cc = value/this.showType;
         return currutil.currency(cc,'',2);
@@ -317,6 +351,7 @@ export default class ProfitLossFunction extends Vue {
     @Watch("height")
     heightChange() {
         this.tableHeight =  this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 }
 </script>
@@ -324,6 +359,11 @@ export default class ProfitLossFunction extends Vue {
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

@@ -970,7 +970,10 @@ export default class LayCelVexTable extends Vue {
     }
     /**排序发生变化 */
     sortChange(column:any){
-        let orderby = column.property+" "+column.order;
+        let orderby = "";
+        if(column.order){
+            orderby = column.property+" "+column.order;
+        }
         this.$emit("sortChange", orderby);
     }
     async cardClick(rowIndex:any,index:any,data:any){

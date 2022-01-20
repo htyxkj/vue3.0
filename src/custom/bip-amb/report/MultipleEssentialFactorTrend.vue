@@ -1,11 +1,11 @@
 <template> 
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
-            <Accounting @dataChange="accChange" class="topdiv1"></Accounting> 
-            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <el-date-picker v-model="to_date" format="yyyy-MM-dd" class="topdiv1" type="date" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
-            <accounting-ele-dialog @dataChange="check_accountEle"  class="topdiv1" :purposesId="amb_purposes_id" :showCbox="false"></accounting-ele-dialog>
-            <div class="topdiv1">
+            <Accounting @dataChange="accChange" :class="screenWidth<1600?'topdiv1_min':'topdiv1'"></Accounting> 
+            <el-date-picker v-model="fm_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="fm_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <el-date-picker v-model="to_date" format="yyyy-MM-dd" :class="screenWidth<1600?'topdiv1_min':'topdiv1'" type="date" @change="to_dateChange"  placeholder="选择日期" size="small"></el-date-picker>
+            <accounting-ele-dialog @dataChange="check_accountEle"  :class="screenWidth<1600?'topdiv1_min':'topdiv1'" :purposesId="amb_purposes_id" :showCbox="false"></accounting-ele-dialog>
+            <div :class="screenWidth<1600?'topdiv1_min':'topdiv1'">
                 <el-button style="border:0px" type="primary" size="small" class="bip_btn_primary" @click="initData">      
                     <i class="el-icon-search"></i>
                     <span>查询</span>
@@ -13,9 +13,9 @@
             </div>
         </el-header>  
         <el-container>
-            <el-aside width="300px">
-                <amb-tree :style="'height:'+treeHeight+'px'" @dataChange="check_ambtree" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
-            </el-aside>
+         <!--    <el-aside width="300px"> -->
+                <amb-tree class="el-tree-node_content" :style="'height:'+treeHeight+'px'" @dataChange="check_ambtree" :purposesId="amb_purposes_id" :showCbox="true" ></amb-tree>
+           <!--  </el-aside> -->
             <el-main style="padding:0px">
                <div ref="EssentialFactorTrendChart" style="height:460px;margin-top:80px;" ></div>
             </el-main>
@@ -60,14 +60,16 @@ export default class MultipleEssentialFactorTrend extends Vue {
     chartStyle:string = "height :400px;";
 
     perioddata:any = []; //期间集合
-    
+    screenWidth:number=1920;
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.to_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.treeHeight =  this.height -60
+        this.screenWidth= document.body.clientWidth;
     }
 
     async initData(){
+        let myChart = echarts.init(this.$refs.EssentialFactorTrendChart as HTMLCanvasElement); 
         let seriesP:any={};
 
         let qjData:any=[];
@@ -99,7 +101,7 @@ export default class MultipleEssentialFactorTrend extends Vue {
             }
 
 
-
+        myChart.showLoading();
         if(this.amb_purposes_id !="" && this.amb_accountEle_ids.length>0 && this.amb_groups_ids.length>0){
             let btn1 = new BipMenuBtn("DLG","多巴指标趋势分析")
             btn1.setDlgType("D")
@@ -117,7 +119,7 @@ export default class MultipleEssentialFactorTrend extends Vue {
             
             let tdata:any = []; 
             if(res.data.id ==0){
-               
+                myChart.hideLoading();
                 if(res.data.data.data.length>0){
                 tdata = res.data.data.data  // 要素 金额数据
                 this.perioddata = res.data.data.period; //期间数据
@@ -144,14 +146,13 @@ export default class MultipleEssentialFactorTrend extends Vue {
                         option.series.push(seriesP);
                     
                     } 
-                    let myChart = echarts.init(this.$refs.EssentialFactorTrendChart as HTMLCanvasElement); 
+                    
                     myChart.setOption(option,true);
 
                }else{
                     option.title.text="暂无数据"
                     option.dataset.source=[];
                     option.series=[];
-                    let myChart = echarts.init(this.$refs.EssentialFactorTrendChart as HTMLCanvasElement); 
                     myChart.setOption(option,true);        
                }      
             }else{
@@ -198,15 +199,22 @@ export default class MultipleEssentialFactorTrend extends Vue {
     @Watch("height")
     heightChange() {
         this.treeHeight =  this.height -60
+         this.screenWidth= document.body.clientWidth;
     }
 
    
 }
 </script>
 <style scoped lang="scss" >
+.el-tree-node_content{font-family: "Microsoft YaHei"; font-size:12px !important}
 .topdiv1{
     float: left;
     margin-right: 3px;
+}
+.topdiv1_min{
+    float: left;
+    margin-right: 3px;
+    width: 130px;
 }
 .topdiv2{
     float: right;

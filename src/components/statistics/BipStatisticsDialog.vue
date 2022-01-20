@@ -485,6 +485,7 @@ export default class BipStatisticsDialog extends Vue {
             }
             if(this.program.isdesktop){//保存桌面组件
                 let cds1:any = await this.getCell("INSDESK");
+                
                 if(cds1 !=null){
                     let cell:CDataSet = cds1; 
                     cell.currRecord = cell.createOne();
@@ -500,6 +501,8 @@ export default class BipStatisticsDialog extends Vue {
                     cell.currRecord.data.sname= this.program.name;
                     cell.currRecord.data.gwcode = this.gwCode;
                     let res = await cell.saveData();
+                    console.log(res);
+                
                     if(res.data.id == 0 ){
                         this.$notify.success("桌面组件保存成功！");
                     }else{
