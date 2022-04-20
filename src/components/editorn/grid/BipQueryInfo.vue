@@ -35,18 +35,18 @@ export default class BipQueryInfo extends Vue{
     @Prop() cell!:Cell
     @Prop() bipInsAid!:BipInsAidNew
     @Prop() env0!:CCliEnv
-    @Provide() contCell!:Cells
-    @Provide() cells!:Cells
-    @Provide() biplay:BipLayout = new BipLayout("")
-    @Provide() env: CCliEnv = new CCliEnv();
-    @Provide() dsmfrom!:CDataSet
-    @Provide() ds_cont!:CDataSet
-    @Provide() visible:boolean = false
-    @Provide() qe:QueryEntity = new QueryEntity("","");
-    @Provide() mkey:number = 0
-    @Provide() tomaps:string = ''
-    @Provide() qcopyconf:QCopyConf = new QCopyConf();
-    @Provide() config:any={};
+    contCell!:Cells
+    cells!:Cells
+    biplay:BipLayout = new BipLayout("")
+    env: CCliEnv = new CCliEnv();
+    dsmfrom!:CDataSet
+    ds_cont!:CDataSet
+    visible:boolean = false
+    qe:QueryEntity = new QueryEntity("","");
+    mkey:number = 0
+    tomaps:string = ''
+    qcopyconf:QCopyConf = new QCopyConf();
+    config:any={};
     mounted(){
         this.config['type']=3
         this.cells = this.bipInsAid.cells
@@ -229,6 +229,7 @@ export default class BipQueryInfo extends Vue{
             crd0 = Object.assign({},this.cds.currRecord);
             crd0 = this.makeUIRecord(this.qcopyconf,crd,crd0,this.cds.ccells)
             crd0.c_state |= 2
+            this.cds.currRecord.c_state |= 2
             if(this.qcopyconf.subs.length>0){
                 crd.subs.forEach(cdata=>{
                     let id = cdata.obj_id
@@ -295,7 +296,11 @@ export default class BipQueryInfo extends Vue{
                     cels = item;
                 return item.id == tf
             })
-            crd0.data[cc[1]] = crd.data[cc[0]]||'' 
+            let vl = crd.data[cc[0]];
+            if(vl == undefined || vl == null){
+                vl = "";
+            }
+            crd0.data[cc[1]] = vl;
             this.cds.checkGS(cels)
         }
 
@@ -311,7 +316,11 @@ export default class BipQueryInfo extends Vue{
                 return item.id == tf
             })
             if(_i>-1){
-                crd0.data[tf] = crd.data[ff]||''
+                let vl = crd.data[ff];
+                if(vl == undefined || vl == null){
+                    vl = "";
+                }
+                crd0.data[tf] = vl
                 this.cds.checkGS(cels)
             }
         }

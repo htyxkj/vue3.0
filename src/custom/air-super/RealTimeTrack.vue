@@ -254,7 +254,7 @@
             <el-row class="bip-lay">
                 <el-form ref="form" label-width="120px">
                     <el-form-item label="查询年份">
-                        <el-input v-model="conditionYera"></el-input>
+                        <el-input v-model="conditionYera" style="height:36px"></el-input>
                     </el-form-item>
                     <el-form-item label="查询内容">
                         <el-checkbox-group v-model="checkList" style="padding-top: 10px;">
@@ -263,6 +263,13 @@
                             <el-checkbox label="3">航线</el-checkbox>
                             <el-checkbox label="4">避让点</el-checkbox>
                             <el-checkbox label="5">起降点</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="季节">
+                        <el-checkbox-group v-model="checkSeason" style="padding-top: 10px;">
+                            <el-checkbox label="0">春季</el-checkbox>
+                            <el-checkbox label="1">夏季</el-checkbox>
+                            <el-checkbox label="2">秋季</el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
                 </el-form>
@@ -351,7 +358,8 @@ export default class RealTimeTrack extends Vue {
     
     dialogShow:boolean = false;
     conditionYera:any = new Date().getFullYear();
-    checkList:any = [];
+    checkList:any = [];//选中查询类型
+    checkSeason:any=[];//选中季节
     operaCell: CDataSet = new CDataSet(""); //作业区对象(查询条件)
     liftCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
     operaBrCell: CDataSet = new CDataSet(""); //起降点区对象(查询条件)
@@ -620,6 +628,7 @@ export default class RealTimeTrack extends Vue {
         this.rightState = false;
         this.clearCover();
         this.loading = true;
+        this.taskname = "";
         if(task){
             this.taskname = this.taskData[tkid].taskname;
             this.flightBeltWidth = this.taskData[tkid].widcloth;
@@ -1072,7 +1081,11 @@ export default class RealTimeTrack extends Vue {
             sorg = this.user.deptInfo.deptCode;
         }
         let qe: QueryEntity = new QueryEntity("FW2015", "FW2015TJ");
-        let tj={iym:this.conditionYera,sbuid:'F2015',sorg:sorg}
+        let season = null;
+        if(this.checkSeason.length>0){
+            season = this.checkSeason.join(";");
+        }
+        let tj={iym:this.conditionYera,sbuid:'F2015',sorg:sorg,season:season}
         qe.page.currPage = 1;
         qe.page.pageSize = 4000;
         qe.cont = JSON.stringify(tj);

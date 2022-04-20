@@ -70,3 +70,5 @@ declare module "vue/types/vue" {
     $message: ElMessage
   }
 }
+import '@antv/x6-vue-shape'
+

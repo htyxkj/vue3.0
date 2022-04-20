@@ -33,17 +33,24 @@ export class CCalcUI extends Vue implements BaseI{
         let crd = cds.currRecord;  
         if(cellId==this.qty){
             crd.data[this.qty] = value
+            this.ckgs(crd,cds,this.qty)
             this.setTaxlb(crd.data["taxlb"])
             this.caclQtyhs(crd,cds.index,cds)
+            this.ckgs(crd,cds,this.qtyhs)
             this.caclFcy(crd,cds.index,cds)
+            this.ckgs(crd,cds,this.fcy)
         }else if(cellId==this.nup){
             crd.data[this.nup] = value
+            this.ckgs(crd,cds,this.nup)
             this.setTaxlb(crd.data["taxlb"])
             this.caclFcy(crd,cds.index,cds)
+            this.ckgs(crd,cds,this.fcy)
         }else if(cellId==this.addtaxrt){
             crd.data[this.addtaxrt] = value
+            this.ckgs(crd,cds,this.addtaxrt)
             this.setTaxlb(crd.data["taxlb"])
             this.caclFcy(crd,cds.index,cds)
+            this.ckgs(crd,cds,this.fcy)
         }else if(cellId == 'taxlb'){
             this.taxlb = parseInt(value)        
             cds.ds_sub.forEach(cds0=>{
@@ -54,6 +61,15 @@ export class CCalcUI extends Vue implements BaseI{
                     });
                 }
             });
+        }
+    }
+
+    public async ckgs(crd:CRecord,cds:CDataSet,cellId:string){
+        for(var i=0;i<cds.ccells.cels.length;i++){
+            let col = cds.ccells.cels[i];
+            if(col.id == cellId){
+                await cds.checkGS(col,crd)
+            }
         }
     }
 
@@ -78,7 +94,11 @@ export class CCalcUI extends Vue implements BaseI{
     public caclFcy(crd:CRecord,row:number,cds:CDataSet){
         let _nup = parseFloat(crd.data[this.nup])
         let _qty = parseFloat(crd.data[this.qty])
-        crd.data[this.fcy] = _nup*_qty
+        if(isNaN(_nup) || isNaN(_qty)){
+
+        }else{
+            crd.data[this.fcy] = _nup*_qty
+        }
         cds.cdata.data[row] = crd
         const mm = this.getMethordName(cds.ccells.obj_id,this.fcy)
         this.$bus.$emit(mm,{cellId:this.fcy,value:crd.data[this.fcy],row:row})
@@ -120,8 +140,8 @@ export class CCalcUI extends Vue implements BaseI{
         this.$bus.$emit(mm,{cellId:this.rmbhs,value:crd.data[this.rmbhs],row:row})
         const mm1 = this.getMethordName(cds.ccells.obj_id,this.addtax)
         this.$bus.$emit(mm1,{cellId:this.addtax,value:crd.data[this.addtax],row:row})
-
-        
+        this.ckgs(crd,cds,this.rmbhs)
+        this.ckgs(crd,cds,this.addtax)
     }
 
     getMethordName(obj_id:string,fld:string){

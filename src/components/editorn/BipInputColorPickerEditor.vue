@@ -69,10 +69,6 @@ export default class BipInputColorPickerEditor extends Vue{
             if(this.cds.currCanEdit()){
                 this.cds.currRecord.data[this.cell.id] = this.model1;
                 this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
-                // const key:string = this.cell.id
-                if(this.cds.baseI){
-                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
-                }
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 this.cds.checkGS(this.cell);
                 this.cds.currRecord.c_state |= 2;

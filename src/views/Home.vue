@@ -112,11 +112,7 @@ export default class Home extends Vue {
       this.initHeight();
     }
     async created(){
-      if(BaseVariable.ITEMTYPE == 'air-super'){
-        this.$router.push({
-          path:'/RealTimeTrack',
-          name:'RealTimeTrack',
-        })
+      if(!this.routeTo()){
         return;
       }
       this.isDraggable = false;
@@ -520,18 +516,30 @@ export default class Home extends Vue {
     @Watch("$route")
     changeRoute(){
       if(this.$route && this.$route.name =="Home"){
-        if(BaseVariable.ITEMTYPE == 'air-super'){
-          this.$router.push({
-            path:'/RealTimeTrack',
-            name:'RealTimeTrack',
-          })
-          return;
+        if(this.routeTo()){
+          this.layoutStyle = "width:90%";  
+          setTimeout(() => {
+            this.layoutStyle = "width:100%";
+          }, 300);
         }
-        this.layoutStyle = "width:90%";  
-        setTimeout(() => {
-          this.layoutStyle = "width:100%";
-        }, 300);
       }
+    }
+    routeTo(){
+      if(BaseVariable.ITEMTYPE == 'air-super'){
+        this.$router.push({
+          path:'/RealTimeTrack',
+          name:'RealTimeTrack',
+        })
+        return false;
+      }
+      if(BaseVariable.ITEMTYPE == 'registration'){
+        this.$router.push({
+          path:'/RealTimeInfo',
+          name:'RealTimeInfo',
+        })
+        return false;
+      }
+      return true;
     }
 }
 </script>

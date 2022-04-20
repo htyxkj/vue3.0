@@ -1,3 +1,4 @@
+import { Vue } from "vue-property-decorator";
 import { Cells } from "./coob/Cells";
 import CData from "./CData";
 import { Cell } from "./coob/Cell";
@@ -239,11 +240,6 @@ export default class CDataSet {
     this.page.index = this.index;
     this.page.total = this.page.total+1
     this.checkGS();
-    if(this.ds_sub && this.ds_sub.length>0){
-      for(var i=0;i<this.ds_sub.length;i++){
-        this.init9DData(this.ds_sub[i]);
-      }
-    }
     return this.currRecord;
   }
 
@@ -300,16 +296,22 @@ export default class CDataSet {
               if ((col.initValue && (col.attr & 0x80) > 0) &&  (curr.c_state & 1)>0) {
                   this.incCalc(this.ccells,curr);
               }
-              if((col.attr & 0x2000) >0)
+              if((col.attr & 0x2000) >0){
                 this.cellChange(col.id,vl);
-              this.checkGS(col)
+              }
+              if(col.type >=1 && col.type<=6){
+                if (this.baseI) {
+                  this.baseI.cellDataChange(this, col.id, vl);
+                }
+              }
+              if(curr){
+                await this.checkGS(col,curr,index)
+              }else{
+                await this.checkGS(col)
+              }
             }
           }
         }
-        if((cell.attr & 0x2000) >0){
-          this.cellChange(cell.id,null);
-        }
-
         this.checkInterbankGs(cell,index);
         for(var i=0;i<this.ds_sub.length;i++){
           let cd = this.ds_sub[i];
@@ -344,6 +346,7 @@ export default class CDataSet {
       return;
     let celzt:Array<any> = this.ccells.CELUIZT[cell.id];
     if(celzt){
+      let state:any = {};
       celzt.forEach((zt:any) => {
         let f1 = zt[0];
         let f2 = zt[1];
@@ -354,6 +357,13 @@ export default class CDataSet {
         }
         let field = f1.substring(f1.indexOf("[")+1,f1.indexOf("]"))
         let cc = baseTool.calcTwoItem(curr.data[field], gs[2], gs[1].charCodeAt(0));
+        if(!state[f2]){
+          state[f2] = cc;
+        }
+      });
+      for(var key in state){
+        let f2 = key;
+        let cc = state[key]
         if(f2.charAt(0) == '!'){//设置为非空
           f2 = f2.substring(1)
           this.ccells.cels.forEach((cel:any) =>{
@@ -388,7 +398,7 @@ export default class CDataSet {
             }
           })
         }
-      });
+      }
     }
   }
   checkCelUi(){
@@ -514,8 +524,10 @@ export default class CDataSet {
           if(col.pRefIds.indexOf(id) !=-1){
             for(var z=0;z<this.cdata.data.length;z++){
               let dat = this.cdata.data[z];
-              let vl = await this.gsCalcc(col);
+              let vl = await this.gsCalcc(col,dat);
               dat.data[col.id] = vl;
+              await this.checkGS(col,dat,z);
+              this.cdata.data[z] = dat;
             }
           }
         }
@@ -524,6 +536,8 @@ export default class CDataSet {
   }
   //就行公式解析
   async gsCalcc(col:any,curr:any=this.currRecord){
+    console.log("解析：",curr);
+    
     let scstr = col.script
     let vl:any = null;
     if(scstr && scstr.indexOf("=:") === 0) {
@@ -1110,6 +1124,15 @@ export default class CDataSet {
     })
   return isok;
   }
+
+  create9DData(){
+    if(this.ds_sub && this.ds_sub.length>0){
+      for(var i=0;i<this.ds_sub.length;i++){
+        this.init9DData(this.ds_sub[i]);
+      }
+    }
+  }
+
   /**
    * 处理对象上  控制字段中的 `9D = 常量
    */
@@ -1124,6 +1147,10 @@ export default class CDataSet {
           bool = true;
           oneSc = oneSc.split('=')[1];
           let eq = new QueryEntity('','');
+          if(cds.ds_par){
+            eq.pcell = cds.ds_par.ccells.obj_id
+            eq.cont = JSON.stringify(cds.ds_par.currRecord.data)
+          }
           let data:any = await tools.getBipInsAidInfo(oneSc, 300,eq).then(res=>{
             if(res.data.id==0){
               let vrr = res.data.data.data

@@ -33,6 +33,11 @@
                     <span>显示隐藏列</span>
                 </el-button>
             </div>
+            <div class="topdiv2"><!-- 显示隐藏列 -->
+                <el-button style="border:0px" @click="showExpData">      
+                    <span>显示扩展指标</span>
+                </el-button>
+            </div>
         </el-header>
         <el-container>
            
@@ -113,6 +118,7 @@ import {CurrUtils} from '@/utils/CurrUtils'
 let currutil = CurrUtils.curr
 import AmbTree from "../components/AmbTree.vue"//阿米巴树
 import XLSX from "xlsx";
+import _ from 'lodash'
 @Component({
     components: {
         Accounting,
@@ -132,6 +138,7 @@ export default class ProfitLossFunction extends Vue {
     amb_group_ids:any =[];//核算阿米巴key
     fm_date:any = "";//期间
     tableData:any=[];
+    allTableData:any = []
     tableHeight:any ="500";
     tableLoading:boolean = true;
     valueTableLoading:boolean = false;
@@ -151,12 +158,24 @@ export default class ProfitLossFunction extends Vue {
 
     excelData:any = [];
     isCollapse:boolean=true;
+    showExp:boolean = false;
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.tableHeight =  this.height - 60
         this.screenWidth= document.body.clientWidth;
     }
     mounted() { 
+    }
+
+    showExpData(){
+        this.showExp = !this.showExp
+        if(this.showExp){
+            this.tableData = this.allTableData
+        }else{
+            this.tableData = _.filter(this.allTableData,(item:any) => {
+                return item.isShow == 1;
+            });
+        }
     }
     async initData(){
         if(!this.amb_group_ids){
@@ -166,6 +185,7 @@ export default class ProfitLossFunction extends Vue {
         this.tableLoading = true;
         this.valueTableLoading = true;
         this.tableData =[];
+        this.allTableData = []
         this.defaultExpandKeys = null;
         if(this.amb_purposes_id !="" && this.amb_group_ids.length>0 && this.fm_date){
             let btn1 = new BipMenuBtn("DLG","职能式损益表")
@@ -183,11 +203,15 @@ export default class ProfitLossFunction extends Vue {
             let tdata = [];
             if(res.data.id ==0){
                 tdata = res.data.data.data
+                this.allTableData = tdata
                 this.defaultExpandKeys = res.data.data.expandRowKeys;
             }else{
                 this.$notify.error(res.data.message)
             }
-            this.tableData = tdata
+            let _data = _.filter(tdata,(item:any) => {
+                return item.isShow == 1;
+            });
+            this.tableData = _data
         }
         this.tableLoading = false;
         this.valueTableLoading = false;
@@ -215,8 +239,12 @@ export default class ProfitLossFunction extends Vue {
     }
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")
-        this.initPeriodDate();
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")
+            this.initPeriodDate();
+        }else{
+            this.fm_date = "";
+        }
     }
     //阿米巴发生变化
     treeChange(checkData:any){
@@ -270,7 +298,7 @@ export default class ProfitLossFunction extends Vue {
         URL.revokeObjectURL(elink.href) // 释放URL 对象
         document.body.removeChild(elink)
         } else { // IE10+下载
-        navigator.msSaveBlob(blob, fileName)
+        // navigator.msSaveBlob(blob, fileName)
         }
     }
     toBuffer (wbout:any) {
@@ -315,6 +343,9 @@ export default class ProfitLossFunction extends Vue {
      * 获取期间的开始时间接收时间
      */
     async initPeriodDate(){
+        if(this.fm_date == null  || this.fm_date ==''){
+            return;
+        }
         let btn1 = new BipMenuBtn("DLG","职能式损益表")
         btn1.setDlgType("D")
         btn1.setDlgCont("amb.serv.util.report.IncomeInvoke*205;0;0");//职能损益表
@@ -327,10 +358,12 @@ export default class ProfitLossFunction extends Vue {
         }
         let v = JSON.stringify(prarm);
         let res = await tools.getDlgRunClass(v,b);
-        let fm_date = res.data.data.fm_date;
-        this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
-        let to_date = res.data.data.to_date;
-        this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
+        if(res.data.id ==0){
+            let fm_date = res.data.data.fm_date;
+            this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
+            let to_date = res.data.data.to_date;
+            this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
+        }
     }
     @Watch("height")
     heightChange() {

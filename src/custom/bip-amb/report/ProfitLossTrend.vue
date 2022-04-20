@@ -16,6 +16,7 @@
                 </el-button>
             </div>
             
+           
             <div class="topdiv2"><!-- 导出 -->
                 <el-button style="border:0px" @click="exportDataEvent">      
                     <i class="el-icon-download"></i>
@@ -26,6 +27,11 @@
                 <el-button style="border:0px" @click="initData">      
                     <i class="el-icon-refresh-right"></i>
                     <span>刷新</span>
+                </el-button>
+            </div>
+             <div class="topdiv2"><!-- 显示隐藏列 -->
+                <el-button style="border:0px" @click="showExpData">      
+                    <span>显示扩展指标</span>
                 </el-button>
             </div>
 
@@ -84,6 +90,7 @@ import XLSX from "xlsx"
 import moment from 'moment'
 import {CurrUtils} from '@/utils/CurrUtils'
 let currutil = CurrUtils.curr
+import _ from 'lodash'
 @Component({
     components: {
         Accounting,
@@ -93,7 +100,7 @@ let currutil = CurrUtils.curr
 /**
  * 损益趋势分析
  */
-export default class ProfitLossFunction extends Vue {
+export default class ProfitLossTrend extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
@@ -118,6 +125,10 @@ export default class ProfitLossFunction extends Vue {
         {id:10000,label:"按万元显示"},
         {id:100000000,label:"按亿元显示"}
     ];
+
+    isCollapse:boolean=true;
+    showExp:boolean = false;
+    allTableData:any = []
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.to_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
@@ -149,6 +160,7 @@ export default class ProfitLossFunction extends Vue {
             let period_ids:any = [];
             if(res.data.id ==0){
                 tdata = res.data.data.data
+                this.allTableData = tdata
                 this.defaultExpandKeys = res.data.data.expandRowKeys;
                 this.period = res.data.data.period
                 // for(var i =0;i<tdata.length;i++){
@@ -162,7 +174,9 @@ export default class ProfitLossFunction extends Vue {
                 //         this.period.push(onep);
                 //     }
                 // }
-                this.tableData = tdata;
+                 this.tableData = _.filter(tdata,(item:any)=>{
+                    return item.isShow==1
+                });
             }else{
                 this.$notify.error(res.data.message)
             }
@@ -182,6 +196,16 @@ export default class ProfitLossFunction extends Vue {
         }
         return data;
     }
+    showExpData(){
+        this.showExp = !this.showExp
+        if(this.showExp){
+            this.tableData = this.allTableData
+        }else{
+            this.tableData = _.filter(this.allTableData,(item:any) => {
+                return item.isShow == 1;
+            });
+        }
+    }
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
         this.amb_purposes_id = value.id;
@@ -189,13 +213,21 @@ export default class ProfitLossFunction extends Vue {
     }
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")
-        this.initPeriodDate();
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")
+            this.initPeriodDate();
+        }else{
+            this.fm_date = "";
+        }
     }
     //期间发生变化
     to_dateChange(value:any){
-        this.to_date = moment(value).format("YYYY-MM-DD")
-        this.initPeriodDate();
+        if(value){
+            this.to_date = moment(value).format("YYYY-MM-DD")
+            this.initPeriodDate();
+        }else{
+            this.to_date = "";
+        }
     }
     //阿米巴发生变化
     treeChange(checkData:any){
@@ -218,10 +250,12 @@ export default class ProfitLossFunction extends Vue {
         }
         let v = JSON.stringify(prarm);
         let res = await tools.getDlgRunClass(v,b);
-        let fm_date = res.data.data.fm_date;
-        this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
-        let to_date = res.data.data.to_date;
-        this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
+        if(res.data.id ==0){
+            let fm_date = res.data.data.fm_date;
+            this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
+            let to_date = res.data.data.to_date;
+            this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
+        }
     }
     //单元格双击
     cellDBClick(env:any){

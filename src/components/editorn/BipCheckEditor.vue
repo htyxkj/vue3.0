@@ -13,22 +13,30 @@
                     </template>
                 </span> 
                 <div class="checkbox_div">
-                    <el-checkbox-group v-model="model1" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
-                        <el-checkbox  v-for="item in options" 
-                        :key="item[cels[0].id]" 
-                        :label="item[cels[0].id]" 
-                        :value="item[cels[0].id]">{{item[cels[1].id]}}</el-checkbox>
-                        <template v-if="have_other">
-                            <el-input size="mini" :placeholder="other_cell.labelString" style="width: 200px;padding-left:8px" v-model="other_model" @change="otherVlChange"></el-input>
-                        </template>
-                    </el-checkbox-group>
-                    <template v-if="cell.desc">
-                        <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
-                            <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
-                                <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
-                            </el-tooltip>
-                        </span>
-                    </template>
+                    <el-row>
+                        <el-col :span="23">
+                            <el-checkbox-group v-model="model1" :style="cell.desc?'width: calc(100% - 29px);':'width:100%'" :disabled="(cell.attr&0x40)>0" clearable  @change="dataChange">
+                                <el-checkbox  v-for="item in options" 
+                                :key="item[cels[0].id]" 
+                                :label="item[cels[0].id]" 
+                                :value="item[cels[0].id]">{{item[cels[1].id]}}</el-checkbox>
+                                <template v-if="have_other">
+                                    <el-input size="mini" :placeholder="other_cell.labelString" style="width: 200px;padding-left:8px" v-model="other_model" @change="otherVlChange"></el-input>
+                                </template>
+                            </el-checkbox-group>
+                        </el-col>
+                        <el-col :span="1">
+                            <template v-if="cell.desc">
+                                <span style="position:relative;line-height:32px;width:29px;padding: 5px 0px 5px 5px;">
+                                    <el-tooltip class="item" effect="dark" :content="cell.desc" placement="top">
+                                        <i class="iconfont icon-bip-bangzhu" style="font-size:14px;"></i>
+                                    </el-tooltip>
+                                </span>
+                            </template>
+                        </el-col>
+                    </el-row>
+                    
+                    
                 </div>
             </el-form-item>
         </template>
@@ -150,10 +158,6 @@ export default class BipCheckEditor extends Vue{
                 this.cds.currRecord = Object.assign({},record);
                 this.cds.cdata.data[this.cds.index] = Object.assign({},record)
                 const key:string = this.cell.id
-                if(this.cds.baseI){
-                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,str)
-                }
-                this.cds.cellChange(key,str);
                 this.cds.checkGS(this.cell);
                 this.cds.currRecord.c_state |= 2;
                 if(this.cds.ds_par){
@@ -191,10 +195,6 @@ export default class BipCheckEditor extends Vue{
             this.cds.currRecord = Object.assign({},record);
             this.cds.cdata.data[this.cds.index] = Object.assign({},record)
             const key:string = this.other_cell.id
-            if(this.cds.baseI){
-                this.cds.baseI.cellDataChange(this.cds,this.other_cell.id,value)
-            }
-            this.cds.cellChange(key,value);
             this.cds.checkGS(this.other_cell);
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){

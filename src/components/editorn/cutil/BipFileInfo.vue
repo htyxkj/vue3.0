@@ -65,7 +65,7 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button size="mini" type="danger" @click="handleDown(scope.$index, scope.row)">下载</el-button>
-              <el-button v-if="canPreviewList.includes(scope.row.name.substring(scope.row.name.lastIndexOf('.') + 1))" size="mini" type="success" @click="previewFileEvent(scope.$index, scope.row)">预览</el-button>
+              <el-button size="mini" type="success" v-if="fileOnlinePreviewUrl" @click="previewFileEvent(scope.$index, scope.row)">预览</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -92,6 +92,7 @@ import { CommICL } from '@/utils/CommICL';
 let icl = CommICL
 import { GlobalVariable } from '@/utils/ICL';
 import CCliEnv from '@/classes/cenv/CCliEnv'
+import {BIPUtils}from '@/utils/BaseUtil'
 @Component({})
 export default class BipFileInfo extends Vue {
     @Prop() env!:CCliEnv    
@@ -109,11 +110,12 @@ export default class BipFileInfo extends Vue {
     canUpFile:boolean = true;
     fjrootCell:Cell = new Cell();//附件路径对象
     fileListType:any = "text";
-    canPreviewList:Array<any> = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx','pdf','txt','png','jpg']
+    fileOnlinePreviewUrl:string="";
     created(){
         let snkey = window.sessionStorage.getItem('snkey');
         this.uri = BaseVariable.BaseUri+''+GlobalVariable.API_UPD
         this.baseURL = BaseVariable.BaseUri
+        this.fileOnlinePreviewUrl = BaseVariable.fileOnlinePreviewUrl
         console.log(this.baseURL);
         if(this.env){
             let pattr = this.env.uriParams.pattr;
@@ -336,6 +338,7 @@ export default class BipFileInfo extends Vue {
                     fis = fis.substring(0,fis.length-1)
                 record.data[this.cell.id] = fis   
                 this.cds.setStateOrAnd(icl.R_EDITED)
+                this.cds.checkGS(this.cell);
                 this.$bus.$emit('cell_edit');
                 if(old_vl != fis){
                     this.$emit('select',true)
@@ -364,22 +367,13 @@ export default class BipFileInfo extends Vue {
     // 在线预览
     previewFileEvent(index:number,file:any){
         let name = file.name;
-        let fileExtension = name.substring(name.lastIndexOf('.') + 1);
+        let snkey = JSON.parse(window.sessionStorage.getItem('snkey')+'');
         let fjroot = this.upLoadDid
-        const typeArr = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx']
-        let url = ''
-        if (typeArr.indexOf(fileExtension) !== -1) {
-            // 用docx云服务的在线预览
-            url = 'http://view.xdocin.com/xdoc?_xdoc='+ this.baseURL +'/mydoc/db_01/' + fjroot +'/'+name;
-        } else {
-            url = this.baseURL +'/mydoc/db_01/' + fjroot +'/'+name;
-        }
-        console.log(url);
-        // window.open()居中打开
-        const width = 1000; const height = 800
-        const top = (window.screen.availHeight - height) / 2
-        const left = (window.screen.availWidth - width) / 2
-        window.open(url, '', 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left)
+        let updid =  '36';
+        snkey = encodeURIComponent(snkey);
+        let ul = this.uri+'?snkey='+snkey+'&fjroot='+fjroot+'&updid='+updid+'&fjname='+name+'&fullfilename=/'+name
+        let url = this.fileOnlinePreviewUrl+'/onlinePreview?url='+encodeURIComponent(BIPUtils.baseUtil.base64Encode(ul));
+        window.open(url);
     }
     makefjRoot(){
         if(this.cds&&this.cell){

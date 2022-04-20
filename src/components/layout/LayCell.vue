@@ -162,7 +162,8 @@ export default class LayCell extends Vue{
                             break;
                         }
                     }
-                    this.uiCels.push(json)
+                    if(json.cells && json.cells.length>0)
+                        this.uiCels.push(json)
                 }
             }else{
                 // this.uiCels[0] = {title:"",cells:this.laycell.uiCels};

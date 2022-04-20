@@ -136,6 +136,7 @@ export default class BaseApplet extends Vue{
                     this.dsm.ds_sub[i].clear();
                 }
             }
+            this.dsm.create9DData();
             this.setListMenuName();
             this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
         } else if (cmd === "SAVE") {
@@ -232,6 +233,9 @@ export default class BaseApplet extends Vue{
         }else if(cmd === "CHECK"){
             // tools.test();
         }else if(cmd=== "SUBMIT"){
+            let bok = this.checkNotNull(this.dsm); 
+            if(!bok)
+                return ;
             this.submint();
         }else if(cmd === 'CHECKPROCESS'){
             let crd:any = this.dsm.currRecord.data;
@@ -280,6 +284,7 @@ export default class BaseApplet extends Vue{
                         this.dsm.currRecord.data[cell.id] = oldData[cell.id]
                     }
                 }
+                this.dsm.create9DData();
                 this.dsm.page = oldPage;
                 let crd = this.dsm.currRecord;
                 this.dsm.page.index = this.dsm.cdata.data.length - 1;
@@ -720,6 +725,10 @@ export default class BaseApplet extends Vue{
                             ord
                         );
                         this.dsm.setState(icl.R_POSTED);
+                        //处理子表主健
+                        console.log(res)
+                        console.log(this.dsm)
+
                         if(data.message == '操作成功！'){
                             this.$message.success(data.message);
                             this.$bus.$emit("tableDatachange",this.dsm.ccells.obj_id)
@@ -1001,6 +1010,8 @@ export default class BaseApplet extends Vue{
 //#region 监听URIParams
     // @Watch("uriParams",{deep:true})
     async uriParamsChange() {
+        console.log("uriParams:",this.uriParams);
+        
         if (this.uriParams&&this.uriParams.pcell) {
             let pcell = this.uriParams.pcell
             let drId = this.uriParams.pbds.importCellId;
@@ -1012,6 +1023,7 @@ export default class BaseApplet extends Vue{
             }
             
             let res = await tools.getCCellsParams(pcell)
+
             this.fullscreenLoading = false;
             let rtn: any = res.data;
             if (rtn.id == 0) {
@@ -1091,7 +1103,7 @@ export default class BaseApplet extends Vue{
      * 获取自定义按钮
      */
     async initDlgBtn(){
-    let t:any = "DLG";
+        let t:any = "DLG";
         if(this.uriParams){
             let name = t+"."+this.uriParams.pbuid;
             let str = name
@@ -1126,6 +1138,7 @@ export default class BaseApplet extends Vue{
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
                     btn1.setIconFontIcon(cc.split(",")[1]);
                     btn1.setType("primary");
+                    btn1.setEtap("all")
                     this.mbs.menuList.push(btn1)
                 });
             }
@@ -1144,6 +1157,8 @@ export default class BaseApplet extends Vue{
                     btn1.setIconFontIcon(item.icon);
                     btn1.setType(item.type);
                     btn1.setDlgSname(item.dlgSname);
+                    btn1.setEtap(item.etap);
+                    btn1.setFtap(item.ftap);
                     this.mbs.menuList.push(btn1)
                 }
             }
@@ -1153,6 +1168,8 @@ export default class BaseApplet extends Vue{
         this.switchBusID = this.$bus.$on('switchChange',this.switchChange)
     }
     async mounted(){
+        console.log("dsm",this.dsm);
+        
         this.initHeight();
         this.rowClickBusID = this.$bus.$on("row_click",this.getCRecordByPk2) 
         await this.uriParamsChange()
@@ -1178,6 +1195,7 @@ export default class BaseApplet extends Vue{
             }else{
                 this.dsm.createRecord();
                 this.dsm.currRecord.c_state = 1
+                this.dsm.create9DData();
             }
         }else{
             this.initGetVal();
@@ -1285,7 +1303,7 @@ export default class BaseApplet extends Vue{
             if(this.params.method =='pkfld'){ //业务关联
                 let data:any = {};
                 data[this.params.pkfld] = this.params.value
-                console.log(this.params.method )
+                console.log(this.params.method)
                 this.findData(data);
             }else if(this.params.method =='dlg'){//DLG 关联
                 if(JSON.stringify(this.params.jsontj).length >=2){
@@ -1308,6 +1326,7 @@ export default class BaseApplet extends Vue{
                             　　}
                             }
                         }
+                        this.dsm.create9DData();
                         this.$bus.$emit("tableDatachange",cell.ccells.obj_id)
                         let pk = this.dsm.ccells.pkindex
                         for(var i=0;i<pk.length;i++){
@@ -1322,8 +1341,19 @@ export default class BaseApplet extends Vue{
                 if(JSON.stringify(this.params.jsontj).length >2)
                 await this.findData(this.params.jsontj);
             }else if(this.params.method == 'CUSADD'){//报表添加按钮
+                if (this.dsm.currRecord && (this.dsm.currRecord.c_state & 2) > 0) {
+                    this.$alert(
+                        `当前数据没有保存，请先保存当前行数据`,
+                        `系统提醒`,
+                        { type: "info" }
+                    ).catch(() => {
+                        console.log("取消");
+                    });
+                    return;
+                }
                 this.dsm.clear();
                 this.dsm.createRecord();
+                this.dsm.create9DData();
             }
         }
     }

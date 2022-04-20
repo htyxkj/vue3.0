@@ -50,7 +50,6 @@ import Particles from '@/components/particles/index'
 import { Component, Vue, Provide, Prop, Watch } from "vue-property-decorator";
 import { User } from "@/classes/User";
 import { Menu } from "@/classes/Menu";
-import qs from "qs";
 import { BIPUtil } from "@/utils/Request";
 import { BaseVariable } from "@/utils/BaseICL";
 import { State, Action, Getter, Mutation } from "vuex-class";
@@ -74,6 +73,7 @@ export default class Login extends Vue {
   @Provide() checked:boolean =false;
   @Provide() loginTitle = "";
   @Provide() COPYRIGHT ="";
+  cookieKey:string = 'dev.sso.login.account.operation.auth';
   mounted() {
     if(!this.user){
       this.user = new User("", "", "");
@@ -83,11 +83,25 @@ export default class Login extends Vue {
     this.getlocalStorage()
     this.loginTitle = BaseVariable.Project_Name;
     this.COPYRIGHT = BaseVariable.COPYRIGHT;
+    this.cookieKey = BaseVariable.CookieKey
     this.setIsOtherePage(true)
   }
+
+  getCookie2(){
+     return this.getCookie(this.cookieKey);
+  }
+
+  getCookie(name:string) {
+    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+    if (arr = document.cookie.match(reg))
+    return (arr[2]);
+    else
+    return null;
+  }
+ 
   //注册
   registered(){
-    this.$router.push({ path: "/registered", name: "registered" });
+    // this.$router.push({ path: "/registered", name: "registered" });
   }
   login() {
     if(this.fullscreenLoading)

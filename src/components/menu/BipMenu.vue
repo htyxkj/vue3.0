@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="showMenu">
         <div class="menuSW" @click="isCollapse = !isCollapse">
             <i v-if="isCollapse" class="iconfont icon-bip-fold menuicon pointer"></i>
             <i v-else class="iconfont icon-bip-unfold menuicon pointer"></i>
@@ -31,6 +31,7 @@ export default class BipMenu extends Vue {
     isCollapse:boolean = true;
     style:any = "";
     heightChangeSID:number  = 0;
+    showMenu:boolean=false;
     mounted() {
         this.menuList = JSON.parse(window.sessionStorage.getItem("menulist") + "");
         if (this.menuList == null) {
@@ -42,7 +43,10 @@ export default class BipMenu extends Vue {
         }
         this.style = "height:"+(height)+"px"
         this.heightChangeSID = this.$bus.$on('totalHChange',this.totalHChange);
-
+        let haveShowMenu = this.findMenu(this.menuList);
+        if(haveShowMenu != null){
+            this.showMenu = true;
+        }
     }
 
     totalHChange(){
@@ -63,6 +67,46 @@ export default class BipMenu extends Vue {
     lastClick(){
         console.log("lastClick")
         this.isCollapse=true
+    }
+
+    /**
+     * 检查是否有显示的菜单
+     * @returns 返回菜单或者是空
+     */
+    findMenu(menu:any){
+        let m1 =null;
+        if(menu!=null){
+            let ml = menu;
+            for (let index = 0; index < ml.length; index++) {
+                const item = ml[index];
+                m1 = this.findMenuByAttr(item)
+                if(m1!=null){
+                    return m1;
+                }
+            }
+        }else{
+            return  null;
+        }
+        return m1;
+    }
+    /**
+     * @description 检查是否有显示的菜单
+     * @param menu 要查询的菜单
+     */
+    findMenuByAttr(menu:Menu):any{
+        if(menu.menuattr != 4){
+            return menu
+        }else{
+            if(menu.haveChild){
+                for(let i = 0;i<menu.childMenu.length;i++){
+                    let m1 = this.findMenuByAttr(menu.childMenu[i])
+                    if(m1!=null){
+                        return m1;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
 </script>

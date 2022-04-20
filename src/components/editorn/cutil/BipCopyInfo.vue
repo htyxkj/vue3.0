@@ -6,12 +6,16 @@
     <!-- <template v-if="init"> -->
         <el-row class="bip-row">
             <el-form @submit.native.prevent label-position="right" label-width="120px">
-                <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cd_cont" :row="cds.index" :bgrid="false"></bip-comm-editor>
+                <bip-comm-editor  v-for="(cel,index) in cells" :key="index" :cell="cel" :cds="cd_cont" :row="cd_cont.index" :bgrid="false"></bip-comm-editor>
             </el-form>
         </el-row>
         <el-row>
             <el-table v-loading="mloading"  :data="cds.cdata.data" size="small" max-height="380" stripe border
-             highlight-current-row row-class-name="bip-assist-row" @current-change="currSelectedChange">   
+             highlight-current-row row-class-name="bip-assist-row" @current-change="currSelectedChange"
+             @selection-change="mMulSelectedChange" >
+                <template v-if="isMultiple">
+                    <el-table-column type="selection"></el-table-column>
+                </template>
                 <el-table-column v-for="(cel,index) in cellsm" :key="index" :prop="cel.id"
                 :label="cel.labelString"
                 :width="widths[index]" :resizable="true" :show-overflow-tooltip="true" :align="'center'">
@@ -84,27 +88,29 @@ let icl = CommICL
 export default class BipCopyInfo extends Vue{
     @Prop() opera!:Operation;
     @Prop() ref_cds!:CDataSet;
-    @Provide() aIdTitle:string='拷贝定义'
-    @Provide() visible:boolean = false
-    @Provide() loading:boolean = false
-    @Provide() mloading:boolean = false
-    @Provide() flowList:Array<any> = []
-    @Provide() buidfr:string =''
-    @Provide() currFlow:any =null
-    @Provide() cd_cont:CDataSet = new CDataSet(null)
-    @Provide() cds:CDataSet = new CDataSet(null)
-    @Provide() init:boolean = false
-    @Provide() cells:Array<any> = []
-    @Provide() cellsm:Array<any> = []
-    @Provide() cellsms:Array<any> = []
-    @Provide() widths:Array<any>=[]
-    @Provide() widths1:Array<any>=[]
-    @Provide() qe:QueryEntity = new QueryEntity("","")
-    @Provide() qeSub:QueryEntity = new QueryEntity("","")
-    @Provide() mSelection:any=null
-    @Provide() sSelections:Array<any>=[]
+    aIdTitle:string='单据拷贝'
+    visible:boolean = false
+    loading:boolean = false
+    mloading:boolean = false
+    flowList:Array<any> = []
+    buidfr:string =''
+    currFlow:any =null
+    cd_cont:CDataSet = new CDataSet(null)
+    cds:CDataSet = new CDataSet(null)
+    init:boolean = false
+    cells:Array<any> = []
+    cellsm:Array<any> = []
+    cellsms:Array<any> = []
+    widths:Array<any>=[]
+    widths1:Array<any>=[]
+    qe:QueryEntity = new QueryEntity("","")
+    qeSub:QueryEntity = new QueryEntity("","")
+    mSelection:any=null
+    sSelections:Array<any>=[]
 
-    @Provide() mul:boolean = false
+    mul:boolean = false
+
+    isMultiple:boolean=false;
     cancel(){
         this.visible = false
     }
@@ -122,45 +128,53 @@ export default class BipCopyInfo extends Vue{
         //  this.visible = false
         if(!this.mul){
             if(this.mSelection){
-                let crd:CRecord = this.ref_cds.currRecord
-                let obj_id = this.cds.ccells.obj_id
-                let scopys:Array<any> = this.currFlow.scopys
-                let index = scopys.findIndex(item=>{
-                    return item.objId == obj_id 
-                })
-                if(index>=0){
-                    //主对象赋值
-                    let scopy = scopys[index]
-                    let toList:Array<string> = scopy.toFldList
-                    let frList:Array<string> = scopy.fromFldList
-                    let crd0:CRecord = this.makeRecord(toList,frList,this.ref_cds,this.mSelection)
-                    if(this.cds.ds_sub.length>0&&this.ref_cds.ds_sub.length>0){
-                        obj_id = this.cds.ds_sub[0].ccells.obj_id
-                        let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata.data
-                        index = scopys.findIndex(item=>{
-                            return item.objId == obj_id 
-                        })
-                        if(index>=0){
-                            let cds1 = this.ref_cds.ds_sub[0];
-                            scopy = scopys[index]
-                            toList = scopy.toFldList
-                            frList = scopy.fromFldList
-                            cds1.clear()
-                            subV.forEach((item,index)=>{
-                                cds1.createRecord();
-                                let crd11 = this.makeRecord(toList,frList,cds1,item)
-                                cds1.currRecord = crd11
-                                cds1.setRecordAtIndex(crd11,index)
-                            })
-                            crd0.subs.push(cds1.cdata)
-                        }
-                    }
-                    this.ref_cds.currRecord = crd0
-
-
+                let selData = []
+                if(!(this.mSelection instanceof Array)){
+                    selData.push(this.mSelection);
+                }else{
+                    selData = this.mSelection;
                 }
-
-
+                for(var i=0;i<selData.length;i++){
+                    if(i>0){
+                        this.ref_cds.createRecord();
+                    }
+                    let one_row = selData[i];
+                    let crd:CRecord = this.ref_cds.currRecord
+                    let obj_id = this.cds.ccells.obj_id
+                    let scopys:Array<any> = this.currFlow.scopys
+                    let index = scopys.findIndex(item=>{
+                        return item.objId == obj_id 
+                    })
+                    if(index>=0){
+                        //主对象赋值
+                        let scopy = scopys[index]
+                        let toList:Array<string> = scopy.toFldList
+                        let frList:Array<string> = scopy.fromFldList
+                        let crd0:CRecord = this.makeRecord(toList,frList,this.ref_cds,one_row)
+                        if(this.cds.ds_sub.length>0&&this.ref_cds.ds_sub.length>0){
+                            obj_id = this.cds.ds_sub[0].ccells.obj_id
+                            let subV:Array<any> = this.sSelections.length>0?this.sSelections:this.cds.ds_sub[0].cdata.data
+                            index = scopys.findIndex(item=>{
+                                return item.objId == obj_id 
+                            })
+                            if(index>=0){
+                                let cds1 = this.ref_cds.ds_sub[0];
+                                scopy = scopys[index]
+                                toList = scopy.toFldList
+                                frList = scopy.fromFldList
+                                cds1.clear()
+                                subV.forEach((item,index)=>{
+                                    cds1.createRecord();
+                                    let crd11 = this.makeRecord(toList,frList,cds1,item)
+                                    cds1.currRecord = crd11
+                                    cds1.setRecordAtIndex(crd11,index)
+                                })
+                                crd0.subs.push(cds1.cdata)
+                            }
+                        }
+                        this.ref_cds.currRecord = crd0
+                    }
+                }
             }
             this.visible = false
         }
@@ -253,11 +267,17 @@ export default class BipCopyInfo extends Vue{
     }
 
     /**
-     * 
+     * 主表单选
      */
     currSelectedChange(val:any) {
+        if(!this.isMultiple){
+            this.mSelection = val;
+            this.findSub()
+        }
+    }
+    //主表多选
+    mMulSelectedChange(val:any){
         this.mSelection = val;
-        this.findSub()
     }
 
     mulSelectedChange(val:any){
@@ -312,9 +332,26 @@ export default class BipCopyInfo extends Vue{
         this.cells = this.cd_cont.ccells.cels.filter(cell=>{
             return cell.isShow;
         })
+        for(var i=0;i<this.cells.length;i++){
+            let cel = this.cells[i]
+            let script = cel.script
+            if(script){
+               if(script.indexOf("*")) {
+                   let cc = script.split("*");
+                    let cdsxx = this.ref_cds.getCdsByObjID(cc[0]);
+                    let vl = cdsxx.currRecord.data[cc[1]]
+                    if(vl){
+                        this.cd_cont.currRecord.data[cel.id] = vl;
+                    }
+               }
+            }
+        }
         this.cellsm = this.cds.ccells.cels.filter(cell=>{
             return cell.isShow;
         })
+        if((this.cds.ccells.attr & 0x40) >0){
+            this.isMultiple=true;
+        }
         this.widths = this.initWidth(this.cellsm)
         if(this.cds.ds_sub.length>0){
             let sub:CDataSet = this.cds.ds_sub[0];

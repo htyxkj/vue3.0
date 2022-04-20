@@ -40,6 +40,7 @@ import {BaseVariable} from "@/utils/BaseICL"
     components:{}
 })
 export default class BipSubMenu extends Vue{
+    @Mutation('isOtherePage', { namespace:'login' }) setIsOtherePage: any;
     name:string="BipSubMenu"
     @Prop() private item!:Menu;
     @Prop() appendBody!:boolean
@@ -66,6 +67,9 @@ export default class BipSubMenu extends Vue{
             }
             this.lastClick();
         }else{
+            if(this.item.menuId == 'SYSKB'){
+                this.setIsOtherePage(true)
+            }
             this.$router.push({
                 path:'/'+command,
                 name:command

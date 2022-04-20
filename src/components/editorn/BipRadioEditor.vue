@@ -135,10 +135,6 @@ export default class BipRadioEditor extends Vue{
                 this.cds.currRecord = Object.assign({},record);
                 this.cds.cdata.data[this.cds.index] = Object.assign({},record)
                 const key:string = this.cell.id
-                if(this.cds.baseI){
-                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,value)
-                }
-                this.cds.cellChange(key,value);
                 this.cds.checkGS(this.cell);
                 this.cds.currRecord.c_state |= 2;
                 if(this.cds.ds_par){
@@ -177,10 +173,6 @@ export default class BipRadioEditor extends Vue{
             this.cds.currRecord = Object.assign({},record);
             this.cds.cdata.data[this.cds.index] = Object.assign({},record)
             const key:string = this.other_cell.id
-            if(this.cds.baseI){
-                this.cds.baseI.cellDataChange(this.cds,this.other_cell.id,value)
-            }
-            this.cds.cellChange(key,value);
             this.cds.checkGS(this.other_cell);
             this.cds.currRecord.c_state |= 2;
             if(this.cds.ds_par){

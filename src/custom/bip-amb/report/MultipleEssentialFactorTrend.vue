@@ -102,6 +102,10 @@ export default class MultipleEssentialFactorTrend extends Vue {
 
 
         myChart.showLoading();
+        if(this.fm_date =="" || this.to_date ==""){
+            this.$notify.error("请选择日期")
+            return;
+        }
         if(this.amb_purposes_id !="" && this.amb_accountEle_ids.length>0 && this.amb_groups_ids.length>0){
             let btn1 = new BipMenuBtn("DLG","多巴指标趋势分析")
             btn1.setDlgType("D")
@@ -190,11 +194,19 @@ export default class MultipleEssentialFactorTrend extends Vue {
 
    //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")       
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")       
+        }else{
+            this.fm_date = "";
+        }
     }
     //期间发生变化
     to_dateChange(value:any){
-        this.to_date = moment(value).format("YYYY-MM-DD")  
+        if(value){
+            this.to_date = moment(value).format("YYYY-MM-DD")  
+        }else{
+            this.to_date = "";
+        }
     }
     @Watch("height")
     heightChange() {

@@ -87,9 +87,6 @@ export default class BipRichTextUEditor extends Vue{
                 value= value.replace(new RegExp(this.uri,'gm'),'{BIPURI}')
                 this.cds.currRecord.data[this.cell.id] = value;
                 this.cds.cdata.data[this.cds.index] = this.cds.currRecord;
-                if(this.cds.baseI){
-                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,value)
-                }
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 this.cds.checkGS(this.cell);
                 this.cds.currRecord.c_state |= 2;

@@ -229,10 +229,6 @@ export default class BipAutograph extends Vue{
                 this.cds.currRecord = Object.assign({},record);
                 this.cds.cdata.data[this.cds.index] = Object.assign({},record)
                 const key:string = this.cell.id
-                if(this.cds.baseI){
-                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,imgBase64)
-                }
-                this.cds.cellChange(key,imgBase64);
                 this.cds.currRecord.c_state |= 2;
                 if(this.cds.ds_par){
                     this.cds.ds_par.currRecord.c_state |= 2;

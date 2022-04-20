@@ -47,7 +47,7 @@ import { values } from 'xe-utils/methods';
 /**
  * 阿米巴比较分析
  */
-export default class ProfitLossFunction extends Vue {
+export default class AMBCompareTrend extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
@@ -150,7 +150,11 @@ export default class ProfitLossFunction extends Vue {
         // this.initData();
     } */
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")       
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")       
+        }else{
+            this.fm_date = "";
+        }
     }
   
     //阿米巴发生变化

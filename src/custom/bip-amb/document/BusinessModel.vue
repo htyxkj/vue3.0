@@ -2,6 +2,8 @@
     <el-container>
         <el-header style="height:45px;padding:0px 10px;border-bottom: 1px solid #CCCCCC;    line-height: 45px;">
             <Accounting @dataChange="accChange" class="topdiv1"></Accounting>
+            <amb-tree-dialog @dataChange="treeChange" class="topdiv1" :purposesId="amb_purposes_id" :showCbox="false" ></amb-tree-dialog>
+            <accounting-ele-dialog @dataChange="check_accountEle"  class="topdiv1" :purposesId="amb_purposes_id" :showCbox="true"></accounting-ele-dialog>
             <!-- <div class="topdiv2">
                 <el-button style="border:0px">      
                     <i class="el-icon-plus"></i>
@@ -108,6 +110,8 @@
 import { Component, Vue, Provide, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import Accounting from "../components/Accounting.vue"//核算目的
+import AmbTreeDialog from "../components/AmbTreeDialog.vue";//阿米巴树
+import AccountingEleDialog from "../components/AccountingEleDialog .vue" //核算要素
 import { Cells } from "@/classes/pub/coob/Cells";
 import CDataSet from "@/classes/pub/CDataSet";
 import QueryEntity from "@/classes/search/QueryEntity";
@@ -120,9 +124,11 @@ import BipGridInfo from "@/components/editorn/grid/BipGridInfo.vue";
 @Component({
     components: {
         Accounting,
+        AmbTreeDialog,
         BipGridInfo,
         ImExFile,
-        BipLog
+        BipLog,
+        AccountingEleDialog
     }
 })
 /**
@@ -132,6 +138,8 @@ export default class BusinessModel extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     tableHeight:any = 500//高度
     amb_purposes_id:any = null;//核算目的
+    amb_group_ids:any = null; //阿米巴
+    amb_accountEle_ids:any =null; //阿米巴巴集合KEY
 
     modelCell:CDataSet = new CDataSet(""); //经营模型主表
     modelCellID:any = "300104WEB";//经营模型对象ＩＤ
@@ -167,6 +175,7 @@ export default class BusinessModel extends Vue {
 
     modelATitle:any = "";
 
+    
     async created() {
         this.tableHeight =  this.height -120
         this.modelCell = await this.getCell(this.modelCellID);//经营模型主表
@@ -175,6 +184,7 @@ export default class BusinessModel extends Vue {
         this.modelA2Cell = await this.getCell(this.modelA2CellID);//经营模型 子表
         this.modelTJCell.createRecord();
         this.initModelData();
+        
     }
     mounted() { 
     } 
@@ -274,7 +284,8 @@ export default class BusinessModel extends Vue {
         this.treeData =[];
         let qe:QueryEntity = new QueryEntity(this.modelCellID,this.modelCellID);
         qe.page.pageSize = 9999;
-        // this.modelTJCell.currRecord.data.purpose_id  = this.amb_purposes_id
+        this.modelTJCell.currRecord.data.purpose_id  = this.amb_purposes_id
+        this.modelTJCell.currRecord.data.group_id  = this.amb_group_ids
         qe.cont = JSON.stringify(this.modelTJCell.currRecord.data)
         let res = await this.modelCell.queryData(qe);
         if(res.data.id ==0){
@@ -283,11 +294,17 @@ export default class BusinessModel extends Vue {
                 this.treeData.push(data[i].data)
             } 
         } 
+ 
         if(this.treeData.length>0){
             this.treSelData = this.treeData[0];
             this.setCurrentKey();
             this.ininModalAData();
         }
+        if(this.treeData.length === 0){
+            this.treSelData = null
+            this.modelACell.clear()
+        }
+        
     }
     //设置Tree初始选中    
     setCurrentKey(){
@@ -301,13 +318,14 @@ export default class BusinessModel extends Vue {
     }
     //查询子表数据
     async ininModalAData(){
+         
         if(this.treSelData){
             this.removeData = [];
             this.modelACell.cdata.data = [];
             this.tableLoading = true;
             let qe:QueryEntity = new QueryEntity(this.modelACellID,this.modelACellID);
             qe.page = this.tablePage;
-            qe.cont = JSON.stringify({compo_id:this.treSelData.id})
+            qe.cont = JSON.stringify({compo_id:this.treSelData.id,element_id:this.amb_accountEle_ids})
             let res = await this.modelACell.queryData(qe);
             if(res.data.id ==0){
                 let data = res.data.data.data.data;
@@ -315,6 +333,7 @@ export default class BusinessModel extends Vue {
                 this.tablePage = res.data.data.data.page
             }
         }
+         
         this.tableLoading = false;
     }
     //新建子表数据
@@ -400,6 +419,19 @@ export default class BusinessModel extends Vue {
     accChange(value:any){
         this.modelCell.clear();
         this.amb_purposes_id = value.id;
+        this.modelTJCell.currRecord.data.purpose_id  = this.amb_purposes_id
+        this.ininModalAData();
+    }
+    //阿米巴发生变化
+    treeChange(checkData:any){
+        this.modelCell.clear();
+        this.amb_group_ids = checkData.keys[0];
+        this.initModelData();
+    }
+    //选择核算要素
+    check_accountEle(checkData:any){
+        //this.modelCell.clear();
+        this.amb_accountEle_ids = checkData.keys.join()
         this.ininModalAData();
     }
     //获取对象

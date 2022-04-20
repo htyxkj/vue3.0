@@ -104,7 +104,7 @@ import AmbTree from "../components/AmbTree.vue"//阿米巴树
 /**
  * 职能式损益表
  */
-export default class ProfitLossFunction extends Vue {
+export default class ProfitYieldAnalysis extends Vue {
     
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     lTreeCkData:any=[];
@@ -193,8 +193,12 @@ export default class ProfitLossFunction extends Vue {
     }
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")
-        this.initPeriodDate();
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")
+            this.initPeriodDate();
+        }else{
+            this.fm_date = "";
+        }
     }
     //阿米巴发生变化
     treeChange(checkData:any){
@@ -249,10 +253,12 @@ export default class ProfitLossFunction extends Vue {
         }
         let v = JSON.stringify(prarm);
         let res = await tools.getDlgRunClass(v,b);
-        let fm_date = res.data.data.fm_date;
-        this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
-        let to_date = res.data.data.to_date;
-        this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
+        if(res.data.id ==0){
+            let fm_date = res.data.data.fm_date;
+            this.period_fm_date = moment(fm_date).format("YYYY-MM-DD")+" 00:00:00"
+            let to_date = res.data.data.to_date;
+            this.period_to_date = moment(to_date).format("YYYY-MM-DD")+" 23:59:59"
+        }
     }
     @Watch("height")
     heightChange() {

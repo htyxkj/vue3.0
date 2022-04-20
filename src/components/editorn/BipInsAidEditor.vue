@@ -149,7 +149,11 @@ export default class BipInsAidEditor extends Vue{
                     let idx = this.othColsIndex[index];
                     let layC = this.bipInsAid.cells.cels[idx];
                     if (layC && !record.data[fld]) {
-                        record.data[fld] = val[layC.id]||"";
+                        let vl = val[0][layC.id];
+                        if(vl == undefined || vl == null){
+                            vl = "";
+                        }
+                        record.data[fld] = vl;
                         let cel = this.cds.getCell(fld)
                         this.cds.checkGS(cel);
                     }
@@ -194,12 +198,18 @@ export default class BipInsAidEditor extends Vue{
                             ds = this.env.getDataSet(obj_id);
                             groupFld = groupFld.split("*")[1];
                         }
+                         let script = this.cell.script;
+                        if(script &&script.indexOf(";")>-1){
+                            groupFld = script.split(";")[0];
+                            this.bipInsAid.sref = groupFld;
+                        }
+                        let cel:any = ds.getCell(groupFld)
+                        if(!cel){
+                            this.$notify.error('未查询到字段：'+groupFld);
+                        }
                         if(ds && !ds.currRecord.data[groupFld]){
-                            let cel:any = ds.getCell(groupFld)
-                            if(cel){
-                                let msg = ds.ccells.desc;
-                                this.$notify.warning('请先填写：'+msg+" "+cel.labelString)
-                            }   
+                            let msg = ds.ccells.desc;
+                            this.$notify.warning('请先填写：'+msg+" "+cel.labelString)
                             return;
                         }
                     }
@@ -242,7 +252,11 @@ export default class BipInsAidEditor extends Vue{
                     let idx = this.othColsIndex[index];
                     let layC = this.bipInsAid.cells.cels[idx];
                     if (layC) {
-                        record.data[fld] = val[0][layC.id]||"";
+                        let vl = val[0][layC.id];
+                        if(vl == undefined || vl == null){
+                            vl = "";
+                        }
+                        record.data[fld] = vl;
                         let cel = this.cds.getCell(fld)
                         this.cds.checkGS(cel);
                     }
@@ -487,7 +501,11 @@ export default class BipInsAidEditor extends Vue{
                     let idx = this.othColsIndex[index];
                     let layC = this.bipInsAid.cells.cels[idx];
                     if (layC && !record.data[fld] && val.length>0) {
-                        record.data[fld] = val[0][layC.id]||"";
+                        let vl = val[0][layC.id];
+                        if(vl == undefined || vl == null){
+                            vl = "";
+                        }
+                        record.data[fld] = vl;
                         let cel = this.cds.getCell(fld)
                         this.cds.checkGS(cel);
                     }

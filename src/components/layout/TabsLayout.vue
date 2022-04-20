@@ -42,6 +42,7 @@ export default class TabsLayout extends Vue{
 
     mounted(){
         this.activeName = '0'
+        
     }
 
     handleSizeChange(value:number){

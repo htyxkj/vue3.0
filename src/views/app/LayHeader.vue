@@ -11,9 +11,7 @@
                 <span v-else-if="base_variable && base_variable.ITEMTYPE == 'JINAN-bip-amb'" style="color: white;font-size: 18px;padding-right: 10px;">
                     JINAN MINING
                 </span>
-                <el-row v-else-if="base_variable && base_variable.ITEMTYPE == 'air-super'" ></el-row>
                 <img v-else-if="base_variable && base_variable.ITEMTYPE == 'Pro-quality'" src="../../assets/bip/208logo.png"/>
-                <img v-else src="../../assets/bip/logo.png"/>
                 <div style="color: white;font-size: 18px;">
                     {{base_variable.Project_Name}}
                 </div>

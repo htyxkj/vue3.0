@@ -12,6 +12,9 @@
     <template v-else-if="baseVar.ITEMTYPE =='JINAN-bip-amb'">
       <login-ja-amb></login-ja-amb>
     </template>
+    <template v-else-if="baseVar.ITEMTYPE =='registration'">
+      <login-t-g></login-t-g>
+    </template>
     <template v-else>
       <login-bip></login-bip>
     </template>
@@ -25,13 +28,15 @@ import LoginRD from '@/views/login/LoginRD'
 import LoginAir from '@/views/login/LoginAir'
 import LoginNgAmb from '@/views/login/LoginNgAmb'
 import LoginJaAmb from '@/views/login/LoginJaAmb'
+import LoginTG from '@/views/login/LoginTG'
 @Component({
     components:{
       LoginBip,
       LoginRD,
       LoginAir,
       LoginNgAmb,
-      LoginJaAmb
+      LoginJaAmb,
+      LoginTG
     }
 })
 export default class Login extends Vue {
@@ -51,6 +56,8 @@ export default class Login extends Vue {
       }
       href = encodeURIComponent(href);
       location.href = (url+href);
+    }else if(BaseVariable.ITEMTYPE == "JINAN-bip-amb"){
+      this.$router.push('/wOauthToken')
     }else{
       this.baseVar = BaseVariable;
     }

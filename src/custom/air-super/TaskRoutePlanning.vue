@@ -35,16 +35,16 @@
                                         style="padding:5px; paddingLeft:10px; border-bottom: 1px solid #f1f1f1; margin-bottom: 5px;">
                                         <el-col :span="24">
                                             <el-row>
-                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.id}}</el-col>
+                                                <el-col :span="24" style="font-size: 0.27rem; color: rgba(0,0,0,.54)">{{item.data.id}}</el-col>
                                             </el-row>
                                              <el-row>
-                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.township}}</el-col>
+                                                <el-col :span="11" style="font-size: 0.2rem; color: rgba(0,0,0,.54)">{{item.data.township}}</el-col>
                                                 <el-col :span="2">~</el-col>
                                                 
-                                                <el-col :span="11" style="font-size: 0.6rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
+                                                <el-col :span="11" style="font-size: 0.2rem; color: rgba(0,0,0,.54)">{{item.data.name}}</el-col>
                                             </el-row>
                                              <el-row>
-                                                <el-col :span="24" style="font-size: 0.8rem; color: rgba(0,0,0,.54)">{{item.data.address}}</el-col>
+                                                <el-col :span="24" style="font-size: 0.2rem; color: rgba(0,0,0,.54)">{{item.data.address}}</el-col>
                                             </el-row>
                                         </el-col>
                                     </el-row>
@@ -63,6 +63,7 @@
                                 <div class="oper-pagination">
                                     <el-pagination small layout="prev, pager, next" @current-change="pageChange" :page-size="taskCellPage.pageSize" :total="taskCellPage.total"></el-pagination>
                                 </div>
+                                <div style="padding-top:10px"></div>
                             </div>
                         </el-aside>
                     </el-container>

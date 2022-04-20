@@ -1,7 +1,21 @@
 <template>
     <el-row>  
-        <el-dialog class="dlgbtn" :title="Title" :visible.sync="sqlDlg0" width="40%" append-to-body>
-            <el-dialog class="dlgbtn" :title="Title" :visible.sync="sqlDlg1" width="30%" append-to-body>
+        <el-dialog class="dlgbtn bipinsaid" :visible.sync="sqlDlg0" width="40%" append-to-body>
+            <!--弹出框头部-->
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">
+                    <i class="el-icon-info"></i>
+                    {{Title}}
+                </div>
+            </span>
+            <el-dialog class="dlgbtn bipinsaid"  :visible.sync="sqlDlg1" width="30%" append-to-body>
+                <!--弹出框头部-->
+                <span slot="title">
+                    <div class="el-dialog__title" style="padding-bottom:5px">
+                        <i class="el-icon-info"></i>
+                        {{Title}}
+                    </div>
+                </span>
                 <span :style="sqlStyle[1]">{{sqlCont[1]}}</span>
                 <span slot="footer" class="dialog-footer">
                  <hr>
@@ -16,7 +30,14 @@
                 <el-button type="primary" @click="sqlOk(true,0)">确 定</el-button>
             </span>  
         </el-dialog> 
-        <el-dialog :title="dlgDCell.ccells.desc" :close-on-click-modal="false" :visible.sync="showDCell" width="50%" append-to-body>
+        <el-dialog class="bipinsaid" :close-on-click-modal="false" :visible.sync="showDCell" width="50%" append-to-body>
+            <!--弹出框头部-->
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">
+                    <i class="el-icon-info"></i>
+                    {{dlgDCell.ccells.desc}}
+                </div>
+            </span>
             <el-row class="bip-lay">
                 <el-form @submit.native.prevent label-position="right" label-width="120px">
                     <div v-for="(cel,index) in dlgDCell.ccells.cels" :key="'A'+index">
@@ -36,7 +57,14 @@
             </span>
         </el-dialog>
         <template v-if="openCell">
-            <el-dialog :title="Title" :visible.sync="openCell" append-to-body>
+            <el-dialog class="bipinsaid" :title="Title" :visible.sync="openCell" append-to-body>
+                <!--弹出框头部-->
+                <span slot="title">
+                    <div class="el-dialog__title" style="padding-bottom:5px">
+                        <i class="el-icon-info"></i>
+                        {{Title}}
+                    </div>
+                </span>
                 <div class="">
                     <el-scrollbar style="margin-bottom:0px;  margin-right: 0px;">
                         <el-form @submit.native.prevent label-position="right" label-width="120px">
@@ -51,7 +79,14 @@
             </el-dialog> 
         </template>
         <bip-ygxz-dia ref="ygxz"></bip-ygxz-dia> 
-        <el-dialog title="微信扫码支付" :visible.sync="showPayQR" append-to-body :close-on-click-modal="false" width="400px" class="bip-query">
+        <el-dialog :visible.sync="showPayQR" append-to-body :close-on-click-modal="false" width="400px" class="bip-query bipinsaid">
+            <!--弹出框头部-->
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">
+                    <i class="el-icon-info"></i>
+                    微信扫码支付
+                </div>
+            </span>
             <div style="text-align: center;">
                 <vue-qr :text="code_url" :size="200"></vue-qr>
             </div>
@@ -63,7 +98,14 @@
             </span>   
         </el-dialog> 
         <!-- 三资股权打印 -->
-        <el-dialog class="dlgbtn" :title="'系统提示'" :visible.sync="printShow" width="40%" append-to-body>
+        <el-dialog class="dlgbtn bipinsaid" :visible.sync="printShow" width="40%" append-to-body>
+            <!--弹出框头部-->
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">
+                    <i class="el-icon-info"></i>
+                    系统提示
+                </div>
+            </span>
             <el-row :gutter="20">
                 <el-col :span="12">
                     当前页：
@@ -123,11 +165,29 @@
             </vxe-table>
             <el-pagination background layout="prev, pager, next, jumper" :page-size="20" :total="dlgGCell.cdata.page.total" :current-page="dlgGCell.cdata.page.currPage" @current-change="dlgGTablePC"></el-pagination>
         </el-drawer>
+
+        <el-dialog class="bipinsaid" :close-on-click-modal="false" :visible.sync="showInvoiceUpload" width="80%" append-to-body>
+            <!--弹出框头部-->
+            <span slot="title">
+                <div class="el-dialog__title" style="padding-bottom:5px">
+                    <i class="el-icon-info"></i>
+                    票据上传
+                </div>
+            </span>
+            <el-row class="bip-lay">
+                <invoice-upload ref="invoiceUpload" :openType="'dialog'"></invoice-upload>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showInvoiceUpload = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="invoiceSelData" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </el-row>
 </template>
 <script lang="ts">
 /**
- * 常量定义 DLG.  解析
+ * 常量定义 DLG.  解析，自定义按钮功能解析
  */
 import { Component, Vue ,Inject} from "vue-property-decorator";
 import CDataSet from "@/classes/pub/CDataSet";
@@ -144,8 +204,9 @@ import { GlobalVariable } from '@/utils/ICL';
 import {BaseVariable} from "@/utils/BaseICL"
 import BipYgxzDia from './BipYGXZDia.vue';
 import BipGridInfo from "../editorn/grid/BipGridInfo.vue";
+import InvoiceUpload from "@/custom/finance_share/InvoiceUpload.vue"
 @Component({
-    components: {BipYgxzDia,VueQr,BipGridInfo}
+    components: {BipYgxzDia,VueQr,BipGridInfo,InvoiceUpload}
 })
 export default class BipMenuBtnDlg extends Vue { 
     @Inject('heightInfo') heightInfo!:any;
@@ -165,6 +226,7 @@ export default class BipMenuBtnDlg extends Vue {
     dlgDCell: CDataSet = new CDataSet("");//D: 弹出对象
     showDCell:boolean =false;
     showPayQR:boolean = false;//微信收款二维码弹框
+    showInvoiceUpload:boolean = false;//票据上传弹出窗口
     code_url:any ="";//二维码内容
     total_fee:any = 0;//支付金额
     uri:string=""//附件操作接口
@@ -279,37 +341,38 @@ export default class BipMenuBtnDlg extends Vue {
             }else{
                 let command = me.command.split("&");
                 let pbuid = command[0].split("=");
-                let pmenuid = command[1].split("="); 
+                let pmenuid = command[1].split("=");
+
+                let path = "";
                 if(pbuid[0] == 'pbuid'){
-                    this.$router.push({
-                        path:'/layout',
-                        name:'layout',
-                        params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
-                        query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
-                    })
-                }else if(pbuid[0] == 'pmenu'){
-                    if(this.btn.cmd=='DLG2'){
-                        this.$router.push({
-                                path:'/'+pbuid[1],
-                                name:pbuid[1],
-                                params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
-                                query: {pmenuid:pmenuid[1]},
-                            })
-                    }else if(this.btn.cmd == 'DLG'){
-                        let param = {
-                            childDlg_width:"70%",
-                            childDlg_icon : me.menuIcon,
-                            childDlg_title:me.menuName,
-                            obj_id:this.env.dsm.ccells.obj_id,
-                            router:{
-                                path:'/'+pbuid[1],
-                                name:pbuid[1],
-                                params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
-                                query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
-                            }
-                        };
-                        this.$bus.$emit("openChildDlg",param);
+                    path = "layout"
+                    if(this.btn.cmd=='DLG'){
+                        path="layoutDlg"
                     }
+                }else if(pbuid[0] == 'pmenu'){
+                    path = pbuid[1];
+                }
+                if(this.btn.cmd=='DLG2'){
+                    this.$router.push({
+                            path:'/'+path,
+                            name:path,
+                            params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
+                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1]},
+                        })
+                }else if(this.btn.cmd == 'DLG'){
+                    let param = {
+                        childDlg_width:"70%",
+                        childDlg_icon : me.menuIcon,
+                        childDlg_title:me.menuName,
+                        obj_id:this.env.dsm.ccells.obj_id,
+                        router:{
+                            path:'/'+path,
+                            name:path,
+                            params:{method:"dlg",pmenuid:pmenuid[1],cellid:cell[1],jsoncont:jsoncont,jsontj:jsontj},
+                            query: {pbuid:pbuid[1],pmenuid:pmenuid[1],time:new Date().getTime()},
+                        }
+                    };
+                    this.$bus.$emit("openChildDlg",param);
                 }
             }
         }else if(btn.dlgType == 'D'){ //调用后台程序 
@@ -540,6 +603,8 @@ export default class BipMenuBtnDlg extends Vue {
             
         }else if(btn.dlgType.startsWith("G") == true){//点击按钮弹出一个表格(对象定义)
             this.initDLGGData(btn,1);
+        }else if(btn.dlgType == 'H'){//发票上传解析
+            this.showInvoiceUpload = true;
         }
     }
     async initDLGGData(btn:any,page:any){
@@ -902,6 +967,30 @@ export default class BipMenuBtnDlg extends Vue {
         snkey = encodeURIComponent(snkey);
         let url = this.uri+'?snkey='+snkey+'&fjroot='+fjroot+'&updid='+updid+'&fjname='+name;
         window.open(url);
+    }
+
+    /**
+     * 票据上传 确认
+     */
+    invoiceSelData(){
+        let ref:any = this.$refs['invoiceUpload'];
+        if(ref){
+            let data = ref.selData;
+            let clazz = this.btn.dlgCont.split(";")[0];
+            let clazzs = clazz.split(",")
+            let cellId = clazzs[0];
+            let dsm = this.env.getDataSet(cellId);
+            for(var i =0;i<data.length;i++){
+                let fp_row = data[i].data;
+                let cr = dsm.createRecord();
+                for(var j=1;j<clazzs.length;j++){
+                    let cz = clazzs[j].split("=")
+                    cr.data[cz[1]] = fp_row[cz[0]]
+                    dsm.cellChange(cz[1],fp_row[cz[0]]);
+                }
+            }
+        }
+        this.showInvoiceUpload = false;
     }
 }
 </script>

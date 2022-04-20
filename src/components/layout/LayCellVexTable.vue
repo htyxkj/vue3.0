@@ -16,6 +16,7 @@
                     <template v-if="breport&&commBtns">
                     <!-- <el-button-group v-if="breport&&commBtns"> -->
                         <template  v-for="(btn,index) in commBtns">
+                            <!-- v-if="btn.visible" -->
                             <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" :size="'small'" @click.native="invokecmd(btn)" :disabled="!btn.enable">     
                                 <template v-if="btn.hasIcon">
                                     <template v-if="btn.icon&&btn.bIconleft">
@@ -44,7 +45,7 @@
                 :footer-method="footerMethod" :show-footer="haveFooterSum"
                 size="small" :data.sync="cds.cdata.data" row-id="id" resizable
                 height="auto" :max-height="height"
-                highlight-hover-row show-all-overflow="tooltip" show-header-overflow
+                highlight-hover-row show-header-overflow
                 highlight-current-row class="vxe-table-element mytable-scrollbar" :optimized="true"
                 :edit-config="{trigger: 'click', mode: 'cell',showStatus: true,showIcon:false,activeMethod:activeMethod}"
                 :selectRow="cds.currRecord"  @cell-click="table_cell_click"
@@ -62,7 +63,7 @@
                     <template v-if="!item.child">
                         <vxe-table-column :key="index" header-align="center" :align="item.align"
                             :field="item.id" :width="widths[item.widthIndex]" :title="item.labelString"
-                            show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(item.attr&0x40)>0">
+                            show-header-overflow :edit-render="{name: 'default'}" :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :disabled="(item.attr&0x40)>0">
                             <template #edit="{rowIndex}">
                                 <bip-comm-editor  :cell="item" :cds="cds" :row="rowIndex" :bgrid="true" :env="env"/> 
                             </template>
@@ -78,7 +79,7 @@
                                     <vxe-table-colgroup header-align="center" :key="idx" :title="child_item.title"><!-- 二级表头 -->
                                         <vxe-table-column v-for="(child_cel,idx1) in child_item.cels" :key="idx1" header-align="center" :align="item.align"
                                             :field="child_cel.id" :width="widths[child_cel.widthIndex]" :title="child_cel.labelString"
-                                            show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_cel.attr&0x40)>0"> <!-- 三级表头 -->
+                                            show-header-overflow :edit-render="{name: 'default'}" :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :disabled="(child_cel.attr&0x40)>0"> <!-- 三级表头 -->
                                             <template v-slot:edit="{rowIndex}">
                                                 <bip-comm-editor  :cell="child_cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                             </template>
@@ -95,7 +96,7 @@
                                                 <vxe-table-colgroup header-align="center" :key="idx" :title="grandson.title"><!-- 三级表头 -->
                                                     <vxe-table-column v-for="(child_cel,idx1) in grandson.cels" :key="idx1" header-align="center" :align="item.align" 
                                                         :field="child_cel.id" :width="widths[child_cel.widthIndex]" :title="child_cel.labelString"
-                                                        show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_cel.attr&0x40)>0"> <!-- 四级表头 -->
+                                                        show-header-overflow :edit-render="{name: 'default'}" :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :disabled="(child_cel.attr&0x40)>0"> <!-- 四级表头 -->
                                                         <template v-slot:edit="{rowIndex}">
                                                             <bip-comm-editor  :cell="child_cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                                         </template>
@@ -108,7 +109,7 @@
                                             <template v-else>
                                                 <vxe-table-column :key="idx" header-align="center" :align="item.align"
                                                     :field="grandson.id" :width="widths[grandson.widthIndex]" :title="grandson.labelString"
-                                                    show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(grandson.attr&0x40)>0">
+                                                    show-header-overflow :edit-render="{name: 'default'}" :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :disabled="(grandson.attr&0x40)>0">
                                                     <template v-slot:edit="{rowIndex}">
                                                         <bip-comm-editor  :cell="grandson" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                                     </template>
@@ -123,7 +124,7 @@
                                 <template v-else>
                                     <vxe-table-column :key="idx" header-align="center" :align="item.align"
                                         :field="child_item.id" :width="widths[child_item.widthIndex]" :title="child_item.labelString"
-                                        show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(child_item.attr&0x40)>0">
+                                        show-header-overflow :edit-render="{name: 'default'}" :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :disabled="(child_item.attr&0x40)>0">
                                         <template v-slot:edit="{rowIndex}">
                                             <bip-comm-editor  :cell="child_item" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                         </template>
@@ -137,7 +138,7 @@
                         <template v-else>
                             <vxe-table-column header-align="center" :align="item.align" v-for="(s_cel,idx2) in item.cels" :key="idx2"
                                 :field="s_cel.id" :width="widths[s_cel.widthIndex]" :title="s_cel.labelString"
-                                show-header-overflow :edit-render="{name: 'default'}" show-overflow :disabled="(s_cel.attr&0x40)>0">
+                                show-header-overflow :edit-render="{name: 'default'}" :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :disabled="(s_cel.attr&0x40)>0">
                                 <template v-slot:edit="{rowIndex}">
                                     <bip-comm-editor  :cell="s_cel" :cds="cds" :row="rowIndex" :bgrid="true"/> 
                                 </template>
@@ -151,29 +152,27 @@
                 <template v-slot:empty>
                     <el-button type="danger" icon="el-icon-plus" circle style="font-size: 28px;"  @click="addRecord"></el-button>
                 </template>
-                <template v-if="breport">
-                    <vxe-table-column field="" title="操作" fixed="right"  align="center" :width="commBtns2.length*90>300?300:commBtns2.length*90">
-                        <template #default="{ rowIndex }">
-                            <el-button-group v-if="breport&&commBtns2">
-                                <template  v-for="(btn,index) in commBtns2">
-                                    <el-button class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)">     
-                                        <template v-if="btn.hasIcon">
-                                            <template v-if="btn.icon&&btn.bIconleft">
-                                                <i :class="btn.icon"></i>{{btn.name}}
-                                            </template>    
-                                            <template v-else>
-                                                {{btn.name}} <i :class="btn.icon"></i> 
-                                            </template>
-                                        </template>
+                <vxe-table-column v-if="breport && commBtns2.length>0" field="" title="操作" fixed="right"  align="center" :width="commBtns2.length*90>300?300:commBtns2.length*90">
+                    <template #default="{ row,rowIndex }">
+                        <template v-if="breport&&commBtns2">
+                            <template  v-for="(btn,index) in commBtns2">
+                                <el-button  v-if="btn.getVisible1({'currRecord':row})" class="bip-menu-bar" :class="btn.type?'bip_btn_'+btn.type:'bip_btn_default'" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)">     
+                                    <template v-if="btn.hasIcon">
+                                        <template v-if="btn.icon&&btn.bIconleft">
+                                            <i :class="btn.icon"></i>{{btn.name}}
+                                        </template>    
                                         <template v-else>
-                                            {{btn.name}}
+                                            {{btn.name}} <i :class="btn.icon"></i> 
                                         </template>
-                                    </el-button>
-                                </template>
-                            </el-button-group>
+                                    </template>
+                                    <template v-else>
+                                        {{btn.name}}
+                                    </template>
+                                </el-button>
+                            </template>
                         </template>
-                    </vxe-table-column>
-                </template>
+                    </template>
+                </vxe-table-column>
             </vxe-table>
             <el-drawer append-to-body :visible.sync="addDrawer" direction="btt" size="50%" :withHeader="false" :wrapperClosable="false">
                 <div class="myDrawer">
@@ -194,8 +193,7 @@
         <template v-else>
             <vxe-table :keep-source="false" class="mytable-scrollbar"
                 :ref="this.cds.ccells.obj_id" v-if="isTable" border resizable size="small"
-                highlight-hover-row show-all-overflow="tooltip"
-                show-header-overflow highlight-current-row
+                highlight-hover-row show-header-overflow highlight-current-row
                 :data.sync="cds.cdata.data" :optimized="true" :height="height"
                 @cell-dblclick="openrefs" @cell-click="table_cell_click"
                 @sort-change="sortChange" :sort-config="{trigger: 'cell',remote:true}"
@@ -218,7 +216,7 @@
                     <template v-if="!item.child">
                         <vxe-table-column header-align="center" :align="item.align" :field="item.id" :key="index"
                             :min-width="widths[item.widthIndex]" :title="item.labelString" show-header-overflow 
-                            :show-overflow="item.editType!=6" :sortable ="(item.attr&0x400000)>0" :fixed="isFixed(item.widthIndex)" >
+                            :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :sortable ="(item.attr&0x400000)>0" :fixed="isFixed(item.widthIndex)" >
                             <template v-slot="{rowIndex}"> 
                                 <bip-grid-info :cds="cds" :cell="item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                             </template>
@@ -233,7 +231,7 @@
                                             <vxe-table-column v-for="(s_cel,idx2) in child_item.cels"
                                             header-align="center" :align="item.align" :field="s_cel.id" :key="idx2"
                                                 :min-width="widths[s_cel.widthIndex]" :title="s_cel.labelString" show-header-overflow 
-                                                show-overflow :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
+                                                :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
                                                 <template v-slot="{rowIndex}"> 
                                                     <bip-grid-info :cds="cds" :cell="s_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                 </template>
@@ -247,7 +245,7 @@
                                                     <vxe-table-column v-for="(s_cel,idx2) in grandson.cels"
                                                     header-align="center" :align="item.align" :field="s_cel.id" :key="idx2"
                                                         :min-width="widths[s_cel.widthIndex]" :title="s_cel.labelString" show-header-overflow 
-                                                        show-overflow :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
+                                                        :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
                                                         <template v-slot="{rowIndex}"> 
                                                             <bip-grid-info :cds="cds" :cell="s_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                         </template>
@@ -257,7 +255,7 @@
                                             <template v-else>
                                                 <vxe-table-column header-align="center" :align="item.align" :field="grandson.id" :key="idx"
                                                     :min-width="widths[grandson.widthIndex]" :title="grandson.labelString" show-header-overflow 
-                                                    show-overflow :sortable ="(grandson.attr&0x400000)>0" :fixed="isFixed(grandson.widthIndex)" >
+                                                    :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :sortable ="(grandson.attr&0x400000)>0" :fixed="isFixed(grandson.widthIndex)" >
                                                     <template v-slot="{rowIndex}"> 
                                                         <bip-grid-info :cds="cds" :cell="grandson" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                                     </template>
@@ -268,7 +266,7 @@
                                     <template v-else>
                                         <vxe-table-column header-align="center" :align="item.align" :field="child_item.id" :key="idx"
                                             :min-width="widths[child_item.widthIndex]" :title="child_item.labelString" show-header-overflow 
-                                            show-overflow :sortable ="(child_item.attr&0x400000)>0" :fixed="isFixed(child_item.widthIndex)" >
+                                            :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :sortable ="(child_item.attr&0x400000)>0" :fixed="isFixed(child_item.widthIndex)" >
                                             <template v-slot="{rowIndex}"> 
                                                 <bip-grid-info :cds="cds" :cell="child_item" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                             </template>
@@ -280,7 +278,7 @@
                                 <vxe-table-column v-for="(s_cel,idx2) in item.cels"
                                     header-align="center" :align="item.align" :field="s_cel.id" :key="idx2"
                                     :min-width="widths[s_cel.widthIndex]" :title="s_cel.labelString" show-header-overflow 
-                                    show-overflow :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
+                                    :show-overflow="((item.attr & 0x1000000) > 0)?false:'tooltip'" :sortable ="(s_cel.attr&0x400000)>0" :fixed="isFixed(s_cel.widthIndex)" >
                                     <template v-slot="{rowIndex}"> 
                                         <bip-grid-info :cds="cds" :cell="s_cel" :row="rowIndex" :bgrid="true" ></bip-grid-info>
                                     </template>
@@ -294,7 +292,7 @@
                     <template #default="{row,rowIndex }">
                         <template v-if="(row.c_state&0x80) <=0">
                             <template  v-for="(btn,index) in commBtns2">
-                                <el-button :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     
+                                <el-button  v-if="btn.getVisible1({'currRecord':row})" :class="[btn.type?'bip_btn_'+btn.type:'bip_btn_default','btn_report']" :key="index" :size="'mini'" @click.native="invokecmd(btn,rowIndex)" >     
                                     <template v-if="btn.hasIcon">
                                         <template v-if="btn.icon&&btn.bIconleft">
                                             <i :class="btn.icon"></i>{{btn.name}}
@@ -519,29 +517,79 @@ export default class LayCelVexTable extends Vue {
     table_loading:boolean=false;//表格加载动画
 
     //初始化表格按钮
-    makeCommBtns(){
-        this.commBtns=[];
-        this.commBtns2=[];
+    async makeCommBtns(){
+        let btns1:any = [];
+        let btns2:any = [];
+
         let mbs = this.env.mbs.menuList
 
         _.forEach(mbs,(item:any) => {
             if( item.cmd == 'DLG' || item.cmd == 'DLG1'){
                 if((this.cds.ccells.attr & 0x40 )>0){
-                    this.commBtns.push(item)
+                    btns1.push(item)
                 }else{
-                    this.commBtns2.push(item)
+                    btns2.push(item)
                 }
             }else{
                 if(item.cmd != 'SAVE' && item.cmd != 'DEL'){
-                    this.commBtns.push(item)
+                    btns1.push(item)
                 }else{
-                    this.commBtns2.push(item)
+                    btns2.push(item)
                 }
                 if((this.laycell.cells.attr & 0x40)>0&&item.cmd == 'DEL'){
-                    this.commBtns.push(item)
+                    btns1.push(item)
                 }
             }
         });
+        /**
+         * 获取表格关联属性
+         */
+        let cells = this.cds.ccells.cels;
+        for(let i=0;i<cells.length;i++){
+            let item:any = cells[i];
+            let index = i;
+            if((item.attr&0x80000)>0 && i<cells.length-1){
+                let item1:any = cells[i+1];
+                let im1_id = item1.id;
+                if(im1_id.indexOf(".")>-1){
+                    im1_id = im1_id.substring(im1_id.indexOf(".")+1)
+                }
+                if(item1&&(im1_id=='sbuid' || im1_id.startsWith('slkbuid'))){
+                    let slkbuidCell :any=cells[index+1];
+                    let btn = new BipMenuBtn(item.id,slkbuidCell.labelString)
+                    btn.setType("primary");
+                    btn.setIconFontIcon('EDIT');
+                    btn.setDlgType('SL');
+                    btns2.push(btn);
+                }
+            }
+        }
+        let name = "BL_"+this.cds.ccells.obj_id+"_";
+        let data:any = await this.initCL(name,-1);
+        if(data){
+            for(var i=0;i<data.length;i++){
+                let d1 = data[i];
+                let idx = d1.title.indexOf("_",d1.title.indexOf("_")+1)+1
+                let titles = d1.title.substring(idx);
+                let btn = new BipMenuBtn(titles,d1.sremark)
+                btn.setType("primary");
+                btn.setIconFontIcon('EDIT');
+                btn.setDlgType('BL');
+                btns2.push(btn);
+            }
+        }
+        this.commBtns = btns1;
+        this.commBtns2 = btns2;
+
+        // for(var i=0;i< this.commBtns2.length;i++){
+        //     let btn:any = this.commBtns2[i];
+        //     btn.getVisible(this.cds)
+        // }
+        // for(var i=0;i< this.commBtns.length;i++){
+        //     let btn:any = this.commBtns[i];
+        //     btn.getVisible(this.cds)
+        // }
+        // this.$forceUpdate();
     }
 
     async created() {
@@ -566,8 +614,12 @@ export default class LayCelVexTable extends Vue {
         }
         //组成多表头
         this.initTableTitleGroup();
-        if(this.heightInfo)
+        if(this.heightInfo){
             this.height = (this.heightInfo.height-114)+"px";
+            if(this.config && this.config.type ==3){
+                this.height = (this.heightInfo.height*0.7-114)+"px";
+            }
+        }
         this.initSfix();
         this.initWidth();
         // this.cds = this.env.getDataSet(this.laycell.obj_id);
@@ -580,45 +632,6 @@ export default class LayCelVexTable extends Vue {
         this.menuChange();
     }
 
-    /**
-     * 获取表格关联属性
-     */
-    async getCellLinks(){
-        let cells = this.cds.ccells.cels;
-        for(let i=0;i<cells.length;i++){
-            let item:any = cells[i];
-            let index = i;
-            if((item.attr&0x80000)>0 && i<cells.length-1){
-                let item1:any = cells[i+1];
-                let im1_id = item1.id;
-                if(im1_id.indexOf(".")>-1){
-                    im1_id = im1_id.substring(im1_id.indexOf(".")+1)
-                }
-                if(item1&&(im1_id=='sbuid' || im1_id.startsWith('slkbuid'))){
-                    let slkbuidCell :any=cells[index+1];
-                    let btn = new BipMenuBtn(item.id,slkbuidCell.labelString)
-                    btn.setType("primary");
-                    btn.setIconFontIcon('EDIT');
-                    btn.setDlgType('SL');
-                    this.commBtns2.push(btn);
-                }
-            }
-        }
-        let name = "BL_"+this.cds.ccells.obj_id+"_";
-        let data:any = await this.initCL(name,-1);
-        if(data){
-            for(var i=0;i<data.length;i++){
-                let d1 = data[i];
-                let idx = d1.title.indexOf("_",d1.title.indexOf("_")+1)+1
-                let titles = d1.title.substring(idx);
-                let btn = new BipMenuBtn(titles,d1.sremark)
-                btn.setType("primary");
-                btn.setIconFontIcon('EDIT');
-                btn.setDlgType('BL');
-                this.commBtns2.push(btn);
-            }
-        }
-    }
     /**
      * 表头最加样式
      */
@@ -1227,7 +1240,7 @@ export default class LayCelVexTable extends Vue {
     }
 
     selectChangeEvent (data:any) {
-        this.removeData = data.records;;
+        this.removeData = data.records;
         for(var i=0;i<this.removeData.length;i++){
             this.removeData[i].c_state =4;
         }
@@ -1271,8 +1284,11 @@ export default class LayCelVexTable extends Vue {
 
     totalHChange(){
         this.$nextTick(()=>{
-        if(this.heightInfo){
+            if(this.heightInfo){
                 this.height = (this.heightInfo.height-114)+"px";
+                if(this.config && this.config.type ==3){
+                    this.height = (this.heightInfo.height*0.7-114)+"px";
+                }
                 if(this.$route.name == 'layoutDlg'){ //如果是子菜单弹出页面  高度不设置上线
                     this.height = '5000px'
                 }
@@ -1694,14 +1710,14 @@ export default class LayCelVexTable extends Vue {
         }
     }
     @Watch("env.mbs.menuList")
-    menuChange(){
-        this.$nextTick(()=>{
-            this.makeCommBtns();
-            this.getCellLinks();
-            if(this.heightInfo){
-                this.height = (this.heightInfo.height-114)+"px";
+    async menuChange(){
+        await this.makeCommBtns();
+        if(this.heightInfo){
+            this.height = (this.heightInfo.height-114)+"px";
+            if(this.config && this.config.type ==3){
+                this.height = (this.heightInfo.height*0.7-114)+"px";
             }
-        })
+        }
     }
     
     /**

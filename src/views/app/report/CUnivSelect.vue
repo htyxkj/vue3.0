@@ -273,12 +273,13 @@ export default class CUnivSelect extends Vue {
             }
         }
         let pbds = this.env.uriParams.pbds;
-        if(pbds.layout && pbds.layout == 'card'){
-            let mb:any = this.$refs['mb'];
+        if(pbds.layout && (pbds.layout == 'Pccard' || pbds.layout == 'card')){
+            this.$bus.$emit('ReportTableShape',[this.env.uriParams.pbuid,this.mbs,true])
+           /*  let mb:any = this.$refs['mb'];
             if(mb){
                 mb.ReportTableShape();
                 this.$bus.$emit('ReportTableShape',[this.env.uriParams.pbuid,this.mbs,true])
-            }
+            } */
         }
         this.initHeight();
     }
@@ -798,6 +799,8 @@ export default class CUnivSelect extends Vue {
                     btn1.setIconFontIcon(item.icon);
                     btn1.setType(item.type);
                     btn1.setDlgSname(item.dlgSname);
+                    btn1.setEtap(item.etap);
+                    btn1.setFtap(item.ftap);
                     this.mbs.menuList.push(btn1)
                 }
             }
@@ -839,6 +842,7 @@ export default class CUnivSelect extends Vue {
                     btn1.setDlgCont(item.substring(item.indexOf(";")+1))
                     btn1.setIconFontIcon(cc.split(",")[1]);
                     btn1.setType("primary");
+                    btn1.setEtap("all")
                     this.mbs.menuList.push(btn1)
                 });
             }

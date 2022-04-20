@@ -1,77 +1,114 @@
 <template >
   <div id="app" v-if="configT">
-    <template v-if="!isLogin"> 
-        <template v-if="isLoginPage == 0">
-            <portal></portal>
-        </template>
-        <template v-else-if="isLoginPage == 2">
-            <analysis></analysis>
-        </template>
-        <template v-else>
-            <router-view />
-        </template>
+    <template v-if="!isLogin">
+      <template v-if="isLoginPage == 0">
+        <portal></portal>
+      </template>
+      <template v-else-if="isLoginPage == 2">
+        <analysis></analysis>
+      </template>
+      <template v-else>
+        <router-view />
+      </template>
     </template>
     <template v-else>
-        <template v-if="initOk">
-            <template v-if="isOtherePage">
-                <div class="yw-sys" @click="gotoIndex">业务系统</div>
-                <router-view />
-            </template>
-            <template v-else>
-                <el-container>
-                    <el-header class="my-el-header"> 
-                        <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
-                    </el-header>
-                    <el-container> 
-                        <bip-menu></bip-menu>
-                        <el-main class="bip-main">
-                            <div style='position: relative;'>
-                                <el-tabs v-model="editableTabsValue2" type="border-card" :editable="editableTabs2.length>1" :closable="false" @tab-remove="removeTab" class="bip-tabs">
-                                    <el-tab-pane v-for="(item) in editableTabs2"
-                                        :key="item.name"  :name="item.name"
-                                        :closable="item.closable" :lazy="true" :style="style"> 
-                                        <template slot="label" v-if="item.name == 'index'">
-                                            <i class="el-icon-house pointer" ></i> 
-                                            {{item.title}}
-                                        </template>
-                                        <template slot="label" v-else-if="item.name == 'myTask'">
-                                            <i class="el-icon-mobile pointer" ></i> 
-                                            {{item.title}}
-                                        </template>
-                                         <template slot="label" v-else-if="item.name == 'myMsg'">
-                                            <i class="el-icon-bell pointer" ></i> 
-                                            {{item.title}}
-                                        </template>
-                                        <template slot="label" v-else>
-                                            <img v-if="item.icon"  class="imgpointer" :src="uri+item.icon"/>
-                                            <i v-else class="el-icon-tickets pointer" ></i>
-                                            <span>&nbsp;{{item.title}}</span>
-                                        </template>
-                                        <lay-out :name="item.name" :bshow="item.name === editableTabsValue2">  
-                                        </lay-out>
-                                    </el-tab-pane>
-                                </el-tabs>
-                            <el-button size='mini' v-if="editableTabs2.length>1" icon="el-icon-delete" circle class="clearBtn" @click="delAllTabs"></el-button>
-                            </div>
-                        </el-main>
-                    </el-container>
-                </el-container>
-            </template>
+      <template v-if="initOk">
+        <template v-if="isOtherePage">
+          <div class="yw-sys" @click="gotoIndex">业务系统</div>
+          <router-view />
         </template>
+        <template v-else>
+          <el-container>
+            <el-header class="my-el-header">
+              <lay-header :isLogin="isLogin" @loginOut="loginOut"></lay-header>
+            </el-header>
+            <el-container>
+              <bip-menu></bip-menu>
+              <el-main class="bip-main">
+                <div style="position: relative">
+                  <el-tabs
+                    v-model="editableTabsValue2"
+                    type="border-card"
+                    :editable="editableTabs2.length > 1"
+                    :closable="false"
+                    @tab-remove="removeTab"
+                    class="bip-tabs"
+                  >
+                    <el-tab-pane
+                      v-for="item in editableTabs2"
+                      :key="item.name"
+                      :name="item.name"
+                      :closable="item.closable"
+                      :lazy="true"
+                      :style="style"
+                    >
+                      <template slot="label" v-if="item.name == 'index'">
+                        <i class="el-icon-house pointer"></i>
+                        {{ item.title }}
+                      </template>
+                      <template slot="label" v-else-if="item.name == 'myTask'">
+                        <i class="el-icon-mobile pointer"></i>
+                        {{ item.title }}
+                      </template>
+                      <template slot="label" v-else-if="item.name == 'myMsg'">
+                        <i class="el-icon-bell pointer"></i>
+                        {{ item.title }}
+                      </template>
+                      <template slot="label" v-else>
+                        <img
+                          v-if="item.icon"
+                          class="imgpointer"
+                          :src="uri + item.icon"
+                        />
+                        <i v-else class="el-icon-tickets pointer"></i>
+                        <span>&nbsp;{{ item.title }}</span>
+                      </template>
+                      <lay-out
+                        :name="item.name"
+                        :bshow="item.name === editableTabsValue2"
+                      >
+                      </lay-out>
+                    </el-tab-pane>
+                  </el-tabs>
+                  <el-button
+                    size="mini"
+                    v-if="editableTabs2.length > 1"
+                    icon="el-icon-delete"
+                    circle
+                    class="clearBtn"
+                    @click="delAllTabs"
+                  ></el-button>
+                </div>
+              </el-main>
+            </el-container>
+          </el-container>
+        </template>
+      </template>
     </template>
-    <el-dialog :visible.sync="childDlg" @close="dlgRouterClose" class="bipinsaid cus-child-dlg" :width="childDlg_width" :close-on-click-modal="false" :close-on-press-escape="false">
-        <!--  @close="invokecmd({cmd:'FIND'})" -->
-        <!--弹出框头部-->
-        <span slot="title">
-            <div class="el-dialog__title" style="padding-bottom:5px">
-                <img v-if="childDlg_icon"  class="imgpointer" :src="uri+childDlg_icon"/>
-                <i v-else class="el-icon-tickets pointer" ></i>
-                {{childDlg_title}}
-            </div>
-        </span>
-        <el-scrollbar wrap-class="scrollbar-wrapper" class="dlg-content">
-            <router-view name="dlgRouter"/>
-        </el-scrollbar>
+    <el-dialog
+      :visible.sync="childDlg"
+      @close="dlgRouterClose"
+      class="bipinsaid cus-child-dlg"
+      :width="childDlg_width"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <!--  @close="invokecmd({cmd:'FIND'})" -->
+      <!--弹出框头部-->
+      <span slot="title">
+        <div class="el-dialog__title" style="padding-bottom: 5px">
+          <img
+            v-if="childDlg_icon"
+            class="imgpointer"
+            :src="uri + childDlg_icon"
+          />
+          <i v-else class="el-icon-tickets pointer"></i>
+          {{ childDlg_title }}
+        </div>
+      </span>
+      <el-scrollbar wrap-class="scrollbar-wrapper" class="dlg-content">
+        <router-view name="dlgRouter" />
+      </el-scrollbar>
     </el-dialog>
   </div>
 </template>
@@ -87,12 +124,12 @@ import LayHeader from "@/views/app/LayHeader.vue";
 import { Route, RawLocation } from "vue-router";
 import { BipTag } from "./classes/BipTag";
 import { Menu } from "@/classes/Menu";
-import { User } from '@/classes/User';
+import { User } from "@/classes/User";
 import { BaseVariable } from "@/utils/BaseICL";
 import { BIPUtils } from "@/utils/BaseUtil";
 let baseTool = BIPUtils.baseUtil;
-import { State, Action, Getter, Mutation } from 'vuex-class';
-import { LoginState } from './store/modules/login/types';
+import { State, Action, Getter, Mutation } from "vuex-class";
+import { LoginState } from "./store/modules/login/types";
 import { BIPUtil } from "@/utils/Request";
 import BipMenu from "@/components/menu/BipMenu.vue";
 @Component({
@@ -104,394 +141,471 @@ import BipMenu from "@/components/menu/BipMenu.vue";
     LayHeader,
     Analysis,
     BipMenu,
-  }
+  },
 })
 export default class App extends Vue {
-    uri:string='';
-    name: string = "app";
-    editableTabsValue2: string = "1";
-    editableTabs2: BipTag[] = [];
-    tabIndex: any = 1;
-    dialogVisible = false;
-    menu1:string = "menu menu1";
-    menu2:string = "menu menu2";
-    isLoginPage:number = -1;
-    query:any=null;
-    configT:boolean = false;//配置文件是否加载完毕
-    initOk:boolean = false;//初始化数据是否加载完毕
-    @State('login') profile!: LoginState
-    @Getter('isLogin', { namespace: 'login' }) isLogin!: boolean;
-    @Getter('menulist', { namespace: 'login' }) menusList!: Menu[] ;
-    @Getter('user', { namespace: 'login' }) user?: User;
-    @State('bipComHeight', { namespace: 'login' }) height!: number;
-    @Mutation('isLogin', { namespace:'login' }) setIsLogin: any;
-    @Mutation("user", { namespace:'login' }) setUserInfo: any;
+  uri: string = "";
+  name: string = "app";
+  editableTabsValue2: string = "1";
+  editableTabs2: BipTag[] = [];
+  tabIndex: any = 1;
+  dialogVisible = false;
+  menu1: string = "menu menu1";
+  menu2: string = "menu menu2";
+  isLoginPage: number = -1;
+  query: any = null;
+  configT: boolean = false; //配置文件是否加载完毕
+  initOk: boolean = false; //初始化数据是否加载完毕
+  @State("login") profile!: LoginState;
+  @Getter("isLogin", { namespace: "login" }) isLogin!: boolean;
+  @Getter("menulist", { namespace: "login" }) menusList!: Menu[];
+  @Getter("user", { namespace: "login" }) user?: User;
+  @State("bipComHeight", { namespace: "login" }) height!: number;
+  @Mutation("isLogin", { namespace: "login" }) setIsLogin: any;
+  @Mutation("user", { namespace: "login" }) setUserInfo: any;
 
-    @Getter('isOtherePage', { namespace: 'login' }) isOtherePage!: boolean;
-    @Mutation('isOtherePage', { namespace:'login' }) setIsOtherePage: any;
+  @Getter("isOtherePage", { namespace: "login" }) isOtherePage!: boolean;
+  @Mutation("isOtherePage", { namespace: "login" }) setIsOtherePage: any;
 
-    style:string="height:"+(this.height?this.height:'400')+"px";
-    @Provide('isNoHomeTable') isNoHomeTable:boolean = true;
-    otherPage:any=["airSuperBI","Report","ItemAnalysis"];//单独展示页面,不在UI框架内的页面
-    noLoginPage:any=["wOauthToken"];//不需要登陆展示的页面
+  style: string = "height:" + (this.height ? this.height : "400") + "px";
+  @Provide("isNoHomeTable") isNoHomeTable: boolean = true;
+  otherPage: any = ["airSuperBI", "Report", "error"]; //单独展示页面,不在UI框架内的页面
+  noLoginPage: any = ["wOauthToken", "error"]; //不需要登陆展示的页面
 
-    childDlg: boolean = false;//子路由弹出窗
-    isDlgRouter: boolean = false;//子路由弹出窗
-    childDlg_width:any = "70%";//子路由弹出窗宽度
-    childDlg_title:any = "";//子路由弹出窗标题
-    childDlg_icon:any = "";//子路由弹出窗图标
-    childDlg_objid:any = "";
-    async created(){
-        this.$bus.$on('openChildDlg',this.openChildDlg)
-        await this.$axios.get('./static/config.json').then((res:any) => { 
-            this.$axios.defaults.baseURL = res.data.ApiUrl; 
-            let url = res.data.ApiUrl;
-            if(url.lastIndexOf("/") == url.length-1){
-                url = url.substring(0,url.length-1);
-            }
-            this.uri = url+'/';
-            BaseVariable.BaseUri = url; 
-            BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
-            BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
-            BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
-            BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
-            BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
-            BaseVariable.Project_Name = res.data.Project_Name;
-            BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
-            BaseVariable.SMSURL = res.data.SMSURL;
-            BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
-            BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
-            BaseVariable.SKIN = res.data.SKIN;
-            if(BaseVariable.SKIN)
-                window.document.documentElement.setAttribute('data-theme', BaseVariable.SKIN)
-        }).catch((err:any) => {
-            console.log(err)
-            window.location.reload()
-        }) 
-        this.configT=true;
-    }
-    async mounted() {
-        await this.$axios.get('./static/config.json').then((res:any) => { 
-            this.$axios.defaults.baseURL = res.data.ApiUrl; 
-            let url = res.data.ApiUrl;
-            if(url.lastIndexOf("/") == url.length-1){
-                url = url.substring(0,url.length-1);
-            }
-            BaseVariable.BaseUri = url; 
-            BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid; 
-            BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
-            BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
-            BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
-            BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
-            BaseVariable.Project_Name = res.data.Project_Name;
-            BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
-            BaseVariable.SMSURL = res.data.SMSURL;
-            BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
-            BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
-            BaseVariable.SKIN = res.data.SKIN;
-            if(BaseVariable.SKIN)
-                window.document.documentElement.setAttribute('data-theme', BaseVariable.SKIN)
-        }).catch((err:any) => {
-            console.log(err)
-            window.location.reload()
-        })
-        if(this.height){
-            this.style = "height:"+(this.height)+"px";
+  childDlg: boolean = false; //子路由弹出窗
+  isDlgRouter: boolean = false; //子路由弹出窗
+  childDlg_width: any = "70%"; //子路由弹出窗宽度
+  childDlg_title: any = ""; //子路由弹出窗标题
+  childDlg_icon: any = ""; //子路由弹出窗图标
+  childDlg_objid: any = "";
+  cookieKey: string = "dev.sso.login.account.operation.auth";
+  async created() {
+    this.$bus.$on("openChildDlg", this.openChildDlg);
+    await this.$axios
+      .get("./static/config.json")
+      .then((res: any) => {
+        this.$axios.defaults.baseURL = res.data.ApiUrl;
+        let url = res.data.ApiUrl;
+        if (url.lastIndexOf("/") == url.length - 1) {
+          url = url.substring(0, url.length - 1);
         }
-        if(this.isLogin){
-            this.editableTabs2 = [];
-            if(this.editableTabs2.length==0){
-                this.addIndex();
-            }
-        }else{
-            this.isLoginPage = -1;
-            if(this.$route.name == null && this.$route.path !='/'){
-                this.$router.push({
-                    path:'/wlogin',
-                    name:'wlogin',
-                })
-                return;
-            }
-            if (this.$route.query) {
-                this.query = this.$route.query;
-                if(this.query.isLoginPage){
-                    this.isLoginPage = parseInt(this.query.isLoginPage+'');
-                }
-                if(BaseVariable.ITEMTYPE == 'bip-flexible'){
-                    this.isLoginPage = 0;
-                }
-                if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
-                    this.isLoginPage = 2;
-                }
-            }
+        this.uri = url + "/";
+        BaseVariable.BaseUri = url;
+        BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid;
+        BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
+        BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
+        BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
+        BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
+        BaseVariable.Project_Name = res.data.Project_Name;
+        BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
+        BaseVariable.SMSURL = res.data.SMSURL;
+        BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
+        BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
+        BaseVariable.SKIN = res.data.SKIN;
+        BaseVariable.fileOnlinePreviewUrl = res.data.fileOnlinePreviewUrl;
+        BaseVariable.CookieKey = res.data.CookieKey;
+        this.cookieKey = BaseVariable.CookieKey;
+        if (BaseVariable.SKIN)
+          window.document.documentElement.setAttribute(
+            "data-theme",
+            BaseVariable.SKIN
+          );
+      })
+      .catch((err: any) => {
+        console.log(err);
+        window.location.reload();
+      });
+    this.configT = true;
+  }
+  async mounted() {
+    await this.$axios
+      .get("./static/config.json")
+      .then((res: any) => {
+        this.$axios.defaults.baseURL = res.data.ApiUrl;
+        let url = res.data.ApiUrl;
+        if (url.lastIndexOf("/") == url.length - 1) {
+          url = url.substring(0, url.length - 1);
         }
+        BaseVariable.BaseUri = url;
+        BaseVariable.COMM_FLD_VALUE_DBID = res.data.dbid;
+        BaseVariable.MQTT_SERVICE = res.data.MQTT_SERVICE;
+        BaseVariable.MQTT_USERNAME = res.data.MQTT_USERNAME;
+        BaseVariable.MQTT_PASSWORD = res.data.MQTT_PASSWORD;
+        BaseVariable.MQTT_HOST = res.data.MQTT_HOST;
+        BaseVariable.Project_Name = res.data.Project_Name;
+        BaseVariable.COPYRIGHT = res.data.COPYRIGHT;
+        BaseVariable.SMSURL = res.data.SMSURL;
+        BaseVariable.ITEMTYPE = res.data.ITEMTYPE;
+        BaseVariable.UniteLoginUrl = res.data.UniteLoginUrl;
+        BaseVariable.SKIN = res.data.SKIN;
+        BaseVariable.fileOnlinePreviewUrl = res.data.fileOnlinePreviewUrl;
+        BaseVariable.CookieKey = res.data.CookieKey;
+        this.cookieKey = BaseVariable.CookieKey;
+        if (BaseVariable.SKIN)
+          window.document.documentElement.setAttribute(
+            "data-theme",
+            BaseVariable.SKIN
+          );
+      })
+      .catch((err: any) => {
+        console.log(err);
+        window.location.reload();
+      });
+    if (this.height) {
+      this.style = "height:" + this.height + "px";
     }
-    openChildDlg(param:any){
-        this.$router.push(param.router)
-        this.isDlgRouter = true;
-        this.childDlg_width =param.childDlg_width;
-        this.childDlg_icon =param.childDlg_icon;
-        this.childDlg_title = param.childDlg_title;
-        this.childDlg_objid = param.obj_id;
-        setTimeout(() => {
-            this.childDlg = true;
-            // this.stopF5Refresh();
-        }, 200);
-    }
-    dlgRouterClose(reload:any = false){
-        if(this.isDlgRouter){
-            this.$router.go(-1);
-            setTimeout(() => {
-                this.$bus.$emit('totalHChange')
-                let v = {value:1,obj_id:this.childDlg_objid};
-                this.$bus.$emit('handleCurrentChange',v)
-                this.isDlgRouter = false;
-                this.childDlg = false;
-                if(reload){
-                    window.location.reload()
-                }
-            }, 500);
-            return false;
-        }else if(reload){
-            window.location.reload()
-        }
-    }
-    addIndex() {
-        let tag = new BipTag("index", "首页", "/", false,'');
-        this.editableTabs2.push(tag);
-        this.editableTabsValue2 = "index";
-    }
-    removeTab(targetName: any) {
-        let tabs = this.editableTabs2;
-        let activeName = this.editableTabsValue2;
-        if (activeName === targetName) {
-            tabs.forEach((tab, index) => {
-                if (tab.name === targetName) {
-                    let nextTab = tabs[index + 1] || tabs[index - 1];
-                    if (nextTab) {
-                            activeName = nextTab.name;
-                            this.$router.push({ path: nextTab.path });
-                    }
-                }
-            });
-        }
-        this.editableTabsValue2 = activeName;
-        this.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
-    }
-    delAllTabs(){
-        this.editableTabs2 = [];
+    if (this.isLogin) {
+      this.editableTabs2 = [];
+      if (this.editableTabs2.length == 0) {
         this.addIndex();
-    }
-    async loginOut(){
-        if(this.user!=null)
-            await BIPUtil.ServApi.loginOut(this.user);
-        this.editableTabs2=[];
-        this.setIsLogin(false);
-        sessionStorage.clear(); 
-        this.isLoginPage = -1
-        this.initOk = false;
-    } 
-    gotoIndex(){
-        this.setIsOtherePage(false)
+      }
+    } else {
+      this.isLoginPage = -1;
+      if (this.$route.name == null && this.$route.path != "/") {
         this.$router.push({
-            path:'/',
-            name:"Home",
-        })
+          path: "/wlogin",
+          name: "wlogin",
+        });
+        return;
+      }
+      if (this.$route.query) {
+        this.query = this.$route.query;
+        if (this.query.isLoginPage) {
+          this.isLoginPage = parseInt(this.query.isLoginPage + "");
+        }
+        if (BaseVariable.ITEMTYPE == "bip-flexible") {
+          this.isLoginPage = 0;
+        }
+        if (BaseVariable.ITEMTYPE == "bip-erp-bi") {
+          this.isLoginPage = 2;
+        }
+      }
     }
-    @Watch('isLogin')
-    logined(){ 
-        // console.log('islogin change');
-        if(this.isLogin){ 
-            // if(this.editableTabs2.length==0)
-            //     this.addIndex();
-        }else{
-            this.initOk = false;
-            this.editableTabs2=[];
-            if (this.$route.query) {
-                this.query = this.$route.query;
-                if(this.query.isLoginPage){
-                    this.isLoginPage = parseInt(this.query.isLoginPage+'');
-                }
-                if(BaseVariable.ITEMTYPE == 'bip-flexible'){
-                    this.isLoginPage = 0;
-                }
-                if(BaseVariable.ITEMTYPE == 'bip-erp-bi'){
-                    this.isLoginPage = 2;
-                }
-                if(this.isLoginPage == -1){
-                    this.$router.push({
-                        path:'/wlogin',
-                        name:'wlogin',
-                    })
-                }
-            } else{
-                this.$router.push({
-                    path:'/wlogin',
-                    name:'wlogin',
-                })
-            }
+  }
+  openChildDlg(param: any) {
+    this.$router.push(param.router);
+    this.isDlgRouter = true;
+    this.childDlg_width = param.childDlg_width;
+    this.childDlg_icon = param.childDlg_icon;
+    this.childDlg_title = param.childDlg_title;
+    this.childDlg_objid = param.obj_id;
+    setTimeout(() => {
+      this.childDlg = true;
+      // this.stopF5Refresh();
+    }, 200);
+  }
+  dlgRouterClose(reload: any = false) {
+    if (this.isDlgRouter) {
+      this.$router.go(-1);
+      setTimeout(() => {
+        this.$bus.$emit("totalHChange");
+        let v = { value: 1, obj_id: this.childDlg_objid };
+        this.$bus.$emit("handleCurrentChange", v);
+        this.isDlgRouter = false;
+        this.childDlg = false;
+        if (reload) {
+          window.location.reload();
         }
+      }, 500);
+      return false;
+    } else if (reload) {
+      window.location.reload();
     }
-    @Watch("$route")
-    routerChange(to: Route, from: Route) {
-        if(this.noLoginPage.indexOf(to.name) !=-1 || this.isDlgRouter || to.fullPath.indexOf('/layout?undefined') !=-1){
-            return;
+  }
+  addIndex() {
+    let tag = new BipTag("index", "首页", "/", false, "");
+    this.editableTabs2.push(tag);
+    this.editableTabsValue2 = "index";
+  }
+  removeTab(targetName: any) {
+    let tabs = this.editableTabs2;
+    let activeName = this.editableTabsValue2;
+    if (activeName === targetName) {
+      tabs.forEach((tab, index) => {
+        if (tab.name === targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1];
+          if (nextTab) {
+            activeName = nextTab.name;
+            this.$router.push({ path: nextTab.path });
+          }
         }
-        if(!this.isLogin && to.name != "wlogin"){
-            this.$router.push({
-                path:'/wlogin',
-                name:'wlogin',
-            })
-            return;
+      });
+    }
+    this.editableTabsValue2 = activeName;
+    this.editableTabs2 = tabs.filter((tab) => tab.name !== targetName);
+  }
+  delAllTabs() {
+    this.editableTabs2 = [];
+    this.addIndex();
+  }
+  async loginOut() {
+    if (BaseVariable.ITEMTYPE == "JINAN-bip-amb") {
+        let auth = Vue.$axios.defaults.headers.common["Authorization"];
+        if (auth) {
+          this.$delete(Vue.$axios.defaults.headers.common, "Authorization");
         }
-        this.initOk = true;
-        if(this.$route.name == "registered"){
-            this.isLoginPage = 1;
-            return;
+      let cookieValue = this.getCookie2();
+      console.log("获取到本地cookie:", cookieValue);
+      // if (!cookieValue) {
+      //   cookieValue =
+      //     "eyJhbGciOiJIUzI1NiJ9.eyJ1bmlvbklkIjoiQkluM0U4YlRScGxYUUNSSGlTWWxaQmdpRWlFIiwiaW5zdGFuY2VJZCI6MiwibG9naW5OYW1lIjoiMTU2NTI1Mjc4OTQiLCJ0ZW5hbnRJZCI6MSwiaWQiOjEzMDQ1NzU3OTc3MTc0NzA0NDQsImxvZ2luU291cmNlIjoiMSIsImp0aSI6ImJjZGZiMzcyLTUyYWUtNDBkNC1hOTE0LWEwZjI1NGFmOWQ4YSIsIm5iZiI6MTY0OTQ3MDkzNSwiZXhwIjoxNjQ5NTU3MzM1fQ.Nfzp1PP62-eNQzYTWldn7yyWeF-bjXfmyYORLP7SdyM";
+      //   console.log("测试手工cookie:", cookieValue);
+      // }
+      // if (cookieValue) {
+        //
+        let data = { token: cookieValue, kid: "logout" };
+        console.log(111);
+        let res: any = await Vue.$axios.get("/gaojinOauthLogin", {
+          params: data,
+        });
+        console.log(res);
+        let datav = res.data;
+        if (datav.id == 1) {
+          this.$notify.error({
+            title: "系统登出",
+            type: "error",
+            message: "无法链接到注册中心...",
+            offset: 40,
+          });
+          return;
         }
-        if (to.name === "wlogin") {
-            this.isLoginPage = -1;
-            this.setIsLogin(false);
-            return;
+      // }
+    }
+    if (this.user != null) await BIPUtil.ServApi.loginOut(this.user);
+    this.editableTabs2 = [];
+    this.setIsLogin(false);
+    sessionStorage.clear();
+    this.isLoginPage = -1;
+    this.initOk = false;
+  }
+  gotoIndex() {
+    this.setIsOtherePage(false);
+    this.$router.push({
+      path: "/",
+      name: "Home",
+    });
+  }
+  @Watch("isLogin")
+  logined() {
+    // console.log('islogin change');
+    if (this.isLogin) {
+      // if(this.editableTabs2.length==0)
+      //     this.addIndex();
+    } else {
+      this.initOk = false;
+      this.editableTabs2 = [];
+      if (this.$route.query) {
+        this.query = this.$route.query;
+        if (this.query.isLoginPage) {
+          this.isLoginPage = parseInt(this.query.isLoginPage + "");
         }
-        if (to.name === 'index' || to.name === 'Home') {
-            this.$bus.$emit('componentsizechange','')
-            this.editableTabsValue2 = 'index';
-            if(this.editableTabs2.length==0)
-                this.addIndex();
+        if (BaseVariable.ITEMTYPE == "bip-flexible") {
+          this.isLoginPage = 0;
         }
-        if (to.name === 'layout') {
-            if (this.menusList.length > 0) {
-                let me:any = baseTool.findMenu(to.query.pmenuid+''); 
-                let menu:any = me;
-                if(to.query.menuName){
-                    menu.menuName = to.query.menuName;
-                }
-                let currTag = this.editableTabs2.filter(
-                tab => 
-                    tab.name == menu.menuId
-                )[0];
-                // console.log(currTag)
-                if (!currTag) {
-                    let strName = menu.menuName;//.substring(0,6)
-                    let tag = new BipTag(menu.menuId, strName, to.fullPath, true, menu.menuIcon, menu.menuName);
-                    this.editableTabs2.push(tag);
-                    this.editableTabsValue2 = menu.menuId;
-                } else {
-                    this.editableTabsValue2 = menu.menuId;
-                }
-            }
-        }else if(to.name === 'myTask' ){
-            let currTag = this.editableTabs2.filter(
-            tab => 
-                tab.name == 'myTask'
-            )[0]; 
-            if (!currTag) {
-                let tag = new BipTag('myTask', '我的任务', to.fullPath, true,'');
-                this.editableTabs2.push(tag);
-                this.editableTabsValue2 = 'myTask';
-            } else {
-                this.editableTabsValue2 = 'myTask';
-            }
-        }else if(to.name === 'myMsg' ){
-            let currTag = this.editableTabs2.filter(
-            tab => 
-                tab.name == 'myMsg'
-            )[0]; 
-            if (!currTag) {
-                let tag = new BipTag('myMsg', '我的消息', to.fullPath, true,'');
-                this.editableTabs2.push(tag);
-                this.editableTabsValue2 = 'myMsg';
-            } else {
-                this.editableTabsValue2 = 'myMsg';
-            }
-        }else{
-            if(this.otherPage.indexOf(to.name) !=-1){//其他页面不在UI框架内的页面
-                this.editableTabs2 = [];
-                this.setIsOtherePage(true)
-                return;
-            }
-            if(to.fullPath != '/'){
-                if (this.menusList.length > 0) { 
-                    let me:any = baseTool.findMenu(to.query.pmenuid+''); 
-                    // console.log(me)
-                    let menu:Menu = me;
-                    if(!me)
-                        return;
-                    let currTag = this.editableTabs2.filter(
-                    tab => 
-                        tab.name == menu.menuId
-                    )[0];
-                    // console.log(currTag)
-                    if (!currTag) {
-                        let tag = new BipTag(menu.menuId, menu.menuName, to.fullPath, true, menu.menuIcon);
-                        this.editableTabs2.push(tag);
-                        this.editableTabsValue2 = menu.menuId;
-                    } else {
-                        this.editableTabsValue2 = menu.menuId;
-                    }
-                }
-            }
+        if (BaseVariable.ITEMTYPE == "bip-erp-bi") {
+          this.isLoginPage = 2;
         }
+        if (this.isLoginPage == -1) {
+          this.$router.push({
+            path: "/wlogin",
+            name: "wlogin",
+          });
+        }
+      } else {
+        this.$router.push({
+          path: "/wlogin",
+          name: "wlogin",
+        });
+      }
+    }
+  }
+  @Watch("$route")
+  routerChange(to: Route, from: Route) {
+    this.initOk = true;
+    if(this.isDlgRouter || to.fullPath.indexOf("/layout?undefined") != -1){
+        return;
+    }
+    if (this.noLoginPage.indexOf(to.name) != -1) {
+        if (this.otherPage.indexOf(to.name) != -1) {
+            //其他页面不在UI框架内的页面
+            this.editableTabs2 = [];
+            this.setIsOtherePage(true);
+        }
+        return;
+    }
+    this.setIsOtherePage(false);
+    if (!this.isLogin && to.name != "wlogin") {
+      this.$router.push({
+        path: "/wlogin",
+        name: "wlogin",
+      });
+      return;
+    }
+    if (this.$route.name == "registered") {
+      this.isLoginPage = 1;
+      return;
     }
 
-    @Watch("editableTabsValue2")
-    currTagChange() {
-        let currTag = this.editableTabs2.filter(tab => tab.name === this.editableTabsValue2)[0];
-        if(this.$route.path !== currTag.path){
-            this.$router.push({ path: currTag.path });
-        }
+    if (to.name === "wlogin") {
+      this.isLoginPage = -1;
+      this.setIsLogin(false);
+      return;
     }
+    if (to.name === "index" || to.name === "Home") {
+      this.$bus.$emit("componentsizechange", "");
+      this.editableTabsValue2 = "index";
+      if (this.editableTabs2.length == 0) this.addIndex();
+    }
+    if (to.name === "layout") {
+      if (this.menusList.length > 0) {
+        let me: any = baseTool.findMenu(to.query.pmenuid + "");
+        let menu: any = me;
+        if (to.query.menuName) {
+          menu.menuName = to.query.menuName;
+        }
+        let currTag = this.editableTabs2.filter(
+          (tab) => tab.name == menu.menuId
+        )[0];
+        // console.log(currTag)
+        if (!currTag) {
+          let strName = menu.menuName; //.substring(0,6)
+          let tag = new BipTag(
+            menu.menuId,
+            strName,
+            to.fullPath,
+            true,
+            menu.menuIcon,
+            menu.menuName
+          );
+          this.editableTabs2.push(tag);
+          this.editableTabsValue2 = menu.menuId;
+        } else {
+          this.editableTabsValue2 = menu.menuId;
+        }
+      }
+    } else if (to.name === "myTask") {
+      let currTag = this.editableTabs2.filter((tab) => tab.name == "myTask")[0];
+      if (!currTag) {
+        let tag = new BipTag("myTask", "我的任务", to.fullPath, true, "");
+        this.editableTabs2.push(tag);
+        this.editableTabsValue2 = "myTask";
+      } else {
+        this.editableTabsValue2 = "myTask";
+      }
+    } else if (to.name === "myMsg") {
+      let currTag = this.editableTabs2.filter((tab) => tab.name == "myMsg")[0];
+      if (!currTag) {
+        let tag = new BipTag("myMsg", "我的消息", to.fullPath, true, "");
+        this.editableTabs2.push(tag);
+        this.editableTabsValue2 = "myMsg";
+      } else {
+        this.editableTabsValue2 = "myMsg";
+      }
+    } else {
+      if (this.otherPage.indexOf(to.name) != -1) {
+        //其他页面不在UI框架内的页面
+        this.editableTabs2 = [];
+        this.setIsOtherePage(true);
+        return;
+      }
+      if (to.fullPath != "/") {
+        if (this.menusList.length > 0) {
+          let me: any = baseTool.findMenu(to.query.pmenuid + "");
+          // console.log(me)
+          let menu: Menu = me;
+          if (!me) return;
+          let currTag = this.editableTabs2.filter(
+            (tab) => tab.name == menu.menuId
+          )[0];
+          // console.log(currTag)
+          if (!currTag) {
+            let tag = new BipTag(
+              menu.menuId,
+              menu.menuName,
+              to.fullPath,
+              true,
+              menu.menuIcon
+            );
+            this.editableTabs2.push(tag);
+            this.editableTabsValue2 = menu.menuId;
+          } else {
+            this.editableTabsValue2 = menu.menuId;
+          }
+        }
+      }
+    }
+  }
 
-    @Watch('height')
-    heightChange(){
-        this.style= "height:"+this.height+"px";
-        console.log(this.style)
+  @Watch("editableTabsValue2")
+  currTagChange() {
+    let currTag = this.editableTabs2.filter(
+      (tab) => tab.name === this.editableTabsValue2
+    )[0];
+    if (this.$route.path !== currTag.path) {
+      this.$router.push({ path: currTag.path });
     }
-    //拦截F5刷新
-    stopF5Refresh(){
-        let _this = this;
-        document.onkeydown = function(e:any){
-            var envt = window.event || e;
-            if(envt.preventDefault){
-                _this.dlgRouterClose(true);
-                envt.preventDefault();
-            }else{
-                _this.dlgRouterClose(true);
-                envt.keyCode = 0;
-                envt.returnValue = false;
-            }
-            return false;
-        }
-        // window.addEventListener('beforeunload', e => this.wkeydown(e));
-        // window.addEventListener('beforeunload', (event) => {
-        //     _this.dlgRouterClose(true);
-        //     event.preventDefault();
-        //     event.returnValue  = null ;
-        // });
-    }
+  }
+
+  getCookie2() {
+    return this.getCookie(this.cookieKey);
+  }
+
+  getCookie(name: string) {
+    var arr,
+      reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+    if ((arr = document.cookie.match(reg))) return arr[2];
+    else return null;
+  }
+
+  @Watch("height")
+  heightChange() {
+    this.style = "height:" + this.height + "px";
+    console.log(this.style);
+  }
+  //拦截F5刷新
+  stopF5Refresh() {
+    let _this = this;
+    document.onkeydown = function (e: any) {
+      var envt = window.event || e;
+      if (envt.preventDefault) {
+        _this.dlgRouterClose(true);
+        envt.preventDefault();
+      } else {
+        _this.dlgRouterClose(true);
+        envt.keyCode = 0;
+        envt.returnValue = false;
+      }
+      return false;
+    };
+    // window.addEventListener('beforeunload', e => this.wkeydown(e));
+    // window.addEventListener('beforeunload', (event) => {
+    //     _this.dlgRouterClose(true);
+    //     event.preventDefault();
+    //     event.returnValue  = null ;
+    // });
+  }
 }
 </script>
 <style scoped lang="scss">
-.yw-sys{
-    position: absolute;
-    right: 0.2rem;
-    top: 0;
-    height: .625rem;
-    line-height: .625rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.25rem;
-    z-index: 999;
+.yw-sys {
+  position: absolute;
+  right: 0.2rem;
+  top: 0;
+  height: 0.625rem;
+  line-height: 0.625rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.25rem;
+  z-index: 999;
 }
-.my-el-header{
-    @include head_all_style();
+.my-el-header {
+  @include head_all_style();
 }
-#app{
-    @include overall_bg_color();
+#app {
+  @include overall_bg_color();
 }
-.imgpointer{
-    width: 14px;
-    height: 14px;
-    transform: translate(-15%, 15%);
+.imgpointer {
+  width: 14px;
+  height: 14px;
+  transform: translate(-15%, 15%);
 }
 </style>

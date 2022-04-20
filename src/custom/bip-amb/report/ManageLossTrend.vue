@@ -41,7 +41,7 @@ let tools = BIPUtil.ServApi;
 /**
  * 经营趋势分析
  */
-export default class ProfitLossFunction extends Vue {
+export default class ManageLossTrend extends Vue {
     @State('bipComHeight', { namespace: 'login' }) height!: number;
     amb_purposes_id:string = "";//核算目的id
     amb_group_ids:any =[];//核算阿米巴key
@@ -158,11 +158,19 @@ export default class ProfitLossFunction extends Vue {
     } */
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")       
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")       
+        }else{
+            this.fm_date = "";
+        }
     }
     //期间发生变化
     to_dateChange(value:any){
-        this.to_date = moment(value).format("YYYY-MM-DD")  
+        if(value){
+            this.to_date = moment(value).format("YYYY-MM-DD")  
+        }else{
+            this.to_date = "";
+        }
     }
     //阿米巴发生变化
     treeChange(checkData:any){

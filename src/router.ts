@@ -21,6 +21,11 @@ export default new Router({
       component :()=> import('./views/Index.vue')
     },
     {
+      path: '/error',
+      name: 'error',
+      component :()=> import('./views/error/ErrorPage.vue')
+    },
+    {
       path: '/layout',
       name: 'layout',
       // route level code-splitting
@@ -242,6 +247,12 @@ export default new Router({
         component: () => import('./custom/bip-amb/report/MoreYieldTargetAnalysis.vue')
       },
       {
+        //阿米巴  数据看板
+        path: '/AmbDataBoard',
+        name: 'AmbDataBoard',
+        component: () => import('./custom/bip-amb/report/AmbDataBoard.vue')
+      },
+      {
           //阿米巴会计期间
           path: '/AccountingPeriod',
           name: 'AccountingPeriod',
@@ -314,6 +325,12 @@ export default new Router({
         component :()=> import('./custom/agv/AgvOperation.vue')
       },
       {
+        //巡检机器机器人嗅觉芯片
+        path: '/AgvDataList',
+        name: 'AgvDataList',
+        component :()=> import('./custom/agv/AgvDataList.vue')
+      },
+      {
           //CRM 工作台
           path:'/workBench',
           name: 'workBench',
@@ -371,6 +388,36 @@ export default new Router({
           default: () => import('./custom/bip-208/FileProcess.vue'),
           dlgRouter:() => import('./custom/bip-208/FileProcess.vue'),
         },
+      },
+      //养畜宝
+      {
+        path:'/CattleAnalyze',
+        name:'CattleAnalyze',
+        component :() => import('./custom/cattle_breed/pages/CattleAnalyze.vue')
+      },
+      //antv x6 Test
+      {
+        path:'/x6_test',
+        name:'x6_test',
+        component :() => import('./custom/basicProject/x6_test.vue')
+      },
+      //财务发票识别
+      {
+        path:'/InvoiceUpload',
+        name:'InvoiceUpload',
+        component:() => import('./custom/finance_share/InvoiceUpload.vue')
+      },
+      //导游/培训 资讯页面
+      {
+        path:'/RealTimeInfo',
+        name:'RealTimeInfo',
+        component:() => import('./custom/registration/RealTimeInfo.vue')
+      },
+      //导游/培训 团体注册
+      {
+        path:'/GroupRegistration',
+        name:'GroupRegistration',
+        component:() => import('./custom/registration/GroupRegistration.vue')
       }
   ]
 })

@@ -338,9 +338,13 @@ export default class DataModeling  extends Vue {
     }
     //期间发生变化
     period_dateChange(value:any){
-        this.period_date = moment(value).format("YYYY-MM-DD")
-        if(this.period_date !=null && this.amb_purposes_id)
-            this.initData();
+        if(value){
+            this.period_date = moment(value).format("YYYY-MM-DD")
+            if(this.period_date !=null && this.amb_purposes_id)
+                this.initData();
+        }else{
+            this.period_date = "";
+        }
     } 
     
     //分页信息变化

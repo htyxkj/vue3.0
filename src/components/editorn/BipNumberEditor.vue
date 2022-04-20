@@ -16,11 +16,11 @@
         @focus="focus"
           :style="cell.desc ? 'width: calc(100% - 29px);' : 'width:100%'" :disabled="(cell.attr & 0x40) > 0"
           @change="dataChange" :precision="ccPoint" controls-position="right">
-          <el-popover  slot="append" placement="top-end" trigger="click">
+          <el-popover  slot="append" placement="top-end" trigger="click" :value="popover_show">
             <div class="calculator" @click="stopBubble($event)">
               <Calculator @valueChange="valueChange" :value="model1"></Calculator>
             </div>
-            <el-button  slot="reference" icon="iconfont icon-bip-calculator" :disabled="(cell.attr & 0x40) > 0" @click="calculatorClick($event)":id="cell.id"></el-button>
+            <el-button  slot="reference" icon="iconfont icon-bip-calculator" :disabled="(cell.attr & 0x40) > 0" @click="calculatorClick($event)" :id="cell.id"></el-button>
           </el-popover>
         </el-input>
         <template v-if="cell.desc">
@@ -82,6 +82,7 @@ export default class BipNumberEditor extends Vue {
   span: number = 6;
   showCalculator: boolean = false;
   datachangeBusID: number = 0;
+  popover_show:boolean = false;
   mounted() {
     if (this.model) {
       this.model1 = parseFloat(this.model + "");
@@ -137,9 +138,9 @@ export default class BipNumberEditor extends Vue {
         }
         if (this.cell.chkRule) {
           chkr = false;
-          let rr = this.cell.chkRule;
-          let rules = rr.split(";");
+          let rules =  this.cell.chkRule.split(";");
           for (let k = 0; k < rules.length; k++) {
+            let rr = rules[k]
             if (rr.indexOf("~") > 0) {
               let vr: Array<any> = rr.split("~");
               let value = parseFloat(this.model1);
@@ -147,9 +148,15 @@ export default class BipNumberEditor extends Vue {
                 value = 0;
               }
               if (vr[0] != "") {
+                let _min = vr[0]
                 let min = parseFloat(vr[0]);
                 if (isNaN(min)) {
-                  min = 0;
+                  if(_min.indexOf("[") !=-1){
+                    _min = _min.substring(_min.indexOf("[")+1,_min.indexOf("]"));
+                    min = this.cds.currRecord.data[_min];
+                  }else{
+                    min = 0;
+                  }
                 }
                 if (value < min) {
                   chkr = false;
@@ -165,9 +172,15 @@ export default class BipNumberEditor extends Vue {
               }
 
               if (vr[1] != "") {
+                let _max = vr[1]
                 let max = parseFloat(vr[1]);
                 if (isNaN(max)) {
-                  max = 0;
+                  if(_max.indexOf("[") != -1){
+                    _max = _max.substring(_max.indexOf("[")+1,_max.indexOf("]"));
+                    max = this.cds.currRecord.data[_max];
+                  }else{
+                    max = 0;
+                  }
                 }
                 if (value > max) {
                   this.model1 = this.model;
@@ -233,8 +246,12 @@ export default class BipNumberEditor extends Vue {
     }
   }
   valueChange(val: number) {
+    this.popover_show = true;
     this.model1 = val;
     this.dataChange(val);
+    setTimeout(() => {
+      this.popover_show = false;
+    }, 200);
   }
 
   beforeDestroy() {

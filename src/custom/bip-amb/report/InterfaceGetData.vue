@@ -188,6 +188,8 @@ export default class InterfaceGetData extends Vue {
             this.$notify.error("没有选择日期");
             return;
         }
+        console.log(this.date);
+        
         let ids = [];
         for(var i=0;i<this.selData.length;i++){
             let d = this.selData[i];
@@ -201,7 +203,7 @@ export default class InterfaceGetData extends Vue {
         if(this.user){
             ClientID = this.user.deptInfo.cmcCode
             let prarm = {
-                "date":this.date,//时间
+                "date":moment(this.date).format("YYYY-MM-DD"),//时间
                 "ids":ids, //接口ID
                 "ClientID":ClientID,
                 "userId":this.user.userCode,

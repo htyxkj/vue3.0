@@ -406,11 +406,19 @@ export default class MonthGoalAchievementTrend extends Vue {
     } */
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM")       
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM")       
+        }else{
+            this.fm_date = "";
+        }
     }
     //期间发生变化
     to_dateChange(value:any){
-        this.to_date = moment(value).format("YYYY-MM")  
+        if(value){
+            this.to_date = moment(value).format("YYYY-MM")  
+        }else{
+            this.to_date = "";
+        }
     }
     //阿米巴发生变化
     treeChange(checkData:any){

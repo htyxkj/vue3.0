@@ -1,0 +1,313 @@
+{
+	"cells": [
+		{
+			"shape": "dag-edge",
+			"attrs": {
+				"line": {
+					"strokeDasharray": ""
+				}
+			},
+			"id": "2b3f3096-c79f-4f4a-9e78-0b8704ae3d6d",
+			"zIndex": -1,
+			"source": {
+				"cell": "ab916afa-b02f-476f-8e83-f0f5a6497888",
+				"port": "out-1648111865545"
+			},
+			"target": {
+				"cell": "d921afe7-8f1a-40e9-82a2-a8f0d8b870b0",
+				"port": "in-1648111869170"
+			}
+		},
+		{
+			"position": {
+				"x": 660,
+				"y": 150
+			},
+			"size": {
+				"width": 180,
+				"height": 40
+			},
+			"shape": "dag-node",
+			"component": {
+				"template": "<database />",
+				"components": {
+					"database": {
+						"name": "database",
+						"inject": {
+							"getGraph": {
+								"from": "getGraph"
+							},
+							"getNode": {
+								"from": "getNode"
+							}
+						},
+						"staticRenderFns": [],
+						"_compiled": true,
+						"_scopeId": "data-v-7099ceb4",
+						"beforeCreate": [
+							null
+						],
+						"beforeDestroy": [
+							null
+						],
+						"__file": "src/components/x6/nodeTheme/database.vue",
+						"_Ctor": {}
+					}
+				}
+			},
+			"ports": {
+				"groups": {
+					"top": {
+						"position": "top",
+						"attrs": {
+							"circle": {
+								"r": 4,
+								"magnet": true,
+								"stroke": "#C2C8D5",
+								"strokeWidth": 1,
+								"fill": "#fff"
+							}
+						}
+					},
+					"bottom": {
+						"position": "bottom",
+						"attrs": {
+							"circle": {
+								"r": 4,
+								"magnet": true,
+								"stroke": "#C2C8D5",
+								"strokeWidth": 1,
+								"fill": "#fff"
+							}
+						}
+					}
+				},
+				"items": [
+					{
+						"id": "in-1648111865545",
+						"group": "top"
+					},
+					{
+						"id": "out-1648111865545",
+						"group": "bottom"
+					}
+				]
+			},
+			"id": "ab916afa-b02f-476f-8e83-f0f5a6497888",
+			"data": {
+				"type": "database",
+				"label": "数据库",
+				"name": "mySql",
+				"data": [
+					{
+						"label": "数据库类型",
+						"value": "mysql"
+					},
+					{
+						"label": "配置1",
+						"value": "aaa"
+					},
+					{
+						"label": "配置2",
+						"value": "bbb"
+					}
+				]
+			},
+			"zIndex": 1
+		},
+		{
+			"position": {
+				"x": 690,
+				"y": 290
+			},
+			"size": {
+				"width": 180,
+				"height": 40
+			},
+			"shape": "dag-condition",
+			"component": {
+				"template": "<condition />",
+				"components": {
+					"condition": {
+						"name": "condition",
+						"inject": {
+							"getGraph": {
+								"from": "getGraph"
+							},
+							"getNode": {
+								"from": "getNode"
+							}
+						},
+						"staticRenderFns": [],
+						"_compiled": true,
+						"_scopeId": "data-v-4660de32",
+						"beforeCreate": [
+							null
+						],
+						"beforeDestroy": [
+							null
+						],
+						"__file": "src/components/x6/nodeTheme/condition.vue",
+						"_Ctor": {}
+					}
+				}
+			},
+			"ports": {
+				"groups": {
+					"top": {
+						"position": "top",
+						"attrs": {
+							"circle": {
+								"r": 4,
+								"magnet": true,
+								"stroke": "#C2C8D5",
+								"strokeWidth": 1,
+								"fill": "#fff"
+							}
+						}
+					},
+					"bottom": {
+						"position": "bottom",
+						"attrs": {
+							"circle": {
+								"r": 4,
+								"magnet": true,
+								"stroke": "#C2C8D5",
+								"strokeWidth": 1,
+								"fill": "#fff"
+							}
+						}
+					}
+				},
+				"items": [
+					{
+						"id": "in-1648111869170",
+						"group": "top"
+					},
+					{
+						"id": "out-1648111869170",
+						"group": "bottom"
+					},
+					{
+						"id": "out-1648111869170-2",
+						"group": "bottom"
+					}
+				]
+			},
+			"id": "d921afe7-8f1a-40e9-82a2-a8f0d8b870b0",
+			"data": {
+				"type": "condition",
+				"label": "条件",
+				"name": "条件",
+				"data": [
+					{
+						"label": "条件配置1",
+						"value": "333"
+					},
+					{
+						"label": "条件配置1",
+						"value": "333"
+					},
+					{
+						"label": "条件配置1",
+						"value": "3333"
+					}
+				]
+			},
+			"zIndex": 2
+		},
+		{
+			"position": {
+				"x": 820,
+				"y": 400
+			},
+			"size": {
+				"width": 180,
+				"height": 40
+			},
+			"shape": "dag-output",
+			"component": {
+				"template": "<onlyout />",
+				"components": {
+					"onlyout": {
+						"name": "onlyOut",
+						"inject": {
+							"getGraph": {
+								"from": "getGraph"
+							},
+							"getNode": {
+								"from": "getNode"
+							}
+						},
+						"staticRenderFns": [],
+						"_compiled": true,
+						"_scopeId": "data-v-08638159",
+						"beforeCreate": [
+							null
+						],
+						"beforeDestroy": [
+							null
+						],
+						"__file": "src/components/x6/nodeTheme/onlyOut.vue",
+						"_Ctor": {}
+					}
+				}
+			},
+			"ports": {
+				"groups": {
+					"top": {
+						"position": "top",
+						"attrs": {
+							"circle": {
+								"r": 4,
+								"magnet": true,
+								"stroke": "#C2C8D5",
+								"strokeWidth": 1,
+								"fill": "#fff"
+							}
+						}
+					},
+					"bottom": {
+						"position": "bottom",
+						"attrs": {
+							"circle": {
+								"r": 4,
+								"magnet": true,
+								"stroke": "#C2C8D5",
+								"strokeWidth": 1,
+								"fill": "#fff"
+							}
+						}
+					}
+				},
+				"items": [
+					{
+						"id": "out-1648111872834",
+						"group": "bottom"
+					}
+				]
+			},
+			"id": "c67c6f43-e069-4be7-b674-0260d6e8cf1f",
+			"data": {
+				"type": "output",
+				"label": "只允许输出",
+				"name": "输出",
+				"data": [
+					{
+						"label": "输出配置1",
+						"value": ""
+					},
+					{
+						"label": "输出配置1",
+						"value": ""
+					},
+					{
+						"label": "输出配置1",
+						"value": ""
+					}
+				]
+			},
+			"zIndex": 3
+		}
+	]
+}

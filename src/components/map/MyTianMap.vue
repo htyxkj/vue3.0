@@ -17,6 +17,7 @@ export default class MyTianMap extends Vue {
     tMap:any=null;
     tZoom:number=12;
     tMapDiv:any= "MAP"+new Date().getTime();
+    mapType:any=null
     created(){
 
     }
@@ -43,9 +44,9 @@ export default class MyTianMap extends Vue {
         //添加比例尺控件
         this.tMap.addControl(scale);
         //创建对象
-        var ctrl = new T.Control.MapType();
+        this.mapType = new T.Control.MapType();
         //添加控件
-        this.tMap.addControl(ctrl);
+        this.tMap.addControl(this.mapType);
         console.log("天地图初始化完成")
     }
     //添加鼠标滑过事件
@@ -63,6 +64,13 @@ export default class MyTianMap extends Vue {
     }
     getMap(){
         return this.tMap;
+    }
+    removeControl(type:any){
+        if(this.tMap){
+            if(type=='MapType'){
+                this.tMap.removeControl(this.mapType)
+            }
+        }
     }
 }
 </script>

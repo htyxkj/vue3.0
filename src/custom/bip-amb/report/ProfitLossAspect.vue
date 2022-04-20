@@ -27,6 +27,11 @@
                         <span>刷新</span>
                     </el-button>
                 </div>
+                <div class="topdiv2"><!-- 显示隐藏列 -->
+                <el-button style="border:0px" @click="showExpData">      
+                    <span>显示扩展指标</span>
+                </el-button>
+                </div>
 
             </el-header>
             <el-container>
@@ -88,6 +93,7 @@ import moment from 'moment'
 import {CurrUtils} from '@/utils/CurrUtils'
 let currutil = CurrUtils.curr
 import echarts from 'echarts'; 
+import _ from 'lodash'
 @Component({
     components: {
         Accounting,
@@ -121,6 +127,10 @@ export default class ProfitLossAspect  extends Vue {
     dialogVisible:boolean = false;
     dialogTitle:any = "";
     screenWidth:number=1920;
+
+    isCollapse:boolean=true;
+    showExp:boolean = false;
+    allTableData:any = []
     async created() {
         this.fm_date = moment(new Date()).add(-1, 'days').format("YYYY-MM-DD")
         this.tableHeight =  this.height - 60
@@ -147,38 +157,15 @@ export default class ProfitLossAspect  extends Vue {
             let v = JSON.stringify(prarm);
             let res = await tools.getDlgRunClass(v,b);
             if(res.data.id ==0){
-                this.tableData = res.data.data.data 
-                console.log(this.tableData);
-                
+                let tdata = res.data.data.data 
+                this.allTableData = tdata
+                this.tableData = _.filter(tdata,(item:any)=>{
+                    return item.isShow==1
+                });
+                 
                 this.defaultExpandKeys = res.data.data.expandRowKeys;
                 this.groups = res.data.data.period
-                // for(var i =0;i<tdata.length;i++){
-                //     let d = tdata[i];
-                //     let elid = d.element_id;
-                //     let elIndex = element_ids.indexOf(elid);
-                //     element_ids.push(elid);
-                //     let data = td[elIndex];
-                //     if(elIndex ==-1){
-                //         data = {};
-                //         data.element_name = d.element_name;
-                //         data.level = d.level
-                //         data[d.group_id+'month_money'] = d.tmonth_money
-                //         data[d.group_id+'month_rate'] = d.month_rate 
-                //         td.push(data);
-                //     }else{
-                //         data[d.group_id+'month_money'] = d.tmonth_money
-                //         data[d.group_id+'month_rate'] = d.month_rate 
-                //         td[elIndex] = data;
-                //     }
-                    
-                //     if(groups_ids.indexOf(d.group_id) ==-1){
-                //         let onep:any = {};
-                //         onep.key = d.group_id
-                //         onep.name = d.group_name
-                //         groups_ids.push(d.group_id)
-                //         this.groups.push(onep);
-                //     }
-                // }
+                 
             }else{
                 this.$notify.error(res.data.message)
             }
@@ -245,6 +232,16 @@ export default class ProfitLossAspect  extends Vue {
         }
         return data;
     }
+    showExpData(){
+        this.showExp = !this.showExp
+        if(this.showExp){
+            this.tableData = this.allTableData
+        }else{
+            this.tableData = _.filter(this.allTableData,(item:any) => {
+                return item.isShow == 1;
+            });
+        }
+    }
     //核算目的发生变化 value = 核算目的ID
     accChange(value:any){
         this.amb_purposes_id = value.id;
@@ -253,7 +250,11 @@ export default class ProfitLossAspect  extends Vue {
     }
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")
+        }else{
+            this.fm_date = "";
+        }
         // this.initData();
     }
     //阿米巴发生变化

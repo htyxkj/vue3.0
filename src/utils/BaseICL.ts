@@ -12,4 +12,6 @@ export const BaseVariable = Object.assign({
     AouthTokenUrl:"",
     UniteLoginUrl:"",
     SKIN:"",
+    fileOnlinePreviewUrl:"",
+    CookieKey:"",
   });

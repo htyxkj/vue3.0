@@ -1,7 +1,7 @@
 <template>
     <el-col :span="span" :xs="24" :sm="24" :md="span">
         <template v-if="!bgrid">
-            <el-form-item :label="cell.labelString" :required="cell.isReq">
+            <el-form-item :label="cell.labelString" class="bip-input-item" :required="cell.isReq">
                 <span slot="label" v-if="cell.labelString">
                     <template v-if="cell.labelString.length>(cell.isReq?4:6)">
                         <el-tooltip class="item" effect="dark" :content="cell.labelString" placement="top">
@@ -58,22 +58,25 @@ export default class BipListEditor extends Vue{
     @Prop() bgrid!:boolean
     @Prop() row!:number
     @Prop() bipInsAid!:BipInsAidNew
-    @Provide() model1:any = ""
-    @Provide() clearable:boolean = true
-    @Provide() multiple:boolean = false
-    @Provide() options:any = []
-    @Provide() refId:string = ''
-    @Provide() initOK:boolean = false
-    @Provide() span:number = 6
+    model1:any = ""
+    clearable:boolean = true
+    multiple:boolean = false
+    options:any = []
+    refId:string = ''
+    initOK:boolean = false
+    span:number = 6
 
-    @Provide() methodName:string = ''
-    @Provide() cels!:Array<Cell>
+    methodName:string = ''
+    cels!:Array<Cell>
 
     isDefault:boolean = false;
     mounted(){
         this.multiple = (this.cds.ccells.attr&0x80)>0
         if((this.cell.attr&0x400000)>0 && (this.cds.ccells.attr &0x80 )>0){
             this.multiple = false;
+        }
+        if((this.cell.attr&0x200000)>0){
+            this.multiple = true;
         }
         this.isDefault = (this.cell.attr & 0x800) >0
         if(!this.bgrid){
@@ -83,40 +86,40 @@ export default class BipListEditor extends Vue{
         }
         if(this.multiple){
             this.model1 = []
-            if(this.model)
-                this.model1 = this.model.split(',')||this.model.split(';')
+            if(this.model){
+                this.model1 = this.model.split(';')||this.model.split(',')
+            }
         }else{
             this.model1 = this.model
         }
-        
         this.methodName = icl.EV_CELL_CHANGE+'_'+this.cds.ccells.obj_id+'_'+this.cell.id
-
         this.initOPtions()
-
     }
 
     initOPtions(){
-        console.log("list init options")
-        this.options = [];
-        if(this.bipInsAid && this.bipInsAid.cells){
-            this.cels = this.bipInsAid.cells.cels
-            if(!this.cell.isReq){
-            let nullVal:any = {}
-            this.cels.forEach(item=>{
-                nullVal[item.id] = ''
-            })
-            this.options.push(nullVal)
-        }
-            this.bipInsAid.values.forEach((item:any) => {
-                let items:any = {}
-                items[this.bipInsAid.cells.cels[0].id] =  item[this.bipInsAid.cells.cels[0].id]+''
-                items[this.bipInsAid.cells.cels[1].id] =  item[this.bipInsAid.cells.cels[1].id]+''
-                this.options.push(items)
-            });
-        }
-        if(this.isDefault && this.options.length>0){
-            this.model1 = this.options[0][this.bipInsAid.cells.cels[0].id];
-            this.dataChange(this.model1);
+        if(this.bipInsAid && this.bipInsAid.values.length>0){
+            console.log("list init options")
+            this.options = [];
+            if(this.bipInsAid && this.bipInsAid.cells){
+                this.cels = this.bipInsAid.cells.cels
+                if(!this.cell.isReq){
+                    let nullVal:any = {}
+                    this.cels.forEach(item=>{
+                        nullVal[item.id] = ''
+                    })
+                    this.options.push(nullVal)
+                }
+                this.bipInsAid.values.forEach((item:any) => {
+                    let items:any = {}
+                    items[this.bipInsAid.cells.cels[0].id] =  item[this.bipInsAid.cells.cels[0].id]+''
+                    items[this.bipInsAid.cells.cels[1].id] =  item[this.bipInsAid.cells.cels[1].id]+''
+                    this.options.push(items)
+                });
+            }
+            if(this.isDefault && this.options.length>0){
+                this.model1 = this.options[0][this.bipInsAid.cells.cels[0].id];
+                this.dataChange(this.model1);
+            }
         }
     }
 
@@ -140,19 +143,16 @@ export default class BipListEditor extends Vue{
         }
         if( str !== this.model){
             if(this.cds.currCanEdit()){
+                const key:string = this.cell.id
                 this.cds.setStateOrAnd(icl.R_EDITED)
                 let record = this.cds.currRecord
-                record.data[this.cell.id] = str
+                record.data[key] = str
                 this.cds.currRecord = Object.assign({},record);
                 this.cds.cdata.data[this.cds.index] = Object.assign({},record)
-                const key:string = this.cell.id
                 // this.$bus.$emit(this.methodName,{cellId:key,value:this.model1,row:this.cds.index})
                 // console.log('3213')
-                if(this.cds.baseI){
-                    this.cds.baseI.cellDataChange(this.cds,this.cell.id,this.model1)
-                }
-                this.cds.cellChange(key,str);
                 this.cds.checkGS(this.cell);
+                this.cds.cellChange(key,str)
                 this.cds.currRecord.c_state |= 2;
                 if(this.cds.ds_par){
                     this.cds.ds_par.currRecord.c_state |= 2;

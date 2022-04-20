@@ -169,7 +169,11 @@ export default class ManageResultsRank extends Vue {
         // this.initData();
     } */
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM-DD")       
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM-DD")       
+        }else{
+            this.fm_date = "";
+        }
     }
     //阿米巴发生变化
     treeChange(checkData:any){

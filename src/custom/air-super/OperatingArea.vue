@@ -17,8 +17,8 @@
                 </el-row>
             </el-aside>
             <el-main class="padding0" style="overflow: hidden;position: relative;">
-                <div id="OperaTMap" style="width:100%;height:100%">
-                    <t-map ref="TMap" class="myTMap"></t-map>
+                <div id="OperaTMap" :style="tmap1Style">
+                    <t-map ref="TMap" class="myTMap" :style="tmap1Style"></t-map>
                 </div>
                 <a class="areaBtn" @click="areaBtnClick">
                     <template v-if="areaBtnOpen">
@@ -76,7 +76,10 @@
                         </el-dropdown>
                     </span>
                     <span class="tools-li">
-                        <el-button size="mini" icon="el-icon-search" @click="Screenshot">截图</el-button>
+                        <el-button size="mini" icon="el-icon-search" @click="Screenshot(0)">截图</el-button>
+                    </span> 
+                    <span class="tools-li">
+                        <el-button size="mini" icon="el-icon-search" @click="Screenshot(1)">截图(区县范围)</el-button>
                     </span> 
                     <span class="tools-li">
                         <el-button size="mini" icon="iconfont icon-bip-save" @click="PlanToReport">防治计划上报</el-button>
@@ -588,7 +591,8 @@ export default class OperatingArea extends Vue {
     planCell:CDataSet = new CDataSet("");//防治计划上报
 
     //作业区地图
-    tmap1Style:string ="width:7000px;height:7000px";
+    // tmap1Style:string ="width:1500px;height:1500px";//4500
+    tmap1Style:string="width:100%;height:100%" 
     TMap1:any = null;//作业区截图地图对象
 
     async created() {
@@ -759,6 +763,7 @@ export default class OperatingArea extends Vue {
         line.setColor("#C00000");
         line.setWeight(4);
         line.setOpacity(1);
+        line.name='5hl'
         //向地图上添加线
         this.tMap.addOverLay(line);
     }
@@ -1182,10 +1187,12 @@ export default class OperatingArea extends Vue {
                 }
             }
             let md = this.jqMapData[key];
-            let ht = md.ht
-            if(Array.isArray(ht))
-                ht = ht[0];
-            points = points.concat(ht)
+            if(md){
+                let ht = md.ht
+                if(Array.isArray(ht))
+                    ht = ht[0];
+                points = points.concat(ht)
+            }
         }
         if(points.length>0){
             let t1 = this.tMap.getViewport(points);
@@ -1541,8 +1548,10 @@ export default class OperatingArea extends Vue {
         if (d1.area != 0 && d1.sbuid != 'F2005') {
             text += "<br/>面积：" + d1.area + "亩";
         }
-        let index = parseInt((points.length/2)+"")
-        let label = this.makeOperaLableTXT(points[index],text,15);
+        // let index = parseInt((points.length/2)+"")
+        // let label = this.makeOperaLableTXT(points[index],text,15);
+        let t1 = this.tMap.getViewport(points);
+        let label = this.makeOperaLableTXT(t1.center,text,14);
         if(this.jqShowText)
         this.tMap.addOverLay(label);
         this.jqMapTextData[operid] = label;
@@ -2308,7 +2317,10 @@ export default class OperatingArea extends Vue {
         }else{
             point =  t1.center;
         }
-        let label = this.makeOperaLableTXT(point,d1.id,55);
+        let name = d1.name;
+        name = name.substring(name.length-3,name.length);
+        name = parseInt(name)+""
+        let label = this.makeOperaLableTXT(point,name,55);
         this.tMap.addOverLay(label);
         this.zyqMapTextData[operid] = label;
         if(edit){
@@ -2632,13 +2644,71 @@ export default class OperatingArea extends Vue {
 
 
 /************************* 导出作业区图片 *************************/
-    Screenshot(){
+    Screenshot(type:any){
+        let zm = 14;
+        this.tmap1Style = "width:4500px;height:3500px"
+        if(type == 0){
+            this.tmap1Style = "width:6500px;height:6500px"
+            zm=12;
+        }
         this.loading++;
         let zx = this.tMap.getCenter();
-        this.TMap1.panTo(zx);
-        this.TMap1.clearOverLays();
-        this.makeImg();
-    } 
+        let zoom = this.tMap.getZoom();
+        setTimeout(() => {
+            let overLays = this.tMap.getOverlays();
+            let pointsArr:any = [];
+            for(var i=0;i<overLays.length;i++){
+                let onel = overLays[i];
+                if(!onel.name || onel.name!='5hl'){
+                    if(onel.ht){
+                        let ht = onel.ht[0];
+                        if(ht instanceof Array){
+                            ht = onel.ht[0]
+                        }else{
+                            ht = onel.ht
+                        }
+                        pointsArr = pointsArr.concat(ht);
+                    }
+                }
+            }
+            this.tMap.checkResize();// 
+            //显示最佳比例尺
+            this.tMap.setViewport(pointsArr);
+            setTimeout(() => {
+                this.makeImg1(zx, zoom);
+            }, 5000);
+        }, 1000);
+    }
+    makeImg1(zx:any,zoom:any){
+        let _this = this;
+        try{
+            domtoimage.toBlob(document.getElementById('OperaTMap')).then(function (data:any) {
+                let blob = new Blob([data], {
+                    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
+                });
+                let date = TMapUt.dateFormat(new Date(),"yyyy-MM-dd_HH:mm:ss")
+                var url = window.URL.createObjectURL(blob); 
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = date+'HKSBQ.png';
+                a.click();
+                
+                _this.tmap1Style="width:100%;height:100%" 
+                _this.tMap.centerAndZoom(zx, zoom);
+                _this.loading=0
+            }).catch(function (error:any) {
+                _this.$notify.error("图片获取失败!!");
+                _this.tmap1Style="width:100%;height:100%" 
+                _this.tMap.centerAndZoom(zx, zoom);
+                _this.loading--;
+            });
+        }catch(e){
+            this.tmap1Style="width:100%;height:100%";
+            this.tMap.centerAndZoom(zx, zoom);
+            this.$notify.error("图片获取失败！");
+            this.loading--;
+        }
+    }
     makeImg(){
         this.TMap1.checkResize();
         try{
@@ -2709,6 +2779,8 @@ export default class OperatingArea extends Vue {
             }
         // //显示最佳比例尺
         this.TMap1.setViewport(pointsArr);
+        let zx = this.tMap.getCenter();
+        this.TMap1.panTo(zx);
         }catch(e){
             console.log(e)
             this.loading =0;
@@ -2718,7 +2790,7 @@ export default class OperatingArea extends Vue {
         let _this = this; 
         try{
             console.log("开始导出图片！")
-            domtoimage.toBlob(document.getElementById('SBQTMap')).then(function (data:any) {
+            domtoimage.toBlob(document.getElementById('OperaTMap')).then(function (data:any) {
                 let blob = new Blob([data], {
                     type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8"
                 });

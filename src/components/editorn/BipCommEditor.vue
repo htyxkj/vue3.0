@@ -182,13 +182,13 @@ export default class BipCommEditor extends Vue{
                 this.editorType = this.I_EDITOR_CHECK
                 let str = this.cell.refValue
                 if(str){
-                    await this.initInsAid(str);
+                    await this.initInsAid(str,true);
                 }
             }else if(this.cell.editType == 4){//单选框
                 this.editorType = this.I_EDITOR_RADIO
                 let str = this.cell.refValue
                 if(str){
-                    await this.initInsAid(str);
+                    await this.initInsAid(str,true);
                 }
             }else if(this.cell.editType == 6){//图片
                 this.editorType = ICL.I_EDITOR_IMG;
@@ -282,6 +282,7 @@ export default class BipCommEditor extends Vue{
         }
     }
     async getInsAidInfoValues(editName:string,bcl:boolean = false,getVl:boolean =false){
+        let bipInsAid = null;
         let str = editName
         if(bcl){
             str = ICL.AID_KEYCL+this.aidMarkKey+str;
@@ -291,30 +292,34 @@ export default class BipCommEditor extends Vue{
         let vv = this.aidInfo.get(str)
         if(!vv || (vv.values && vv.values.length==0)){
             vv  = window.sessionStorage.getItem(str)
-            if(vv)
-                vv = JSON.parse(vv)
+            if(vv){
+                vv = JSON.parse(vv);
+                bipInsAid = vv;
+            }
             if(!vv || (vv.values && vv.values.length==0)){
                 let vars = {id:bcl?300:200,aid:editName,ak:this.aidMarkKey}
-                await this.fetchInsAid(vars);
-            }else{
-                this.bipInsAid = vv;
+                let res = await this.fetchInsAid(vars);
+                if(res.data.id==0){
+                    vv = res.data.data.data
+                    bipInsAid = vv;
+                }
             }
         }else{
-            this.bipInsAid = vv;
+            bipInsAid = vv;
         }
-        vv = this.aidInfo.get(str);
         //List  是辅助的 进行一下数据查询
         if(vv && getVl){
             this.qe.page.pageSize = 1000
             await tools.getBipInsAidInfo(editName,210,this.qe).then((res:any)=>{
                 if(res.data.id==0){
                     vv.values = res.data.data.data.values;
-                    this.bipInsAid = vv;
+                    bipInsAid = vv;
                 }
             }).catch((err:any)=>{
                 this.$notify.error(err+";BipCommEditor getInsAidInfoValues")
             });
         }
+        this.bipInsAid = bipInsAid;
     }
 
     async initInsAid(str:any,getVl:boolean=false){

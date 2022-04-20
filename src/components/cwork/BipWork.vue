@@ -3,7 +3,7 @@
     <el-dialog v-loading="loading"
         :visible.sync="centerDialogVisible"
         width="30%"
-        ref="chk" class="bip-work" :title="title" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
+        ref="chk" class="bip-work" :title="title" append-to-body :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
         <!-- <span slot="title">审核</span> -->
         <template v-if="!bchked && isReview">
             <el-row class="bip-work-title"><h3>审批意见</h3></el-row>

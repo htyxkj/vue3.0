@@ -3,7 +3,7 @@ export class Menu{
     menuName:string;
     haveChild:boolean;
     command:string;
-    menuAttr:number;
+    menuattr:number;
     top: boolean;
     menuIcon:string;
     private _childMenu:Array<Menu>=[];
@@ -12,7 +12,7 @@ export class Menu{
         this.menuId = menuid
         this.menuName = menuname
         this.command = command
-        this.menuAttr = menuatr
+        this.menuattr = menuatr
         this.top = btop;
         this.haveChild = bchild;
         this.menuIcon = menuIcon;

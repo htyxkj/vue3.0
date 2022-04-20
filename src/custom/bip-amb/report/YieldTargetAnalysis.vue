@@ -308,7 +308,11 @@ export default class YieldTargetAnalysis extends Vue {
     } */
     //期间发生变化
     fm_dateChange(value:any){
-        this.fm_date = moment(value).format("YYYY-MM")       
+        if(value){
+            this.fm_date = moment(value).format("YYYY-MM")       
+        }else{
+            this.fm_date = "";
+        }
     }
     //期间发生变化
   /*   to_dateChange(value:any){
