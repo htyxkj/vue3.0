@@ -53,9 +53,9 @@
     "xlsx": "^0.16.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.8.0",
+    "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-typescript": "^3.8.1",
-    "@vue/cli-service": "^3.8.0",
+    "@vue/cli-service": "^5.0.8",
     "axios": "^0.21.1",
     "babel-plugin-component": "^1.1.1",
     "node-sass": "^4.14.1",
